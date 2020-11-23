@@ -1,0 +1,13 @@
+prefix=@prefix@
+exec_prefix=@exec_prefix@
+libdir=@libdir@
+includedir=@includedir@
+pkgincludedir=@includedir@/@PACKAGE@
+
+Name: @PACKAGE@
+Description: Development files
+Version: @VERSION@
+Requires.private: openssl >= 1.1.0 sqlite3 >= 3.5.1
+Cflags: -I${includedir}
+Libs: -L${libdir} -lwanhive
+Libs.private: -lpthread

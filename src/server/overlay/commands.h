@@ -1,0 +1,73 @@
+/*
+ * commands.h
+ *
+ * Extended list of commands for Wanhive overlay network
+ *
+ *
+ * Copyright (C) 2019 Wanhive Systems Private Limited (info@wanhive.com)
+ * This program is part of the Wanhive IoT Platform.
+ * Check the COPYING file for the license.
+ *
+ */
+
+#ifndef WH_SERVER_OVERLAY_COMMANDS_H_
+#define WH_SERVER_OVERLAY_COMMANDS_H_
+#include "../../util/commands.h"
+
+namespace wanhive {
+/*
+ * Classification of commands.
+ */
+enum WhpDhtCommand {
+	WH_DHT_CMD_NULL = WH_CMD_NULL,
+	WH_DHT_CMD_BASIC = WH_CMD_BASIC,
+	WH_DHT_CMD_MULTICAST = WH_CMD_MULTICAST,
+	WH_DHT_CMD_NODE,
+	WH_DHT_CMD_OVERLAY
+};
+
+/*
+ * Each command can have multiple qualifiers/functions.
+ */
+enum WhpDhtQualifier {
+	//WH_DHT_CMD_NULL
+	WH_DHT_QLF_NULL = WH_QLF_NULL,
+	WH_DHT_QLF_IDENTIFY = WH_QLF_IDENTIFY,
+	WH_DHT_QLF_AUTHENTICATE = WH_QLF_AUTHENTICATE,
+	WH_DHT_QLF_DESCRIBE = WH_QLF_DESCRIBE,
+	//WH_DHT_CMD_BASIC
+	WH_DHT_QLF_REGISTER = WH_QLF_REGISTER,
+	WH_DHT_QLF_GETKEY = WH_QLF_GETKEY,
+	WH_DHT_QLF_FINDROOT = WH_QLF_FINDROOT,
+	WH_DHT_QLF_BOOTSTRAP = WH_QLF_BOOTSTRAP,
+	//WH_DHT_CMD_MULTICAST
+	WH_DHT_QLF_PUBLISH = WH_QLF_PUBLISH,
+	WH_DHT_QLF_SUBSCRIBE = WH_QLF_SUBSCRIBE,
+	WH_DHT_QLF_UNSUBSCRIBE = WH_QLF_UNSUBSCRIBE,
+	//WH_DHT_CMD_NODE
+	WH_DHT_QLF_GETPREDECESSOR = 0,
+	WH_DHT_QLF_SETPREDECESSOR = 1,
+	WH_DHT_QLF_GETSUCCESSOR = 2,
+	WH_DHT_QLF_SETSUCCESSOR = 3,
+	WH_DHT_QLF_GETFINGER = 4,
+	WH_DHT_QLF_SETFINGER = 5,
+	WH_DHT_QLF_GETNEIGHBOURS = 6,
+	WH_DHT_QLF_NOTIFY = 7,
+	//WH_DHT_CMD_OVERLAY
+	WH_DHT_QLF_FINDSUCCESSOR = 0,
+	WH_DHT_QLF_PING = 1,
+	WH_DHT_QLF_MAP = 2
+};
+
+/*
+ * Request and response status.
+ */
+enum WhpDhtStatus {
+	WH_DHT_AQLF_REJECTED = WH_AQLF_REJECTED,
+	WH_DHT_AQLF_ACCEPTED = WH_AQLF_ACCEPTED,
+	WH_DHT_AQLF_REQUEST = WH_AQLF_REQUEST
+};
+
+}  // namespace wanhive
+
+#endif /* WH_SERVER_OVERLAY_COMMANDS_H_ */

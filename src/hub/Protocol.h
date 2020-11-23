@@ -1,0 +1,183 @@
+/*
+ * Protocol.h
+ *
+ * Bare minimum Wanhive protocol implementation
+ *
+ *
+ * Copyright (C) 2019 Amit Kumar (amitkriit@gmail.com)
+ * This program is part of the Wanhive IoT Platform.
+ * Check the COPYING file for the license.
+ *
+ */
+
+#ifndef WH_HUB_PROTOCOL_H_
+#define WH_HUB_PROTOCOL_H_
+#include "../util/Endpoint.h"
+
+/**
+ * Bare minimum Wanhive protocol implementation
+ * Expects blocking socket connection
+ * Thread safe at class level
+ */
+namespace wanhive {
+
+class Protocol: public Endpoint {
+public:
+	Protocol() noexcept;
+	~Protocol();
+	//-----------------------------------------------------------------
+	/**
+	 * Bare minimum identification and authentication protocol
+	 * <id> = identifier of the remote host
+	 */
+	//Returns length of the message on success, 0 on failure
+	unsigned int createIdentificationRequest(uint64_t id, uint64_t uid,
+			const unsigned char *nonce, unsigned int nonceLength) noexcept;
+	//Returns length of the message on success, 0 on failure
+	unsigned int processIdentificationResponse(unsigned int &saltLength,
+			const unsigned char *&salt, unsigned int &nonceLength,
+			const unsigned char *&nonce) noexcept;
+	//Call processIdentificationResponse explicitly to process the response
+	bool identificationRequest(uint64_t id, uint64_t uid,
+			const unsigned char *nonce, unsigned int nonceLength);
+	//Returns length of the message on success, 0 on failure
+	unsigned int createAuthenticationRequest(uint64_t id,
+			const unsigned char *proof, unsigned int length) noexcept;
+	//Returns length of the message on success, 0 on failure
+	unsigned int processAuthenticationResponse(unsigned int &length,
+			const unsigned char *&proof) noexcept;
+	//Call processAuthenticationResponse explicitly to process the response
+	bool authenticationRequest(uint64_t id, const unsigned char *proof,
+			unsigned int length);
+	//-----------------------------------------------------------------
+	/**
+	 * Bare minimum registration protocol implementation
+	 * <id> = identifier of the remote host
+	 */
+	//Returns length of the message on success, 0 on failure
+	unsigned int createRegisterRequest(uint64_t id, uint64_t uid, Digest *hc =
+			nullptr) noexcept;
+	//Returns length of the message on success, 0 on failure
+	unsigned int processRegisterResponse() noexcept;
+	//Returns true on success, false if request denied by the host
+	bool registerRequest(uint64_t id, uint64_t uid, Digest *hc = nullptr);
+
+	//Set <verify> if verification of host is desired
+	unsigned int createGetKeyRequest(uint64_t id, Digest *hc,
+			bool verify) noexcept;
+	unsigned int processGetKeyResponse(Digest *hc) noexcept;
+	//Set <verify> if verification of host is desired
+	bool getKeyRequest(uint64_t id, Digest *hc, bool verify);
+	//-----------------------------------------------------------------
+	/**
+	 * Bare minimum bootstrapping protocol
+	 * <id> = identifier of the remote host
+	 */
+	unsigned int createFindRootRequest(uint64_t id, uint64_t uid) noexcept;
+	unsigned int processFindRootResponse(uint64_t uid, uint64_t &root) noexcept;
+	bool findRootRequest(uint64_t id, uint64_t uid, uint64_t &root);
+
+	unsigned int createBootstrapRequest(uint64_t id) noexcept;
+	unsigned int processBootstrapResponse(uint64_t keys[],
+			uint32_t &limit) noexcept;
+	bool bootstrapRequest(uint64_t id, uint64_t keys[], uint32_t &limit);
+	//-----------------------------------------------------------------
+	/**
+	 * Bare minimum pub/sub protocol
+	 * <id> = identifier of the remote host
+	 */
+	unsigned int createPublishRequest(uint64_t id, uint8_t topic,
+			const unsigned char *payload, unsigned int payloadLength) noexcept;
+	bool publishRequest(uint64_t id, uint8_t topic,
+			const unsigned char *payload, unsigned int payloadLength);
+
+	unsigned int createSubscribeRequest(uint64_t id, uint8_t topic) noexcept;
+	unsigned int processSubscribeResponse(uint8_t topic) noexcept;
+	bool subscribeRequest(uint64_t id, uint8_t topic);
+
+	unsigned int createUnsubscribeRequest(uint64_t id, uint8_t topic) noexcept;
+	unsigned int processUnsubscribeResponse(uint8_t topic) noexcept;
+	bool unsubscribeRequest(uint64_t id, uint8_t topic);
+	//-----------------------------------------------------------------
+	/**
+	 * STATIC METHODS
+	 * Bare minimum bootstrapping and registration protocol
+	 * <host> is the identifier of the remote host.
+	 * <uid> is the identifier of the local node.
+	 */
+	//Returns message length on success, 0 on failure
+	static unsigned int createIdentificationRequest(uint64_t host, uint64_t uid,
+			uint16_t sequenceNumber, const unsigned char *nonce,
+			unsigned int nonceLength, MessageHeader &header,
+			unsigned char *buf) noexcept;
+	//Returns a new message on success, nullptr on failure
+	static Message* createIdentificationRequest(uint64_t host, uint64_t uid,
+			uint16_t sequenceNumber, const unsigned char *nonce,
+			unsigned int nonceLength) noexcept;
+	//Returns message length on success, 0 on failure
+	static unsigned int processIdentificationResponse(
+			const MessageHeader &header, const unsigned char *buf,
+			unsigned int &saltLength, const unsigned char *&salt,
+			unsigned int &nonceLength, const unsigned char *&nonce) noexcept;
+	//Returns message length on success, 0 on failure
+	static unsigned int processIdentificationResponse(Message *msg,
+			unsigned int &saltLength, const unsigned char *&salt,
+			unsigned int &nonceLength, const unsigned char *&nonce) noexcept;
+
+	//Returns message length on success, 0 on failure
+	static unsigned int createAuthenticationRequest(uint64_t host,
+			uint16_t sequenceNumber, const unsigned char *proof,
+			unsigned int length, MessageHeader &header,
+			unsigned char *buf) noexcept;
+	//Returns a new message on success, nullptr on failure
+	static Message* createAuthenticationRequest(uint64_t host,
+			uint16_t sequenceNumber, const unsigned char *proof,
+			unsigned int length) noexcept;
+	//Returns message length on success, 0 on failure
+	static unsigned int processAuthenticationResponse(
+			const MessageHeader &header, const unsigned char *buf,
+			unsigned int &length, const unsigned char *&proof) noexcept;
+	//Returns message length on success, 0 on failure
+	static unsigned int processAuthenticationResponse(Message *msg,
+			unsigned int &length, const unsigned char *&proof) noexcept;
+
+	//Returns message length on success, 0 on failure
+	static unsigned int createRegisterRequest(uint64_t host, uint64_t uid,
+			uint16_t sequenceNumber, const Digest *hc, MessageHeader &header,
+			unsigned char *buf) noexcept;
+	//Returns <msg> (a new message if <msg> is nullptr) on success, nullptr otherwise
+	static Message* createRegisterRequest(uint64_t host, uint64_t uid,
+			const Digest *hc, Message *msg) noexcept;
+
+	//Returns message length on success, 0 on failure
+	static unsigned int createGetKeyRequest(uint64_t host,
+			uint16_t sequenceNumber, const TransactionKey &tk,
+			MessageHeader &header, unsigned char *buf) noexcept;
+	//Returns <msg> (a new message if <msg> is nullptr) on success, nullptr otherwise
+	static Message* createGetKeyRequest(uint64_t host, const TransactionKey &tk,
+			Message *msg) noexcept;
+	//Returns message length on success, 0 on failure (<hc> is the value-result argument)
+	static unsigned int processGetKeyResponse(const MessageHeader &header,
+			const unsigned char *buf, Digest *hc) noexcept;
+	//Returns message length on success, 0 on failure (<hc> is the value-result argument)
+	static unsigned int processGetKeyResponse(Message *msg, Digest *hc) noexcept;
+
+	//Returns message length on success, 0 on failure
+	static unsigned int createFindRootRequest(uint64_t host, uint64_t uid,
+			uint64_t identity, uint16_t sequenceNumber, MessageHeader &header,
+			unsigned char *buf) noexcept;
+	//Returns a new message on success, nullptr on failure
+	static Message* createFindRootRequest(uint64_t host, uint64_t uid,
+			uint64_t identity, uint16_t sequenceNumber) noexcept;
+	//Returns message length on success, 0 on failure
+	static unsigned int processFindRootResponse(const MessageHeader &header,
+			const unsigned char *buf, uint64_t identity,
+			uint64_t &root) noexcept;
+	//Returns message length on success, 0 on failure
+	static unsigned int processFindRootResponse(Message *msg, uint64_t identity,
+			uint64_t &root) noexcept;
+};
+
+} /* namespace wanhive */
+
+#endif /* WH_HUB_PROTOCOL_H_ */
