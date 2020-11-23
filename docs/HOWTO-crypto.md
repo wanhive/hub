@@ -2,7 +2,7 @@
 
 REF: [Self signed certificate with custom ca](https://gist.github.com/fntlnz/cf14feb5a46b2eda428e000157447309)
 
-##Root CA
+## Root CA
 
 If you want a non password protected key just remove the **-des3** option
 
@@ -11,7 +11,7 @@ openssl genrsa -des3 -out rootCA.key 4096
 openssl req -x509 -new -nodes -key rootCA.key -sha256 -days 1024 -out rootCA.crt
 ```
 
-##Server Key and CSR
+## Server Key and CSR
 
 ```
 openssl genrsa -out wh.key 2048

@@ -17,7 +17,7 @@
 
 //VERSION PATTERN: https://semver.org/spec/v2.0.0.html
 #define WH_RELEASE_VERSION "1.0.0"
-#define WH_RELEASE_NAME "(Janus)"
+#define WH_RELEASE_NAME "(janus)"
 #define WH_RELEASE_YEAR "2020"
 #define WH_RELEASE_AUTHOR "Wanhive Systems Private Limited"
 #define WH_RELEASE_COAUTHOR "Amit Kumar"
