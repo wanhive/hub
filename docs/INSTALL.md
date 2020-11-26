@@ -145,7 +145,7 @@ The program will attempt to read **wanhive.conf** from the locations listed belo
 3. $HOME/.config/wanhive
 4. [sysconfdir](https://www.gnu.org/software/automake/manual/html_node/Standard-Directory-Variables.html)
 
-##Configuration file
+## Configuration file
 
 The configuration file uses a restricted version of the [INI file](https://en.wikipedia.org/wiki/INI_file) format.
 

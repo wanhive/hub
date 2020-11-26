@@ -15,7 +15,7 @@ You agree to license your "original work" under a compatible permissive license.
 
 ## Code of conduct
 
-[Code of conduct](CodeOfConduct.md)
+[Code of conduct](CODE_OF_CONDUCT.md)
 
 # General requirements
 
