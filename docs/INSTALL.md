@@ -17,7 +17,7 @@
 * PostgreSQL server version 10 or above (required by authentication hub and Wanhive IoT web console)
 * Wanhive IoT web console (web application for the management of users and IoT endpoints)
 
-# Build and Install
+# Build and install
 
 * Extract the archive.
 
@@ -114,7 +114,7 @@ Press **Ctrl+C** to exit the program.
 * Overlay hubs use the identifiers in the range [0-1023].
 * Clients cannot connect with the overlay hub attached to the identifier 0.
 
-#Setup options
+# Setup options
 
 ## Basic setup
 
