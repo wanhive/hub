@@ -70,7 +70,7 @@ unsigned int Twiddler::power2Floor(unsigned int x) noexcept {
 		unsigned int p = 1;
 		unsigned int r = 1;
 
-		while (p <= x) {
+		while (p && p <= x) {
 			r = p;
 			p <<= 1;
 		}
@@ -86,7 +86,7 @@ unsigned int Twiddler::power2Ceil(unsigned int x) noexcept {
 		return x;
 	} else {
 		unsigned int r = 1;
-		while (r < x) {
+		while (r && r < x) {
 			r <<= 1;
 		}
 		return r;
