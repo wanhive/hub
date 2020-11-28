@@ -29,10 +29,10 @@ This package includes
 * **Overlay hub** acts as an intermediary between the IoT endpoints and ensures movement of data between the connected devices.
 * **Development files** for application development in C++ programming language.
 
-This package doesn't include
+### Recommended packages
 
-* **Wanhive IoT web console** a web application for the management of users and IoT endpoints.
-
+* [Wanhive IoT web console](https://github.com/wanhive/webconsole) a web application for the management of users and IoT endpoints.
+* [Wanhive EndPoint](https://github.com/wanhive/endpoint.java) Endpoint development library in the Java programming language.
 
 # Resources
 
