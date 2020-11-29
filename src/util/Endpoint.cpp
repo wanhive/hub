@@ -44,10 +44,10 @@ const PKI* Endpoint::getKeyPair() const noexcept {
 	return pki;
 }
 
-void Endpoint::connect(const nameInfo &ni, int timeoutMils) {
+void Endpoint::connect(const NameInfo &ni, int timeoutMils) {
 	int socket = -1;
 	try {
-		socketAddress sa;
+		SocketAddress sa;
 		socket = connect(ni, sa, timeoutMils);
 		setSocket(socket);
 	} catch (BaseException &e) {
@@ -346,7 +346,7 @@ unsigned char* Endpoint::buffer() noexcept {
 	return _buffer;
 }
 
-int Endpoint::connect(const nameInfo &ni, socketAddress &sa, int timeoutMils) {
+int Endpoint::connect(const NameInfo &ni, SocketAddress &sa, int timeoutMils) {
 	int sfd = -1;
 	try {
 		if (!strcasecmp(ni.service, "unix")) {

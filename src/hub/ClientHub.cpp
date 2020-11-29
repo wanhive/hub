@@ -226,7 +226,7 @@ void ClientHub::connectToAuthenticator() noexcept {
 		}
 		//-----------------------------------------------------------------
 		//Establish new connection
-		nameInfo ni;
+		NameInfo ni;
 		Identity::getAddress(id, ni);
 		s = new Socket(ni);
 		s->setUid(id);
@@ -272,7 +272,7 @@ void ClientHub::connectToOverlay() noexcept {
 		}
 		//-----------------------------------------------------------------
 		//Establish new connection
-		nameInfo ni;
+		NameInfo ni;
 		Identity::getAddress(id, ni);
 		s = new Socket(ni);
 		s->setUid(id);
@@ -317,7 +317,7 @@ void ClientHub::findRoot() noexcept {
 			WH_LOG_DEBUG("Found the root node [%llu]", bs.root);
 		} else {
 			fresh = true;
-			nameInfo ni;
+			NameInfo ni;
 			Identity::getAddress(bs.root, ni);
 			s = new Socket(ni);
 			s->setUid(bs.root);

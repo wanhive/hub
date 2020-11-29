@@ -361,7 +361,7 @@ Watcher* OverlayHub::createProxyConnection(unsigned long long id,
 
 	Socket *conn = nullptr;
 	try {
-		nameInfo ni;
+		NameInfo ni;
 		Identity::getAddress(id, ni);
 		conn = new Socket(ni);
 		//-----------------------------------------------------------------

@@ -44,7 +44,7 @@ public:
 	 * Connection management
 	 */
 	//Establish a new connection, old connection is terminated
-	void connect(const nameInfo &ni, int timeoutMils = -1);
+	void connect(const NameInfo &ni, int timeoutMils = -1);
 	//Terminate the existing connection
 	void disconnect();
 
@@ -153,7 +153,7 @@ public:
 	 * Otherwise connect will be completed in background,
 	 * use Selector to check whether connect returned successfully or not.
 	 */
-	static int connect(const nameInfo &ni, socketAddress &sa, int timeoutMils =
+	static int connect(const NameInfo &ni, SocketAddress &sa, int timeoutMils =
 			-1);
 	/*
 	 * If PKI is provided then the message will be signed using PKI's private key

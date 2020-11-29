@@ -34,9 +34,9 @@ public:
 	//Dump database content into a TAB-delimited text file
 	void batchDump(const char *path);
 	//Returns 0 on success; 1 if no record found; -1 on error
-	int getHost(unsigned long long uid, nameInfo &ni) noexcept;
+	int getHost(unsigned long long uid, NameInfo &ni) noexcept;
 	//Returns 0 on success, -1 on error
-	int addHost(unsigned long long uid, const nameInfo &ni) noexcept;
+	int addHost(unsigned long long uid, const NameInfo &ni) noexcept;
 	//Returns 0 on success, -1 on error
 	int removeHost(unsigned long long uid) noexcept;
 private:

@@ -166,7 +166,7 @@ bool Identity::verifyNonce(Hash &hash, uint64_t salt, uint64_t id,
 	}
 }
 
-void Identity::getAddress(uint64_t uid, nameInfo &ni) {
+void Identity::getAddress(uint64_t uid, NameInfo &ni) {
 	if (getHost(uid, ni) == 0) {
 		return;
 	} else {
@@ -174,7 +174,7 @@ void Identity::getAddress(uint64_t uid, nameInfo &ni) {
 	}
 }
 
-void Identity::setAddress(uint64_t uid, nameInfo &ni) {
+void Identity::setAddress(uint64_t uid, NameInfo &ni) {
 	if (addHost(uid, ni) == 0) {
 		return;
 	} else {

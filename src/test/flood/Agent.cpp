@@ -81,7 +81,7 @@ bool Agent::authenticate() {
 
 void Agent::connect(uint64_t id, int timeout) {
 	try {
-		nameInfo ni;
+		NameInfo ni;
 		Identity::getAddress(id, ni);
 		Protocol::connect(ni, timeout);
 	} catch (BaseException &e) {

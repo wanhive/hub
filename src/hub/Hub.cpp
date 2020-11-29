@@ -615,7 +615,7 @@ void Hub::initListener() {
 		//-----------------------------------------------------------------
 		auto serviceName = ctx.serviceName;
 		auto isUnixSocket = false;
-		nameInfo nodeAddress;
+		NameInfo nodeAddress;
 		if (!serviceName) {
 			Identity::getAddress(getUid(), nodeAddress);
 			if (!strcasecmp(nodeAddress.service, "unix")) {

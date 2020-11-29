@@ -65,7 +65,7 @@ void Host::batchUpdate(const char *path) {
 	try {
 		beginTransaction();
 		unsigned long long id;
-		nameInfo ni;
+		NameInfo ni;
 
 		char format[32];
 		snprintf(format, sizeof(format), " %%llu %%%zus %%%zus ",
@@ -113,7 +113,7 @@ void Host::batchDump(const char *path) {
 	}
 }
 
-int Host::getHost(unsigned long long uid, nameInfo &ni) noexcept {
+int Host::getHost(unsigned long long uid, NameInfo &ni) noexcept {
 	if (db && qStmt) {
 		int ret = 0;
 		int z;
@@ -138,7 +138,7 @@ int Host::getHost(unsigned long long uid, nameInfo &ni) noexcept {
 	}
 }
 
-int Host::addHost(unsigned long long uid, const nameInfo &ni) noexcept {
+int Host::addHost(unsigned long long uid, const NameInfo &ni) noexcept {
 	if (db && iStmt) {
 		int ret = 0;
 		sqlite3_bind_int64(iStmt, 1, uid);

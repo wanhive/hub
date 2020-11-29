@@ -23,7 +23,7 @@
 
 namespace wanhive {
 
-int Network::serverSocket(const char *service, socketAddress &sa, bool blocking,
+int Network::serverSocket(const char *service, SocketAddress &sa, bool blocking,
 		int type, int family, int protocol) {
 	int sfd;
 	addrinfo *result, *rp;
@@ -63,7 +63,7 @@ int Network::serverSocket(const char *service, socketAddress &sa, bool blocking,
 }
 
 int Network::connectedSocket(const char *name, const char *service,
-		socketAddress &sa, bool blocking, int type, int family, int flags,
+		SocketAddress &sa, bool blocking, int type, int family, int flags,
 		int protocol) {
 	int sfd = -1;
 	addrinfo *result, *rp;
@@ -100,13 +100,13 @@ int Network::connectedSocket(const char *name, const char *service,
 	return sfd;
 }
 
-int Network::connectedSocket(const nameInfo &ni, socketAddress &sa,
+int Network::connectedSocket(const NameInfo &ni, SocketAddress &sa,
 		bool blocking, int type, int family, int flags, int protocol) {
 	return connectedSocket(ni.host, ni.service, sa, blocking, type, family,
 			flags, protocol);
 }
 
-int Network::socket(const char *name, const char *service, socketAddress &sa,
+int Network::socket(const char *name, const char *service, SocketAddress &sa,
 		int type, int family, int flags, int protocol) {
 	int sfd;
 	addrinfo *result, *rp;
@@ -130,12 +130,12 @@ int Network::socket(const char *name, const char *service, socketAddress &sa,
 	return sfd;
 }
 
-int Network::socket(const nameInfo &ni, socketAddress &sa, int type, int family,
+int Network::socket(const NameInfo &ni, SocketAddress &sa, int type, int family,
 		int flags, int protocol) {
 	return socket(ni.host, ni.service, sa, type, family, flags, protocol);
 }
 
-void Network::bind(int sfd, socketAddress &sa) {
+void Network::bind(int sfd, SocketAddress &sa) {
 	if (::bind(sfd, (sockaddr*) &sa.address, sa.length) == -1) {
 		throw SystemException();
 	}
@@ -147,7 +147,7 @@ void Network::listen(int sfd, int backlog) {
 	}
 }
 
-int Network::accept(int listenfd, socketAddress &sa, int flags) {
+int Network::accept(int listenfd, SocketAddress &sa, int flags) {
 	sa.length = sizeof(sockaddr_storage);
 	int sfd = ::accept4(listenfd, (sockaddr*) &sa.address, &sa.length, flags);
 	if (sfd != -1) {
@@ -159,7 +159,7 @@ int Network::accept(int listenfd, socketAddress &sa, int flags) {
 	}
 }
 
-int Network::connect(int sfd, socketAddress &sa) {
+int Network::connect(int sfd, SocketAddress &sa) {
 	int ret = ::connect(sfd, (sockaddr*) (&sa.address), sa.length);
 	if (ret != -1) {
 		return ret; //=0
@@ -205,7 +205,7 @@ bool Network::isBlocking(int sfd) {
 	}
 }
 
-int Network::unixServerSocket(const char *path, socketAddress &sa,
+int Network::unixServerSocket(const char *path, SocketAddress &sa,
 		bool blocking, int type, int protocol) {
 	if (!path) {
 		throw Exception(EX_NULL);
@@ -238,7 +238,7 @@ int Network::unixServerSocket(const char *path, socketAddress &sa,
 	return sfd;
 }
 
-int Network::unixConnectedSocket(const char *path, socketAddress &sa,
+int Network::unixConnectedSocket(const char *path, SocketAddress &sa,
 		bool blocking, int type, int protocol) {
 	if (!path) {
 		throw Exception(EX_NULL);
@@ -272,7 +272,7 @@ void Network::socketPair(int sv[2], bool blocking, int type) {
 	}
 }
 
-void Network::getNameInfo(const socketAddress &sa, nameInfo &ni, int flags) {
+void Network::getNameInfo(const SocketAddress &sa, NameInfo &ni, int flags) {
 	int s;
 	s = getnameinfo((sockaddr*) &sa.address, sa.length, ni.host, NI_MAXHOST,
 			ni.service, NI_MAXSERV, flags);
@@ -281,14 +281,14 @@ void Network::getNameInfo(const socketAddress &sa, nameInfo &ni, int flags) {
 	}
 }
 
-void Network::getSockName(int sfd, socketAddress &sa) {
+void Network::getSockName(int sfd, SocketAddress &sa) {
 	sa.length = sizeof(sockaddr_storage);
 	if (getsockname(sfd, (sockaddr*) &sa.address, &sa.length)) {
 		throw SystemException();
 	}
 }
 
-void Network::getPeerName(int sfd, socketAddress &sa) {
+void Network::getPeerName(int sfd, SocketAddress &sa) {
 	sa.length = sizeof(sockaddr_storage);
 	if (getpeername(sfd, (sockaddr*) &sa.address, &sa.length))
 		throw SystemException();

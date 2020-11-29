@@ -45,12 +45,12 @@ enum SocketType {
 class Socket: public Watcher {
 public:
 	Socket(int fd) noexcept;
-	Socket(int fd, const socketAddress &sa) noexcept;
+	Socket(int fd, const SocketAddress &sa) noexcept;
 	/*
 	 * Creates a connected Socket, type is set to SOCKET_PROXY
 	 * If ni.service is "unix" then a unix domain socket is created
 	 */
-	Socket(const nameInfo &ni, bool blocking = false, int timeoutMils = -1);
+	Socket(const NameInfo &ni, bool blocking = false, int timeoutMils = -1);
 	/*
 	 * Creates a server Socket, type is set to SOCKET_LISTENER
 	 * If <isUnix> is set then a unix domain socket is created
@@ -107,7 +107,7 @@ public:
 	 * is configured correctly for reading from or writing to it's IO buffer.
 	 */
 	Message* getMessage();
-	socketAddress const& getAddress() const noexcept;
+	SocketAddress const& getAddress() const noexcept;
 	//Whether the connection has outlived the specified timeOut (in miliseconds)
 	bool hasTimedOut(unsigned int timeOut) const noexcept;
 	/*
@@ -203,7 +203,7 @@ private:
 	Topic subscriptions;
 	//-----------------------------------------------------------------
 	//Address associated with the current connection
-	socketAddress address;
+	SocketAddress address;
 	//When was this connection created
 	Timer timer;
 	//-----------------------------------------------------------------

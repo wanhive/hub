@@ -16,12 +16,12 @@
 
 namespace wanhive {
 //-----------------------------------------------------------------
-struct nameInfo {
+struct NameInfo {
 	char host[NI_MAXHOST];
 	char service[NI_MAXSERV];
 };
 
-struct socketAddress {
+struct SocketAddress {
 	sockaddr_storage address;
 	socklen_t length;
 };
@@ -34,32 +34,32 @@ struct socketAddress {
 class Network {
 public:
 	//Returns a bound socket
-	static int serverSocket(const char *service, socketAddress &sa,
+	static int serverSocket(const char *service, SocketAddress &sa,
 			bool blocking, int type = SOCK_STREAM, int family = AF_UNSPEC,
 			int protocol = 0);
 	//Set AI_NUMERICHOST in <flags> to stop DNS resolution
 	static int connectedSocket(const char *name, const char *service,
-			socketAddress &sa, bool blocking, int type = SOCK_STREAM,
+			SocketAddress &sa, bool blocking, int type = SOCK_STREAM,
 			int family = AF_UNSPEC, int flags = 0, int protocol = 0);
 	//Same as above, but uses nameInfo
-	static int connectedSocket(const nameInfo &ni, socketAddress &sa,
+	static int connectedSocket(const NameInfo &ni, SocketAddress &sa,
 			bool blocking, int type = SOCK_STREAM, int family = AF_UNSPEC,
 			int flags = 0, int protocol = 0);
 	//The basic socket, not connected
-	static int socket(const char *name, const char *service, socketAddress &sa,
+	static int socket(const char *name, const char *service, SocketAddress &sa,
 			int type, int family, int flags, int protocol = 0);
 	//Same as above, but uses nameinfo
-	static int socket(const nameInfo &ni, socketAddress &sa, int type,
+	static int socket(const NameInfo &ni, SocketAddress &sa, int type,
 			int family, int flags, int protocol = 0);
 	//Assign the address to the socket
-	static void bind(int sfd, socketAddress &sa);
+	static void bind(int sfd, SocketAddress &sa);
 	//Listen for incoming connections
 	static void listen(int sfd, int backlog);
 	/*
 	 * Accept an incoming connection
 	 * Useful flag=SOCK_NONBLOCK (linux specific)
 	 */
-	static int accept(int listenfd, socketAddress &sa, int flags = 0);
+	static int accept(int listenfd, SocketAddress &sa, int flags = 0);
 	/*
 	 * Connect to a server, in case connect fails, retry with a fresh socket
 	 * MAN 2  CONNECT: The socket is nonblocking and the  connection  cannot  be  completed  immediately.
@@ -70,7 +70,7 @@ public:
 	 * (SO_ERROR is one of the usual error codes listed here, explaining the reason for the failure).
 	 *
 	 */
-	static int connect(int sfd, socketAddress &sa);
+	static int connect(int sfd, SocketAddress &sa);
 	//Wrapper for the shutdown(2) system call
 	static int shutdown(int sfd, int how = SHUT_RDWR) noexcept;
 	//closes an open socket, best effort
@@ -80,20 +80,20 @@ public:
 	//Test whether the socket is blocking
 	static bool isBlocking(int sfd);
 	//Creates a unix domain socket and binds it to the given address
-	static int unixServerSocket(const char *path, socketAddress &sa,
+	static int unixServerSocket(const char *path, SocketAddress &sa,
 			bool blocking, int type = SOCK_STREAM, int protocol = 0);
 	//Connects to a Unix domain socket, returns the socket descriptor (if success or in progress)
-	static int unixConnectedSocket(const char *path, socketAddress &sa,
+	static int unixConnectedSocket(const char *path, SocketAddress &sa,
 			bool blocking, int type = SOCK_STREAM, int protocol = 0);
 	// Creates unnamed pair of connected sockets (unix domain)
 	static void socketPair(int sv[2], bool blocking, int type = SOCK_STREAM);
 	//No costly DNS resolution by default
-	static void getNameInfo(const socketAddress &sa, nameInfo &ni,
+	static void getNameInfo(const SocketAddress &sa, NameInfo &ni,
 			int flags = (NI_NUMERICHOST | NI_NUMERICSERV));
 	//returns the current address to which the socket sfd is bound
-	static void getSockName(int sfd, socketAddress &sa);
+	static void getSockName(int sfd, SocketAddress &sa);
 	//returns the address of the peer connected to the socket sfd
-	static void getPeerName(int sfd, socketAddress &sa);
+	static void getPeerName(int sfd, SocketAddress &sa);
 	//=================================================================
 	/**
 	 * Blocking IO utilities

@@ -27,13 +27,13 @@ Socket::Socket(int fd) noexcept :
 	clear();
 }
 
-Socket::Socket(int fd, const socketAddress &sa) noexcept :
+Socket::Socket(int fd, const SocketAddress &sa) noexcept :
 		Watcher(fd) {
 	clear();
 	address = sa;
 }
 
-Socket::Socket(const nameInfo &ni, bool blocking, int timeoutMils) {
+Socket::Socket(const NameInfo &ni, bool blocking, int timeoutMils) {
 	try {
 		clear();
 		if (!strcasecmp(ni.service, "unix")) {
@@ -140,7 +140,7 @@ bool Socket::testTopic(unsigned int index) const noexcept {
 }
 
 Socket* Socket::accept(bool blocking) {
-	socketAddress sa;
+	SocketAddress sa;
 	int flag = blocking ? 0 : SOCK_NONBLOCK;
 	int sfd = Network::accept(this->getHandle(), sa, flag);
 	if (sfd == -1) {
@@ -230,7 +230,7 @@ Message* Socket::getMessage() {
 	return nullptr;
 }
 
-socketAddress const& Socket::getAddress() const noexcept {
+SocketAddress const& Socket::getAddress() const noexcept {
 	return address;
 }
 

@@ -65,9 +65,9 @@ protected:
 	 * Hosts management
 	 */
 	//Returns host <uid>'s address in <ni>
-	void getAddress(uint64_t uid, nameInfo &ni);
+	void getAddress(uint64_t uid, NameInfo &ni);
 	//Fails if a file used instead of database
-	void setAddress(uint64_t uid, nameInfo &ni);
+	void setAddress(uint64_t uid, NameInfo &ni);
 	//Fails if a file used instead of database
 	void removeAddress(uint64_t uid);
 	//-----------------------------------------------------------------

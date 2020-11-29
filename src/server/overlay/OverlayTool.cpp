@@ -178,7 +178,7 @@ void OverlayTool::connect() {
 	}
 
 	try {
-		nameInfo ni;
+		NameInfo ni;
 		Identity::getAddress(host, ni);
 		Endpoint::connect(ni, timeout);
 		std::cout << "Connected with the host: " << host << std::endl;
