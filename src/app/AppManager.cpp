@@ -75,8 +75,8 @@ void AppManager::printHelp(FILE *stream) noexcept {
 			"%s in that order.\n\n", WH_PRODUCT_NAME, Identity::CONF_FILE,
 			Identity::CONF_PATH, Identity::CONF_SYSTEM_PATH);
 
-	fprintf(stream, "\nwebsite: %s   email: %s\n\n",
-	WH_RELEASE_WEBSITE, WH_RELEASE_EMAIL);
+	fprintf(stream, "\nurl: %s   email: %s\n\n", WH_RELEASE_URL,
+			WH_RELEASE_EMAIL);
 }
 
 int AppManager::parseOptions(int argc, char *const*argv) noexcept {
