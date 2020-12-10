@@ -81,6 +81,7 @@ public:
 	//-----------------------------------------------------------------
 	/**
 	 * Header and message management
+	 * NOTE: The format string follows the Serializer class.
 	 */
 	//Message's source identifier will be set to <source>
 	void setSource(uint64_t source) noexcept;
@@ -183,8 +184,9 @@ public:
 	 * NOTE 1: <buffer> contains the full message (header+payload) in either case.
 	 * NOTE 2: Caller must ensure that <buffer> points to valid memory region of
 	 * sufficient size, none of the functions perform overflow check.
+	 * NOTE 3: The format string follows the Serializer class.
 	 */
-	//<header> is copied verbatim however if the length field is 0 then the message length is calculated
+	//If the length field in <header> is 0 then the message length is calculated
 	static unsigned int pack(const MessageHeader &header, unsigned char *buffer,
 			const char *format, ...) noexcept;
 	static unsigned int pack(const MessageHeader &header, unsigned char *buffer,

@@ -65,7 +65,6 @@ void Message::recycle(Message *p) noexcept {
 void Message::clear() noexcept {
 	referenceCount = 0;
 	ttl = 0;
-	origin = 0;
 
 	State::clear();
 	header.clear();
@@ -75,18 +74,6 @@ void Message::clear() noexcept {
 bool Message::validate() const noexcept {
 	return (buffer.getIndex() == 0) && (buffer.getLimit() == getLength())
 			&& (getLength() >= HEADER_SIZE);
-}
-
-MessageHeader& Message::getHeader() noexcept {
-	return this->header;
-}
-
-unsigned char* Message::getStorage() noexcept {
-	return buffer.offset();
-}
-
-unsigned int Message::remaining() const noexcept {
-	return buffer.space();
 }
 
 unsigned int Message::addReferenceCount() noexcept {
@@ -101,6 +88,18 @@ uint64_t Message::getOrigin() const noexcept {
 	return origin;
 }
 
+MessageHeader& Message::getHeader() noexcept {
+	return this->header;
+}
+
+unsigned char* Message::getStorage() noexcept {
+	return buffer.offset();
+}
+
+unsigned int Message::remaining() const noexcept {
+	return buffer.space();
+}
+
 void Message::prepareHeader() noexcept {
 	//Deserialize the header
 	header.deserialize(buffer.array());
@@ -108,7 +107,7 @@ void Message::prepareHeader() noexcept {
 }
 
 void Message::prepareData() noexcept {
-	//Set correct limit and position for the next reading cycle
+	//Set the correct limit and index for the next read cycle
 	buffer.setIndex(header.getLength());
 	buffer.rewind();
 }

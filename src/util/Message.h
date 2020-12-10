@@ -23,9 +23,9 @@ namespace wanhive {
 enum MessageFlag {
 	/*
 	 * Wait for Header -> Wait for Data -> Wait for Processing -> Processed
-	 * First four flags must be set exclusively (clear all other flags)
+	 * The first four flags must be set exclusively (clear other flags)
 	 */
-	MSG_WAIT_HEADER = 1, //Default status, waiting for the header
+	MSG_WAIT_HEADER = 1, //Waiting for the header
 	MSG_WAIT_DATA = 2, //Waiting for the payload
 	MSG_WAIT_PROCESSING = 4, //Waiting for processing
 	MSG_PROCESSED = 8, //Message has been processed
@@ -50,38 +50,38 @@ public:
 	static unsigned int allocated() noexcept;
 	static unsigned int unallocated() noexcept;
 
-	//Creates a new Message object
+	//Creates a new Message
 	static Message* create(uint64_t origin = 0) noexcept;
-	//Recycles a Message object (nullptrl parameter results in a noop)
+	//Recycles a Message (nullptr results in noop)
 	static void recycle(Message *p) noexcept;
-	//Resets the message to initial state (reference count is cleared as well)
+	//Resets the message to it's initial state
 	void clear() noexcept;
 	//Returns true if the message is internally consistent
 	bool validate() const noexcept;
 	//=================================================================
+	//Increases and returns the reference count, misuse will cause memory leak
+	unsigned int addReferenceCount() noexcept;
+	//Increases and returns the ttl count
+	unsigned int addTTL() noexcept;
+	//Returns the local source identifier
+	uint64_t getOrigin() const noexcept;
+	//=================================================================
 	/**
-	 * Following methods grant direct access to the internal structures.
-	 * These methods violate encapsulation and must be used with great care because
-	 * incorrect usage can introduce hard to debug issues.
+	 * Following three methods grant direct access to the internal structures.
+	 * These methods violate encapsulation and must be used with great care
+	 * because incorrect usage can introduce hard to debug issues.
 	 */
 	//Returns direct reference to the message header
 	MessageHeader& getHeader() noexcept;
 	//Returns the message buffer offset correctly for data processing
 	unsigned char* getStorage() noexcept;
-	//Returns the number of bytes which waiting to be transferred to a data sink
+	//Returns the number of bytes waiting for transfer to a data sink
 	unsigned int remaining() const noexcept;
 	//=================================================================
-	//Increases and returns the reference count, misuse will lead to memory leak
-	unsigned int addReferenceCount() noexcept;
-	//Increases and returns the ttl count
-	unsigned int addTTL() noexcept;
-	//Returns the identifier of the source from which this message was received
-	uint64_t getOrigin() const noexcept;
-	//=================================================================
 	/**
-	 * Following two functions must be called in the same order while reading from
-	 * a data source (e.g. socket connection). Must be used with great care because
-	 * incorrect usage can introduce hard to debug issues.
+	 * Following two methods must be called in the same order while reading
+	 * from a data source (e.g. socket connection). Must be used with great
+	 * care because incorrect usage can introduce hard to debug issues.
 	 */
 	//Deserializes the header and prepares the IO buffer for payload transfer
 	void prepareHeader() noexcept;
@@ -93,9 +93,9 @@ public:
 	 * getXXX: returns value from the message header
 	 * testXXX: tests whether a value in message header is valid
 	 * setXXX: modifies the deserialized data
-	 * updateXXX: modifies the serialized data (IO buffer)
+	 * updateXXX: modifies the serialized data
 	 * putXXX: combines setXXX and updateXXX in a single call.
-	 * NOTE: Functions returning boolean value perform sanity test.
+	 * NOTE: Functions returning boolean perform sanity test.
 	 */
 	uint64_t getLabel() const noexcept;
 	void setLabel(uint64_t label) noexcept;
@@ -159,7 +159,7 @@ public:
 	bool putHeader(const MessageHeader &header) noexcept;
 	//=================================================================
 	/**
-	 * Basic payload management functions
+	 * Payload management functions
 	 * getDataxx/getBytes/getDouble: returns the payload data at the given index.
 	 * setDataxx/setBytes/setDouble: inserts data into the payload at given index, doesn't
 	 * modify the message length.
@@ -200,6 +200,7 @@ public:
 	 * the <format> string. If the payload is empty then the <format> should
 	 * be nullptr or empty string. Length field in <header> is ignored and the
 	 * correct length is calculated. Return true on success, false on failure.
+	 * NOTE: The format string follows the Serializer class.
 	 */
 	bool pack(const MessageHeader &header, const char *format, ...) noexcept;
 	bool pack(const MessageHeader &header, const char *format,
@@ -212,8 +213,9 @@ public:
 	bool pack(const unsigned char *message) noexcept;
 
 	/**
-	 * Following two functions append additional data at the end of this message
-	 * and update the message length. Return true on success, false on failure.
+	 * Following two functions append additional data at the end of this
+	 * message and update the message length. Return true on success, false
+	 * on failure.
 	 */
 	bool append(const char *format, ...) noexcept;
 	bool append(const char *format, va_list ap) noexcept;
@@ -247,14 +249,16 @@ public:
 	static constexpr unsigned int HEADER_SIZE = MessageHeader::SIZE;
 	//Cannot be less than the HEADER_SIZE
 	static constexpr unsigned int MTU = 1024;
-	//Maximum payload size (bytes)
+	//The maximum payload size (bytes)
 	static constexpr unsigned int PAYLOAD_SIZE = (MTU - HEADER_SIZE);
 private:
 	unsigned int referenceCount; //Reference count
-	unsigned int ttl; //TTL up counter
-	uint64_t origin; //Socket ID from which this message was read
-	MessageHeader header; //Holds the deserialized header data
-	StaticBuffer<unsigned char, MTU> buffer; //Holds the raw bytes
+	unsigned int ttl; //TTL up-counter
+
+	const uint64_t origin; //The local source of this message
+	MessageHeader header; //The deserialized header data
+	StaticBuffer<unsigned char, MTU> buffer; //Stores the raw bytes
+
 	static MemoryPool pool;
 };
 

@@ -23,7 +23,7 @@ public:
 	State() noexcept;
 	~State();
 
-	//Clear out all the fields, except mark
+	//Clear out all the fields, except the mark
 	void clear() noexcept;
 	//-----------------------------------------------------------------
 	/**
