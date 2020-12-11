@@ -28,15 +28,15 @@ class Topics {
 public:
 	Topics() noexcept;
 	virtual ~Topics();
-	//Associates Watcher <w> with the <topic>
+	//Associates the Watcher <w> with the <topic>
 	bool put(unsigned int topic, Watcher *w) noexcept;
 	//Iterates over the list of Watchers associated with the <topic>
 	Watcher* get(unsigned int topic, unsigned int index) const noexcept;
-	//Removes subscription to <topic> for the Watcher <w>
+	//Unsubscribes the Watcher <w> from the <topic>
 	void remove(unsigned int topic, Watcher *w) noexcept;
-	//Returns true if <w> is subscribed to <topic>, false otherwise
+	//Returns true if Watcher <w> is subscribed to the <topic>, false otherwise
 	bool contains(unsigned int topic, Watcher *w) const noexcept;
-	//Returns number of watchers subscribed to the <topic>
+	//Returns the number of watchers subscribed to the <topic>
 	unsigned int count(unsigned int topic) const noexcept;
 	//Clears subscriptions without deallocating memory
 	void clear() noexcept;

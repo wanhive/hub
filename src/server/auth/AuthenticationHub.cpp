@@ -31,8 +31,11 @@ AuthenticationHub::~AuthenticationHub() {
 
 void AuthenticationHub::stop(Watcher *w) noexcept {
 	Authenticator *authenticator = nullptr;
-	session.hmGet(w->getUid(), authenticator);
-	session.removeKey(w->getUid());
+	auto index = session.get(w->getUid());
+	if (index != session.end()) {
+		session.getValue(index, authenticator);
+		session.remove(index);
+	}
 	delete authenticator;
 	Hub::stop(w);
 }
