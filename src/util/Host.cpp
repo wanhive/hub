@@ -13,7 +13,7 @@
 #include "Host.h"
 #include "../base/Logger.h"
 #include "../base/common/Exception.h"
-#include<cstring>
+#include <cstring>
 
 namespace wanhive {
 
@@ -22,6 +22,7 @@ Host::Host() noexcept {
 	iStmt = nullptr;
 	qStmt = nullptr;
 	dStmt = nullptr;
+	lStmt = nullptr;
 }
 
 Host::Host(const char *path, bool readOnly) {
@@ -29,7 +30,8 @@ Host::Host(const char *path, bool readOnly) {
 	iStmt = nullptr;
 	qStmt = nullptr;
 	dStmt = nullptr;
-	load(path, readOnly); //cleans up in case of exception
+	lStmt = nullptr;
+	load(path, readOnly);
 }
 
 Host::~Host() {
@@ -43,10 +45,9 @@ void Host::load(const char *path, bool readOnly) {
 		if (!readOnly) {
 			createTable();
 		}
-		//deferTransaction();
 		prepareStatements();
 	} catch (BaseException &e) {
-		//Clean up before throw
+		//Clean up to prevent resource leak
 		clear();
 		throw;
 	}
@@ -130,7 +131,6 @@ int Host::getHost(unsigned long long uid, NameInfo &ni) noexcept {
 		} else {
 			ret = -1;
 		}
-		//Reset immediately to free the resources
 		reset(qStmt);
 		return ret;
 	} else {
@@ -148,7 +148,6 @@ int Host::addHost(unsigned long long uid, const NameInfo &ni) noexcept {
 		if (sqlite3_step(iStmt) != SQLITE_DONE) {
 			ret = -1;
 		}
-		//Reset immediately to free the resources
 		reset(iStmt);
 		return ret;
 	} else {
@@ -163,10 +162,32 @@ int Host::removeHost(unsigned long long uid) noexcept {
 		if (sqlite3_step(dStmt) != SQLITE_DONE) {
 			ret = -1;
 		}
-		//Reset immediately to free the resources
 		reset(dStmt);
 		return ret;
 	} else {
+		return -1;
+	}
+}
+
+int Host::list(unsigned long long uids[], unsigned int &count,
+		int type) noexcept {
+	if (uids && count && db && lStmt) {
+		sqlite3_bind_int(lStmt, 1, type);
+		sqlite3_bind_int(lStmt, 2, count);
+		unsigned int x = 0;
+		int z = 0;
+		while ((x < count) && ((z = sqlite3_step(lStmt)) == SQLITE_ROW)) {
+			uids[x++] = sqlite3_column_int64(lStmt, 0);
+		}
+		reset(lStmt);
+		count = x;
+		if (z == SQLITE_ROW || z == SQLITE_DONE) {
+			return 0;
+		} else {
+			return -1;
+		}
+	} else {
+		count = 0;
 		return -1;
 	}
 }
@@ -175,9 +196,10 @@ void Host::clear() noexcept {
 	finalize(iStmt);
 	finalize(qStmt);
 	finalize(dStmt);
+	finalize(lStmt);
 	closeConnection(db);
 	db = nullptr;
-	iStmt = qStmt = dStmt = nullptr;
+	iStmt = qStmt = dStmt = lStmt = nullptr;
 }
 
 void Host::openConnection(const char *path, bool readOnly) {
@@ -209,7 +231,7 @@ void Host::createTable() {
 		sqlite3_free(errMsg);
 		throw Exception(EX_INVALIDSTATE);
 	} else {
-		//hosts table has been found
+		//Hosts table has been found
 	}
 }
 
@@ -217,23 +239,29 @@ void Host::prepareStatements() {
 	const char *iq = "INSERT INTO hosts (uid, name, service) VALUES (?,?,?)";
 	const char *sq = "SELECT name, service FROM hosts where uid=?";
 	const char *dq = "DELETE FROM hosts where uid=?";
+	const char *lq =
+			"SELECT uid FROM hosts where type=? order by RANDOM() limit ?";
 
 	if ((sqlite3_prepare_v2(db, iq, strlen(iq), &iStmt, nullptr) != SQLITE_OK)
 			|| (sqlite3_prepare_v2(db, sq, strlen(sq), &qStmt, nullptr)
 					!= SQLITE_OK)
 			|| (sqlite3_prepare_v2(db, dq, strlen(dq), &dStmt, nullptr)
+					!= SQLITE_OK)
+			|| (sqlite3_prepare_v2(db, lq, strlen(lq), &lStmt, nullptr)
 					!= SQLITE_OK)) {
 		finalize(iStmt);
 		finalize(qStmt);
 		finalize(dStmt);
-		iStmt = qStmt = dStmt = nullptr;
-		WH_LOG_DEBUG("Could not create Prepared Statements");
+		finalize(lStmt);
+		iStmt = qStmt = dStmt = lStmt = nullptr;
+		WH_LOG_DEBUG("Could not create prepared statements");
 		throw Exception(EX_INVALIDSTATE);
 	} else {
-		//To make sure that everything is in place
+		//Make sure that everything is good and shiny
 		reset(iStmt);
 		reset(qStmt);
 		reset(dStmt);
+		reset(lStmt);
 	}
 }
 

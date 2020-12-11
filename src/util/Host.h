@@ -18,7 +18,8 @@
 
 namespace wanhive {
 /**
- * The hosts database based on sqlite3
+ * Database of Wanhive hosts (uses SQLite 3)
+ * Thread safe at class level
  */
 class Host {
 public:
@@ -33,12 +34,26 @@ public:
 	void batchUpdate(const char *path);
 	//Dump database content into a TAB-delimited text file
 	void batchDump(const char *path);
-	//Returns 0 on success; 1 if no record found; -1 on error
+	/*
+	 * Retrieves network address of the host <uid>. Returns 0 on success; 1 if
+	 * no record found; -1 on error.
+	 */
 	int getHost(unsigned long long uid, NameInfo &ni) noexcept;
-	//Returns 0 on success, -1 on error
+	/*
+	 * Adds the host <uid> to the database if doesn't exist and associates
+	 * it with the network address <ni>. Returns 0 on success, -1 on error.
+	 */
 	int addHost(unsigned long long uid, const NameInfo &ni) noexcept;
-	//Returns 0 on success, -1 on error
+	/*
+	 * Removes host <uid> from the database. Returns 0 on success, -1 on error.
+	 */
 	int removeHost(unsigned long long uid) noexcept;
+	/*
+	 * Randomly copies list of host identifiers of <type> into <uids>.
+	 * At most <count> identifiers are copied and the actual number of elements
+	 * transferred is returned via <count>. Returns 0 on success, -1 on error.
+	 */
+	int list(unsigned long long uids[], unsigned int &count, int type) noexcept;
 private:
 	void clear() noexcept;
 	void openConnection(const char *path, bool readOnly);
@@ -55,6 +70,7 @@ private:
 	sqlite3_stmt *iStmt; //Insert
 	sqlite3_stmt *qStmt; //Query
 	sqlite3_stmt *dStmt; //Delete
+	sqlite3_stmt *lStmt; //List
 };
 
 } /* namespace wanhive */
