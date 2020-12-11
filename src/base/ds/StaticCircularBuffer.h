@@ -86,11 +86,10 @@ public:
 	 * returns the actual number of elements transferred
 	 */
 	unsigned int write(const X *src, unsigned int length) noexcept;
-	/*
-	 * Returns the backing array
-	 * (For IO Operations)
-	 */
+	//Returns a pointer to the backing array
 	X* array() noexcept;
+	//Returns a const pointer to the backing array
+	const X* array() const noexcept;
 
 	/**
 	 * Used to maintain status of the buffer
@@ -359,6 +358,11 @@ template<typename X, unsigned int SIZE, bool ATOMIC> unsigned int wanhive::Stati
 
 template<typename X, unsigned int SIZE, bool ATOMIC> X* wanhive::StaticCircularBuffer<
 		X, SIZE, ATOMIC>::array() noexcept {
+	return this->storage;
+}
+
+template<typename X, unsigned int SIZE, bool ATOMIC> const X* wanhive::StaticCircularBuffer<
+		X, SIZE, ATOMIC>::array() const noexcept {
 	return this->storage;
 }
 

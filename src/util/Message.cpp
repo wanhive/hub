@@ -337,11 +337,21 @@ bool Message::putHeader(const MessageHeader &header) noexcept {
 }
 
 uint64_t Message::getData64(unsigned int index) const noexcept {
-	return Serializer::unpacku64(
-			const_cast<Message*>(this)->buffer.array() + HEADER_SIZE + index);
+	auto edge = HEADER_SIZE + sizeof(uint64_t) + index;
+	if (edge < MTU) {
+		return Serializer::unpacku64(buffer.array() + HEADER_SIZE + index);
+	} else {
+		return 0;
+	}
 }
-void Message::setData64(unsigned int index, uint64_t data) noexcept {
-	Serializer::packi64((buffer.array() + HEADER_SIZE + index), data);
+bool Message::setData64(unsigned int index, uint64_t data) noexcept {
+	auto edge = HEADER_SIZE + sizeof(uint64_t) + index;
+	if (edge < MTU) {
+		Serializer::packi64((buffer.array() + HEADER_SIZE + index), data);
+		return true;
+	} else {
+		return false;
+	}
 }
 bool Message::appendData64(uint64_t data) noexcept {
 	auto index = getLength();
@@ -354,11 +364,21 @@ bool Message::appendData64(uint64_t data) noexcept {
 }
 
 uint32_t Message::getData32(unsigned int index) const noexcept {
-	return Serializer::unpacku32(
-			const_cast<Message*>(this)->buffer.array() + HEADER_SIZE + index);
+	auto edge = HEADER_SIZE + sizeof(uint32_t) + index;
+	if (edge < MTU) {
+		return Serializer::unpacku32(buffer.array() + HEADER_SIZE + index);
+	} else {
+		return 0;
+	}
 }
-void Message::setData32(unsigned int index, uint32_t data) {
-	Serializer::packi32((buffer.array() + HEADER_SIZE + index), data);
+bool Message::setData32(unsigned int index, uint32_t data) noexcept {
+	auto edge = HEADER_SIZE + sizeof(uint32_t) + index;
+	if (edge < MTU) {
+		Serializer::packi32((buffer.array() + HEADER_SIZE + index), data);
+		return true;
+	} else {
+		return false;
+	}
 }
 bool Message::appendData32(uint32_t data) noexcept {
 	auto index = getLength();
@@ -371,11 +391,21 @@ bool Message::appendData32(uint32_t data) noexcept {
 }
 
 uint16_t Message::getData16(unsigned int index) const noexcept {
-	return Serializer::unpacku16(
-			const_cast<Message*>(this)->buffer.array() + HEADER_SIZE + index);
+	auto edge = HEADER_SIZE + sizeof(uint16_t) + index;
+	if (edge < MTU) {
+		return Serializer::unpacku16(buffer.array() + HEADER_SIZE + index);
+	} else {
+		return 0;
+	}
 }
-void Message::setData16(unsigned int index, uint16_t data) noexcept {
-	Serializer::packi16((buffer.array() + HEADER_SIZE + index), data);
+bool Message::setData16(unsigned int index, uint16_t data) noexcept {
+	auto edge = HEADER_SIZE + sizeof(uint16_t) + index;
+	if (edge < MTU) {
+		Serializer::packi16((buffer.array() + HEADER_SIZE + index), data);
+		return true;
+	} else {
+		return false;
+	}
 }
 bool Message::appendData16(uint16_t data) noexcept {
 	auto index = getLength();
@@ -388,11 +418,21 @@ bool Message::appendData16(uint16_t data) noexcept {
 }
 
 uint8_t Message::getData8(unsigned int index) const noexcept {
-	return Serializer::unpacku8(
-			const_cast<Message*>(this)->buffer.array() + HEADER_SIZE + index);
+	auto edge = HEADER_SIZE + sizeof(uint8_t) + index;
+	if (edge < MTU) {
+		return Serializer::unpacku8(buffer.array() + HEADER_SIZE + index);
+	} else {
+		return 0;
+	}
 }
-void Message::setData8(unsigned int index, uint8_t data) noexcept {
-	Serializer::packi8((buffer.array() + HEADER_SIZE + index), data);
+bool Message::setData8(unsigned int index, uint8_t data) noexcept {
+	auto edge = HEADER_SIZE + sizeof(uint8_t) + index;
+	if (edge < MTU) {
+		Serializer::packi8((buffer.array() + HEADER_SIZE + index), data);
+		return true;
+	} else {
+		return false;
+	}
 }
 bool Message::appendData8(uint8_t data) noexcept {
 	auto index = getLength();
@@ -404,18 +444,35 @@ bool Message::appendData8(uint8_t data) noexcept {
 	}
 }
 
-void Message::getBytes(unsigned int index, unsigned char *block,
+bool Message::getBytes(unsigned int index, unsigned char *block,
 		unsigned int length) const noexcept {
-	Serializer::unpackib(block,
-			(const_cast<Message*>(this)->buffer.array() + HEADER_SIZE + index),
-			length);
+	auto edge = HEADER_SIZE + index + length;
+	if (edge < MTU) {
+		Serializer::unpackib(block, (buffer.array() + HEADER_SIZE + index),
+				length);
+		return true;
+	} else {
+		return false;
+	}
 }
 const unsigned char* Message::getBytes(unsigned int index) const noexcept {
-	return const_cast<Message*>(this)->buffer.array() + HEADER_SIZE + index;
+	auto edge = HEADER_SIZE + index;
+	if (edge < MTU) {
+		return buffer.array() + HEADER_SIZE + index;
+	} else {
+		return nullptr;
+	}
 }
-void Message::setBytes(unsigned int index, const unsigned char *block,
+bool Message::setBytes(unsigned int index, const unsigned char *block,
 		unsigned int length) noexcept {
-	Serializer::packib((buffer.array() + HEADER_SIZE + index), block, length);
+	auto edge = HEADER_SIZE + index + length;
+	if (edge < MTU) {
+		Serializer::packib((buffer.array() + HEADER_SIZE + index), block,
+				length);
+		return true;
+	} else {
+		return false;
+	}
 }
 bool Message::appendBytes(const unsigned char *block,
 		unsigned int length) noexcept {
@@ -429,11 +486,21 @@ bool Message::appendBytes(const unsigned char *block,
 }
 
 double Message::getDouble(unsigned int index) const noexcept {
-	return Serializer::unpackf64(
-			(const_cast<Message*>(this)->buffer.array() + HEADER_SIZE + index));
+	auto edge = HEADER_SIZE + sizeof(uint64_t) + index;
+	if (edge < MTU) {
+		return Serializer::unpackf64((buffer.array() + HEADER_SIZE + index));
+	} else {
+		return 0;
+	}
 }
-void Message::setDouble(unsigned int index, double data) noexcept {
-	Serializer::packf64((buffer.array() + HEADER_SIZE + index), data);
+bool Message::setDouble(unsigned int index, double data) noexcept {
+	auto edge = HEADER_SIZE + sizeof(uint64_t) + index;
+	if (edge < MTU) {
+		Serializer::packf64((buffer.array() + HEADER_SIZE + index), data);
+		return true;
+	} else {
+		return false;
+	}
 }
 bool Message::appendDouble(double data) noexcept {
 	auto index = getLength();
@@ -443,6 +510,10 @@ bool Message::appendDouble(double data) noexcept {
 	} else {
 		return false;
 	}
+}
+
+void Message::unpackHeader(MessageHeader &header) const noexcept {
+	header.deserialize(buffer.array());
 }
 
 bool Message::pack(const MessageHeader &header, const char *format,
@@ -524,10 +595,6 @@ bool Message::append(const char *format, va_list ap) noexcept {
 	}
 }
 
-void Message::unpackHeader(MessageHeader &header) const noexcept {
-	header.deserialize(const_cast<Message*>(this)->buffer.array());
-}
-
 bool Message::unpack(const char *format, ...) const noexcept {
 	va_list ap;
 	va_start(ap, format);
@@ -538,8 +605,7 @@ bool Message::unpack(const char *format, ...) const noexcept {
 
 bool Message::unpack(const char *format, va_list ap) const noexcept {
 	if (format && format[0] && validate()) {
-		return Serializer::vunpack(
-				const_cast<Message*>(this)->buffer.array() + HEADER_SIZE,
+		return Serializer::vunpack(buffer.array() + HEADER_SIZE,
 				getPayloadLength(), format, ap);
 	} else {
 		return false;
@@ -549,7 +615,7 @@ bool Message::unpack(const char *format, va_list ap) const noexcept {
 void Message::printHeader(bool deep) const noexcept {
 	if (deep) {
 		MessageHeader header;
-		header.deserialize(const_cast<Message*>(this)->buffer.array());
+		header.deserialize(buffer.array());
 		header.print();
 	} else {
 		this->header.print();

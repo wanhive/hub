@@ -35,7 +35,7 @@ enum MessageFlag {
 };
 //-----------------------------------------------------------------
 /**
- * Wanhive's binary communication protocol implementation
+ * Wanhive packet structure implementation
  * Packet structure: [{FIXED HEADER}{VARIABLE LENGTH PAYLOAD}]
  * Not thread safe
  */
@@ -54,11 +54,11 @@ public:
 	static Message* create(uint64_t origin = 0) noexcept;
 	//Recycles a Message (nullptr results in noop)
 	static void recycle(Message *p) noexcept;
+
 	//Resets the message to it's initial state
 	void clear() noexcept;
 	//Returns true if the message is internally consistent
 	bool validate() const noexcept;
-	//=================================================================
 	//Increases and returns the reference count, misuse will cause memory leak
 	unsigned int addReferenceCount() noexcept;
 	//Increases and returns the ttl count
@@ -77,7 +77,7 @@ public:
 	unsigned char* getStorage() noexcept;
 	//Returns the number of bytes waiting for transfer to a data sink
 	unsigned int remaining() const noexcept;
-	//=================================================================
+	//-----------------------------------------------------------------
 	/**
 	 * Following two methods must be called in the same order while reading
 	 * from a data source (e.g. socket connection). Must be used with great
@@ -159,41 +159,48 @@ public:
 	bool putHeader(const MessageHeader &header) noexcept;
 	//=================================================================
 	/**
-	 * Payload management functions
-	 * getDataxx/getBytes/getDouble: returns the payload data at the given index.
-	 * setDataxx/setBytes/setDouble: inserts data into the payload at given index, doesn't
-	 * modify the message length.
-	 * appendDataxx/appendBytes/appendDouble: appends the data at the end of payload and
-	 * modifies the message length accordingly. Returns true on success, false otherwise.
+	 * Payload handling functions
+	 ** getDataxx/getBytes/getDouble: returns the payload data at the given
+	 * index. May fail silently if the index violates the MTU.
 	 *
-	 * NOTE: <index> isn't bounds checked.
+	 ** setDataxx/setBytes/setDouble: inserts data into the payload at given
+	 * index. Doesn't modify the message length. Returns true on success,
+	 * false otherwise.
+	 *
+	 ** appendDataxx/appendBytes/appendDouble: appends the data at the end of
+	 * the payload and modifies the message length accordingly. Returns true
+	 * on success, false otherwise.
+	 *
 	 */
 	uint64_t getData64(unsigned int index) const noexcept;
-	void setData64(unsigned int index, uint64_t data) noexcept;
+	bool setData64(unsigned int index, uint64_t data) noexcept;
 	bool appendData64(uint64_t data) noexcept;
 
 	uint32_t getData32(unsigned int index) const noexcept;
-	void setData32(unsigned int index, uint32_t data);
+	bool setData32(unsigned int index, uint32_t data) noexcept;
 	bool appendData32(uint32_t data) noexcept;
 
 	uint16_t getData16(unsigned int index) const noexcept;
-	void setData16(unsigned int index, uint16_t data) noexcept;
+	bool setData16(unsigned int index, uint16_t data) noexcept;
 	bool appendData16(uint16_t data) noexcept;
 
 	uint8_t getData8(unsigned int index) const noexcept;
-	void setData8(unsigned int index, uint8_t data) noexcept;
+	bool setData8(unsigned int index, uint8_t data) noexcept;
 	bool appendData8(uint8_t data) noexcept;
 
-	void getBytes(unsigned int index, unsigned char *block,
+	bool getBytes(unsigned int index, unsigned char *block,
 			unsigned int length) const noexcept;
 	const unsigned char* getBytes(unsigned int index) const noexcept;
-	void setBytes(unsigned int index, const unsigned char *block,
+	bool setBytes(unsigned int index, const unsigned char *block,
 			unsigned int length) noexcept;
 	bool appendBytes(const unsigned char *block, unsigned int length) noexcept;
 
 	double getDouble(unsigned int index) const noexcept;
-	void setDouble(unsigned int index, double data) noexcept;
+	bool setDouble(unsigned int index, double data) noexcept;
 	bool appendDouble(double data) noexcept;
+
+	//Unpacks the header data from the IO buffer into <header>
+	void unpackHeader(MessageHeader &header) const noexcept;
 	//=================================================================
 	/**
 	 * Following two functions pack <header> and data into this Message using
@@ -205,24 +212,20 @@ public:
 	bool pack(const MessageHeader &header, const char *format, ...) noexcept;
 	bool pack(const MessageHeader &header, const char *format,
 			va_list ap) noexcept;
-
-	//Packs the <header> and the <payload> into this object, returns true on success
+	//-----------------------------------------------------------------
+	//Packs <header> and <payload> into this object, returns true on success
 	bool pack(const MessageHeader &header,
 			const unsigned char *payload) noexcept;
-	//Packs the <message> into this object, returns true on success
+	//Packs <message> into this object, returns true on success
 	bool pack(const unsigned char *message) noexcept;
-
+	//-----------------------------------------------------------------
 	/**
-	 * Following two functions append additional data at the end of this
-	 * message and update the message length. Return true on success, false
-	 * on failure.
+	 * Following two functions append data at the end of this message and
+	 * update the message length. Return true on success, false on failure.
 	 */
 	bool append(const char *format, ...) noexcept;
 	bool append(const char *format, va_list ap) noexcept;
-
-	//Extracts the serialized header into <header>
-	void unpackHeader(MessageHeader &header) const noexcept;
-
+	//-----------------------------------------------------------------
 	/**
 	 * Following two functions extract the payload using the <format>.
 	 * Return true on success, false on failure.

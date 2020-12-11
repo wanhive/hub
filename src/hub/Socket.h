@@ -38,6 +38,7 @@ enum SocketType {
 //-----------------------------------------------------------------
 /**
  * Data stream watcher
+ * Not thread safe
  * NOTE: Can watch any non blocking IO stream compatible with epoll including
  * pipe, stdin/stdout etc as long as the the data stream is compliant with the
  * Wanhive protocol.

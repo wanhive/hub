@@ -511,7 +511,7 @@ bool Endpoint::sign(Message *msg, const PKI *pki) noexcept {
 	if (msg && msg->validate()) {
 		unsigned int length = msg->getLength();
 		bool ret = sign(msg->getStorage(), length, pki);
-		//Need putLength here to correctly set buffer's limit
+		//Update the message length
 		msg->putLength(length);
 		return ret;
 	} else {

@@ -179,8 +179,8 @@ public:
 	/**
 	 * Following functions pack and unpack a message (header and payload) to and
 	 * from the <buffer>. <format> specifies the message payload format. If the
-	 * payload is empty then format must be nullptr. All functions return the number
-	 * of bytes written/read to/from the <buffer>, 0 if <buffer> is nullptr.
+	 * payload is empty then format must be nullptr. All functions return the
+	 * number of bytes transferred to/from the <buffer>, 0 if <buffer> is nullptr.
 	 * NOTE 1: <buffer> contains the full message (header+payload) in either case.
 	 * NOTE 2: Caller must ensure that <buffer> points to valid memory region of
 	 * sufficient size, none of the functions perform overflow check.
@@ -200,8 +200,8 @@ public:
 	//-----------------------------------------------------------------
 	/**
 	 * Message authentication functions, return true on success, false on error.
-	 * <pki> can be nullptr in which case the functions are noop and always return true.
-	 * Functions may fail if invalid length or null pointer detected.
+	 * <pki> can be nullptr in which case the functions are noop and always return
+	 * true. Functions may fail if invalid length or null pointer detected.
 	 */
 	//<length> is a value-result argument, always returns true if <pki> is nullptr
 	static bool sign(unsigned char *out, unsigned int &length,
@@ -213,7 +213,7 @@ public:
 	static bool verify(Message *msg, const PKI *pki) noexcept;
 	//-----------------------------------------------------------------
 	/*
-	 * Execute a request-response cycle over blocking socket.
+	 * Execute a request-response call over blocking socket connection.
 	 * If <signer> is provided then it's private key will be used for signing
 	 * the message. If <verifier> is provided then it's public key will be used
 	 * for message verification. Returns true if the request was accepted.
@@ -221,7 +221,7 @@ public:
 	static bool executeRequest(int sfd, MessageHeader &header,
 			unsigned char *buf, const PKI *signer = nullptr,
 			const PKI *verifier = nullptr);
-	//Same as above however uses SSL/TLS connection
+	//Same as above but uses SSL/TLS connection
 	static bool executeRequest(SSL *ssl, MessageHeader &header,
 			unsigned char *buf, const PKI *signer = nullptr,
 			const PKI *verifier = nullptr);

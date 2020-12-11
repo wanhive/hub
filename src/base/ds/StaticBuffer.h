@@ -102,16 +102,14 @@ public:
 	 * The index is then set to (limit-index) and the limit is set to the capacity.
 	 */
 	void pack() noexcept;
-	/*
-	 * Returns a pointer to the backing array.
-	 * (For IO operations)
-	 */
+	//Returns a pointer to the backing array.
 	X* array() noexcept;
-	/*
-	 * Returns a pointer to the backing array offset by the current index.
-	 * (For IO operations)
-	 */
+	//Returns a const pointer to the backing array.
+	const X* array() const noexcept;
+	//Returns a pointer to the backing array offset by the index.
 	X* offset() noexcept;
+	//Returns a pointer to the backing array offset by the index.
+	const X* offset() const noexcept;
 	//Get the status of this buffer
 	int getStatus() const noexcept;
 	//Set the status of this buffer
@@ -285,7 +283,15 @@ template<typename X, unsigned int SIZE> X* wanhive::StaticBuffer<X, SIZE>::array
 	return storage;
 }
 
+template<typename X, unsigned int SIZE> const X* wanhive::StaticBuffer<X, SIZE>::array() const noexcept {
+	return storage;
+}
+
 template<typename X, unsigned int SIZE> X* wanhive::StaticBuffer<X, SIZE>::offset() noexcept {
+	return storage + _index;
+}
+
+template<typename X, unsigned int SIZE> const X* wanhive::StaticBuffer<X, SIZE>::offset() const noexcept {
 	return storage + _index;
 }
 
