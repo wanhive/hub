@@ -115,7 +115,6 @@ public:
 	void putDestination(uint64_t destination) noexcept;
 
 	uint16_t getLength() const noexcept;
-	uint16_t getPayloadLength() const noexcept;
 	bool testLength() const noexcept;
 	bool setLength(uint16_t length) noexcept;
 	bool updateLength(uint16_t length) noexcept;
@@ -159,6 +158,11 @@ public:
 			uint16_t sequenceNumber, uint8_t session, uint8_t command,
 			uint8_t qualifier, uint8_t status, uint64_t label = 0) noexcept;
 	bool putHeader(const MessageHeader &header) noexcept;
+	//-----------------------------------------------------------------
+	//Returns the payload size in bytes, 0 if the message length is invalid
+	uint16_t getPayloadLength() const noexcept;
+	//Unpacks the header data from the IO buffer into the <header>
+	void unpackHeader(MessageHeader &header) const noexcept;
 	//=================================================================
 	/**
 	 * Payload handling functions
@@ -200,9 +204,6 @@ public:
 	double getDouble(unsigned int index) const noexcept;
 	bool setDouble(unsigned int index, double data) noexcept;
 	bool appendDouble(double data) noexcept;
-
-	//Unpacks the header data from the IO buffer into <header>
-	void unpackHeader(MessageHeader &header) const noexcept;
 	//=================================================================
 	/**
 	 * Following two functions pack <header> and data into this Message using

@@ -158,14 +158,6 @@ uint16_t Message::getLength() const noexcept {
 	return header.getLength();
 }
 
-uint16_t Message::getPayloadLength() const noexcept {
-	if (header.getLength() > HEADER_SIZE) {
-		return header.getLength() - HEADER_SIZE;
-	} else {
-		return 0;
-	}
-}
-
 bool Message::testLength() const noexcept {
 	return testLength(header.getLength());
 }
@@ -330,6 +322,18 @@ bool Message::putHeader(const MessageHeader &header) noexcept {
 	} else {
 		return false;
 	}
+}
+
+uint16_t Message::getPayloadLength() const noexcept {
+	if (testLength()) {
+		return header.getLength() - HEADER_SIZE;
+	} else {
+		return 0;
+	}
+}
+
+void Message::unpackHeader(MessageHeader &header) const noexcept {
+	header.deserialize(buffer.array());
 }
 
 uint64_t Message::getData64(unsigned int index) const noexcept {
@@ -506,10 +510,6 @@ bool Message::appendDouble(double data) noexcept {
 	} else {
 		return false;
 	}
-}
-
-void Message::unpackHeader(MessageHeader &header) const noexcept {
-	header.deserialize(buffer.array());
 }
 
 bool Message::pack(const MessageHeader &header, const char *format,
