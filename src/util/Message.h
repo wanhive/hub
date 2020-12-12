@@ -59,7 +59,7 @@ public:
 	void clear() noexcept;
 	//Returns true if the message is internally consistent
 	bool validate() const noexcept;
-	//Increases and returns the reference count, misuse will cause memory leak
+	//Increases and returns the reference count
 	unsigned int addReferenceCount() noexcept;
 	//Increases and returns the ttl count
 	unsigned int addTTL() noexcept;
@@ -67,11 +67,11 @@ public:
 	uint64_t getOrigin() const noexcept;
 	//=================================================================
 	/**
-	 * Following three methods grant direct access to the internal structures.
-	 * These methods violate encapsulation and must be used with great care
-	 * because incorrect usage can introduce hard to debug issues.
+	 * For efficient IO operations
+	 * Following five methods grant direct access to the internal structures.
+	 * These methods violate encapsulation. Use with great care.
 	 */
-	//Returns direct reference to the message header
+	//Returns direct reference to the routing header
 	MessageHeader& getHeader() noexcept;
 	//Returns the message buffer offset correctly for data processing
 	unsigned char* getStorage() noexcept;
@@ -79,23 +79,25 @@ public:
 	unsigned int remaining() const noexcept;
 	//-----------------------------------------------------------------
 	/**
+	 * For efficient IO operations
 	 * Following two methods must be called in the same order while reading
-	 * from a data source (e.g. socket connection). Must be used with great
-	 * care because incorrect usage can introduce hard to debug issues.
+	 * from a data source. Use with great care.
 	 */
-	//Deserializes the header and prepares the IO buffer for payload transfer
+	//Builds the routing header and readies the object for payload transfer
 	void prepareHeader() noexcept;
-	//Prepares the message for processing after full message data is received
+	//Finalizes the object after completion of data transfer
 	void prepareData() noexcept;
 	//=================================================================
 	/**
-	 * Message header access and manipulation functions
-	 * getXXX: returns value from the message header
-	 * testXXX: tests whether a value in message header is valid
-	 * setXXX: modifies the deserialized data
-	 * updateXXX: modifies the serialized data
-	 * putXXX: combines setXXX and updateXXX in a single call.
-	 * NOTE: Functions returning boolean perform sanity test.
+	 * Message header handling functions
+	 ** getX: returns a value from the routing header
+	 ** testX: tests whether a value in the routing header is valid
+	 ** setX: modifies the routing header
+	 ** updateX: modifies the IO buffer (serialized data)
+	 ** putX: combines setX and updateX in a single call.
+	 *
+	 * NOTE: Functions returning boolean perform sanity test
+	 * and return true on success, false otherwise.
 	 */
 	uint64_t getLabel() const noexcept;
 	void setLabel(uint64_t label) noexcept;
@@ -248,19 +250,19 @@ private:
 	void* operator new(size_t size) noexcept;
 	void operator delete(void *p) noexcept;
 public:
-	//Size (bytes) of the fixed-size message header
+	//Message header size in bytes
 	static constexpr unsigned int HEADER_SIZE = MessageHeader::SIZE;
-	//Cannot be less than the HEADER_SIZE
+	//The maximum message size in bytes
 	static constexpr unsigned int MTU = 1024;
-	//The maximum payload size (bytes)
+	//The maximum payload size in bytes
 	static constexpr unsigned int PAYLOAD_SIZE = (MTU - HEADER_SIZE);
 private:
 	unsigned int referenceCount; //Reference count
 	unsigned int ttl; //TTL up-counter
 
-	const uint64_t origin; //The local source of this message
-	MessageHeader header; //The deserialized header data
-	StaticBuffer<unsigned char, MTU> buffer; //Stores the raw bytes
+	const uint64_t origin; //The local source
+	MessageHeader header; //The routing header
+	StaticBuffer<unsigned char, MTU> buffer; //The raw bytes
 
 	static MemoryPool pool;
 };

@@ -101,13 +101,13 @@ unsigned int Message::remaining() const noexcept {
 }
 
 void Message::prepareHeader() noexcept {
-	//Deserialize the header
+	//Prepare the routing header
 	header.deserialize(buffer.array());
 	buffer.setIndex(HEADER_SIZE);
 }
 
 void Message::prepareData() noexcept {
-	//Set the correct limit and index for the next read cycle
+	//Set the correct limit and index
 	buffer.setIndex(header.getLength());
 	buffer.rewind();
 }
@@ -159,7 +159,7 @@ uint16_t Message::getLength() const noexcept {
 }
 
 uint16_t Message::getPayloadLength() const noexcept {
-	if (header.getLength() >= HEADER_SIZE) {
+	if (header.getLength() > HEADER_SIZE) {
 		return header.getLength() - HEADER_SIZE;
 	} else {
 		return 0;
@@ -180,7 +180,7 @@ bool Message::setLength(uint16_t length) noexcept {
 
 }
 bool Message::updateLength(uint16_t length) noexcept {
-	if (length >= HEADER_SIZE && buffer.setLimit(length)) {
+	if (testLength(length) && buffer.setLimit(length)) {
 		MessageHeader::setLength(buffer.array(), length);
 		return true;
 	} else {
@@ -188,7 +188,7 @@ bool Message::updateLength(uint16_t length) noexcept {
 	}
 }
 bool Message::putLength(uint16_t length) noexcept {
-	if (length >= HEADER_SIZE && buffer.setLimit(length)) {
+	if (testLength(length) && buffer.setLimit(length)) {
 		header.setLength(length);
 		MessageHeader::setLength(buffer.array(), length);
 		return true;
@@ -293,20 +293,18 @@ bool Message::updateHeader(uint64_t source, uint64_t destination,
 		uint16_t length, uint16_t sequenceNumber, uint8_t session,
 		uint8_t command, uint8_t qualifier, uint8_t status,
 		uint64_t label) noexcept {
-	if (testLength(length)) {
+	if (testLength(length) && buffer.setLimit(length)) {
 		MessageHeader::serialize(buffer.array(), source, destination, length,
 				sequenceNumber, session, command, qualifier, status, label);
-		//Expand/shrink the buffer limit accordingly
-		return buffer.setLimit(length);
+		return true;
 	} else {
 		return false;
 	}
 }
 bool Message::updateHeader(const MessageHeader &header) noexcept {
-	if (testLength(header.getLength())) {
+	if (testLength(header.getLength()) && buffer.setLimit(header.getLength())) {
 		header.serialize(buffer.array());
-		//Expand/shrink the buffer limit accordingly
-		return buffer.setLimit(header.getLength());
+		return true;
 	} else {
 		return false;
 	}
@@ -314,23 +312,21 @@ bool Message::updateHeader(const MessageHeader &header) noexcept {
 bool Message::putHeader(uint64_t source, uint64_t destination, uint16_t length,
 		uint16_t sequenceNumber, uint8_t session, uint8_t command,
 		uint8_t qualifier, uint8_t status, uint64_t label) noexcept {
-	if (testLength(length)) {
+	if (testLength(length) && buffer.setLimit(length)) {
 		header.load(source, destination, length, sequenceNumber, session,
 				command, qualifier, status, label);
 		MessageHeader::serialize(buffer.array(), source, destination, length,
 				sequenceNumber, session, command, qualifier, status, label);
-		//Expand/shrink the buffer limit accordingly
-		return buffer.setLimit(length);
+		return true;
 	} else {
 		return false;
 	}
 }
 bool Message::putHeader(const MessageHeader &header) noexcept {
-	if (testLength(header.getLength())) {
+	if (testLength(header.getLength()) && buffer.setLimit(header.getLength())) {
 		this->header = header;
 		header.serialize(buffer.array());
-		//Expand/shrink the buffer limit accordingly
-		return buffer.setLimit(header.getLength());
+		return true;
 	} else {
 		return false;
 	}
@@ -623,7 +619,7 @@ void Message::printHeader(bool deep) const noexcept {
 }
 
 bool Message::testLength(unsigned int length) noexcept {
-	return Twiddler::isInRange(length, HEADER_SIZE, MTU);
+	return (length >= HEADER_SIZE && length <= MTU);
 }
 
 unsigned int Message::packets(unsigned int bytes) noexcept {
