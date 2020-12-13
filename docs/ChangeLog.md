@@ -16,14 +16,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 
 - Strict bounds checking in the Message class.
-- Rename the structures to comply with the guidelines.
-- Fix typos in the documentation.
+- Rename the structures, methods and fields to comply with the guidelines.
+- Update the documentation.
 - Rename and update the code of conduct file.
 
 ### Fixed
 
 - Integer overflows in the Twiddler class.
 - Message's origin should be immutable.
+
+### Removed
+
+- Methods in the **Identity** class that modify the hosts database.
 
 ## [1.0.0] - 2020-11-25
 

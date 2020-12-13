@@ -165,8 +165,8 @@ Wanhive hubs use a special text file to resolve network addresses.
 
 The required steps have been summarized below:
 
-1. Create a text file containing addresses of all the *available* servers (overlay and authentication hubs).
-2. Update the **HOSTS** section of the configuration file, as illustrated below.
+1. Create a text file containing addresses of all the *available* hosts (overlay and authentication hubs).
+2. Update the **HOSTS** section of the configuration file as illustrated below.
 
 ```
 [HOSTS]
@@ -175,7 +175,7 @@ The required steps have been summarized below:
 hostsFile = <pathname-of-hosts-file>
 ```
 
-### The hosts file format
+### The hosts file
 
 A **hosts file** contains rows of *tab-separated* tuples:
 
@@ -183,15 +183,15 @@ A **hosts file** contains rows of *tab-separated* tuples:
 IDENTITY	HOST	SERVICE		[TYPE]
 ```
 
-Each row maps an **identity** to a **network address** and a **type (optional)**.
+Each row maps an **identifier** to a **network address** and a **type (optional)**.
 
-An example hosts file:
+A *hosts file* example:
 
 ```
 0	/home/user/wh0.uds	unix
 1	127.0.0.1	9001
 2	hub2.example.com	9002
-3	testmachine.local 9003
+3	testmachine.local	9003
 256	localhost	5555	1
 
 ```
@@ -203,9 +203,9 @@ An example hosts file:
 * Specify **unix** in the **SERVICE** column to create a *Unix domain socket* instead of TCP/IP socket.
 
 
-### Option 1: Manually create a hosts file
+#### Option 1: Create manually
 
-You can manually create a small **hosts file** for *testing*. For example, the following **hosts file** describes five hubs:
+Use your favorite text editor to create a small **hosts file**. For example, the following **hosts file** describes five hubs:
 
 ```
 0	127.0.0.1	9000
@@ -223,7 +223,7 @@ You can manually create a small **hosts file** for *testing*. For example, the f
 * Values in the rows are **TAB-separated**.
 * Hub's function is determined using the **Bootstrap** files described further below.
 
-### Option 2: Create a new file
+#### Option 2: Generate a dummy file
 
 ```
 wanhive -m
@@ -235,12 +235,40 @@ wanhive -m
 4. Follow the instructions.
 5. Edit the file using your favorite text editor.
 
-### Option 3: Use the default template
+#### Option 3: Use the default template
 
 * This package includes a sample **hosts** file.
 * A sample **hosts** file is installed into the **datadir**.
 * Edit the file using your favorite text editor.
 * The sample file is sufficient for testing purposes.
+
+### The hosts database
+
+A Wanhive hub doesn't use its **hosts file** directly but imports one into the program's in-memory SQLite3 database.
+
+Although a **hosts file** is convenient, a **hosts database** is advantageous in certain use cases.
+
+#### Using a hosts database
+
+Create **hosts database** from a **hosts file**:
+
+```
+wanhive -m
+```
+
+1. Select *UTILITIES(2)* from the list of available options.
+2. Next, select *Manage hosts(2)* and then,
+3. Select *Dump the "hosts" file into an SQLite3 database(1)*
+4. Follow the instructions.
+
+Update the **HOSTS** section of the configuration file as illustrated below.
+
+```
+[HOSTS]
+.
+.
+hostsDb = <pathname-of-hosts-database>
+```
 
 ## Bootstrap
 

@@ -92,8 +92,8 @@ void ConfigTool::manageHosts() {
 	char hf[1024];
 	char sf[1024];
 	std::cout << "Select operation\n"
-			<< "1: Dump \"hosts\" file over sqlite3 database\n"
-			<< "2: Dump \"hosts\" sqlite3 database over file\n"
+			<< "1: Dump the \"hosts\" file into an SQLite3 database\n"
+			<< "2: Dump the SQLite3 \"hosts\" database into a file\n"
 			<< "3: Generate a sample \"hosts\" file\n:: ";
 	std::cin >> mode;
 	if (CommandLine::inputError()) {
