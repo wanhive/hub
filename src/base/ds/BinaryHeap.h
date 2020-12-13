@@ -90,8 +90,8 @@ private:
 	unsigned int getParentIndex(unsigned int index) const noexcept {
 		return ((index - 1) >> 1); //(index - 1) / 2
 	}
-	unsigned int shiftUp(unsigned int index);
-	unsigned int shiftDown(unsigned int index);
+	unsigned int shiftUp(unsigned int index) noexcept;
+	unsigned int shiftDown(unsigned int index) noexcept;
 
 private:
 	WH_POD_ASSERT(X);
@@ -225,7 +225,8 @@ const X* wanhive::BinaryHeap<X, CMPFN, BHFN>::array() const noexcept {
 }
 
 template<typename X, typename CMPFN, typename BHFN>
-unsigned int wanhive::BinaryHeap<X, CMPFN, BHFN>::shiftUp(unsigned int index) {
+unsigned int wanhive::BinaryHeap<X, CMPFN, BHFN>::shiftUp(
+		unsigned int index) noexcept {
 	while (index != 0) {
 		auto parent = getParentIndex(index);
 		if (cmp(storage[index], storage[parent])) {
@@ -241,14 +242,14 @@ unsigned int wanhive::BinaryHeap<X, CMPFN, BHFN>::shiftUp(unsigned int index) {
 
 template<typename X, typename CMPFN, typename BHFN>
 unsigned int wanhive::BinaryHeap<X, CMPFN, BHFN>::shiftDown(
-		unsigned int index) {
+		unsigned int index) noexcept {
 	while (index < _size) {
 		unsigned int min = 0;
 		auto left = getLeftChildIndex(index);
 		auto right = getRightChildIndex(index);
 
 		//Get the index to smaller child
-		if (left >= _size) {
+		if ((left >= _size) || (left <= index)) {
 			//We reached the leaf
 			break;
 		} else if (right >= _size) {
