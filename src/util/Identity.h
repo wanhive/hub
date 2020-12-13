@@ -23,28 +23,17 @@ namespace wanhive {
  * Hub configuration, database and security keys
  * Thread safe at class level
  */
-class Identity: private Host {
+class Identity {
 public:
 	/*
-	 * If <path> is set to nullptr then the (re-)initialization routine will
-	 * attempt to load the configuration file from a set of predefined paths(s).
+	 * If the <path> is nullptr then the initialization routine will attempt
+	 * to load the configuration file from a set of predefined paths.
 	 */
 	Identity(const char *path = nullptr) noexcept;
 	~Identity();
 
-	//(Re-)initialize the object
+	//Initialize the object
 	void initialize();
-	/*
-	 * Returns a 0-terminated list of identifiers from the path pointed to by the
-	 * configuration file entries. At max (length-1) entries are transferred.
-	 * Returns the number of entries transferred, excluding the 0-terminator.
-	 * NOTE: Can be safely called by an external thread if the external thread is
-	 * spawned after this object's initialization and if the configuration is
-	 * never modified/reloaded after initialization.
-	 */
-	unsigned int loadIdentifiers(const char *section, const char *option,
-			unsigned long long nodes[], unsigned int length);
-protected:
 	const Configuration& getConfiguration() const noexcept;
 	const PKI* getPKI() const noexcept;
 	bool verifyHost() const noexcept;
@@ -64,12 +53,22 @@ protected:
 	/**
 	 * Hosts management
 	 */
-	//Returns host <uid>'s address in <ni>
+	//Returns network address of the host <uid> into <ni>
 	void getAddress(uint64_t uid, NameInfo &ni);
-	//Fails if a file used instead of database
-	void setAddress(uint64_t uid, NameInfo &ni);
-	//Fails if a file used instead of database
-	void removeAddress(uint64_t uid);
+	/*
+	 * Returns a randomized list of identifiers of the given <type> from the
+	 * hosts database. At most <length> entries are read. Returns the number
+	 * of entries transferred into <nodes>.
+	 */
+	unsigned int loadIdentifiers(unsigned long long nodes[],
+			unsigned int length, int type);
+	/*
+	 * Returns a 0-terminated list of identifiers from the path pointed to by
+	 * the configuration file entries. At most (<length>-1) entries are read.
+	 * Returns the number of entries transferred, excluding the 0-terminator.
+	 */
+	unsigned int loadIdentifiers(const char *section, const char *option,
+			unsigned long long nodes[], unsigned int length);
 	//-----------------------------------------------------------------
 	/**
 	 * Absolute paths
@@ -108,6 +107,8 @@ private:
 	InstanceID *instanceId;
 	//The application configuration
 	Configuration cfg;
+	//The hosts database
+	Host host;
 
 	//For authentication
 	struct {

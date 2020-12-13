@@ -22,6 +22,7 @@
  * Data structures
  */
 #include "base/ds/Array.h"
+#include "base/ds/BinaryHeap.h"
 #include "base/ds/Buffer.h"
 #include "base/ds/CircularBuffer.h"
 #include "base/ds/Encoding.h"

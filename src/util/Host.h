@@ -24,36 +24,41 @@ namespace wanhive {
 class Host {
 public:
 	Host() noexcept;
-	//if <readOnly> is true then the database is loaded in read-only mode
+	//Opens the hosts database at <path>
 	Host(const char *path, bool readOnly = false);
 	~Host();
 
-	//if <readOnly> is true then the database is loaded in read-only mode
-	void load(const char *path, bool readOnly = false);
-	//Load addresses into database from a TAB-delimited text file
+	//Opens the hosts database at <path>
+	void open(const char *path, bool readOnly = false);
+	//Imports the hosts database from a TAB-delimited text file
 	void batchUpdate(const char *path);
-	//Dump database content into a TAB-delimited text file
-	void batchDump(const char *path);
+	//Exports the hosts database to a TAB-delimited text file
+	void batchDump(const char *path, int version = 1);
 	/*
-	 * Retrieves network address of the host <uid>. Returns 0 on success; 1 if
-	 * no record found; -1 on error.
+	 * Retrieves network address of the host <uid>.
+	 * Returns 0 on success;1 if no record found; -1 on error.
 	 */
-	int getHost(unsigned long long uid, NameInfo &ni) noexcept;
+	int get(unsigned long long uid, NameInfo &ni) noexcept;
 	/*
 	 * Adds the host <uid> to the database if doesn't exist and associates
 	 * it with the network address <ni>. Returns 0 on success, -1 on error.
 	 */
-	int addHost(unsigned long long uid, const NameInfo &ni) noexcept;
+	int put(unsigned long long uid, const NameInfo &ni) noexcept;
 	/*
-	 * Removes host <uid> from the database. Returns 0 on success, -1 on error.
+	 * Removes the details of the host <uid> from the database.
+	 * Returns 0 on success, -1 on error.
 	 */
-	int removeHost(unsigned long long uid) noexcept;
+	int remove(unsigned long long uid) noexcept;
 	/*
-	 * Randomly copies list of host identifiers of <type> into <uids>.
+	 * Copies a random list of host identifiers of a given <type> into <uids>.
 	 * At most <count> identifiers are copied and the actual number of elements
 	 * transferred is returned via <count>. Returns 0 on success, -1 on error.
 	 */
 	int list(unsigned long long uids[], unsigned int &count, int type) noexcept;
+	/*
+	 * Generates a dummy hosts file
+	 */
+	static void createDummy(const char *path, int version = 1);
 private:
 	void clear() noexcept;
 	void openConnection(const char *path, bool readOnly);

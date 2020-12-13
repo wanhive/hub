@@ -192,18 +192,7 @@ void ConfigTool::generateVerifier() {
 
 void ConfigTool::createDummyHostsFile(const char *path) {
 	std::cout << "Generating dummy \"hosts\" file..." << std::endl;
-	FILE *f = Storage::openStream(path, "wt", true);
-	if (f) {
-		const char *hostname = "127.0.0.1";
-		for (uint64_t id = 0; id < 256; id++) {
-			unsigned int port = (9001 + id);
-			fprintf(f, "%" PRIu64 "\t%s\t%u%s", id, hostname, port,
-					Storage::NEWLINE);
-		}
-		Storage::closeStream(f);
-	} else {
-		throw Exception(EX_INVALIDPARAM);
-	}
+	Host::createDummy(path);
 }
 
 } /* namespace wanhive */

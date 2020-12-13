@@ -19,6 +19,7 @@ namespace wanhive {
 struct NameInfo {
 	char host[NI_MAXHOST];
 	char service[NI_MAXSERV];
+	int type;
 };
 
 struct SocketAddress {

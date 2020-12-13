@@ -71,7 +71,7 @@ public:
 	 * Absolute get method reads the element at the given index.
 	 * Returns true on success, false otherwise.
 	 */
-	bool get(X &value, unsigned int index) noexcept;
+	bool get(X &value, unsigned int index) const noexcept;
 	/*
 	 * Relative bulk get method transfers elements from the buffer into the given
 	 * destination starting at the current index of the buffer. At most <length>
@@ -112,7 +112,7 @@ public:
 	const X* array() const noexcept;
 	//Returns a pointer to the backing array offset by the index.
 	X* offset() noexcept;
-	//Returns a pointer to the backing array offset by the index.
+	//Returns a const pointer to the backing array offset by the index.
 	const X* offset() const noexcept;
 	//Get the status of this buffer
 	int getStatus() const noexcept;
@@ -225,7 +225,7 @@ template<typename X> bool wanhive::Buffer<X>::get(X &value) noexcept {
 }
 
 template<typename X> bool wanhive::Buffer<X>::get(X &value,
-		unsigned int index) noexcept {
+		unsigned int index) const noexcept {
 	if (index < _limit) {
 		value = storage[index];
 		return true;

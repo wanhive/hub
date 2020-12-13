@@ -73,52 +73,6 @@ void Identity::initialize() {
 	}
 }
 
-unsigned int Identity::loadIdentifiers(const char *section, const char *option,
-		unsigned long long nodes[], unsigned int length) {
-	//--------------------------------------------------------------------------
-	//Get these boundary conditions out of the way
-	if (!nodes || !length) {
-		return 0;
-	} else if (length == 1) {
-		nodes[0] = 0;
-		return 0;
-	}
-	//--------------------------------------------------------------------------
-	memset(nodes, 0, length * sizeof(unsigned long long));
-	char *filename = cfg.getPathName(section, option, nullptr);
-	if (Storage::testFile(filename) != 1) {
-		WH_free(filename);
-		return 0;
-	}
-
-	FILE *fp = Storage::openStream(filename, "rt", false);
-	WH_free(filename);
-	if (!fp) {
-		return 0;
-	}
-	//--------------------------------------------------------------------------
-	unsigned int i = 0;
-	while (i < (length - 1)) {
-		if (fscanf(fp, "%llu", &nodes[i]) == 1 && nodes[i]) {
-			i++;
-		} else {
-			break;
-		}
-	}
-	Storage::closeStream(fp);
-	//--------------------------------------------------------------------------
-	//Apply Fisher–Yates shuffle algorithm
-	MersenneTwister mt(Timer::timeSeed());
-	for (unsigned int x = (i - 1); i && x; --x) {
-		unsigned int j = mt.next() % (x + 1);
-		unsigned long long tmp = nodes[j];
-		nodes[j] = nodes[x];
-		nodes[x] = tmp;
-	}
-
-	return i;
-}
-
 const Configuration& Identity::getConfiguration() const noexcept {
 	return cfg;
 }
@@ -167,27 +121,67 @@ bool Identity::verifyNonce(Hash &hash, uint64_t salt, uint64_t id,
 }
 
 void Identity::getAddress(uint64_t uid, NameInfo &ni) {
-	if (getHost(uid, ni) == 0) {
+	if (host.get(uid, ni) == 0) {
 		return;
 	} else {
 		throw Exception(EX_INVALIDOPERATION);
 	}
 }
 
-void Identity::setAddress(uint64_t uid, NameInfo &ni) {
-	if (addHost(uid, ni) == 0) {
-		return;
+unsigned int Identity::loadIdentifiers(unsigned long long nodes[],
+		unsigned int length, int type) {
+	unsigned int count = length;
+	if (host.list(nodes, count, type) == 0) {
+		return count;
 	} else {
 		throw Exception(EX_INVALIDOPERATION);
 	}
 }
 
-void Identity::removeAddress(uint64_t uid) {
-	if (removeHost(uid) == 0) {
-		return;
-	} else {
-		throw Exception(EX_INVALIDOPERATION);
+unsigned int Identity::loadIdentifiers(const char *section, const char *option,
+		unsigned long long nodes[], unsigned int length) {
+	//--------------------------------------------------------------------------
+	//Get these boundary conditions out of the way
+	if (!nodes || !length) {
+		return 0;
+	} else if (length == 1) {
+		nodes[0] = 0;
+		return 0;
 	}
+	//--------------------------------------------------------------------------
+	memset(nodes, 0, length * sizeof(unsigned long long));
+	char *filename = cfg.getPathName(section, option, nullptr);
+	if (Storage::testFile(filename) != 1) {
+		WH_free(filename);
+		return 0;
+	}
+
+	FILE *fp = Storage::openStream(filename, "rt", false);
+	WH_free(filename);
+	if (!fp) {
+		return 0;
+	}
+	//--------------------------------------------------------------------------
+	unsigned int i = 0;
+	while (i < (length - 1)) {
+		if (fscanf(fp, "%llu", &nodes[i]) == 1 && nodes[i]) {
+			i++;
+		} else {
+			break;
+		}
+	}
+	Storage::closeStream(fp);
+	//--------------------------------------------------------------------------
+	//Apply Fisher–Yates shuffle algorithm
+	MersenneTwister mt(Timer::timeSeed());
+	for (unsigned int x = (i - 1); i && x; --x) {
+		unsigned int j = mt.next() % (x + 1);
+		unsigned long long tmp = nodes[j];
+		nodes[j] = nodes[x];
+		nodes[x] = tmp;
+	}
+
+	return i;
 }
 
 const char* Identity::getConfigurationFile() const noexcept {
@@ -368,8 +362,8 @@ void Identity::loadHostsDatabase() {
 		if (!paths.hostsDatabaseName) {
 			WH_LOG_WARNING("No hosts database");
 		} else {
-			//Load the database file from disk in read-only mode
-			Host::load(paths.hostsDatabaseName, true);
+			//Load the database file from the disk in read-only mode
+			host.open(paths.hostsDatabaseName, true);
 			WH_LOG_DEBUG("Hosts loaded from %s", paths.hostsDatabaseName);
 		}
 	} catch (BaseException &e) {
@@ -384,8 +378,8 @@ void Identity::loadHostsFile() {
 			WH_LOG_WARNING("No hosts file");
 		} else {
 			//Load the hosts into in-memory database
-			Host::load(":memory:");
-			Host::batchUpdate(paths.hostsFileName);
+			host.open(":memory:");
+			host.batchUpdate(paths.hostsFileName);
 			WH_LOG_DEBUG("Hosts loaded from %s", paths.hostsFileName);
 		}
 	} catch (BaseException &e) {

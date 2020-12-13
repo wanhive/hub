@@ -119,11 +119,13 @@ Press **Ctrl+C** to exit the program.
 ## Basic setup
 
 * Install this package.
-    * Does not support user/endpoint management.
-    * Does not support authentication and access control.
-    * Supports clustering.
     * Sufficient for testing.
-    * Sufficient for building basic IoT applications over the local IP network.
+    * Sufficient for building small IoT applications over a local IP network.
+    * Does not support user and endpoint management.
+    * Does not support authentication.
+    * Does not support access control.
+    * Does not support device type identification.
+    * Supports clustering.
 
 ## Standard setup
 
@@ -173,33 +175,37 @@ The required steps have been summarized below:
 hostsFile = <pathname-of-hosts-file>
 ```
 
-### Hosts file format
+### The hosts file format
 
-The "hosts" file contains rows of tab-separated tuples:
+A **hosts file** contains rows of *tab-separated* tuples:
 
 ```
-[IDENTIFIER]	[HOST]	[SERVICE]
+IDENTITY	HOST	SERVICE		[TYPE]
 ```
 
-Each row maps an identifier to a network address. An example of the "hosts" file:
+Each row maps an **identity** to a **network address** and a **type (optional)**.
+
+An example hosts file:
 
 ```
 0	/home/user/wh0.uds	unix
 1	127.0.0.1	9001
 2	hub2.example.com	9002
 3	testmachine.local 9003
-256	localhost	7788
+256	localhost	5555	1
 
 ```
 
 **NOTES**:
 
-* Specify **unix** in the SERVICE column to use *unix domain socket* instead of TCP/IP socket.
-* The HOST column is irrelevant for the creation of a listening TCP/IP socket.
+* The **TYPE** column is optional.
+* The listening TCP/IP sockets bind to the wildcard address.
+* Specify **unix** in the **SERVICE** column to create a *Unix domain socket* instead of TCP/IP socket.
+
 
 ### Option 1: Manually create a hosts file
 
-You can manually create a small **hosts** file for *testing*. For example the following "hosts" file can be used to describe five hubs:
+You can manually create a small **hosts file** for *testing*. For example, the following **hosts file** describes five hubs:
 
 ```
 0	127.0.0.1	9000
@@ -209,12 +215,13 @@ You can manually create a small **hosts** file for *testing*. For example the fo
 256	localhost	5555
 ```
 
-1. Four overlay hubs having identifiers 0, 1, 2, and 3 running on 127.0.0.1 at ports 9000, 9001, 9002, and 9003 respectively.
-2. An authentication hub having identifier 256, running at localhost:5555
+1. Four overlay hubs with identifiers 0, 1, 2, and 3 running on 127.0.0.1 at ports 9000, 9001, 9002, and 9003 in that order.
+2. An authentication hub with identifier 256, running at localhost:5555.
 
-The type of hub is discerned using the **Bootstrap** files described further below.
+**NOTES**:
 
-Please note that values in rows are **TAB-separated**.
+* Values in the rows are **TAB-separated**.
+* Hub's function is determined using the **Bootstrap** files described further below.
 
 ### Option 2: Create a new file
 
@@ -261,8 +268,8 @@ auths = <pathname-of-auths-file>
 **NOTES**:
 
 * All the identifiers are resolved to their physical addresses using the **Hosts** file/database.
-* Identifier **0** is reserved for a special purpose (see **clustering**) and should not be used here.
-* If **clustering** is enabled, identifiers of only a few (ideally, three or more) stable overlay hubs are sufficient for bootstrapping irrespective of the number of hubs in the cluster.
+* Do not use the identifier **0** here (reserved for a special purpose).
+* Run few (ideally three or more) "well-known" overlay hubs as bootstrap nodes in a cluster.
 
 ### Example (for testing)
 
@@ -352,7 +359,7 @@ wanhive -to -n 0 -c <configfile>
 wanhive -to -n 0
 ```
 
-Run few "well-known" overlay hubs as bootstrap nodes. If multiple bootstrap nodes are desired, then start them in succession to avoid network partitioning.
+Run few (ideally three or more) "well-known" overlay hubs as bootstrap nodes in a cluster. If multiple bootstrap nodes are desired, then start them in succession to avoid network partitioning.
 
 Restart all the other overlay hubs. Overlay hubs will automatically organize themselves into a structured overlay network. Overlay hubs can join and leave the network at any time.
 

@@ -15,6 +15,31 @@
 #include "../base/common/Exception.h"
 #include <cstring>
 
+namespace {
+/**
+ * Helper functions for writing to the hosts file.
+ */
+static void writeTuple(FILE *f, unsigned long long uid, const char *host,
+		const char *service) noexcept {
+	fprintf(f, "%llu\t%s\t%s%s", uid, host, service, wanhive::Storage::NEWLINE);
+}
+
+static void writeTuple(FILE *f, unsigned long long uid, const char *host,
+		const char *service, int type) noexcept {
+	fprintf(f, "%llu\t%s\t%s\t%d%s", uid, host, service, type,
+			wanhive::Storage::NEWLINE);
+}
+
+static void writeHeading(FILE *f, int version) noexcept {
+	if (version == 1) {
+		fprintf(f, "# Revision: %d%s", version, wanhive::Storage::NEWLINE);
+		fprintf(f, "# UID\tHOSTNAME\tSERVICE\tTYPE%s",
+				wanhive::Storage::NEWLINE);
+	}
+}
+
+}  // namespace
+
 namespace wanhive {
 
 Host::Host() noexcept {
@@ -31,14 +56,14 @@ Host::Host(const char *path, bool readOnly) {
 	qStmt = nullptr;
 	dStmt = nullptr;
 	lStmt = nullptr;
-	load(path, readOnly);
+	open(path, readOnly);
 }
 
 Host::~Host() {
 	clear();
 }
 
-void Host::load(const char *path, bool readOnly) {
+void Host::open(const char *path, bool readOnly) {
 	try {
 		clear();
 		openConnection(path, readOnly);
@@ -57,37 +82,44 @@ void Host::batchUpdate(const char *path) {
 	if (!db || Storage::testFile(path) != 1) {
 		throw Exception(EX_RESOURCE);
 	}
-	//-----------------------------------------------------------------
+
 	FILE *f = Storage::openStream(path, "rt", false);
 	if (!f) {
 		throw Exception(EX_INVALIDPARAM);
 	}
-	//-----------------------------------------------------------------
+
 	try {
 		beginTransaction();
-		unsigned long long id;
+		//-----------------------------------------------------------------
+		char line[2048];
+		char format[64];
 		NameInfo ni;
-
-		char format[32];
-		snprintf(format, sizeof(format), " %%llu %%%zus %%%zus ",
+		snprintf(format, sizeof(format), " %%llu %%%zus %%%zus %%d ",
 				(sizeof(ni.host) - 1), (sizeof(ni.service) - 1));
-		while (fscanf(f, format, &id, ni.host, ni.service) == 3) {
-			if (addHost(id, ni) == -1) { //Stop on error
+		while (fgets(line, sizeof(line), f)) {
+			unsigned long long id = 0;
+			ni.type = 0;
+			if (sscanf(line, format, &id, ni.host, ni.service, &ni.type) < 3) {
+				continue;
+			} else if (put(id, ni) == 0) {
+				continue;
+			} else {
 				break;
 			}
 		}
-		endTransaction();
 		Storage::closeStream(f);
+		//-----------------------------------------------------------------
+		endTransaction();
 	} catch (BaseException &e) {
 		Storage::closeStream(f);
 		throw;
 	}
 }
 
-void Host::batchDump(const char *path) {
+void Host::batchDump(const char *path, int version) {
 	if (db) {
 		//-----------------------------------------------------------------
-		const char *query = "SELECT uid, name, service FROM hosts";
+		const char *query = "SELECT uid, name, service, type FROM hosts";
 		sqlite3_stmt *stmt = nullptr;
 		if (sqlite3_prepare_v2(db, query, strlen(query), &stmt,
 				nullptr) != SQLITE_OK) {
@@ -101,11 +133,17 @@ void Host::batchDump(const char *path) {
 			throw Exception(EX_INVALIDPARAM);
 		}
 
+		writeHeading(f, version);
 		while (sqlite3_step(stmt) == SQLITE_ROW) {
 			unsigned long long id = sqlite3_column_int64(stmt, 0);
-			const unsigned char *host = sqlite3_column_text(stmt, 1);
-			const unsigned char *service = sqlite3_column_text(stmt, 2);
-			fprintf(f, "%llu\t%s\t%s%s", id, host, service, Storage::NEWLINE);
+			const char *host = (const char*) sqlite3_column_text(stmt, 1);
+			const char *service = (const char*) sqlite3_column_text(stmt, 2);
+			unsigned int type = sqlite3_column_int(stmt, 3);
+			if (version == 1) {
+				writeTuple(f, id, host, service, type);
+			} else {
+				writeTuple(f, id, host, service);
+			}
 		}
 		Storage::closeStream(f);
 		finalize(stmt);
@@ -114,7 +152,7 @@ void Host::batchDump(const char *path) {
 	}
 }
 
-int Host::getHost(unsigned long long uid, NameInfo &ni) noexcept {
+int Host::get(unsigned long long uid, NameInfo &ni) noexcept {
 	if (db && qStmt) {
 		int ret = 0;
 		int z;
@@ -125,6 +163,7 @@ int Host::getHost(unsigned long long uid, NameInfo &ni) noexcept {
 			strcpy(ni.host, (const char*) x);
 			x = sqlite3_column_text(qStmt, 1);
 			strcpy(ni.service, (const char*) x);
+			ni.type = sqlite3_column_int(qStmt, 2);
 		} else if (z == SQLITE_DONE) {
 			//No record found
 			ret = 1;
@@ -138,13 +177,14 @@ int Host::getHost(unsigned long long uid, NameInfo &ni) noexcept {
 	}
 }
 
-int Host::addHost(unsigned long long uid, const NameInfo &ni) noexcept {
+int Host::put(unsigned long long uid, const NameInfo &ni) noexcept {
 	if (db && iStmt) {
 		int ret = 0;
 		sqlite3_bind_int64(iStmt, 1, uid);
 		sqlite3_bind_text(iStmt, 2, ni.host, strlen(ni.host), SQLITE_STATIC);
 		sqlite3_bind_text(iStmt, 3, ni.service, strlen(ni.service),
 		SQLITE_STATIC);
+		sqlite3_bind_int(iStmt, 4, ni.type);
 		if (sqlite3_step(iStmt) != SQLITE_DONE) {
 			ret = -1;
 		}
@@ -155,7 +195,7 @@ int Host::addHost(unsigned long long uid, const NameInfo &ni) noexcept {
 	}
 }
 
-int Host::removeHost(unsigned long long uid) noexcept {
+int Host::remove(unsigned long long uid) noexcept {
 	if (db && dStmt) {
 		int ret = 0;
 		sqlite3_bind_int64(dStmt, 1, uid);
@@ -189,6 +229,28 @@ int Host::list(unsigned long long uids[], unsigned int &count,
 	} else {
 		count = 0;
 		return -1;
+	}
+}
+
+void Host::createDummy(const char *path, int version) {
+	FILE *f = Storage::openStream(path, "wt", true);
+	if (f) {
+		const char *host = "127.0.0.1";
+		char service[32];
+		int type = 0;
+		writeHeading(f, version);
+		for (unsigned long long id = 0; id < 256; id++) {
+			unsigned int port = (9001 + id);
+			snprintf(service, sizeof(service), "%d", port);
+			if (version == 1) {
+				writeTuple(f, id, host, service, type);
+			} else {
+				writeTuple(f, id, host, service);
+			}
+		}
+		Storage::closeStream(f);
+	} else {
+		throw Exception(EX_INVALIDPARAM);
 	}
 }
 
@@ -231,16 +293,17 @@ void Host::createTable() {
 		sqlite3_free(errMsg);
 		throw Exception(EX_INVALIDSTATE);
 	} else {
-		//Hosts table has been found
+		//SUCCESS
 	}
 }
 
 void Host::prepareStatements() {
-	const char *iq = "INSERT INTO hosts (uid, name, service) VALUES (?,?,?)";
-	const char *sq = "SELECT name, service FROM hosts where uid=?";
-	const char *dq = "DELETE FROM hosts where uid=?";
+	const char *iq =
+			"INSERT INTO hosts (uid, name, service, type) VALUES (?,?,?,?)";
+	const char *sq = "SELECT name, service, type FROM hosts WHERE uid=?";
+	const char *dq = "DELETE FROM hosts WHERE uid=?";
 	const char *lq =
-			"SELECT uid FROM hosts where type=? order by RANDOM() limit ?";
+			"SELECT uid FROM hosts WHERE type=? ORDER BY RANDOM() LIMIT ?";
 
 	if ((sqlite3_prepare_v2(db, iq, strlen(iq), &iStmt, nullptr) != SQLITE_OK)
 			|| (sqlite3_prepare_v2(db, sq, strlen(sq), &qStmt, nullptr)

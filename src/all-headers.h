@@ -22,6 +22,7 @@
 #include "base/common/defines.h"
 #include "base/common/pod.h"
 #include "base/ds/Array.h"
+#include "base/ds/BinaryHeap.h"
 #include "base/ds/Buffer.h"
 #include "base/ds/CircularBuffer.h"
 #include "base/ds/CircularBufferVector.h"
