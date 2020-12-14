@@ -10,7 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 - The new **hosts file** format. The new format adds a numeric **TYPE** column. The old format remains supported.
-- The **Hosts** class returns a randomized list of *hub identifiers of a given type*.
+- The **Host** class returns a randomized list of *hub identifiers of a given type*.
 - Binary heap-based priority queue.
 
 ### Changed
@@ -27,7 +27,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Removed
 
-- Methods in the **Identity** class that modify the hosts database.
+- Public methods in the **Identity** class that modify the hosts database.
 
 ## [1.0.0] - 2020-11-25
 
