@@ -43,19 +43,11 @@ static void writeHeading(FILE *f, int version) noexcept {
 namespace wanhive {
 
 Host::Host() noexcept {
-	db = nullptr;
-	iStmt = nullptr;
-	qStmt = nullptr;
-	dStmt = nullptr;
-	lStmt = nullptr;
+	memset(&db, 0, sizeof(db));
 }
 
 Host::Host(const char *path, bool readOnly) {
-	db = nullptr;
-	iStmt = nullptr;
-	qStmt = nullptr;
-	dStmt = nullptr;
-	lStmt = nullptr;
+	memset(&db, 0, sizeof(db));
 	open(path, readOnly);
 }
 
@@ -79,7 +71,7 @@ void Host::open(const char *path, bool readOnly) {
 }
 
 void Host::batchUpdate(const char *path) {
-	if (!db || Storage::testFile(path) != 1) {
+	if (!db.conn || Storage::testFile(path) != 1) {
 		throw Exception(EX_RESOURCE);
 	}
 
@@ -117,11 +109,11 @@ void Host::batchUpdate(const char *path) {
 }
 
 void Host::batchDump(const char *path, int version) {
-	if (db) {
+	if (db.conn) {
 		//-----------------------------------------------------------------
 		const char *query = "SELECT uid, name, service, type FROM hosts";
 		sqlite3_stmt *stmt = nullptr;
-		if (sqlite3_prepare_v2(db, query, strlen(query), &stmt,
+		if (sqlite3_prepare_v2(db.conn, query, strlen(query), &stmt,
 				nullptr) != SQLITE_OK) {
 			finalize(stmt);
 			throw Exception(EX_INVALIDSTATE);
@@ -153,24 +145,24 @@ void Host::batchDump(const char *path, int version) {
 }
 
 int Host::get(unsigned long long uid, NameInfo &ni) noexcept {
-	if (db && qStmt) {
+	if (db.conn && db.qStmt) {
 		int ret = 0;
 		int z;
 		memset(&ni, 0, sizeof(ni));
-		sqlite3_bind_int64(qStmt, 1, uid);
-		if ((z = sqlite3_step(qStmt)) == SQLITE_ROW) {
-			const unsigned char *x = sqlite3_column_text(qStmt, 0);
+		sqlite3_bind_int64(db.qStmt, 1, uid);
+		if ((z = sqlite3_step(db.qStmt)) == SQLITE_ROW) {
+			const unsigned char *x = sqlite3_column_text(db.qStmt, 0);
 			strcpy(ni.host, (const char*) x);
-			x = sqlite3_column_text(qStmt, 1);
+			x = sqlite3_column_text(db.qStmt, 1);
 			strcpy(ni.service, (const char*) x);
-			ni.type = sqlite3_column_int(qStmt, 2);
+			ni.type = sqlite3_column_int(db.qStmt, 2);
 		} else if (z == SQLITE_DONE) {
 			//No record found
 			ret = 1;
 		} else {
 			ret = -1;
 		}
-		reset(qStmt);
+		reset(db.qStmt);
 		return ret;
 	} else {
 		return -1;
@@ -178,17 +170,17 @@ int Host::get(unsigned long long uid, NameInfo &ni) noexcept {
 }
 
 int Host::put(unsigned long long uid, const NameInfo &ni) noexcept {
-	if (db && iStmt) {
+	if (db.conn && db.iStmt) {
 		int ret = 0;
-		sqlite3_bind_int64(iStmt, 1, uid);
-		sqlite3_bind_text(iStmt, 2, ni.host, strlen(ni.host), SQLITE_STATIC);
-		sqlite3_bind_text(iStmt, 3, ni.service, strlen(ni.service),
+		sqlite3_bind_int64(db.iStmt, 1, uid);
+		sqlite3_bind_text(db.iStmt, 2, ni.host, strlen(ni.host), SQLITE_STATIC);
+		sqlite3_bind_text(db.iStmt, 3, ni.service, strlen(ni.service),
 		SQLITE_STATIC);
-		sqlite3_bind_int(iStmt, 4, ni.type);
-		if (sqlite3_step(iStmt) != SQLITE_DONE) {
+		sqlite3_bind_int(db.iStmt, 4, ni.type);
+		if (sqlite3_step(db.iStmt) != SQLITE_DONE) {
 			ret = -1;
 		}
-		reset(iStmt);
+		reset(db.iStmt);
 		return ret;
 	} else {
 		return -1;
@@ -196,13 +188,13 @@ int Host::put(unsigned long long uid, const NameInfo &ni) noexcept {
 }
 
 int Host::remove(unsigned long long uid) noexcept {
-	if (db && dStmt) {
+	if (db.conn && db.dStmt) {
 		int ret = 0;
-		sqlite3_bind_int64(dStmt, 1, uid);
-		if (sqlite3_step(dStmt) != SQLITE_DONE) {
+		sqlite3_bind_int64(db.dStmt, 1, uid);
+		if (sqlite3_step(db.dStmt) != SQLITE_DONE) {
 			ret = -1;
 		}
-		reset(dStmt);
+		reset(db.dStmt);
 		return ret;
 	} else {
 		return -1;
@@ -211,15 +203,15 @@ int Host::remove(unsigned long long uid) noexcept {
 
 int Host::list(unsigned long long uids[], unsigned int &count,
 		int type) noexcept {
-	if (uids && count && db && lStmt) {
-		sqlite3_bind_int(lStmt, 1, type);
-		sqlite3_bind_int(lStmt, 2, count);
+	if (uids && count && db.conn && db.lStmt) {
+		sqlite3_bind_int(db.lStmt, 1, type);
+		sqlite3_bind_int(db.lStmt, 2, count);
 		unsigned int x = 0;
 		int z = 0;
-		while ((x < count) && ((z = sqlite3_step(lStmt)) == SQLITE_ROW)) {
-			uids[x++] = sqlite3_column_int64(lStmt, 0);
+		while ((x < count) && ((z = sqlite3_step(db.lStmt)) == SQLITE_ROW)) {
+			uids[x++] = sqlite3_column_int64(db.lStmt, 0);
 		}
-		reset(lStmt);
+		reset(db.lStmt);
 		count = x;
 		if (z == SQLITE_ROW || z == SQLITE_DONE) {
 			return 0;
@@ -255,30 +247,29 @@ void Host::createDummy(const char *path, int version) {
 }
 
 void Host::clear() noexcept {
-	finalize(iStmt);
-	finalize(qStmt);
-	finalize(dStmt);
-	finalize(lStmt);
-	closeConnection(db);
-	db = nullptr;
-	iStmt = qStmt = dStmt = lStmt = nullptr;
+	closeStatements();
+	closeConnection();
 }
 
 void Host::openConnection(const char *path, bool readOnly) {
+	closeConnection();
 	int flags = readOnly ?
 	SQLITE_OPEN_READONLY :
 							(SQLITE_OPEN_READWRITE | SQLITE_OPEN_CREATE);
-	if (sqlite3_open_v2(path, &db, flags, nullptr) != SQLITE_OK) {
-		WH_LOG_DEBUG("%s", sqlite3_errmsg(db));
+	sqlite3 *conn = nullptr;
+	if (sqlite3_open_v2(path, &conn, flags, nullptr) != SQLITE_OK) {
+		WH_LOG_DEBUG("%s", sqlite3_errmsg(conn));
 		//sqlite3_open_v2 always returns a connection handle
-		sqlite3_close(db);
-		db = nullptr;
-		throw Exception(EX_INVALIDSTATE);
+		sqlite3_close(conn);
+		throw Exception(EX_INVALIDOPERATION);
+	} else {
+		db.conn = conn;
 	}
 }
 
-void Host::closeConnection(sqlite3 *db) noexcept {
-	sqlite3_close(db);
+void Host::closeConnection() noexcept {
+	sqlite3_close_v2(db.conn);
+	db.conn = nullptr;
 }
 
 void Host::createTable() {
@@ -287,11 +278,10 @@ void Host::createTable() {
 			"name TEXT NOT NULL DEFAULT '127.0.0.1',"
 			"service TEXT NOT NULL DEFAULT '9000',"
 			"type INTEGER NOT NULL DEFAULT 0)";
-	char *errMsg = nullptr;
-	if (sqlite3_exec(db, tq, nullptr, nullptr, &errMsg) != SQLITE_OK) {
-		WH_LOG_DEBUG("%s", errMsg);
-		sqlite3_free(errMsg);
-		throw Exception(EX_INVALIDSTATE);
+	if (!db.conn
+			|| sqlite3_exec(db.conn, tq, nullptr, nullptr, nullptr) != SQLITE_OK) {
+		WH_LOG_DEBUG("Could not create database tables");
+		throw Exception(EX_INVALIDOPERATION);
 	} else {
 		//SUCCESS
 	}
@@ -305,27 +295,41 @@ void Host::prepareStatements() {
 	const char *lq =
 			"SELECT uid FROM hosts WHERE type=? ORDER BY RANDOM() LIMIT ?";
 
-	if ((sqlite3_prepare_v2(db, iq, strlen(iq), &iStmt, nullptr) != SQLITE_OK)
-			|| (sqlite3_prepare_v2(db, sq, strlen(sq), &qStmt, nullptr)
+	closeStatements();
+	if (!db.conn
+			|| (sqlite3_prepare_v2(db.conn, iq, strlen(iq), &db.iStmt, nullptr)
 					!= SQLITE_OK)
-			|| (sqlite3_prepare_v2(db, dq, strlen(dq), &dStmt, nullptr)
+			|| (sqlite3_prepare_v2(db.conn, sq, strlen(sq), &db.qStmt, nullptr)
 					!= SQLITE_OK)
-			|| (sqlite3_prepare_v2(db, lq, strlen(lq), &lStmt, nullptr)
+			|| (sqlite3_prepare_v2(db.conn, dq, strlen(dq), &db.dStmt, nullptr)
+					!= SQLITE_OK)
+			|| (sqlite3_prepare_v2(db.conn, lq, strlen(lq), &db.lStmt, nullptr)
 					!= SQLITE_OK)) {
-		finalize(iStmt);
-		finalize(qStmt);
-		finalize(dStmt);
-		finalize(lStmt);
-		iStmt = qStmt = dStmt = lStmt = nullptr;
+		closeStatements();
 		WH_LOG_DEBUG("Could not create prepared statements");
-		throw Exception(EX_INVALIDSTATE);
+		throw Exception(EX_INVALIDOPERATION);
 	} else {
-		//Make sure that everything is good and shiny
-		reset(iStmt);
-		reset(qStmt);
-		reset(dStmt);
-		reset(lStmt);
+		resetStatements();
 	}
+}
+
+void Host::resetStatements() noexcept {
+	reset(db.iStmt);
+	reset(db.qStmt);
+	reset(db.dStmt);
+	reset(db.lStmt);
+}
+
+void Host::closeStatements() noexcept {
+	finalize(db.iStmt);
+	finalize(db.qStmt);
+	finalize(db.dStmt);
+	finalize(db.lStmt);
+
+	db.iStmt = nullptr;
+	db.qStmt = nullptr;
+	db.dStmt = nullptr;
+	db.lStmt = nullptr;
 }
 
 void Host::reset(sqlite3_stmt *stmt) noexcept {
@@ -341,34 +345,19 @@ void Host::finalize(sqlite3_stmt *stmt) noexcept {
 }
 
 void Host::beginTransaction() {
-	char *errMsg = nullptr;
-	if (sqlite3_exec(db, "BEGIN TRANSACTION", nullptr, nullptr,
-			&errMsg) != SQLITE_OK) {
-		WH_LOG_DEBUG("%s", errMsg);
+	const char *begin = "BEGIN TRANSACTION";
+	if (!db.conn
+			|| sqlite3_exec(db.conn, begin, nullptr, nullptr, nullptr)
+					!= SQLITE_OK) {
 		throw Exception(EX_INVALIDOPERATION);
 	}
 }
 
 void Host::endTransaction() {
-	char *errMsg = nullptr;
-	if (sqlite3_exec(db, "END TRANSACTION", nullptr, nullptr,
-			&errMsg) != SQLITE_OK) {
-		WH_LOG_DEBUG("%s", errMsg);
-		throw Exception(EX_INVALIDOPERATION);
-	}
-}
-
-void Host::deferTransaction() {
-	char *errMsg = nullptr;
-	if (sqlite3_exec(db, "PRAGMA synchronous = OFF", nullptr, nullptr,
-			&errMsg) != SQLITE_OK) {
-		WH_LOG_DEBUG("%s", errMsg);
-		throw Exception(EX_INVALIDOPERATION);
-	}
-
-	if (sqlite3_exec(db, "PRAGMA journal_mode = MEMORY", nullptr, nullptr,
-			&errMsg) != SQLITE_OK) {
-		WH_LOG_DEBUG("%s", errMsg);
+	const char *end = "END TRANSACTION";
+	if (!db.conn
+			|| sqlite3_exec(db.conn, end, nullptr, nullptr, nullptr)
+					!= SQLITE_OK) {
 		throw Exception(EX_INVALIDOPERATION);
 	}
 }

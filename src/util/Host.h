@@ -62,20 +62,23 @@ public:
 private:
 	void clear() noexcept;
 	void openConnection(const char *path, bool readOnly);
-	void closeConnection(sqlite3 *db) noexcept;
+	void closeConnection() noexcept;
 	void createTable();
 	void prepareStatements();
+	void resetStatements() noexcept;
+	void closeStatements() noexcept;
 	void reset(sqlite3_stmt *stmt) noexcept;
 	void finalize(sqlite3_stmt *stmt) noexcept;
 	void beginTransaction();
 	void endTransaction();
-	void deferTransaction();
 private:
-	sqlite3 *db;
-	sqlite3_stmt *iStmt; //Insert
-	sqlite3_stmt *qStmt; //Query
-	sqlite3_stmt *dStmt; //Delete
-	sqlite3_stmt *lStmt; //List
+	struct {
+		sqlite3 *conn; //The database connection
+		sqlite3_stmt *iStmt; //Insert
+		sqlite3_stmt *qStmt; //Get
+		sqlite3_stmt *dStmt; //Delete
+		sqlite3_stmt *lStmt; //List
+	} db;
 };
 
 } /* namespace wanhive */
