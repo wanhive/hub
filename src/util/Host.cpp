@@ -111,7 +111,7 @@ void Host::batchUpdate(const char *path) {
 void Host::batchDump(const char *path, int version) {
 	if (db.conn) {
 		//-----------------------------------------------------------------
-		const char *query = "SELECT uid, name, service, type FROM hosts";
+		const char *query = "SELECT uid, name, service, type FROM hosts ORDER BY uid ASC";
 		sqlite3_stmt *stmt = nullptr;
 		if (sqlite3_prepare_v2(db.conn, query, strlen(query), &stmt,
 				nullptr) != SQLITE_OK) {
