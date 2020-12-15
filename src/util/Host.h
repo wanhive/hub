@@ -71,6 +71,7 @@ private:
 	void finalize(sqlite3_stmt *stmt) noexcept;
 	void beginTransaction();
 	void endTransaction();
+	void cancelTransaction();
 private:
 	struct {
 		sqlite3 *conn; //The database connection

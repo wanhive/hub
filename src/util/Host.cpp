@@ -203,7 +203,9 @@ int Host::remove(unsigned long long uid) noexcept {
 
 int Host::list(unsigned long long uids[], unsigned int &count,
 		int type) noexcept {
-	if (uids && count && db.conn && db.lStmt) {
+	if (count == 0) {
+		return 0;
+	} else if (uids && db.conn && db.lStmt) {
 		sqlite3_bind_int(db.lStmt, 1, type);
 		sqlite3_bind_int(db.lStmt, 2, count);
 		unsigned int x = 0;
@@ -345,7 +347,7 @@ void Host::finalize(sqlite3_stmt *stmt) noexcept {
 }
 
 void Host::beginTransaction() {
-	const char *begin = "BEGIN TRANSACTION";
+	const char *begin = "BEGIN";
 	if (!db.conn
 			|| sqlite3_exec(db.conn, begin, nullptr, nullptr, nullptr)
 					!= SQLITE_OK) {
@@ -354,9 +356,18 @@ void Host::beginTransaction() {
 }
 
 void Host::endTransaction() {
-	const char *end = "END TRANSACTION";
+	const char *commit = "COMMIT";
 	if (!db.conn
-			|| sqlite3_exec(db.conn, end, nullptr, nullptr, nullptr)
+			|| sqlite3_exec(db.conn, commit, nullptr, nullptr, nullptr)
+					!= SQLITE_OK) {
+		throw Exception(EX_INVALIDOPERATION);
+	}
+}
+
+void Host::cancelTransaction() {
+	const char *rollback = "ROLLBACK";
+	if (!db.conn
+			|| sqlite3_exec(db.conn, rollback, nullptr, nullptr, nullptr)
 					!= SQLITE_OK) {
 		throw Exception(EX_INVALIDOPERATION);
 	}
