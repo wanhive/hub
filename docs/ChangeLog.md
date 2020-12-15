@@ -9,7 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-- The new **hosts file** format. The new format adds a numeric **TYPE** column. The old format remains supported.
+- The new **hosts file** format (Revision 1). The new format adds a numeric **TYPE** column. The old format remains supported.
 - The **Host** class returns a randomized list of *hub identifiers of a given type*.
 - Binary heap-based priority queue.
 

@@ -3,43 +3,19 @@
 - Name: Wanhive Systems Private Limited
 - Website: http://www.wanhive.com
 
-### What are the hub identifiers.
+### Where to find the Wanhive Protocol documentation.
 
-Each Wanhive hub has a unique identifier assigned to it.
+Use the following link to access the most recent documentation.
 
-* Identifiers are 64-bit non-negative integers which can take up values in the range [0-9223372036854775807].
-* Identifiers in the range [0-65535] are reserved and should not be used by the hubs acting as the client.
-* Valid identifier range for overlay hubs is [0-1023], however, this range can be modified while building from the source.
-* Identifier **0** is reserved for the **Controller** which is a specialized overlay hub used for [clustering](INSTALL.md).
+[WANHIVE PROTOCOL](https://www.wanhive.com/publications.php)
 
-### How to modify the identifier range for overlay hubs.
-
-The identifier range of [0-1023] for overlay hubs might seem restrictive. However, this can be changed while building from source.
-
-The default identifier range is hard coded as illustrated below (not exactly):
-
-```
-#define MAXKEYLENGTH 16U   //The architectural limit
-#define WH_DHT_KEYLEN 10U  //Current value
-#define KEYLENGTH MINOF(MAXKEYLENGTH, WH_DHT_KEYLEN)
-unsigned long CONTROLLER = 0
-unsigned long MIN_ID = 1
-unsigned long MAX_ID = (1UL << KEYLENGTH) - 1  //(2^KEYLENGTH) - 1
-```
-
-For example, setting the value of the macro **WH_DHT_KEYLEN** to 12 will increase the identifier range to [0-4095].
-
-```
-./configure CXXFLAGS="-DWH_DHT_KEYLEN=12 -O2 -g"
-```
-
-### How to run protocol tests.
+### How to run the protocol tests.
 
 ```
 wanhive -m
 ```
 
-Select **PROTOCOL TEST (3)** from the list of available options.
+Select **PROTOCOL TEST(3)** from the list of available options.
 
 Table of commands:
 
@@ -87,9 +63,9 @@ Table of commands:
 
 ```
 
-"Cluster only" commands must be initiated via the controller.
+*Cluster only* commands must be initiated via the controller.
 
-Commands requiring "privileged access" are meant for internal use and cannot be executed by a client. The following steps allow bypassing this restriction:
+The commands that require *Privileged access* are meant for the internal use and cannot be executed by a client. The following steps allow bypassing this restriction:
 
 1. If clustering is disabled:
     1. Register at the overlay hub with an identifier in the range [1-1023] to simulate a privileged hub.
@@ -101,3 +77,44 @@ Commands requiring "privileged access" are meant for internal use and cannot be 
     4. Select a host (#6) other than the controller.
     5. Retry.
 
+### What are the hub identifiers.
+
+Each Wanhive hub is assigned a unique identifier.
+
+* **Hub identifiers** can take up numerical values in the range [0-9223372036854775807].
+* A hub acting as the client should not use an identifier in the range [0-65535].
+* The default identifier range for the overlay hubs is [0-1023].
+* The cluster **Controller** uses the identifier **0**. See [Clustering](INSTALL.md).
+
+### How to modify the identifier range for overlay hubs.
+
+The identifier range [0-1023] for overlay hubs may look limiting. You can modify this range while building from the source.
+
+The default identifier range is hardcoded in the following manner (not exactly):
+
+```
+#define MAXKEYLENGTH 16U   //The architectural limit
+#define WH_DHT_KEYLEN 10U  //The Current value
+
+#define KEYLENGTH MINOF(MAXKEYLENGTH, WH_DHT_KEYLEN)
+
+unsigned long CONTROLLER = 0
+unsigned long MIN_ID = 1
+unsigned long MAX_ID = (1UL << KEYLENGTH) - 1  //(2^KEYLENGTH) - 1
+```
+
+For example, setting the value of the macro **WH_DHT_KEYLEN** to 12 will increase the identifier range to [0-4095].
+
+```
+./configure CXXFLAGS="-DWH_DHT_KEYLEN=12 -O2 -g"
+```
+
+### How to calculate the capacity reservation ratios.
+
+The *capacity reservation ratios* determine the portions of a hub's computational resource for *answering* and *forwarding* the messages. Use the following equations to calculate their values:
+
+```
+2*answerRatio + forwardRatio <= 1
+
+answerRatio = (1 / (2 + (0.5 * KEYLENGTH)))
+```
