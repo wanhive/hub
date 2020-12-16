@@ -300,13 +300,13 @@ bool Endpoint::unpack(const char *format, va_list ap) const noexcept {
 	}
 }
 
-bool Endpoint::checkCommand(uint8_t command, uint8_t qualifier) noexcept {
+bool Endpoint::checkCommand(uint8_t command, uint8_t qualifier) const noexcept {
 	return _header.getCommand() == command
 			&& _header.getQualifier() == qualifier;
 }
 
 bool Endpoint::checkCommand(uint8_t command, uint8_t qualifier,
-		uint8_t status) noexcept {
+		uint8_t status) const noexcept {
 	return checkCommand(command, qualifier) && _header.getStatus() == status;
 }
 

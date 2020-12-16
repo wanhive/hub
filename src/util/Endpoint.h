@@ -121,10 +121,10 @@ public:
 	bool unpack(const char *format, ...) const noexcept;
 	bool unpack(const char *format, va_list ap) const noexcept;
 	//Verify that message's context are correctly set in the header
-	bool checkCommand(uint8_t command, uint8_t qualifier) noexcept;
+	bool checkCommand(uint8_t command, uint8_t qualifier) const noexcept;
 	//Verify that message's context are correctly set in the header
 	bool checkCommand(uint8_t command, uint8_t qualifier,
-			uint8_t status) noexcept;
+			uint8_t status) const noexcept;
 	//-----------------------------------------------------------------
 	/**
 	 * Blocking message IO

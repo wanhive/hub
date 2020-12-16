@@ -370,7 +370,7 @@ bool Message::setData64(unsigned int index, uint64_t data) noexcept {
 bool Message::appendData64(uint64_t data) noexcept {
 	auto offset = getLength();
 	if (putLength(offset + sizeof(uint64_t))) {
-		Serializer::packi64(buffer.array() + offset, data);
+		Serializer::packi64((buffer.array() + offset), data);
 		return true;
 	} else {
 		return false;
@@ -403,7 +403,7 @@ bool Message::setData32(unsigned int index, uint32_t data) noexcept {
 bool Message::appendData32(uint32_t data) noexcept {
 	auto offset = getLength();
 	if (putLength(offset + sizeof(uint32_t))) {
-		Serializer::packi32(buffer.array() + offset, data);
+		Serializer::packi32((buffer.array() + offset), data);
 		return true;
 	} else {
 		return false;
@@ -436,7 +436,7 @@ bool Message::setData16(unsigned int index, uint16_t data) noexcept {
 bool Message::appendData16(uint16_t data) noexcept {
 	auto offset = getLength();
 	if (putLength(offset + sizeof(uint16_t))) {
-		Serializer::packi16(buffer.array() + offset, data);
+		Serializer::packi16((buffer.array() + offset), data);
 		return true;
 	} else {
 		return false;
@@ -469,7 +469,7 @@ bool Message::setData8(unsigned int index, uint8_t data) noexcept {
 bool Message::appendData8(uint8_t data) noexcept {
 	auto offset = getLength();
 	if (putLength(offset + sizeof(uint8_t))) {
-		Serializer::packi8(buffer.array() + offset, data);
+		Serializer::packi8((buffer.array() + offset), data);
 		return true;
 	} else {
 		return false;
@@ -484,7 +484,7 @@ double Message::getDouble(unsigned int index) const noexcept {
 bool Message::getDouble(unsigned int index, double &data) const noexcept {
 	auto offset = HEADER_SIZE + index;
 	if ((offset + sizeof(uint64_t)) <= MTU) {
-		data = Serializer::unpackf64((buffer.array() + offset));
+		data = Serializer::unpackf64(buffer.array() + offset);
 		return true;
 	} else {
 		return false;
@@ -502,7 +502,7 @@ bool Message::setDouble(unsigned int index, double data) noexcept {
 bool Message::appendDouble(double data) noexcept {
 	auto offset = getLength();
 	if (putLength(offset + sizeof(uint64_t))) {
-		Serializer::packf64(buffer.array() + offset, data);
+		Serializer::packf64((buffer.array() + offset), data);
 		return true;
 	} else {
 		return false;
@@ -541,7 +541,7 @@ bool Message::appendBytes(const unsigned char *block,
 		unsigned int length) noexcept {
 	auto offset = getLength();
 	if (putLength(offset + length)) {
-		Serializer::packib(buffer.array() + offset, block, length);
+		Serializer::packib((buffer.array() + offset), block, length);
 		return true;
 	} else {
 		return false;
