@@ -66,7 +66,7 @@ public:
 	virtual ~Socket();
 
 	void* operator new(size_t size);
-	void operator delete(void *p);
+	void operator delete(void *p) noexcept;
 	//=================================================================
 	/**
 	 * Watcher implementation

@@ -89,7 +89,7 @@ void* Socket::operator new(size_t size) {
 	}
 }
 
-void Socket::operator delete(void *p) {
+void Socket::operator delete(void *p) noexcept {
 	pool.deallocate(p);
 }
 
