@@ -212,11 +212,12 @@ bool Endpoint::pack(const MessageHeader &header,
 bool Endpoint::pack(const unsigned char *message) noexcept {
 	if (message) {
 		_header.deserialize(message);
-		if (!Message::testLength(_header.getLength())) {
+		if (Message::testLength(_header.getLength())) {
+			memcpy(_buffer, message, _header.getLength());
+			return true;
+		} else {
 			return false;
 		}
-		memcpy(_buffer, message, _header.getLength());
-		return true;
 	} else {
 		return false;
 	}
@@ -289,10 +290,11 @@ bool Endpoint::unpack(const char *format, ...) const noexcept {
 }
 
 bool Endpoint::unpack(const char *format, va_list ap) const noexcept {
-	if (format && Message::testLength(_header.getLength())
-			&& MessageHeader::getLength(_buffer) == _header.getLength()) {
+	auto msgLength = _header.getLength();
+	if (format && Message::testLength(msgLength)
+			&& MessageHeader::getLength(_buffer) == msgLength) {
 		return Serializer::vunpack(_buffer + Message::HEADER_SIZE,
-				_header.getLength() - Message::HEADER_SIZE, format, ap);
+				(msgLength - Message::HEADER_SIZE), format, ap);
 	} else {
 		return false;
 	}
@@ -301,6 +303,11 @@ bool Endpoint::unpack(const char *format, va_list ap) const noexcept {
 bool Endpoint::checkCommand(uint8_t command, uint8_t qualifier) noexcept {
 	return _header.getCommand() == command
 			&& _header.getQualifier() == qualifier;
+}
+
+bool Endpoint::checkCommand(uint8_t command, uint8_t qualifier,
+		uint8_t status) noexcept {
+	return checkCommand(command, qualifier) && _header.getStatus() == status;
 }
 
 void Endpoint::send(bool sign) {
@@ -451,10 +458,9 @@ unsigned int Endpoint::pack(const MessageHeader &header, unsigned char *buffer,
 		const char *format, va_list ap) noexcept {
 	if (buffer) {
 		auto size = header.serialize(buffer);
-		size += Serializer::vpack(buffer + Message::HEADER_SIZE, format, ap);
-		if (header.getLength() == 0) {
-			MessageHeader::setLength(buffer, size);
-		}
+		size += Serializer::vpack(buffer + Message::HEADER_SIZE,
+				Message::PAYLOAD_SIZE, format, ap);
+		MessageHeader::setLength(buffer, size);
 		return size;
 	} else {
 		return 0;
@@ -474,8 +480,14 @@ unsigned int Endpoint::unpack(MessageHeader &header,
 		const unsigned char *buffer, const char *format, va_list ap) noexcept {
 	if (buffer) {
 		auto size = header.deserialize(buffer);
-		size += Serializer::vunpack(buffer + Message::HEADER_SIZE, format, ap);
-		return size;
+		auto msgLength = header.getLength();
+		if (Message::testLength(msgLength)) {
+			size += Serializer::vunpack(buffer + Message::HEADER_SIZE,
+					(msgLength - Message::HEADER_SIZE), format, ap);
+			return size;
+		} else {
+			return 0;
+		}
 	} else {
 		return 0;
 	}

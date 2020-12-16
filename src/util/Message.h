@@ -43,6 +43,9 @@ class Message: public State {
 private:
 	Message(uint64_t origin) noexcept;
 	~Message();
+
+	void* operator new(size_t size) noexcept;
+	void operator delete(void *p) noexcept;
 public:
 	static void initPool(unsigned int size);
 	static void destroyPool();
@@ -165,34 +168,47 @@ public:
 	void unpackHeader(MessageHeader &header) const noexcept;
 	//=================================================================
 	/**
-	 * Payload handling functions
-	 ** getDataxx/getBytes/getDouble: returns the payload data at the given
-	 * index. May fail silently if the index violates the MTU.
+	 * Payload data handlers
 	 *
-	 ** setDataxx/setBytes/setDouble: inserts data into the payload at given
-	 * index. Doesn't modify the message length. Returns true on success,
+	 * All the methods perform bounds checking.
+	 *
+	 ** getDataxx/getDouble/getBytes: returns the payload data at the given
+	 * index. Methods returning value of matching type fail silently. Methods
+	 * returning boolean return true on success, false otherwise.
+	 *
+	 ** setDataxx/setDouble/setBytes: inserts data into the payload at the
+	 ** given ndex. Doesn't modify the message length. Returns true on success,
 	 * false otherwise.
 	 *
-	 ** appendDataxx/appendBytes/appendDouble: appends the data at the end of
-	 * the payload and modifies the message length accordingly. Returns true
+	 ** appendDataxx/appendDouble/appendBytes: appends the data at the end of
+	 * the payload and updates the message length accordingly. Returns true
 	 * on success, false otherwise.
 	 *
 	 */
 	uint64_t getData64(unsigned int index) const noexcept;
+	bool getData64(unsigned int index, uint64_t &data) const noexcept;
 	bool setData64(unsigned int index, uint64_t data) noexcept;
 	bool appendData64(uint64_t data) noexcept;
 
 	uint32_t getData32(unsigned int index) const noexcept;
+	bool getData32(unsigned int index, uint32_t &data) const noexcept;
 	bool setData32(unsigned int index, uint32_t data) noexcept;
 	bool appendData32(uint32_t data) noexcept;
 
 	uint16_t getData16(unsigned int index) const noexcept;
+	bool getData16(unsigned int index, uint16_t &data) const noexcept;
 	bool setData16(unsigned int index, uint16_t data) noexcept;
 	bool appendData16(uint16_t data) noexcept;
 
 	uint8_t getData8(unsigned int index) const noexcept;
+	bool getData8(unsigned int index, uint8_t &data) const noexcept;
 	bool setData8(unsigned int index, uint8_t data) noexcept;
 	bool appendData8(uint8_t data) noexcept;
+
+	double getDouble(unsigned int index) const noexcept;
+	bool getDouble(unsigned int index, double &data) const noexcept;
+	bool setDouble(unsigned int index, double data) noexcept;
+	bool appendDouble(double data) noexcept;
 
 	bool getBytes(unsigned int index, unsigned char *block,
 			unsigned int length) const noexcept;
@@ -200,10 +216,6 @@ public:
 	bool setBytes(unsigned int index, const unsigned char *block,
 			unsigned int length) noexcept;
 	bool appendBytes(const unsigned char *block, unsigned int length) noexcept;
-
-	double getDouble(unsigned int index) const noexcept;
-	bool setDouble(unsigned int index, double data) noexcept;
-	bool appendDouble(double data) noexcept;
 	//=================================================================
 	/**
 	 * Following two functions pack <header> and data into this Message using
@@ -247,9 +259,6 @@ public:
 	static bool testLength(unsigned int length) noexcept;
 	//Returns number of messages required to transmit <bytes> of data
 	static unsigned int packets(unsigned int bytes) noexcept;
-private:
-	void* operator new(size_t size) noexcept;
-	void operator delete(void *p) noexcept;
 public:
 	//Message header size in bytes
 	static constexpr unsigned int HEADER_SIZE = MessageHeader::SIZE;

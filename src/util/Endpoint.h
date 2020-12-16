@@ -120,8 +120,11 @@ public:
 	//Deserialize the payload data
 	bool unpack(const char *format, ...) const noexcept;
 	bool unpack(const char *format, va_list ap) const noexcept;
-	//Verify that <command> and <qualifier> fields are correctly set in the header
+	//Verify that message's context are correctly set in the header
 	bool checkCommand(uint8_t command, uint8_t qualifier) noexcept;
+	//Verify that message's context are correctly set in the header
+	bool checkCommand(uint8_t command, uint8_t qualifier,
+			uint8_t status) noexcept;
 	//-----------------------------------------------------------------
 	/**
 	 * Blocking message IO
@@ -172,26 +175,26 @@ public:
 	 */
 	static void receive(int sockfd, unsigned char *buf, MessageHeader &header,
 			unsigned int sequenceNumber = 0, const PKI *pki = nullptr);
-	//Same as above however uses SSL/TLS connection
+	//Same as the above but uses SSL/TLS connection
 	static void receive(SSL *ssl, unsigned char *buf, MessageHeader &header,
 			unsigned int sequenceNumber = 0, const PKI *pki = nullptr);
 	//-----------------------------------------------------------------
 	/**
 	 * Following functions pack and unpack a message (header and payload) to and
 	 * from the <buffer>. <format> specifies the message payload format. If the
-	 * payload is empty then format must be nullptr. All functions return the
-	 * number of bytes transferred to/from the <buffer>, 0 if <buffer> is nullptr.
-	 * NOTE 1: <buffer> contains the full message (header+payload) in either case.
-	 * NOTE 2: Caller must ensure that <buffer> points to valid memory region of
-	 * sufficient size, none of the functions perform overflow check.
-	 * NOTE 3: The format string follows the Serializer class.
+	 * payload is empty then the format must be nullptr. All functions return the
+	 * number of bytes transferred to/from the <buffer>, 0 on error.
+	 * NOTE 1: Caller must ensure that <buffer> points to a valid memory region
+	 * of sufficient size.
+	 * NOTE 2: The format string follows the Serializer class.
 	 */
-	//If the length field in <header> is 0 then the message length is calculated
+	//Message length is always automatically calculated
 	static unsigned int pack(const MessageHeader &header, unsigned char *buffer,
 			const char *format, ...) noexcept;
 	static unsigned int pack(const MessageHeader &header, unsigned char *buffer,
 			const char *format, va_list list) noexcept;
-	//<header> is populated from the serialized header data in the buffer
+
+	//<header> is populated from the serialized header data in the <buffer>
 	static unsigned int unpack(MessageHeader &header,
 			const unsigned char *buffer, const char *format, ...) noexcept;
 	static unsigned int unpack(MessageHeader &header,
@@ -206,10 +209,13 @@ public:
 	//<length> is a value-result argument, always returns true if <pki> is nullptr
 	static bool sign(unsigned char *out, unsigned int &length,
 			const PKI *pki) noexcept;
+	//Signs the Message <msg>, always returns true if <pki> is nullptr
 	static bool sign(Message *msg, const PKI *pki) noexcept;
+
 	//Verifies a signed message, always returns true if <pki> is nullptr
 	static bool verify(const unsigned char *in, unsigned int length,
 			const PKI *pki) noexcept;
+	//Verifies the Message <msg>, always returns true if <pki> is nullptr
 	static bool verify(Message *msg, const PKI *pki) noexcept;
 	//-----------------------------------------------------------------
 	/*
@@ -221,7 +227,7 @@ public:
 	static bool executeRequest(int sfd, MessageHeader &header,
 			unsigned char *buf, const PKI *signer = nullptr,
 			const PKI *verifier = nullptr);
-	//Same as above but uses SSL/TLS connection
+	//Same as the above but uses SSL/TLS connection
 	static bool executeRequest(SSL *ssl, MessageHeader &header,
 			unsigned char *buf, const PKI *signer = nullptr,
 			const PKI *verifier = nullptr);

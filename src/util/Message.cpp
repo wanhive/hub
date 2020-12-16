@@ -25,6 +25,14 @@ Message::~Message() {
 
 }
 
+void* Message::operator new(size_t size) noexcept {
+	return pool.allocate();
+}
+
+void Message::operator delete(void *p) noexcept {
+	pool.deallocate(p);
+}
+
 void Message::initPool(unsigned int size) {
 	pool.initialize(sizeof(Message), size);
 }
@@ -337,26 +345,32 @@ void Message::unpackHeader(MessageHeader &header) const noexcept {
 }
 
 uint64_t Message::getData64(unsigned int index) const noexcept {
-	auto edge = HEADER_SIZE + sizeof(uint64_t) + index;
-	if (edge < MTU) {
-		return Serializer::unpacku64(buffer.array() + HEADER_SIZE + index);
+	uint64_t data = 0;
+	getData64(index, data);
+	return data;
+}
+bool Message::getData64(unsigned int index, uint64_t &data) const noexcept {
+	auto offset = HEADER_SIZE + index;
+	if ((offset + sizeof(uint64_t)) <= MTU) {
+		data = Serializer::unpacku64(buffer.array() + offset);
+		return true;
 	} else {
-		return 0;
+		return false;
 	}
 }
 bool Message::setData64(unsigned int index, uint64_t data) noexcept {
-	auto edge = HEADER_SIZE + sizeof(uint64_t) + index;
-	if (edge < MTU) {
-		Serializer::packi64((buffer.array() + HEADER_SIZE + index), data);
+	auto offset = HEADER_SIZE + index;
+	if ((offset + sizeof(uint64_t)) <= MTU) {
+		Serializer::packi64((buffer.array() + offset), data);
 		return true;
 	} else {
 		return false;
 	}
 }
 bool Message::appendData64(uint64_t data) noexcept {
-	auto index = getLength();
-	if (putLength(index + sizeof(uint64_t))) {
-		Serializer::packi64(buffer.array() + index, data);
+	auto offset = getLength();
+	if (putLength(offset + sizeof(uint64_t))) {
+		Serializer::packi64(buffer.array() + offset, data);
 		return true;
 	} else {
 		return false;
@@ -364,26 +378,32 @@ bool Message::appendData64(uint64_t data) noexcept {
 }
 
 uint32_t Message::getData32(unsigned int index) const noexcept {
-	auto edge = HEADER_SIZE + sizeof(uint32_t) + index;
-	if (edge < MTU) {
-		return Serializer::unpacku32(buffer.array() + HEADER_SIZE + index);
+	uint32_t data = 0;
+	getData32(index, data);
+	return data;
+}
+bool Message::getData32(unsigned int index, uint32_t &data) const noexcept {
+	auto offset = HEADER_SIZE + index;
+	if ((offset + sizeof(uint32_t)) <= MTU) {
+		data = Serializer::unpacku32(buffer.array() + offset);
+		return true;
 	} else {
-		return 0;
+		return false;
 	}
 }
 bool Message::setData32(unsigned int index, uint32_t data) noexcept {
-	auto edge = HEADER_SIZE + sizeof(uint32_t) + index;
-	if (edge < MTU) {
-		Serializer::packi32((buffer.array() + HEADER_SIZE + index), data);
+	auto offset = HEADER_SIZE + index;
+	if ((offset + sizeof(uint32_t)) <= MTU) {
+		Serializer::packi32((buffer.array() + offset), data);
 		return true;
 	} else {
 		return false;
 	}
 }
 bool Message::appendData32(uint32_t data) noexcept {
-	auto index = getLength();
-	if (putLength(index + sizeof(uint32_t))) {
-		Serializer::packi32(buffer.array() + index, data);
+	auto offset = getLength();
+	if (putLength(offset + sizeof(uint32_t))) {
+		Serializer::packi32(buffer.array() + offset, data);
 		return true;
 	} else {
 		return false;
@@ -391,26 +411,32 @@ bool Message::appendData32(uint32_t data) noexcept {
 }
 
 uint16_t Message::getData16(unsigned int index) const noexcept {
-	auto edge = HEADER_SIZE + sizeof(uint16_t) + index;
-	if (edge < MTU) {
-		return Serializer::unpacku16(buffer.array() + HEADER_SIZE + index);
+	uint16_t data = 0;
+	getData16(index, data);
+	return data;
+}
+bool Message::getData16(unsigned int index, uint16_t &data) const noexcept {
+	auto offset = HEADER_SIZE + index;
+	if ((offset + sizeof(uint16_t)) <= MTU) {
+		data = Serializer::unpacku16(buffer.array() + offset);
+		return true;
 	} else {
-		return 0;
+		return false;
 	}
 }
 bool Message::setData16(unsigned int index, uint16_t data) noexcept {
-	auto edge = HEADER_SIZE + sizeof(uint16_t) + index;
-	if (edge < MTU) {
-		Serializer::packi16((buffer.array() + HEADER_SIZE + index), data);
+	auto offset = HEADER_SIZE + index;
+	if ((offset + sizeof(uint16_t)) <= MTU) {
+		Serializer::packi16((buffer.array() + offset), data);
 		return true;
 	} else {
 		return false;
 	}
 }
 bool Message::appendData16(uint16_t data) noexcept {
-	auto index = getLength();
-	if (putLength(index + sizeof(uint16_t))) {
-		Serializer::packi16(buffer.array() + index, data);
+	auto offset = getLength();
+	if (putLength(offset + sizeof(uint16_t))) {
+		Serializer::packi16(buffer.array() + offset, data);
 		return true;
 	} else {
 		return false;
@@ -418,26 +444,65 @@ bool Message::appendData16(uint16_t data) noexcept {
 }
 
 uint8_t Message::getData8(unsigned int index) const noexcept {
-	auto edge = HEADER_SIZE + sizeof(uint8_t) + index;
-	if (edge < MTU) {
-		return Serializer::unpacku8(buffer.array() + HEADER_SIZE + index);
+	uint8_t data = 0;
+	getData8(index, data);
+	return data;
+}
+bool Message::getData8(unsigned int index, uint8_t &data) const noexcept {
+	auto offset = HEADER_SIZE + index;
+	if ((offset + sizeof(uint8_t)) <= MTU) {
+		data = Serializer::unpacku8(buffer.array() + offset);
+		return true;
 	} else {
-		return 0;
+		return false;
 	}
 }
 bool Message::setData8(unsigned int index, uint8_t data) noexcept {
-	auto edge = HEADER_SIZE + sizeof(uint8_t) + index;
-	if (edge < MTU) {
-		Serializer::packi8((buffer.array() + HEADER_SIZE + index), data);
+	auto offset = HEADER_SIZE + index;
+	if ((offset + sizeof(uint8_t)) <= MTU) {
+		Serializer::packi8((buffer.array() + offset), data);
 		return true;
 	} else {
 		return false;
 	}
 }
 bool Message::appendData8(uint8_t data) noexcept {
-	auto index = getLength();
-	if (putLength(index + sizeof(uint8_t))) {
-		Serializer::packi8(buffer.array() + index, data);
+	auto offset = getLength();
+	if (putLength(offset + sizeof(uint8_t))) {
+		Serializer::packi8(buffer.array() + offset, data);
+		return true;
+	} else {
+		return false;
+	}
+}
+
+double Message::getDouble(unsigned int index) const noexcept {
+	double data = 0;
+	getDouble(index, data);
+	return data;
+}
+bool Message::getDouble(unsigned int index, double &data) const noexcept {
+	auto offset = HEADER_SIZE + index;
+	if ((offset + sizeof(uint64_t)) <= MTU) {
+		data = Serializer::unpackf64((buffer.array() + offset));
+		return true;
+	} else {
+		return false;
+	}
+}
+bool Message::setDouble(unsigned int index, double data) noexcept {
+	auto offset = HEADER_SIZE + index;
+	if ((offset + sizeof(uint64_t)) <= MTU) {
+		Serializer::packf64((buffer.array() + offset), data);
+		return true;
+	} else {
+		return false;
+	}
+}
+bool Message::appendDouble(double data) noexcept {
+	auto offset = getLength();
+	if (putLength(offset + sizeof(uint64_t))) {
+		Serializer::packf64(buffer.array() + offset, data);
 		return true;
 	} else {
 		return false;
@@ -446,29 +511,27 @@ bool Message::appendData8(uint8_t data) noexcept {
 
 bool Message::getBytes(unsigned int index, unsigned char *block,
 		unsigned int length) const noexcept {
-	auto edge = HEADER_SIZE + index + length;
-	if (edge < MTU) {
-		Serializer::unpackib(block, (buffer.array() + HEADER_SIZE + index),
-				length);
+	auto offset = HEADER_SIZE + index;
+	if (block && (offset + length) <= MTU) {
+		Serializer::unpackib(block, (buffer.array() + offset), length);
 		return true;
 	} else {
 		return false;
 	}
 }
 const unsigned char* Message::getBytes(unsigned int index) const noexcept {
-	auto edge = HEADER_SIZE + index;
-	if (edge < MTU) {
-		return buffer.array() + HEADER_SIZE + index;
+	auto offset = HEADER_SIZE + index;
+	if (offset < MTU) {
+		return buffer.array() + offset;
 	} else {
 		return nullptr;
 	}
 }
 bool Message::setBytes(unsigned int index, const unsigned char *block,
 		unsigned int length) noexcept {
-	auto edge = HEADER_SIZE + index + length;
-	if (edge < MTU) {
-		Serializer::packib((buffer.array() + HEADER_SIZE + index), block,
-				length);
+	auto offset = HEADER_SIZE + index;
+	if ((offset + length) <= MTU) {
+		Serializer::packib((buffer.array() + offset), block, length);
 		return true;
 	} else {
 		return false;
@@ -476,36 +539,9 @@ bool Message::setBytes(unsigned int index, const unsigned char *block,
 }
 bool Message::appendBytes(const unsigned char *block,
 		unsigned int length) noexcept {
-	auto index = getLength();
-	if (putLength(index + length)) {
-		Serializer::packib(buffer.array() + index, block, length);
-		return true;
-	} else {
-		return false;
-	}
-}
-
-double Message::getDouble(unsigned int index) const noexcept {
-	auto edge = HEADER_SIZE + sizeof(uint64_t) + index;
-	if (edge < MTU) {
-		return Serializer::unpackf64((buffer.array() + HEADER_SIZE + index));
-	} else {
-		return 0;
-	}
-}
-bool Message::setDouble(unsigned int index, double data) noexcept {
-	auto edge = HEADER_SIZE + sizeof(uint64_t) + index;
-	if (edge < MTU) {
-		Serializer::packf64((buffer.array() + HEADER_SIZE + index), data);
-		return true;
-	} else {
-		return false;
-	}
-}
-bool Message::appendDouble(double data) noexcept {
-	auto index = getLength();
-	if (putLength(index + sizeof(uint64_t))) {
-		Serializer::packf64(buffer.array() + index, data);
+	auto offset = getLength();
+	if (putLength(offset + length)) {
+		Serializer::packib(buffer.array() + offset, block, length);
 		return true;
 	} else {
 		return false;
@@ -624,14 +660,6 @@ bool Message::testLength(unsigned int length) noexcept {
 
 unsigned int Message::packets(unsigned int bytes) noexcept {
 	return (bytes + PAYLOAD_SIZE - 1) / PAYLOAD_SIZE;
-}
-
-void* Message::operator new(size_t size) noexcept {
-	return pool.allocate();
-}
-
-void Message::operator delete(void *p) noexcept {
-	pool.deallocate(p);
 }
 
 } /* namespace wanhive */

@@ -15,7 +15,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
-- Strict bounds checking in the Message class.
+- Improved bounds checking in **Message** and **Endpoint** classes.
 - Rename the structures, methods and fields to comply with the guidelines.
 - Update the documentation.
 - Rename and update the code of conduct file.
