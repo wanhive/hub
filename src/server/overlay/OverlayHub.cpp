@@ -429,7 +429,7 @@ int OverlayHub::processRegistrationRequest(Message *message) noexcept {
 	}
 
 	if (mode == -1) {
-		disable(getWatcher(oldUid));
+		removeWatcher(oldUid);
 		return -1;
 	}
 
