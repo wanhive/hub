@@ -442,7 +442,7 @@ ssize_t Socket::sslRead(void *buf, size_t count) {
 		throw SystemException();
 		break;
 	case SSL_ERROR_ZERO_RETURN:
-		throw Exception(EX_SECURITY);
+		throw Exception(EX_RESOURCE);
 		break;
 	default:
 		throw Exception(EX_SECURITY);
@@ -478,7 +478,7 @@ ssize_t Socket::sslWrite(const void *buf, size_t count) {
 		throw SystemException();
 		break;
 	case SSL_ERROR_ZERO_RETURN:
-		throw Exception(EX_SECURITY);
+		throw Exception(EX_RESOURCE);
 		break;
 	default:
 		throw Exception(EX_SECURITY);
