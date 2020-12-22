@@ -26,10 +26,10 @@ public:
 	 * success, false otherwise. Doesn't modify the ListNode::listed field of
 	 * the <head> (allows the <head> to mark the list boundaries).
 	 */
-	bool link(ListNode *head) noexcept;
+	bool list(ListNode *head) noexcept;
 	//Removes the node from it's linked list
-	void delink() noexcept;
-	//Returns true if this node is already in a linked list.
+	void delist() noexcept;
+	//Returns true if this node is already in a linked list
 	bool isListed() const noexcept;
 	//Returns the predecessor (nullptr if no predecessor)
 	ListNode* getPredecessor() const noexcept;

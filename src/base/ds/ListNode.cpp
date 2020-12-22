@@ -22,7 +22,7 @@ ListNode::~ListNode() {
 
 }
 
-bool ListNode::link(ListNode *head) noexcept {
+bool ListNode::list(ListNode *head) noexcept {
 	if (!isListed() && head) {
 		// --(head)-[this]-[n1]-[n2]--
 		setPredecessor(head);
@@ -36,7 +36,7 @@ bool ListNode::link(ListNode *head) noexcept {
 	}
 }
 
-void ListNode::delink() noexcept {
+void ListNode::delist() noexcept {
 	if (isListed()) {
 		getSuccessor()->setPredecessor(getPredecessor());
 		getPredecessor()->setSuccessor(getSuccessor());
