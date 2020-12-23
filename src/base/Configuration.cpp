@@ -49,7 +49,7 @@ void Configuration::clear() noexcept {
 }
 
 bool Configuration::load(const char *filename, unsigned int *lastRow) noexcept {
-	char buffer[MAX_LINE_LEN];
+	char buffer[MAX_LINE_LEN * 2];
 	char section[MAX_SECTION_LEN];
 	char key[MAX_KEY_LEN];
 	char value[MAX_VALUE_LEN];
@@ -67,7 +67,7 @@ bool Configuration::load(const char *filename, unsigned int *lastRow) noexcept {
 	}
 
 	section[0] = '\0';	//Default section name
-	while (fgets(buffer, MAX_LINE_LEN, fp)) {
+	while (fgets(buffer, sizeof(buffer), fp)) {
 		char *line = buffer;
 		int eol = 0;
 		rows++;
