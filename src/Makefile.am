@@ -3,7 +3,7 @@ WH_BASE_COMMONHEADERS = base/common/Atomic.h base/common/BaseException.h \
 	base/common/audit.h base/common/defines.h base/common/pod.h
 WH_BASE_DSHEADERS = base/ds/Array.h base/ds/BinaryHeap.h base/ds/Buffer.h \
 	base/ds/CircularBuffer.h base/ds/CircularBufferVector.h base/ds/Encoding.h \
-	base/ds/Khash.h base/ds/ListNode.h base/ds/MemoryPool.h \
+	base/ds/Khash.h base/ds/List.h base/ds/ListNode.h base/ds/MemoryPool.h \
 	base/ds/MersenneTwister.h base/ds/Serializer.h base/ds/State.h \
 	base/ds/StaticBuffer.h base/ds/StaticCircularBuffer.h base/ds/Twiddler.h \
 	base/ds/functors.h
@@ -18,12 +18,13 @@ WH_BASE_SECURITYHEADERS = base/security/CryptoUtils.h base/security/CSPRNG.h \
 WH_BASEHEADERS = $(WH_BASE_COMMONHEADERS) $(WH_BASE_DSHEADERS) $(WH_BASE_TOPHEADERS) \
 	$(WH_BASE_SECURITYHEADERS)
 WH_BASESOURCES = base/common/CommandLine.cpp base/common/Exception.cpp \
-	base/common/Memory.cpp base/ds/Encoding.cpp base/ds/ListNode.cpp \
-	base/ds/MemoryPool.cpp base/ds/MersenneTwister.cpp base/ds/Serializer.cpp \
-	base/ds/State.cpp base/ds/Twiddler.cpp \
-	base/Condition.cpp base/Configuration.cpp base/Logger.cpp base/Network.cpp \
-	base/NetworkAddressException.cpp base/Selector.cpp base/Signal.cpp base/Storage.cpp \
-	base/System.cpp base/SystemException.cpp base/Thread.cpp base/Timer.cpp \
+	base/common/Memory.cpp base/ds/Encoding.cpp base/ds/List.cpp \
+	base/ds/ListNode.cpp base/ds/MemoryPool.cpp base/ds/MersenneTwister.cpp \
+	base/ds/Serializer.cpp base/ds/State.cpp base/ds/Twiddler.cpp \
+	base/Condition.cpp base/Configuration.cpp base/Logger.cpp \
+	base/Network.cpp base/NetworkAddressException.cpp base/Selector.cpp \
+	base/Signal.cpp base/Storage.cpp base/System.cpp base/SystemException.cpp \
+	base/Thread.cpp base/Timer.cpp \
 	base/security/CryptoUtils.cpp base/security/CSPRNG.cpp base/security/Rsa.cpp \
 	base/security/SecurityException.cpp base/security/Sha.cpp base/security/Srp.cpp \
 	base/security/SSLContext.cpp

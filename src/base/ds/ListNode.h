@@ -41,7 +41,13 @@ protected:
 	//Sets <node> as the successor (treats nullptr as this pointer)
 	void setSuccessor(ListNode *node) noexcept;
 	//Resets the object to it's initial state
-	void reset() noexcept;
+	void clear() noexcept;
+	/*
+	 * Connects the nodes <n1> and <n2> in such a manner that <n1> becomes
+	 * the predecessor of <n2> and <n2> becomes the successor of <n1>.
+	 * Returns true on success, false on failure (<n1> or <n2> is nullptr).
+	 */
+	static bool tie(ListNode *n1, ListNode *n2) noexcept;
 private:
 	bool listed;
 	ListNode *contiguous[2];

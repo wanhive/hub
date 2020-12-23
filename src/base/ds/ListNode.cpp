@@ -15,7 +15,7 @@
 namespace wanhive {
 
 ListNode::ListNode() noexcept {
-	reset();
+	clear();
 }
 
 ListNode::~ListNode() {
@@ -40,7 +40,7 @@ void ListNode::delist() noexcept {
 	if (isListed()) {
 		getSuccessor()->setPredecessor(getPredecessor());
 		getPredecessor()->setSuccessor(getSuccessor());
-		reset();
+		clear();
 	}
 }
 
@@ -72,10 +72,20 @@ void ListNode::setSuccessor(ListNode *node) noexcept {
 	}
 }
 
-void ListNode::reset() noexcept {
+void ListNode::clear() noexcept {
 	listed = false;
 	contiguous[0] = this;
 	contiguous[1] = this;
+}
+
+bool ListNode::tie(ListNode *n1, ListNode *n2) noexcept {
+	if (n1 && n2) {
+		n1->setSuccessor(n2);
+		n2->setPredecessor(n1);
+		return true;
+	} else {
+		return false;
+	}
 }
 
 } /* namespace wanhive */
