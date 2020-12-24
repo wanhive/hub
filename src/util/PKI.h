@@ -17,10 +17,10 @@
 namespace wanhive {
 //-----------------------------------------------------------------
 //Length of RSA key in bits
-#ifndef WH_PKI_KEY_LENGTH
+#undef WH_PKI_KEY_LENGTH
 #define WH_PKI_KEY_LENGTH 2048
-#endif
 //Length of RSA encrypted data in bytes (256 bytes)
+#undef WH_PKI_ENCODING_LEN
 #define WH_PKI_ENCODING_LEN ((WH_PKI_KEY_LENGTH) / 8)
 //RSA signature
 using Signature=unsigned char[WH_PKI_ENCODING_LEN];
