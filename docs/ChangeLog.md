@@ -5,6 +5,21 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Added
+
+- Doubly linked list.
+- **Hub::removeWatcher** method to remove a watcher from the event loop.
+
+### Changed
+
+- Improve the input handling in the **Configuration** class.
+
+### Fixed
+
+- The **Socket** class should not report a *security violation* on SSL disconnection (SSL_ERROR_ZERO_RETURN).
+
 ## [2.0.0] - 2020-12-17
 
 ### Added
