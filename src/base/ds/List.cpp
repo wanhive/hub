@@ -21,10 +21,10 @@ List::List() noexcept {
 
 List::~List() {
 	auto node = getSuccessor();
-	while (node->isListed()) {
-		setSuccessor(node->getSuccessor());
+	while (node != this) {
+		auto tmp = node->getSuccessor();
 		delete node;
-		node = getSuccessor();
+		node = tmp;
 	}
 }
 
