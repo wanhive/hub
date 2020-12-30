@@ -61,8 +61,13 @@ bool Condition::timedWait(unsigned int milliseconds) {
 		if (!flag && milliseconds) {
 			struct timespec tv;
 			clock_gettime(CLOCK_REALTIME, &tv);
+
 			tv.tv_sec += milliseconds / 1000;
 			tv.tv_nsec += (milliseconds % 1000) * 1000000L;
+			//Adjust for overflow
+			tv.tv_sec += tv.tv_nsec / 1000000000L;
+			tv.tv_nsec %= 1000000000L;
+
 			rc = pthread_cond_timedwait(&condition, &mutex, &tv);
 		}
 		auto value = flag;
