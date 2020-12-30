@@ -24,8 +24,8 @@ void milsToSpec(unsigned int milliseconds, timespec &ts) {
 	ts.tv_nsec = (milliseconds - (ts.tv_sec * 1000)) * 1000000L;
 }
 
-unsigned long specToMils(timespec &ts) {
-	return ((ts.tv_sec * 1000) + (ts.tv_nsec / 1000000L));
+long long specToMils(timespec &ts) {
+	return (((long long) ts.tv_sec * 1000) + (ts.tv_nsec / 1000000L));
 }
 
 }  // namespace
