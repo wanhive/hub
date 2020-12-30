@@ -24,7 +24,7 @@ void milsToSpec(unsigned int milliseconds, timespec &ts) {
 	ts.tv_nsec = (milliseconds - (ts.tv_sec * 1000)) * 1000000L;
 }
 
-unsigned int specToMils(timespec &ts) {
+unsigned long specToMils(timespec &ts) {
 	return ((ts.tv_sec * 1000) + (ts.tv_nsec / 1000000L));
 }
 
@@ -59,9 +59,14 @@ bool Timer::hasTimedOut(unsigned int milliseconds,
 void Timer::sleep(unsigned int milliseconds, unsigned int nanoseconds) noexcept {
 	struct timespec tv;
 	//These many seconds
-	tv.tv_sec = (milliseconds) / 1000;
+	tv.tv_sec = milliseconds / 1000;
 	//These many nanoseconds
-	tv.tv_nsec = (milliseconds % 1000) * 1000000 + nanoseconds;
+	auto nsec = (unsigned long long) ((milliseconds % 1000) * 1000000UL)
+			+ nanoseconds;
+	//Adjust for nanoseconds overflow
+	tv.tv_sec += (nsec / 1000000000L);
+	tv.tv_nsec = (nsec % 1000000000L);
+
 	//Sleep might get interrupted due to signal delivery
 	while (nanosleep(&tv, &tv) == -1 && errno == EINTR) {
 		//Loop if interrupted by a signal

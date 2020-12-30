@@ -76,8 +76,8 @@ void Signal::pause() noexcept {
 
 bool Signal::timedWait(unsigned int milliseconds) {
 	struct timespec tv;
-	tv.tv_sec = (milliseconds) / 1000;
-	tv.tv_nsec = (milliseconds % 1000) * 1000000;
+	tv.tv_sec = milliseconds / 1000;
+	tv.tv_nsec = (milliseconds % 1000) * 1000000L;
 
 	sigset_t ss;
 	fill(&ss);
@@ -94,8 +94,8 @@ bool Signal::timedWait(unsigned int milliseconds) {
 
 bool Signal::timedwait(unsigned int milliseconds, int signum) {
 	struct timespec tv;
-	tv.tv_sec = (milliseconds) / 1000;
-	tv.tv_nsec = (milliseconds % 1000) * 1000000;
+	tv.tv_sec = milliseconds / 1000;
+	tv.tv_nsec = (milliseconds % 1000) * 1000000L;
 
 	sigset_t ss;
 	empty(&ss);
