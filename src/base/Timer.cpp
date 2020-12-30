@@ -130,7 +130,8 @@ unsigned long long Timer::currentTime() noexcept {
 	timespec ts;
 	//Cannot fail, return value ignored
 	clock_gettime(CLOCK_MONOTONIC, &ts);
-	return (ts.tv_sec * MS_IN_SEC + ts.tv_nsec / NS_IN_MS);
+	return (((unsigned long long) ts.tv_sec * MS_IN_SEC)
+			+ (ts.tv_nsec / NS_IN_MS));
 }
 
 double Timer::difference(unsigned long long start,
