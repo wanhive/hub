@@ -43,12 +43,15 @@ public:
 	//Generate a 64-bit seed from current time for seeding the RNGs
 	static unsigned long long timeSeed() noexcept;
 
-	//Create a timer file descriptor
+	//Creates a timer file descriptor
 	static int openTimerfd(bool blocking = false);
-	//Set expiration and periodic interval in milliseconds, set <expiration> to 0 to disable
+	/*
+	 * Sets expiration and periodic interval in milliseconds.
+	 * Setting <expiration> to zero(0) will disable the timer.
+	 */
 	static void setTimerfd(int fd, unsigned int expiration,
 			unsigned int interval);
-	//Returns current settings of a timer file descriptor in milliseconds
+	//Returns the settings of a timer file descriptor in milliseconds
 	static void getTimerfdSettings(int fd, unsigned int &expiration,
 			unsigned int &interval);
 	//Closes a timer file descriptor
@@ -56,17 +59,11 @@ public:
 private:
 	//Wrapper for clock_gettime, returns current time
 	static unsigned long long currentTime() noexcept;
-	//Returns the difference of microsecond precision <start> and <end> values in seconds
+	//Returns the difference of the microsecond precision values in seconds
 	static double difference(unsigned long long start,
 			unsigned long long end) noexcept;
 private:
-	//Microseconds in a Second
-	static constexpr unsigned long MS_IN_SEC = 1000000;
-	//Nanoseconds in a Microsecond
-	static constexpr unsigned int NS_IN_MS = 1000;
-	//Microseconds in Milliseconds
-	static constexpr unsigned int MS_IN_MILS = 1000;
-	//Holds the current time with microseconds resolution, sufficient for 300,000 years :-)
+	//Time in microseconds, sufficient for 300,000 years
 	unsigned long long t;
 };
 

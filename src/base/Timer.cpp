@@ -19,13 +19,26 @@
 #include <sys/timerfd.h>
 
 namespace {
+//Nanoseconds in a Second
+constexpr long NS_IN_SEC = 1000000000L;
+//Microseconds in a Second
+constexpr long MS_IN_SEC = 1000000L;
+//Milliseconds in a Second
+constexpr long MILS_IN_SEC = 1000L;
+//Nanoseconds in a Microsecond
+constexpr long NS_IN_MS = (NS_IN_SEC / MS_IN_SEC);
+//Nanoseconds in a Millisecond
+constexpr long NS_IN_MILS = (NS_IN_SEC / MILS_IN_SEC);
+//Microseconds in a Millisecond
+constexpr long MS_IN_MILS = (MS_IN_SEC / MILS_IN_SEC);
+
 void milsToSpec(unsigned int milliseconds, timespec &ts) {
-	ts.tv_sec = milliseconds / 1000;
-	ts.tv_nsec = (milliseconds - (ts.tv_sec * 1000)) * 1000000L;
+	ts.tv_sec = milliseconds / MILS_IN_SEC;
+	ts.tv_nsec = (milliseconds - (ts.tv_sec * MILS_IN_SEC)) * NS_IN_MILS;
 }
 
 long long specToMils(timespec &ts) {
-	return (((long long) ts.tv_sec * 1000) + (ts.tv_nsec / 1000000L));
+	return (((long long) ts.tv_sec * MILS_IN_SEC) + (ts.tv_nsec / NS_IN_MILS));
 }
 
 }  // namespace
@@ -52,20 +65,20 @@ bool Timer::hasTimedOut(unsigned int milliseconds,
 		unsigned int nanoseconds) const noexcept {
 	auto mark = currentTime();
 	auto diff = ((unsigned long long) milliseconds) * MS_IN_MILS
-			+ nanoseconds / NS_IN_MS;
+			+ (nanoseconds / NS_IN_MS);
 	return (mark < t) || ((mark - t) > diff);
 }
 
 void Timer::sleep(unsigned int milliseconds, unsigned int nanoseconds) noexcept {
 	struct timespec tv;
 	//These many seconds
-	tv.tv_sec = milliseconds / 1000;
+	tv.tv_sec = milliseconds / MILS_IN_SEC;
 	//These many nanoseconds
-	auto nsec = (unsigned long long) ((milliseconds % 1000) * 1000000UL)
+	auto nsec = (unsigned long long) ((milliseconds % MILS_IN_SEC) * NS_IN_MILS)
 			+ nanoseconds;
 	//Adjust for nanoseconds overflow
-	tv.tv_sec += (nsec / 1000000000L);
-	tv.tv_nsec = (nsec % 1000000000L);
+	tv.tv_sec += (nsec / NS_IN_SEC);
+	tv.tv_nsec = (nsec % NS_IN_SEC);
 
 	//Sleep might get interrupted due to signal delivery
 	while (nanosleep(&tv, &tv) == -1 && errno == EINTR) {
