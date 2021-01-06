@@ -226,10 +226,10 @@ void Node::print() noexcept {
 	fprintf(stderr, "FINGER TABLE [STATUS= %s]:\n",
 			(isStable() ? "STABLE" : "UNSTABLE"));
 	fprintf(stderr, "------------------------------------\n");
-	fprintf(stderr, "SN    START  CURRENT  HISTORY   CONN\n");
+	fprintf(stderr, " SN    START  CURRENT  HISTORY   CONN\n");
 	for (unsigned int i = 0; i < TABLESIZE; ++i) {
 		auto f = getFinger(i);
-		fprintf(stderr, "%2u%9u%9u%9u   %4s\n", (i + 1), f->getStart(),
+		fprintf(stderr, "%3u%9u%9u%9u   %4s\n", (i + 1), f->getStart(),
 				f->getId(), f->getOldId(), (f->isConnected() ? "Y" : "N"));
 	}
 	fprintf(stderr, "\n=======================================\n");

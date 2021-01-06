@@ -145,9 +145,9 @@ bool Configuration::print(FILE *stream, const char *name) noexcept {
 	}
 
 	if (name) {
-		char tBuf[32];
-		memset(tBuf, 0, 32);
-		Timer::refractorTime(tBuf, 32);
+		char tBuf[64];
+		memset(tBuf, 0, sizeof(tBuf));
+		Timer::refractorTime(tBuf, sizeof(tBuf));
 		//Print the header
 		fprintf(stream, "#Configuration %s auto-generated on %s\n", name, tBuf);
 	}

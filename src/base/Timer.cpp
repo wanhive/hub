@@ -88,9 +88,10 @@ void Timer::sleep(unsigned int milliseconds, unsigned int nanoseconds) noexcept 
 
 size_t Timer::refractorTime(char *buffer, size_t size,
 		const char *format) noexcept {
-	time_t t = time(nullptr);
 	format = format ? format : "%Y-%m-%d %H:%M:%S";
-	return strftime(buffer, size, format, localtime(&t));
+	time_t timep = time(nullptr);
+	struct tm t;
+	return strftime(buffer, size, format, localtime_r(&timep, &t));
 }
 
 unsigned long long Timer::timeSeed() noexcept {

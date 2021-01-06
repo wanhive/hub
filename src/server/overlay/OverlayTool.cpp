@@ -315,9 +315,9 @@ void OverlayTool::describeCmd() {
 					"FINGER TABLE [STATUS= %s]:\n", info.uid, info.predecessor,
 					info.successor, (info.stable ? "STABLE" : "UNSTABLE"));
 			fprintf(stdout, "------------------------------------\n");
-			fprintf(stdout, "SN    START  CURRENT  HISTORY   CONN\n");
-			for (uint8_t i = 0; i < info.routes; i++) {
-				fprintf(stdout, "%2d%9llu%9llu%9llu%7s\n", (i + 1),
+			fprintf(stdout, " SN    START  CURRENT  HISTORY   CONN\n");
+			for (unsigned int i = 0; i < info.routes; i++) {
+				fprintf(stdout, "%3u%9llu%9llu%9llu%7s\n", (i + 1),
 						info.route[i].start, info.route[i].current,
 						info.route[i].old,
 						(info.route[i].connected ? "Y" : "N"));

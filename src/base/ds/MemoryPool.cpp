@@ -69,7 +69,7 @@ void MemoryPool::initialize(unsigned int size, unsigned int count) {
 unsigned int MemoryPool::destroy() noexcept {
 	auto ret = _allocated;
 	if (_bucket) {
-		memset(_bucket, 0, _capacity * _blockSize);
+		memset(_bucket, 0, ((size_t) _capacity) * _blockSize);
 	}
 	free(_bucket);
 	_bucket = nullptr;
