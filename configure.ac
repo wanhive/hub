@@ -49,7 +49,7 @@ AC_FUNC_LSTAT_FOLLOWS_SLASHED_SYMLINK
 AC_FUNC_MALLOC
 AC_FUNC_REALLOC
 AC_FUNC_STRERROR_R
-AC_CHECK_FUNCS([clock_gettime getcwd memmove memset mkdir select socket strcasecmp strchr strdup strrchr])
+AC_CHECK_FUNCS([clock_gettime getcwd localtime_r memmove memset mkdir select socket strcasecmp strchr strdup strrchr])
 
 # Conditionally build the additional packages
 AC_ARG_WITH([executables],
