@@ -27,10 +27,10 @@ namespace wanhive {
 template<typename X, bool ATOMIC = false> class CircularBuffer {
 public:
 	CircularBuffer() noexcept;
-	//Throws Exception
 	CircularBuffer(unsigned int size);
 	~CircularBuffer();
-	//Initializes a buffer to a particular size, throws Exception
+
+	//Initializes the buffer to a particular size
 	void initialize(unsigned int size);
 	//Returns max capacity of this buffer
 	unsigned int capacity() const noexcept;

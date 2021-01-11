@@ -26,10 +26,10 @@ namespace wanhive {
 template<typename X> class Buffer {
 public:
 	Buffer() noexcept;
-	//Throws Exception
 	Buffer(unsigned int size);
 	~Buffer();
-	//Initializes a buffer to a particular size, Throws Exception
+
+	//Initializes the buffer to a particular size
 	void initialize(unsigned int size);
 	//Returns buffer's capacity.
 	unsigned int capacity() const noexcept;

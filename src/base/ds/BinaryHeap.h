@@ -42,6 +42,7 @@ public:
 	BinaryHeap(unsigned int size);
 	~BinaryHeap();
 
+	//Initializes the heap to a particular size
 	void initialize(unsigned int size);
 	//Clears the heap (doesn't clean up the contents)
 	void clear() noexcept;
