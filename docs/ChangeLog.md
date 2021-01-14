@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 
 - Use localtime_r in place of localtime for thread safety.
+- Use type casts for narrow conversions.
 
 ## [2.1.0] - 2021-01-01
 
