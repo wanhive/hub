@@ -6,7 +6,7 @@ Follow these guidelines while making changes in the project's repository.
 
 Submit all additions, issues, suggestions, and updates via the repository. Clearly explain the problem being addressed.
 
-You agree to license your "original work" under a compatible permissive license. You may assign the copyright to Wanhive Systems Private Limited at your convenience. Find the list of recommended permissive licenses below:
+You agree to license your "original work" under a compatible permissive license. Find the list of recommended permissive licenses below:
 
 - Apache License 2.0
 - BSD 2-clause license
