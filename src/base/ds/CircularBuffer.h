@@ -217,6 +217,10 @@ template<typename X, bool ATOMIC> void wanhive::CircularBuffer<X, ATOMIC>::initi
 		_capacity = size ? (size - 1) : size;
 		clear();
 	} catch (...) {
+		storage = nullptr;
+		_size = 0;
+		_capacity = 0;
+		clear();
 		throw Exception(EX_ALLOCFAILED);
 	}
 }

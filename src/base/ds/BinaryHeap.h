@@ -132,6 +132,9 @@ void wanhive::BinaryHeap<X, CMPFN, BHFN>::initialize(unsigned int size) {
 		_capacity = size;
 		_size = 0;
 	} catch (...) {
+		storage = nullptr;
+		_capacity = 0;
+		_size = 0;
 		throw Exception(EX_ALLOCFAILED);
 	}
 }

@@ -161,6 +161,9 @@ template<typename X> void wanhive::Buffer<X>::initialize(unsigned int size) {
 		_capacity = size;
 		clear();
 	} catch (...) {
+		storage = nullptr;
+		_capacity = 0;
+		clear();
 		throw Exception(EX_ALLOCFAILED);
 	}
 }
