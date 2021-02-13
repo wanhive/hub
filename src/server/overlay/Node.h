@@ -60,7 +60,7 @@ public:
 	//Set this node's successor
 	bool setSuccessor(unsigned int id) noexcept;
 
-	//Is the finger table stable and all changes were committed
+	//Is the finger table in a stable/consistent state
 	bool isStable() const noexcept;
 	//Set finger table's <stable> state
 	void setStable(bool stable) noexcept;

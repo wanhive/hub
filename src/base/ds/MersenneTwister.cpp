@@ -49,7 +49,6 @@ unsigned long MersenneTwister::next() noexcept {
 }
 
 void MersenneTwister::twist() noexcept {
-	//TODO: unroll the loop to remove costly modulo operations
 	for (unsigned int i = 0; i < N; ++i) {
 		auto x = ((mt[i] & UBM) | (mt[(i + 1) % N] & LBM));
 		auto y = (x & 0x1UL) ? ((x >> 1) ^ A) : (x >> 1);

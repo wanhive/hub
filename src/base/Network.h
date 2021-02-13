@@ -62,14 +62,10 @@ public:
 	 */
 	static int accept(int listenfd, SocketAddress &sa, int flags = 0);
 	/*
-	 * Connect to a server, in case connect fails, retry with a fresh socket
-	 * MAN 2  CONNECT: The socket is nonblocking and the  connection  cannot  be  completed  immediately.
-	 * It  is  possible  to select(2)  or  poll(2)  for  completion  by  selecting the socket for writing.
-	 * After select(2) indicates writability, use getsockopt(2) to
-	 * read the SO_ERROR option at level SOL_SOCKET to determine whether  connect()
-	 * completed  successfully  (SO_ERROR is zero) or unsuccessfully
-	 * (SO_ERROR is one of the usual error codes listed here, explaining the reason for the failure).
-	 *
+	 * Wrapper for the system call connect(2).
+	 * Connects to a server, if the call fails then retry with a new socket.
+	 * Returns 0 on success, -1 if socket is nonblocking and the connection
+	 * cannot be completed immediately.
 	 */
 	static int connect(int sfd, SocketAddress &sa);
 	//Wrapper for the shutdown(2) system call
@@ -99,21 +95,29 @@ public:
 	/**
 	 * Blocking IO utilities
 	 */
+
+	/*
+	 * Writes <length> bytes from the buffer <buf> to the socket <sockfd>.
+	 * Returns the actual number of bytes transferred.
+	 */
 	static size_t sendStream(int sockfd, const unsigned char *buf,
 			size_t length);
-	//If <strict> then throws exception if the connection closes or times out mid-way
+	/*
+	 * Reads at most <length> bytes from the socket <sockfd> into the buffer <buf>.
+	 * If <strict> is truew then throws exception on connection close or timeout.
+	 * Returns the actual number of bytes transferred.
+	 */
 	static size_t receiveStream(int sockfd, unsigned char *buf, size_t length,
 			bool strict = true);
 	/*
-	 * Set send and receive time-outs for blocking sockets
-	 * If the timeout is 0 then the socket blocks forever
+	 * Set send and receive time-outs for blocking sockets.
+	 * If the timeout value is 0 then the socket blocks forever.
 	 */
 	static void setReceiveTimeout(int sfd, int milliseconds);
 	static void setSendTimeout(int sfd, int milliseconds);
 	/*
-	 * Combines the above two functions, both timeout values
-	 * are measured in milliseconds. If the timeout is negative,
-	 * then it is ignored.
+	 * Combines the previous two functions. Both timeout values are measured
+	 * in milliseconds. Negative timeout value is ignored.
 	 */
 	static void setSocketTimeout(int sfd, int recvTimeout, int sendTimeout);
 private:

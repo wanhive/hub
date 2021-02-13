@@ -100,7 +100,7 @@ unsigned int OverlayProtocol::processDescribeResponse(
 
 bool OverlayProtocol::describeRequest(uint64_t id, OverlayHubInfo &info) {
 	/*
-	 * HEADER: SRC=0, DEST=D, ....CMD=0, QLF=127, AQLF=0/1/127
+	 * HEADER: SRC=0, DEST=X, ....CMD=0, QLF=127, AQLF=0/1/127
 	 * BODY: 0 bytes in Request; 84+25*Node::TABLESIZE bytes in Response
 	 * TOTAL: 32 bytes in Request; 116+25*Node::TABLESIZE bytes in Response
 	 */
@@ -133,7 +133,7 @@ unsigned int OverlayProtocol::processGetPredecessorResponse(
 
 bool OverlayProtocol::getPredecessorRequest(uint64_t id, uint64_t &key) {
 	/*
-	 * HEADER: SRC=0, DEST=D, ....CMD=3, QLF=0, AQLF=0/1/127
+	 * HEADER: SRC=0, DEST=X, ....CMD=3, QLF=0, AQLF=0/1/127
 	 * BODY: 0 bytes in Request; 8 bytes as <predecessor> in Response
 	 * TOTAL: 32 bytes in Request; 32+8=40 bytes in Response
 	 */
@@ -171,7 +171,7 @@ unsigned int OverlayProtocol::processSetPredecessorResponse(
 
 bool OverlayProtocol::setPredecessorRequest(uint64_t id, uint64_t key) {
 	/*
-	 * HEADER: SRC=0, DEST=D, ....CMD=3, QLF=1, AQLF=0/1/127
+	 * HEADER: SRC=0, DEST=X, ....CMD=3, QLF=1, AQLF=0/1/127
 	 * BODY: 8 bytes as <predecessor> in Request; 8 bytes as <predecessor> in Response
 	 * TOTAL: 32+8=40 bytes
 	 */
@@ -204,7 +204,7 @@ unsigned int OverlayProtocol::processGetSuccessorResponse(
 
 bool OverlayProtocol::getSuccessorRequest(uint64_t id, uint64_t &key) {
 	/*
-	 * HEADER: SRC=0, DEST=D, ....CMD=3, QLF=2, AQLF=0/1/127
+	 * HEADER: SRC=0, DEST=X, ....CMD=3, QLF=2, AQLF=0/1/127
 	 * BODY: 0 bytes in Request; 8 bytes as <successor> in Response
 	 * TOTAL: 32 bytes in Request; 32+8=40 bytes in Response
 	 */
@@ -241,7 +241,7 @@ unsigned int OverlayProtocol::processSetSuccessorResponse(uint64_t key) noexcept
 
 bool OverlayProtocol::setSuccessorRequest(uint64_t id, uint64_t key) {
 	/*
-	 * HEADER: SRC=0, DEST=D, ....CMD=3, QLF=3, AQLF=0/1/127
+	 * HEADER: SRC=0, DEST=X, ....CMD=3, QLF=3, AQLF=0/1/127
 	 * BODY: 8 bytes as <successor> in Request; 8 bytes as <successor> in response
 	 * TOTAL: 32+8=40 bytes
 	 */
@@ -284,7 +284,7 @@ unsigned int OverlayProtocol::processGetFingerResponse(uint32_t index,
 bool OverlayProtocol::getFingerRequest(uint64_t id, uint32_t index,
 		uint64_t &key) {
 	/*
-	 * HEADER: SRC=0, DEST=D, ....CMD=3, QLF=4, AQLF=0/1/127
+	 * HEADER: SRC=0, DEST=X, ....CMD=3, QLF=4, AQLF=0/1/127
 	 * BODY: 4 bytes in Request as <index>; 4 bytes as <index> + 8 bytes as <finger> in Response
 	 * TOTAL: 32+4=36 bytes in Request; 32+4+8=44 bytes in Response
 	 */
@@ -326,7 +326,7 @@ unsigned int OverlayProtocol::processSetFingerResponse(uint32_t index,
 bool OverlayProtocol::setFingerRequest(uint64_t id, uint32_t index,
 		uint64_t key) {
 	/*
-	 * HEADER: SRC=0, DEST=D, ....CMD=3, QLF=5, AQLF=0/1/127
+	 * HEADER: SRC=0, DEST=X, ....CMD=3, QLF=5, AQLF=0/1/127
 	 * BODY: 4 bytes as <index> and 8 bytes as <finger> in Request and in Response
 	 * TOTAL: 32+4+8=44 bytes
 	 */
@@ -362,7 +362,7 @@ unsigned int OverlayProtocol::processGetNeighboursResponse(
 bool OverlayProtocol::getNeighboursRequest(uint64_t id, uint64_t &predecessor,
 		uint64_t &successor) {
 	/*
-	 * HEADER: SRC=0, DEST=D, ....CMD=3, QLF=6, AQLF=0/1/127
+	 * HEADER: SRC=0, DEST=X, ....CMD=3, QLF=6, AQLF=0/1/127
 	 * BODY: 0 bytes in REQ; 8 bytes as <predecessor> + 8 bytes as <successor> in Response
 	 * TOTAL: 32 bytes in Request; 32+8+8=48 bytes in Response
 	 */
@@ -392,7 +392,7 @@ unsigned int OverlayProtocol::processNotifyResponse() noexcept {
 
 bool OverlayProtocol::notifyRequest(uint64_t id, uint64_t predecessor) {
 	/*
-	 * HEADER: SRC=0, DEST=D, ....CMD=3, QLF=7, AQLF=0/1/127
+	 * HEADER: SRC=0, DEST=X, ....CMD=3, QLF=7, AQLF=0/1/127
 	 * BODY: 8 bytes as <predecessor> in Request; 0 bytes in Response
 	 * TOTAL: 32+8=40 bytes in Request; 32 bytes in Response
 	 */
@@ -434,7 +434,7 @@ unsigned int OverlayProtocol::processFindSuccessorResponse(uint64_t uid,
 bool OverlayProtocol::findSuccessorRequest(uint64_t id, uint64_t uid,
 		uint64_t &key) {
 	/*
-	 * HEADER: SRC=0, DEST=D, ....CMD=4, QLF=0, AQLF=0/1/127
+	 * HEADER: SRC=0, DEST=X, ....CMD=4, QLF=0, AQLF=0/1/127
 	 * BODY: 8 bytes as <id> in Request; 8 bytes as <id> and 8 bytes as <successor> in Response
 	 * TOTAL: 32+8=40 bytes in Request; 32+8+8=48 bytes in Response
 	 */
@@ -460,7 +460,7 @@ unsigned int OverlayProtocol::processPingRequest() noexcept {
 
 bool OverlayProtocol::pingRequest(uint64_t id) {
 	/*
-	 * HEADER: SRC=0, DEST=D, ....CMD=4, QLF=1, AQLF=0/1/127
+	 * HEADER: SRC=0, DEST=X, ....CMD=4, QLF=1, AQLF=0/1/127
 	 * BODY: 0 bytes in Request and Response
 	 * TOTAL: 32 bytes in Request and Response
 	 */
@@ -485,7 +485,7 @@ unsigned int OverlayProtocol::processMapRequest() noexcept {
 
 bool OverlayProtocol::mapRequest(uint64_t id) {
 	/*
-	 * HEADER: SRC=0, DEST=D, ....CMD=4, QLF=2, AQLF=0/1/127
+	 * HEADER: SRC=0, DEST=X, ....CMD=4, QLF=2, AQLF=0/1/127
 	 * BODY: variable in Request; variable in Response
 	 * TOTAL: at least 32 bytes in Request and Response
 	 */

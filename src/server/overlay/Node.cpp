@@ -175,7 +175,6 @@ unsigned int Node::closestPredecessor(unsigned int id,
 
 void Node::join(unsigned int id) noexcept {
 	setPredecessor(0);
-	/*successor = n'.find_successor(n);*/
 	setSuccessor(id);
 }
 

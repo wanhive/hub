@@ -30,7 +30,7 @@ int Network::serverSocket(const char *service, SocketAddress &sa, bool blocking,
 	result = getAddrInfo(nullptr, service, family, type, AI_PASSIVE, protocol);
 
 	/*
-	 * getaddrinfo() returns a list of address structures.
+	 * getaddrinfo(3) returns a list of address structures.
 	 * Try each address until we successfully bind(2).
 	 * If socket(2) (or bind(2)) fails, we (close the socket and)
 	 * try the next address.
@@ -45,7 +45,6 @@ int Network::serverSocket(const char *service, SocketAddress &sa, bool blocking,
 
 		int yes = 1;
 		setsockopt(sfd, SOL_SOCKET, SO_REUSEADDR, &yes, sizeof(int));
-		//setsockopt(sfd, SOL_SOCKET, SO_REUSEPORT, &yes, sizeof(int));
 
 		if (::bind(sfd, rp->ai_addr, rp->ai_addrlen) == 0) {
 			memcpy(&sa.address, rp->ai_addr, rp->ai_addrlen);
@@ -70,7 +69,7 @@ int Network::connectedSocket(const char *name, const char *service,
 	result = getAddrInfo(name, service, family, type, flags, protocol);
 
 	/*
-	 * getaddrinfo() returns a list of address structures.
+	 * getaddrinfo(3) returns a list of address structures.
 	 * Try each address until we successfully connect(2).
 	 * If socket(2) (or connect(2)) fails, we (close the socket and)
 	 * try the next address.
@@ -117,7 +116,7 @@ int Network::socket(const char *name, const char *service, SocketAddress &sa,
 			continue;
 		}
 
-		//store the details of socket
+		//Store the details of socket
 		memcpy(&sa.address, rp->ai_addr, rp->ai_addrlen);
 		sa.length = rp->ai_addrlen;
 		break;
@@ -162,7 +161,7 @@ int Network::accept(int listenfd, SocketAddress &sa, int flags) {
 int Network::connect(int sfd, SocketAddress &sa) {
 	int ret = ::connect(sfd, (sockaddr*) (&sa.address), sa.length);
 	if (ret != -1) {
-		return ret; //=0
+		return ret;
 	} else if (errno == EINPROGRESS) {
 		return -1;
 	} else {

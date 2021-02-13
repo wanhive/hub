@@ -796,7 +796,7 @@ int OverlayHub::handleInvalidRequest(Message *msg) noexcept {
 
 int OverlayHub::handleDescribeNodeRequest(Message *msg) noexcept {
 	/*
-	 * HEADER: SRC=0, DEST=D, ....CMD=0, QLF=127, AQLF=0/1/127
+	 * HEADER: SRC=0, DEST=X, ....CMD=0, QLF=127, AQLF=0/1/127
 	 * BODY: 0 bytes in Request; 84+25*Node::TABLESIZE bytes in Response
 	 * TOTAL: 32 bytes in Request; 116+25*Node::TABLESIZE bytes in Response
 	 */
@@ -876,10 +876,10 @@ int OverlayHub::handleRegistrationRequest(Message *msg) noexcept {
 	msg->setFlags(MSG_TRAP);
 	//-----------------------------------------------------------------
 	/*
-	 * PROXY ESTABLISHMENT
-	 * In case a Proxy Connection with the remote node is being established by the local node,
-	 * we might receive a <ACCEPTED> or a <REJECTED> message over the proxy connection. In such
-	 * case no further processing is needed
+	 * [PROXY ESTABLISHMENT]
+	 * In case a Proxy Connection with the remote node is being established by the
+	 * local node, we might receive a <ACCEPTED> or a <REJECTED> message over the
+	 * proxy connection. In such case no further processing is needed
 	 */
 	if (msg->isType(SOCKET_PROXY) && msg->getStatus() != WH_DHT_AQLF_REQUEST) {
 		msg->setDestination(origin);
@@ -920,17 +920,18 @@ int OverlayHub::handleRegistrationRequest(Message *msg) noexcept {
 
 int OverlayHub::handleGetKeyRequest(Message *msg) noexcept {
 	/*
-	 * HEADER: SRC=0, DEST=D, ....CMD=1, QLF=1, AQLF=0/1/127
+	 * HEADER: SRC=0, DEST=X, ....CMD=1, QLF=1, AQLF=0/1/127
 	 * BODY: 512/8=64 Bytes in Request (optional), (512/8)*2=128 Bytes in Response
 	 * TOTAL: 32+64=96 bytes in Request; 32+128=160 bytes in Response
 	 */
 	auto origin = msg->getOrigin();
 	//-----------------------------------------------------------------
 	/*
-	 * In case a Proxy Connection with the remote node is being established by the local node,
-	 * we might receive a nonce from the remote node (this call always succeeds) if such request
-	 * was made (to ensure security). In such case send a registration request to complete the process.
-	 * [send getKey -> receive nonce -> send Registration request -> activate proxy]
+	 * [PROXY ESTABLISHMENT]
+	 * In case a Proxy Connection with the remote node is being established by
+	 * the local node, we might receive a nonce from the remote node if such a
+	 * request was made. Send a registration request to complete the process.
+	 * [GetKey request -> receive nonce -> Registration request -> activate]
 	 */
 	if (msg->isType(SOCKET_PROXY) && msg->getStatus() != WH_DHT_AQLF_REQUEST) {
 		//Check message integrity
@@ -998,7 +999,7 @@ int OverlayHub::handleGetKeyRequest(Message *msg) noexcept {
 
 int OverlayHub::handleFindRootRequest(Message *msg) noexcept {
 	/*
-	 * HEADER: SRC=0, DEST=D, ....CMD=1, QLF=2, AQLF=0/1/127
+	 * HEADER: SRC=0, DEST=X, ....CMD=1, QLF=2, AQLF=0/1/127
 	 * BODY: 8 bytes as <id> in Request; 8 bytes as <id> and 8 bytes as <successor> in Response
 	 * TOTAL: 32+8=40 bytes in Request; 32+8+8=48 bytes in Response
 	 */
@@ -1066,7 +1067,7 @@ int OverlayHub::handleFindRootRequest(Message *msg) noexcept {
 
 int OverlayHub::handleBootstrapRequest(Message *msg) noexcept {
 	/*
-	 * HEADER: SRC=0, DEST=D, ....CMD=1, QLF=3, AQLF=0/1/127
+	 * HEADER: SRC=0, DEST=X, ....CMD=1, QLF=3, AQLF=0/1/127
 	 * BODY: 0 in Request; 4 bytes as count + 8*NODECACHE_SIZE bytes as IDs in Response
 	 * TOTAL: 32 bytes in Request; 32+4+8*NODECACHE_SIZE bytes in Response
 	 */
@@ -1100,7 +1101,7 @@ int OverlayHub::handleBootstrapRequest(Message *msg) noexcept {
 //=================================================================
 int OverlayHub::handlePublishRequest(Message *msg) noexcept {
 	/*
-	 * HEADER: SRC=0, DEST=D, ....CMD=2, QLF=0, AQLF=0/1/127
+	 * HEADER: SRC=0, DEST=X, ....CMD=2, QLF=0, AQLF=0/1/127
 	 * BODY: variable in Request; no Response
 	 * TOTAL: at least 32 bytes in Request; no Response
 	 */
@@ -1126,7 +1127,7 @@ int OverlayHub::handlePublishRequest(Message *msg) noexcept {
 
 int OverlayHub::handleSubscribeRequest(Message *msg) noexcept {
 	/*
-	 * HEADER: SRC=0, DEST=D, ....CMD=2, QLF=1, AQLF=0/1/127
+	 * HEADER: SRC=0, DEST=X, ....CMD=2, QLF=1, AQLF=0/1/127
 	 * BODY: 0 in Request; 0 in Response
 	 * TOTAL: 32 bytes in Request; 32 bytes in Response
 	 */
@@ -1154,7 +1155,7 @@ int OverlayHub::handleSubscribeRequest(Message *msg) noexcept {
 
 int OverlayHub::handleUnsubscribeRequest(Message *msg) noexcept {
 	/*
-	 * HEADER: SRC=0, DEST=D, ....CMD=2, QLF=2, AQLF=0/1/127
+	 * HEADER: SRC=0, DEST=X, ....CMD=2, QLF=2, AQLF=0/1/127
 	 * BODY: 0 in Request; 0 in Response
 	 * TOTAL: 32 bytes in Request; 32 bytes in Response
 	 */
@@ -1179,7 +1180,7 @@ int OverlayHub::handleUnsubscribeRequest(Message *msg) noexcept {
 //=================================================================
 int OverlayHub::handleGetPredecessorRequest(Message *msg) noexcept {
 	/*
-	 * HEADER: SRC=0, DEST=D, ....CMD=3, QLF=0, AQLF=0/1/127
+	 * HEADER: SRC=0, DEST=X, ....CMD=3, QLF=0, AQLF=0/1/127
 	 * BODY: 0 bytes in Request; 8 bytes as <predecessor> in Response
 	 * TOTAL: 32 bytes in Request; 32+8=40 bytes in Response
 	 */
@@ -1195,7 +1196,7 @@ int OverlayHub::handleGetPredecessorRequest(Message *msg) noexcept {
 
 int OverlayHub::handleSetPredecessorRequest(Message *msg) noexcept {
 	/*
-	 * HEADER: SRC=0, DEST=D, ....CMD=3, QLF=1, AQLF=0/1/127
+	 * HEADER: SRC=0, DEST=X, ....CMD=3, QLF=1, AQLF=0/1/127
 	 * BODY: 8 bytes as <predecessor> in Request; 8 bytes as <predecessor> in Response
 	 * TOTAL: 32+8=40 bytes
 	 */
@@ -1219,7 +1220,7 @@ int OverlayHub::handleSetPredecessorRequest(Message *msg) noexcept {
 
 int OverlayHub::handleGetSuccessorRequest(Message *msg) noexcept {
 	/*
-	 * HEADER: SRC=0, DEST=D, ....CMD=3, QLF=2, AQLF=0/1/127
+	 * HEADER: SRC=0, DEST=X, ....CMD=3, QLF=2, AQLF=0/1/127
 	 * BODY: 0 bytes in Request; 8 bytes as <successor> in Response
 	 * TOTAL: 32 bytes in Request; 32+8=40 bytes in Response
 	 */
@@ -1235,7 +1236,7 @@ int OverlayHub::handleGetSuccessorRequest(Message *msg) noexcept {
 
 int OverlayHub::handleSetSuccessorRequest(Message *msg) noexcept {
 	/*
-	 * HEADER: SRC=0, DEST=D, ....CMD=3, QLF=3, AQLF=0/1/127
+	 * HEADER: SRC=0, DEST=X, ....CMD=3, QLF=3, AQLF=0/1/127
 	 * BODY: 8 bytes as <successor> in Request; 8 bytes as <successor> in response
 	 * TOTAL: 32+8=40 bytes
 	 */
@@ -1259,7 +1260,7 @@ int OverlayHub::handleSetSuccessorRequest(Message *msg) noexcept {
 
 int OverlayHub::handleGetFingerRequest(Message *msg) noexcept {
 	/*
-	 * HEADER: SRC=0, DEST=D, ....CMD=3, QLF=4, AQLF=0/1/127
+	 * HEADER: SRC=0, DEST=X, ....CMD=3, QLF=4, AQLF=0/1/127
 	 * BODY: 4 bytes in Request as <index>; 4 bytes as <index> + 8 bytes as <finger> in Response
 	 * TOTAL: 32+4=36 bytes in Request; 32+4+8=44 bytes in Response
 	 */
@@ -1277,7 +1278,7 @@ int OverlayHub::handleGetFingerRequest(Message *msg) noexcept {
 
 int OverlayHub::handleSetFingerRequest(Message *msg) noexcept {
 	/*
-	 * HEADER: SRC=0, DEST=D, ....CMD=3, QLF=5, AQLF=0/1/127
+	 * HEADER: SRC=0, DEST=X, ....CMD=3, QLF=5, AQLF=0/1/127
 	 * BODY: 4 bytes as <index> and 8 bytes as <finger> in Request and in Response
 	 * TOTAL: 32+4+8=44 bytes
 	 */
@@ -1303,7 +1304,7 @@ int OverlayHub::handleSetFingerRequest(Message *msg) noexcept {
 
 int OverlayHub::handleGetNeighboursRequest(Message *msg) noexcept {
 	/*
-	 * HEADER: SRC=0, DEST=D, ....CMD=3, QLF=6, AQLF=0/1/127
+	 * HEADER: SRC=0, DEST=X, ....CMD=3, QLF=6, AQLF=0/1/127
 	 * BODY: 0 bytes in REQ; 8 bytes as <predecessor> + 8 bytes as <successor> in Response
 	 * TOTAL: 32 bytes in Request; 32+8+8=48 bytes in Response
 	 */
@@ -1320,7 +1321,7 @@ int OverlayHub::handleGetNeighboursRequest(Message *msg) noexcept {
 
 int OverlayHub::handleNotifyRequest(Message *msg) noexcept {
 	/*
-	 * HEADER: SRC=0, DEST=D, ....CMD=3, QLF=7, AQLF=0/1/127
+	 * HEADER: SRC=0, DEST=X, ....CMD=3, QLF=7, AQLF=0/1/127
 	 * BODY: 8 bytes as <predecessor> in Request; 0 bytes in Response
 	 * TOTAL: 32+8=40 bytes in Request; 32 bytes in Response
 	 */
@@ -1336,7 +1337,7 @@ int OverlayHub::handleNotifyRequest(Message *msg) noexcept {
 //=================================================================
 int OverlayHub::handleFindSuccesssorRequest(Message *msg) noexcept {
 	/*
-	 * HEADER: SRC=0, DEST=D, ....CMD=4, QLF=0, AQLF=0/1/127
+	 * HEADER: SRC=0, DEST=X, ....CMD=4, QLF=0, AQLF=0/1/127
 	 * BODY: 8 bytes as <id> in Request; 8 bytes as <id> and 8 bytes as <successor> in Response
 	 * TOTAL: 32+8=40 bytes in Request; 32+8+8=48 bytes in Response
 	 */
@@ -1373,7 +1374,7 @@ int OverlayHub::handleFindSuccesssorRequest(Message *msg) noexcept {
 
 int OverlayHub::handlePingNodeRequest(Message *msg) noexcept {
 	/*
-	 * HEADER: SRC=0, DEST=D, ....CMD=4, QLF=1, AQLF=0/1/127
+	 * HEADER: SRC=0, DEST=X, ....CMD=4, QLF=1, AQLF=0/1/127
 	 * BODY: 0 bytes in Request and Response
 	 * TOTAL: 32 bytes in Request and Response
 	 */
@@ -1396,7 +1397,7 @@ int OverlayHub::handlePingNodeRequest(Message *msg) noexcept {
 
 int OverlayHub::handleMapRequest(Message *msg) noexcept {
 	/*
-	 * HEADER: SRC=0, DEST=D, ....CMD=4, QLF=2, AQLF=0/1/127
+	 * HEADER: SRC=0, DEST=X, ....CMD=4, QLF=2, AQLF=0/1/127
 	 * BODY: variable in Request; variable in Response
 	 * TOTAL: at least 32 bytes in Request and Response
 	 */
@@ -1607,7 +1608,7 @@ bool OverlayHub::isExternalNode(unsigned long long uid) noexcept {
 
 unsigned int OverlayHub::mapKey(unsigned long long key) noexcept {
 	if (key > (MAX_ID + MAX_NODES)) {
-		//Mix a little to take the higher bits into account
+		//Mix a little bit to take the higher bits into account
 		return static_cast<unsigned int>(Twiddler::mix(key) & MAX_ID);
 	} else {
 		return static_cast<unsigned int>(key & MAX_ID);

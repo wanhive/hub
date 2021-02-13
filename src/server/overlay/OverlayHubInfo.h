@@ -39,8 +39,8 @@ struct OverlayHubInfo {
 	 */
 	unsigned long long predecessor;
 	unsigned long long successor;
-	bool stable; //is the local routing table in stable state
-	unsigned int routes; //number of routing table entries
+	bool stable; //Is the routing table in a stable state
+	unsigned int routes; //Number of routing table entries
 	struct {
 		unsigned long long start;
 		unsigned long long current;

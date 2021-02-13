@@ -40,7 +40,7 @@ unsigned int Protocol::processIdentificationResponse(unsigned int &saltLength,
 bool Protocol::identificationRequest(uint64_t id, uint64_t uid,
 		const unsigned char *nonce, unsigned int nonceLength) {
 	/*
-	 * HEADER: SRC=<identity>, DEST=D, ....CMD=0, QLF=1, AQLF=0/1/127
+	 * HEADER: SRC=<identity>, DEST=X, ....CMD=0, QLF=1, AQLF=0/1/127
 	 * BODY: variable in Request and Response
 	 * TOTAL: at least 32 bytes in Request and Response
 	 */
@@ -62,7 +62,7 @@ unsigned int Protocol::processAuthenticationResponse(unsigned int &length,
 bool Protocol::authenticationRequest(uint64_t id, const unsigned char *proof,
 		unsigned int length) {
 	/*
-	 * HEADER: SRC=0, DEST=D, ....CMD=0, QLF=2, AQLF=0/1/127
+	 * HEADER: SRC=0, DEST=X, ....CMD=0, QLF=2, AQLF=0/1/127
 	 * BODY: variable in Request and Response
 	 * TOTAL: at least 32 bytes in Request and Response
 	 */
@@ -107,7 +107,7 @@ unsigned int Protocol::processGetKeyResponse(Digest *hc) noexcept {
 
 bool Protocol::getKeyRequest(uint64_t id, Digest *hc, bool verify) {
 	/*
-	 * HEADER: SRC=0, DEST=D, ....CMD=1, QLF=1, AQLF=0/1/127
+	 * HEADER: SRC=0, DEST=X, ....CMD=1, QLF=1, AQLF=0/1/127
 	 * BODY: 512/8=64 Bytes in Request (optional), (512/8)*2=128 Bytes in Response
 	 * TOTAL: 32+64=96 bytes in Request; 32+128=160 bytes in Response
 	 */
@@ -127,7 +127,7 @@ unsigned int Protocol::processFindRootResponse(uint64_t uid,
 
 bool Protocol::findRootRequest(uint64_t id, uint64_t uid, uint64_t &root) {
 	/*
-	 * HEADER: SRC=0, DEST=D, ....CMD=1, QLF=2, AQLF=0/1/127
+	 * HEADER: SRC=0, DEST=X, ....CMD=1, QLF=2, AQLF=0/1/127
 	 * BODY: 8 bytes as <id> in Request; 8 bytes as <id> and 8 bytes as <successor> in Response
 	 * TOTAL: 32+8=40 bytes in Request; 32+8+8=48 bytes in Response
 	 */
@@ -166,7 +166,7 @@ unsigned int Protocol::processBootstrapResponse(uint64_t keys[],
 
 bool Protocol::bootstrapRequest(uint64_t id, uint64_t keys[], uint32_t &limit) {
 	/*
-	 * HEADER: SRC=0, DEST=D, ....CMD=1, QLF=3, AQLF=0/1/127
+	 * HEADER: SRC=0, DEST=X, ....CMD=1, QLF=3, AQLF=0/1/127
 	 * BODY: 0 in Request; 4 bytes as count + 8*NODECACHE_SIZE bytes as IDs in Response
 	 * TOTAL: 32 bytes in Request; 32+4+8*NODECACHE_SIZE bytes in Response
 	 */
@@ -193,7 +193,7 @@ unsigned int Protocol::createPublishRequest(uint64_t id, uint8_t topic,
 bool Protocol::publishRequest(uint64_t id, uint8_t topic,
 		const unsigned char *payload, unsigned int payloadLength) {
 	/*
-	 * HEADER: SRC=0, DEST=D, ....CMD=2, QLF=0, AQLF=0/1/127
+	 * HEADER: SRC=0, DEST=X, ....CMD=2, QLF=0, AQLF=0/1/127
 	 * BODY: variable in Request; no Response
 	 * TOTAL: at least 32 bytes in Request; no Response
 	 */
@@ -222,7 +222,7 @@ unsigned int Protocol::processSubscribeResponse(uint8_t topic) noexcept {
 
 bool Protocol::subscribeRequest(uint64_t id, uint8_t topic) {
 	/*
-	 * HEADER: SRC=0, DEST=D, ....CMD=2, QLF=1, AQLF=0/1/127
+	 * HEADER: SRC=0, DEST=X, ....CMD=2, QLF=1, AQLF=0/1/127
 	 * BODY: 0 in Request; 0 in Response
 	 * TOTAL: 32 bytes in Request; 32 bytes in Response
 	 */
@@ -251,7 +251,7 @@ unsigned int Protocol::processUnsubscribeResponse(uint8_t topic) noexcept {
 
 bool Protocol::unsubscribeRequest(uint64_t id, uint8_t topic) {
 	/*
-	 * HEADER: SRC=0, DEST=D, ....CMD=2, QLF=2, AQLF=0/1/127
+	 * HEADER: SRC=0, DEST=X, ....CMD=2, QLF=2, AQLF=0/1/127
 	 * BODY: 0 in Request; 0 in Response
 	 * TOTAL: 32 bytes in Request; 32 bytes in Response
 	 */
