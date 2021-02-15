@@ -45,7 +45,7 @@ AppManager::~AppManager() {
 
 }
 
-void AppManager::execute(int argc, char *const*argv) noexcept {
+void AppManager::execute(int argc, char *argv[]) noexcept {
 	if (parseOptions(argc, argv) == 0) {
 		processOptions();
 	}
@@ -79,7 +79,7 @@ void AppManager::printHelp(FILE *stream) noexcept {
 			WH_RELEASE_EMAIL);
 }
 
-int AppManager::parseOptions(int argc, char *const*argv) noexcept {
+int AppManager::parseOptions(int argc, char *argv[]) noexcept {
 	programName = nullptr;
 	menu = false;
 	hubId = (unsigned long long) -1;
@@ -289,9 +289,9 @@ void AppManager::runComponentsTest() noexcept {
 
 	{
 		std::cout << "\n-----SRP STRESS TEST BEGIN-----\n";
-		std::cout << "Group size: " << 2048 << std::endl;
+		std::cout << "Group size: 2048" << std::endl;
 		std::cout << "Hash function: SHA 512" << std::endl;
-		std::cout << "Iterations: " << 300 << std::endl;
+		std::cout << "Iterations: 300" << std::endl;
 		Timer t;
 		Srp::test("alice", (const unsigned char*) "password123",
 				strlen("password123"), 300, SRP_2048, WH_SHA512);

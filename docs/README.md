@@ -1,6 +1,6 @@
 # Introduction
 
-**Wanhive Hub** for secure multimedia based Internet of Things. Use it to create both server and client-side applications.
+**Wanhive Hub** for secure multimedia based Internet of Things. Use it to build both server and client-side applications.
 
 This package is part of the Wanhive IoT Platform.
 
@@ -20,7 +20,6 @@ Wanhive IoT Platform comprises basic building blocks that reduce complexity, cos
 * Message broker service
 * Identification, authentication, and authorization service
 
-
 # Package
 
 This package includes
@@ -36,6 +35,7 @@ This package includes
 
 # Resources
 
+* [CHANGELOG](ChangeLog.md)
 * [CONTRIBUTING](CONTRIBUTING.md)
 * [FAQ](HOWTO-faq.md)
 * [INSTALL](INSTALL.md)

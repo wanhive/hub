@@ -63,7 +63,7 @@ protected:
 	ssize_t write(const iovec *iov, int count);
 	ssize_t write(const void *buf, size_t count);
 private:
-	//Automated UID generation (thread safe)
+	//UID generator (thread safe)
 	static unsigned long long nextUid() noexcept;
 public:
 	//[9223372036854775808, 18446744073709551615] are used as automatic identifiers
@@ -71,7 +71,7 @@ public:
 			((unsigned long long) INT64_MAX) + 1;
 	static constexpr unsigned long long MAX_TMP_ID = UINT64_MAX;
 private:
-	//Counter for the generation of the next uid
+	//Counter for the UID generator
 	static unsigned long long _nextUid;
 	//The unique identifier (UID) of this object
 	unsigned long long uid;

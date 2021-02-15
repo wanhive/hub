@@ -19,8 +19,8 @@
 namespace wanhive {
 /**
  * Reactor pattern implementation (synchronous event demultiplexer and dispatcher)
- * Thread safe at class level
  * Ref: http://www.dre.vanderbilt.edu/~schmidt/PDF/reactor-siemens.pdf
+ * Thread safe at class level
  */
 class Reactor {
 public:

@@ -23,10 +23,10 @@ class AppManager {
 public:
 	AppManager() noexcept;
 	~AppManager();
-	static void execute(int argc, char *const*argv) noexcept;
+	static void execute(int argc, char *argv[]) noexcept;
 private:
 	static void printHelp(FILE *stream) noexcept;
-	static int parseOptions(int argc, char *const*argv) noexcept;
+	static int parseOptions(int argc, char *argv[]) noexcept;
 	static void processOptions() noexcept;
 	//-----------------------------------------------------------------
 	static void executeHub() noexcept;

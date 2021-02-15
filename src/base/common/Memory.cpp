@@ -20,7 +20,7 @@ void* Memory::malloc(size_t size, const char *filename, int linenumber,
 		const char *function) noexcept {
 	auto result = ::malloc(size);
 	if (result == nullptr && size != 0) {
-		WH_FATAL_ERROR_FLF("malloc", filename, linenumber, function);
+		WH_FATAL_ERROR_FLF("Memory::malloc", filename, linenumber, function);
 	}
 	return result;
 }
@@ -36,7 +36,7 @@ void Memory::realloc(void **p, size_t elementSize, size_t count,
 	auto ptr = ::realloc(*p, size);
 
 	if (ptr == nullptr && size != 0) {
-		WH_FATAL_ERROR_FLF("realloc", filename, linenumber, function);
+		WH_FATAL_ERROR_FLF("Memory::realloc", filename, linenumber, function);
 	}
 	*p = ptr;
 }
@@ -45,7 +45,7 @@ char* Memory::strdup(const char *s, const char *filename, int linenumber,
 		const char *function) noexcept {
 	auto ret = ::strdup(s);
 	if (ret == nullptr) {
-		WH_FATAL_ERROR_FLF("strdup", filename, linenumber, function);
+		WH_FATAL_ERROR_FLF("Memory::strdup", filename, linenumber, function);
 	}
 	return ret;
 }
