@@ -31,7 +31,7 @@ This package includes
 ### Recommended packages
 
 * [Wanhive IoT web console](https://github.com/wanhive/webconsole) a web application for the management of users and IoT endpoints.
-* [Wanhive EndPoint](https://github.com/wanhive/endpoint.java) Endpoint development library in the Java programming language.
+* [Wanhive EndPoint](https://github.com/wanhive/endpoint.java) the IoT endpoint development library written in Java.
 
 # Resources
 
