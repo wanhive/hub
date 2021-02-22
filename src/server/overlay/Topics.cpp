@@ -22,7 +22,7 @@ Topics::~Topics() {
 
 }
 
-bool Topics::put(unsigned int topic, Watcher *w) noexcept {
+bool Topics::put(unsigned int topic, const Watcher *w) noexcept {
 	if ((topic < Topic::COUNT) && w) {
 		int ret = 0;
 		unsigned int i = indexes.put( { w, topic }, ret);
@@ -46,9 +46,9 @@ bool Topics::put(unsigned int topic, Watcher *w) noexcept {
 
 Watcher* Topics::get(unsigned int topic, unsigned int index) const noexcept {
 	if (topic < Topic::COUNT) {
-		Watcher *w = nullptr;
+		const Watcher *w = nullptr;
 		if (topics[topic].get(w, index)) {
-			return w;
+			return const_cast<Watcher*>(w);
 		} else {
 			return nullptr;
 		}
@@ -57,7 +57,7 @@ Watcher* Topics::get(unsigned int topic, unsigned int index) const noexcept {
 	}
 }
 
-void Topics::remove(unsigned int topic, Watcher *w) noexcept {
+void Topics::remove(unsigned int topic, const Watcher *w) noexcept {
 	if ((topic < Topic::COUNT) && w) {
 		//Get the iterator to the key
 		unsigned int i = indexes.get( { w, topic });
@@ -78,7 +78,7 @@ void Topics::remove(unsigned int topic, Watcher *w) noexcept {
 		indexes.remove(i);
 
 		//Adjust the index of the replacement
-		Watcher *s = nullptr;
+		const Watcher *s = nullptr;
 		if (!topics[topic].get(s, index)) { //The last entry
 			return;
 		} else {
@@ -88,10 +88,10 @@ void Topics::remove(unsigned int topic, Watcher *w) noexcept {
 	}
 }
 
-bool Topics::contains(unsigned int topic, Watcher *w) const noexcept {
+bool Topics::contains(unsigned int topic, const Watcher *w) const noexcept {
 	if ((topic < Topic::COUNT) && w) {
 		unsigned int index = 0;
-		Watcher *cmp = nullptr;
+		const Watcher *cmp = nullptr;
 
 		//Get the iterator to the key
 		unsigned int i = indexes.get( { w, topic });

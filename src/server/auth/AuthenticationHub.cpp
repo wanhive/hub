@@ -91,7 +91,7 @@ void AuthenticationHub::route(Message *message) noexcept {
 
 int AuthenticationHub::handleIdentificationRequest(Message *message) noexcept {
 	/*
-	 * HEADER: SRC=<identity>, DEST=D, ....CMD=0, QLF=1, AQLF=0/1/127
+	 * HEADER: SRC=<identity>, DEST=X, ....CMD=0, QLF=1, AQLF=0/1/127
 	 * BODY: variable in Request and Response
 	 * TOTAL: at least 32 bytes in Request and Response
 	 */
@@ -127,9 +127,9 @@ int AuthenticationHub::handleIdentificationRequest(Message *message) noexcept {
 
 		if (ctx.salt && ctx.saltLength) {
 			/*
-			 * Obfuscate the failed identification request
-			 * Salt associated with an identity should not tend to change on new
-			 * request, while nonce should look like it was randomly generated.
+			 * Obfuscate the failed identification request. Salt associated
+			 * with an identity should not tend to change on new request.
+			 * Nonce should look like it was randomly generated.
 			 */
 			unsigned int saltLength = ctx.saltLength;
 			unsigned int hostNonceLength = 0;
@@ -149,7 +149,7 @@ int AuthenticationHub::handleIdentificationRequest(Message *message) noexcept {
 
 int AuthenticationHub::handleAuthenticationRequest(Message *message) noexcept {
 	/*
-	 * HEADER: SRC=0, DEST=D, ....CMD=0, QLF=2, AQLF=0/1/127
+	 * HEADER: SRC=0, DEST=X, ....CMD=0, QLF=2, AQLF=0/1/127
 	 * BODY: variable in Request and Response
 	 * TOTAL: at least 32 bytes in Request and Response
 	 */
@@ -221,7 +221,7 @@ bool AuthenticationHub::loadIdentity(Authenticator *authenticator,
 	//-----------------------------------------------------------------
 	auto conn = PQconnectdb(ctx.connInfo);
 	if (PQstatus(conn) == CONNECTION_BAD) {
-		WH_LOG_ERROR("Database connection error %s", PQerrorMessage(conn));
+		WH_LOG_DEBUG("%s", PQerrorMessage(conn));
 		PQfinish(conn);
 		return false;
 	}
@@ -236,6 +236,7 @@ bool AuthenticationHub::loadIdentity(Authenticator *authenticator,
 	auto res = PQexecParams(conn, ctx.query, 1, nullptr, paramValues, nullptr,
 			nullptr, 1);
 	if (PQresultStatus(res) != PGRES_TUPLES_OK || PQntuples(res) == 0) {
+		WH_LOG_DEBUG("%s", PQerrorMessage(conn));
 		PQclear(res);
 		PQfinish(conn);
 		return false;

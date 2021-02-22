@@ -29,13 +29,13 @@ public:
 	Topics() noexcept;
 	virtual ~Topics();
 	//Associates the Watcher <w> with the <topic>
-	bool put(unsigned int topic, Watcher *w) noexcept;
+	bool put(unsigned int topic, const Watcher *w) noexcept;
 	//Iterates over the list of Watchers associated with the <topic>
 	Watcher* get(unsigned int topic, unsigned int index) const noexcept;
 	//Unsubscribes the Watcher <w> from the <topic>
-	void remove(unsigned int topic, Watcher *w) noexcept;
+	void remove(unsigned int topic, const Watcher *w) noexcept;
 	//Returns true if Watcher <w> is subscribed to the <topic>, false otherwise
-	bool contains(unsigned int topic, Watcher *w) const noexcept;
+	bool contains(unsigned int topic, const Watcher *w) const noexcept;
 	//Returns the number of watchers subscribed to the <topic>
 	unsigned int count(unsigned int topic) const noexcept;
 	//Clears subscriptions without deallocating memory
@@ -59,7 +59,7 @@ private:
 	};
 
 	//List of watchers subscribed to various topics
-	Array<Watcher*> topics[Topic::COUNT];
+	Array<const Watcher*> topics[Topic::COUNT];
 	//Index lookup table for fast insertion and deletion
 	Khash<Key, unsigned int, true, HFN, EQFN> indexes;
 };
