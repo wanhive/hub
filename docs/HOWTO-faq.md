@@ -1,13 +1,13 @@
 ### Contact us.
 
-- Name: Wanhive Systems Private Limited
-- Website: http://www.wanhive.com
+- Create an [issue](https://github.com/wanhive/hub/issues) on the github.
+- Send us an email [info@wanhive.com].
 
-### Where to find the Wanhive Protocol documentation.
+### Where is the protocol specification.
 
-Use the following link to access the most recent documentation.
+Use the following link to access the most recent document.
 
-[WANHIVE PROTOCOL](https://www.wanhive.com/publications.php)
+[Wanhive communication protocol](wanhive-protocol-v1.0.0.pdf)
 
 ### How to run the protocol tests.
 

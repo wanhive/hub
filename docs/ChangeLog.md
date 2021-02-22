@@ -5,12 +5,17 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased]
+## [2.1.2] - 2021-02-22
+
+### Added
+
+- Wanhive communication protocol specification (PDF document).
 
 ### Changed
 
 - Leave the data structures in a clean state after initialization failure.
 - Source code clean up.
+- Update the documentation.
 
 ## [2.1.1] - 2021-01-16
 
