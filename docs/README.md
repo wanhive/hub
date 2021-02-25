@@ -9,10 +9,10 @@ Wanhive IoT Platform comprises basic building blocks that reduce complexity, cos
 ## Features
 
 * Access control
-* End-to-end communication security
 * Endpoint identification and authentication
 * Message-based end-to-end **multistreaming**
 * Publish-subscribe messaging pattern
+* Secure communication using TLS/SSL
 
 # Package
 
