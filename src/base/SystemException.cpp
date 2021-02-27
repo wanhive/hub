@@ -29,13 +29,15 @@ SystemException::~SystemException() {
 }
 
 const char* SystemException::what() const noexcept {
-	/* Check whether XSI compliant STRERROR is available */
+	/* Check for the XSI-compliant version */
 #if (_POSIX_C_SOURCE >= 200112L || _XOPEN_SOURCE >= 600) && ! _GNU_SOURCE
-	buffer[0]='\0';
-	strerror_r(error, (char *) buffer, MSG_LEN);
-	return buffer;
+	if (strerror_r(error, const_cast<char*>(buffer), MSG_LEN) == 0) {
+		return buffer;
+	} else {
+		return "Unknown";
+	}
 #else
-	return strerror_r(error, (char*) buffer, MSG_LEN);
+	return strerror_r(error, const_cast<char*>(buffer), MSG_LEN);
 #endif
 }
 

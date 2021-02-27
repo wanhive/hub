@@ -27,7 +27,7 @@ public:
 	int errorCode() const noexcept override;
 private:
 	//Should be sufficient
-	static constexpr int MSG_LEN = 128;
+	static constexpr int MSG_LEN = 256;
 
 	int error;
 	char buffer[MSG_LEN];
