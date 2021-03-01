@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+- Implementation of the **SystemException** class.
+
 ### Fixed
 
 - Handle the XSI-compliant strerror_r correctly.

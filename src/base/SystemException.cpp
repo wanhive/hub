@@ -18,10 +18,12 @@ namespace wanhive {
 
 SystemException::SystemException() noexcept {
 	error = errno;
+	errorMessage = getErrorMessage();
 }
 
 SystemException::SystemException(int type) noexcept {
 	error = type;
+	errorMessage = getErrorMessage();
 }
 
 SystemException::~SystemException() {
@@ -29,20 +31,24 @@ SystemException::~SystemException() {
 }
 
 const char* SystemException::what() const noexcept {
-	/* Check for the XSI-compliant version */
-#if (_POSIX_C_SOURCE >= 200112L || _XOPEN_SOURCE >= 600) && ! _GNU_SOURCE
-	if (strerror_r(error, const_cast<char*>(buffer), MSG_LEN) == 0) {
-		return buffer;
-	} else {
-		return "Unknown";
-	}
-#else
-	return strerror_r(error, const_cast<char*>(buffer), MSG_LEN);
-#endif
+	return errorMessage;
 }
 
 int SystemException::errorCode() const noexcept {
 	return this->error;
+}
+
+const char* SystemException::getErrorMessage() noexcept {
+	/* Check for the XSI-compliant version */
+#if (_POSIX_C_SOURCE >= 200112L) && !  _GNU_SOURCE
+	if (strerror_r(error, buffer, sizeof(buffer)) == 0) {
+		return buffer;
+	} else {
+		return "Unknown system error";
+	}
+#else
+	return strerror_r(error, buffer, sizeof(buffer));
+#endif
 }
 
 } /* namespace wanhive */

@@ -26,11 +26,11 @@ public:
 	const char* what() const noexcept override;
 	int errorCode() const noexcept override;
 private:
-	//Should be sufficient
-	static constexpr int MSG_LEN = 256;
-
+	const char* getErrorMessage() noexcept;
+private:
 	int error;
-	char buffer[MSG_LEN];
+	const char *errorMessage;
+	char buffer[256]; //Should be sufficient
 };
 
 } /* namespace wanhive */
