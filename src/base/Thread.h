@@ -58,7 +58,7 @@ public:
 	Task* getTask() const noexcept;
 
 	//Number of CPUs on this machine
-	static int getNumberOfCPUs();
+	static long getNumberOfCPUs();
 private:
 	static void* entryPoint(void *ptr) noexcept;
 	//Clear the internal states and settings

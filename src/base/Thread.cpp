@@ -117,7 +117,7 @@ Task* Thread::getTask() const noexcept {
 	return task;
 }
 
-int Thread::getNumberOfCPUs() {
+long Thread::getNumberOfCPUs() {
 	// Getting number of CPUs
 	auto cpus = sysconf(_SC_NPROCESSORS_ONLN);
 	if (cpus < 0) {
