@@ -29,12 +29,8 @@ int Network::serverSocket(const char *service, SocketAddress &sa, bool blocking,
 	auto result = getAddrInfo(nullptr, service, family, type, AI_PASSIVE,
 			protocol);
 	auto rp = result; //The iterator
-	/*
-	 * getaddrinfo(3) returns a list of address structures.
-	 * Try each address until we successfully bind(2).
-	 * If socket(2) (or bind(2)) fails, we (close the socket and)
-	 * try the next address.
-	 */
+
+	//Try each address until we successfully bind(2).
 	for (; rp != nullptr; rp = rp->ai_next) {
 		int sockType =
 				blocking ? rp->ai_socktype : rp->ai_socktype | SOCK_NONBLOCK;
@@ -67,12 +63,8 @@ int Network::connectedSocket(const char *name, const char *service,
 	int sfd = -1;
 	auto result = getAddrInfo(name, service, family, type, flags, protocol);
 	auto rp = result; //The iterator
-	/*
-	 * getaddrinfo(3) returns a list of address structures.
-	 * Try each address until we successfully connect(2).
-	 * If socket(2) (or connect(2)) fails, we (close the socket and)
-	 * try the next address.
-	 */
+
+	//Try each address until we successfully connect(2).
 	for (; rp != nullptr; rp = rp->ai_next) {
 		//Linux-specific, saves a system call
 		auto sockType =
@@ -109,6 +101,7 @@ int Network::socket(const char *name, const char *service, SocketAddress &sa,
 	int sfd;
 	auto result = getAddrInfo(name, service, family, type, flags, protocol);
 	auto rp = result; //The iterator
+
 	for (; rp != nullptr; rp = rp->ai_next) {
 		sfd = ::socket(rp->ai_family, rp->ai_socktype, rp->ai_protocol);
 		if (sfd == -1) {

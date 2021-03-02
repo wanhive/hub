@@ -102,7 +102,7 @@ unsigned long long Timer::timeSeed() noexcept {
 }
 
 int Timer::openTimerfd(bool blocking) {
-	int fd = timerfd_create(CLOCK_MONOTONIC, blocking ? 0 : TFD_NONBLOCK);
+	auto fd = timerfd_create(CLOCK_MONOTONIC, blocking ? 0 : TFD_NONBLOCK);
 	if (fd != -1) {
 		return fd;
 	} else {

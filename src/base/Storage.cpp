@@ -60,7 +60,7 @@ int Storage::closeStream(FILE *fp) noexcept {
 }
 
 int Storage::getDescriptor(FILE *stream) {
-	int result = fileno(stream);
+	auto result = fileno(stream);
 	if (result != -1) {
 		return result;
 	} else {
@@ -89,7 +89,7 @@ int Storage::close(int fd) noexcept {
 }
 
 FILE* Storage::getStream(int fd, const char *modes) {
-	FILE *fp = fdopen(fd, modes);
+	auto fp = fdopen(fd, modes);
 	if (fp) {
 		return fp;
 	} else {

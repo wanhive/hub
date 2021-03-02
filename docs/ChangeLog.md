@@ -5,17 +5,17 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased]
+## [3.0.0] - 2021-03-02
 
 ### Added
 
 - MessageContext structure in the MessageHeader.h file.
-- FVN-1a hash (Fowler–Noll–Vo hash) in the Twiddler class.
+- FVN-1a hash (Fowler–Noll–Vo hash) method in the Twiddler class.
 
 ### Changed
 
 - Source code restructuring and cleanup. Not backward compatible.
-- **Storage::lock** and **Storage::unlock** methods.
+- **Storage::lock** and **Storage::unlock** methods work as they should.
 - Improve error message handling in the **SystemException** and **SecurityException** classes.
 
 ### Security

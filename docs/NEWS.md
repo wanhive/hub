@@ -1,3 +1,7 @@
+## 2021-03-02
+
+- Version 3.0.0 release.
+
 ## 2021-02-22
 
 - Version 2.1.2 release.

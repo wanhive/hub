@@ -30,10 +30,11 @@ public:
 	 */
 	bool wait();
 	/*
-	 * Calling threads wait until at most <milliseconds> duration for a notification.
-	 * In case of pending notification competing threads may be spuriously woken
-	 * up, however exactly one of them sees <true> as the returned value and the
-	 * notifications are cleared. On timeout false is returned.
+	 * Calling threads wait until at most <milliseconds> duration for a
+	 * notification. In case of pending notification competing threads may
+	 * be spuriously woken up, however exactly one of them sees <true> as
+	 * the returned value and the notifications are cleared. Returns false
+	 * on timeout.
 	 */
 	bool timedWait(unsigned int milliseconds);
 	//Delivers a notification to this object.

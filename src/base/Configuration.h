@@ -120,7 +120,7 @@ private:
 	};
 	// Configuration Data
 	struct {
-		//0 if clean, 1 if modified, -1 if an error occurred (last store failed)
+		//0 if clean, 1 if modified, -1 if an error occurred
 		int status;
 		//How many sections do we have?
 		unsigned int nSections;

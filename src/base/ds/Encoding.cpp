@@ -316,7 +316,7 @@ unsigned int Encoding::base64Decode(unsigned char *dest, const char *src,
 		*dest++ = buf >> 4;
 	}
 
-	return length; /* return to reflect the actual output size */
+	return length;
 }
 
 unsigned int Encoding::base32Encode(char *dest, const void *src,
@@ -522,7 +522,7 @@ unsigned int Encoding::base16Decode(unsigned char *dest, const char *src,
 		}
 	}
 
-	return length; /* return to reflect the actual output size */
+	return length;
 }
 
 unsigned int Encoding::encode(EncodingBase base, char *dest, const void *src,

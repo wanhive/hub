@@ -54,7 +54,7 @@ size_t Serializer::vpack(unsigned char *buf, const char *format,
 		return 0;
 	}
 
-	size_t len = 0; //Length of an ascii string/blob
+	size_t len = 0; //Length of a string/blob
 	auto mark = buf; //Preserve the initial position
 
 	for (; *format != '\0'; ++format) {
@@ -142,10 +142,10 @@ size_t Serializer::vpack(unsigned char *buf, const char *format,
 
 		default:
 			if (isdigit(*format)) {
-				//track blob size
+				//Track the string/blob size
 				len = len * 10 + (*format - '0');
 			} else {
-				//invalid format character
+				//Invalid format character
 				return 0;
 			}
 			break;
@@ -193,7 +193,7 @@ size_t Serializer::vpack(unsigned char *buf, size_t size, const char *format,
 		return 0;
 	}
 
-	size_t len = 0; //Length of an ascii string/blob
+	size_t len = 0; //Length of a string/blob
 	auto mark = buf; //Preserve the initial position
 	auto end = buf + size; //Preserve the end position
 
@@ -334,10 +334,10 @@ size_t Serializer::vpack(unsigned char *buf, size_t size, const char *format,
 
 		default:
 			if (isdigit(*format)) {
-				//track blob size
+				//Track the string/blob size
 				len = len * 10 + (*format - '0');
 			} else {
-				//invalid format character
+				//Invalid format character
 				return 0;
 			}
 			break;
@@ -385,7 +385,7 @@ size_t Serializer::vunpack(const unsigned char *buf, const char *format,
 		return 0;
 	}
 
-	size_t length = 0, maxLength = 0; //Length of an ascii string/blob
+	size_t length = 0, maxLength = 0; //Length of a string/blob
 	auto mark = buf; //Preserve the initial position
 
 	for (; *format != '\0'; ++format) {
@@ -483,10 +483,10 @@ size_t Serializer::vunpack(const unsigned char *buf, const char *format,
 
 		default:
 			if (isdigit(*format)) {
-				//track max string/blob len
+				//Track the max string/blob len
 				maxLength = maxLength * 10 + (*format - '0');
 			} else {
-				//invalid format character
+				//Invalid format character
 				return 0;
 			}
 			break;
@@ -536,7 +536,7 @@ size_t Serializer::vunpack(const unsigned char *buf, size_t size,
 		return 0;
 	}
 
-	size_t length = 0, maxLength = 0; //Length of an ascii string/blob
+	size_t length = 0, maxLength = 0; //Length of a string/blob
 	auto mark = buf; //Preserve the initial position
 	auto end = buf + size; //Preserve the end position
 
@@ -689,10 +689,10 @@ size_t Serializer::vunpack(const unsigned char *buf, size_t size,
 
 		default:
 			if (isdigit(*format)) {
-				//track max string/blob len
+				//Track max string/blob len
 				maxLength = maxLength * 10 + (*format - '0');
 			} else {
-				//invalid format character
+				//Invalid format character
 				return 0;
 			}
 			break;

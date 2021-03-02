@@ -540,9 +540,9 @@ bool Endpoint::verify(const unsigned char *in, unsigned int length,
 	//Make sure that the message is long enough to carry a signature
 	if (in && length <= Message::MTU
 			&& length >= (PKI::SIGNATURE_LENGTH + Message::HEADER_SIZE)) {
-		unsigned int bufLength = length - PKI::SIGNATURE_LENGTH;
-		const unsigned char *block = in;
-		Signature *sign = (Signature*) (block + bufLength);
+		auto bufLength = length - PKI::SIGNATURE_LENGTH;
+		auto block = in;
+		auto sign = (const Signature*) (block + bufLength);
 		return pki->verify(block, bufLength, sign);
 	} else {
 		return false;
