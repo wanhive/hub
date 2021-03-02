@@ -23,7 +23,7 @@ public:
 	static unsigned long getError() noexcept;
 	//Clear and report the most recent error
 	static void getErrorMessage(char *buffer, unsigned int length) noexcept;
-	//Report the <error> code
+	//Write the <error> message into the <buffer> of size <length>
 	static void getErrorMessage(unsigned long error, char *buffer,
 			unsigned int length) noexcept;
 	//Clear the error queue

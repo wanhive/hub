@@ -68,7 +68,7 @@ void Logger::log(LogLevel level, const char *fmt, ...) const noexcept {
 	if (level <= Logger::level) {
 		va_list ap;
 		va_start(ap, fmt);
-		//POSIX compliant vfprintf is thread safe (no intermingling)
+		//POSIX compliant vfprintf is thread safe
 		vfprintf(stderr, fmt, ap);
 		va_end(ap);
 	} else {

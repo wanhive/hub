@@ -52,6 +52,10 @@ public:
 	//For 64-bit values
 	static unsigned long long mix(unsigned long long l) noexcept;
 	//=================================================================
+	//FVN-1a hash (Fowler–Noll–Vo hash)
+	static unsigned long long FVN1aHash(const void *data,
+			unsigned int bytes) noexcept;
+	//=================================================================
 	/**
 	 * Interval functions
 	 */

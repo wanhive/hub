@@ -55,7 +55,7 @@ void Thread::setStatus(int status) noexcept {
 void Thread::start(void *arg) {
 	if (!alive) {
 		this->arg = arg;
-		int s = pthread_create(&threadId, nullptr, Thread::entryPoint, this);
+		auto s = pthread_create(&threadId, nullptr, Thread::entryPoint, this);
 		if (!s) {
 			alive = true;
 		} else {
@@ -67,7 +67,7 @@ void Thread::start(void *arg) {
 }
 
 void Thread::detach() {
-	int s = pthread_detach(threadId);
+	auto s = pthread_detach(threadId);
 	if (!s) {
 		clear();
 	} else {
@@ -76,7 +76,7 @@ void Thread::detach() {
 }
 
 void Thread::join() {
-	int s = pthread_join(threadId, nullptr);
+	auto s = pthread_join(threadId, nullptr);
 	if (!s) {
 		clear();
 	} else {
@@ -89,7 +89,7 @@ bool Thread::isAlive() const noexcept {
 }
 
 void Thread::signal(int signum) {
-	int error = pthread_kill(threadId, signum);
+	auto error = pthread_kill(threadId, signum);
 	if (error) {
 		throw SystemException(error);
 	}
@@ -103,7 +103,7 @@ void Thread::setAffinity(int cpuNumber) {
 	cpu_set_t cpuSet;
 	CPU_ZERO(&cpuSet);
 	CPU_SET(cpuNumber, &cpuSet);
-	int s = pthread_setaffinity_np(threadId, sizeof(cpu_set_t), &cpuSet);
+	auto s = pthread_setaffinity_np(threadId, sizeof(cpu_set_t), &cpuSet);
 	if (s) {
 		throw SystemException(s);
 	}
@@ -119,7 +119,7 @@ Task* Thread::getTask() const noexcept {
 
 int Thread::getNumberOfCPUs() {
 	// Getting number of CPUs
-	long int cpus = sysconf(_SC_NPROCESSORS_ONLN);
+	auto cpus = sysconf(_SC_NPROCESSORS_ONLN);
 	if (cpus < 0) {
 		throw SystemException();
 	}

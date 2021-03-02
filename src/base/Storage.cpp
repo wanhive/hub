@@ -17,7 +17,6 @@
 #include "ds/Twiddler.h"
 #include <cerrno>
 #include <cstring>
-#include <dirent.h>
 #include <ftw.h>
 #include <libgen.h>
 #include <unistd.h>
@@ -28,12 +27,9 @@ namespace {
 //Helper function for removeDirectory
 int rmHelper(const char *path, const struct stat *s, int flag,
 		struct FTW *f) noexcept {
-	int rv = remove(path);
-	if (rv) {
-		perror(path);
-	}
-	return rv;
+	return remove(path);
 }
+
 }  // namespace
 
 namespace wanhive {
@@ -82,7 +78,6 @@ int Storage::open(const char *path, int flags, mode_t mode, bool createPath) {
 				throw SystemException();
 			}
 		}
-
 		return fd;
 	} else {
 		throw Exception(EX_INVALIDPARAM);
@@ -103,7 +98,7 @@ FILE* Storage::getStream(int fd, const char *modes) {
 }
 
 size_t Storage::read(int fd, void *buffer, size_t count, bool strict) {
-	size_t toRead = count;
+	auto toRead = count;
 	size_t index = 0;
 	ssize_t n = 0;
 	while (toRead != 0) {
@@ -125,7 +120,7 @@ size_t Storage::read(int fd, void *buffer, size_t count, bool strict) {
 }
 
 size_t Storage::write(int fd, const void *buffer, size_t count) {
-	size_t toWrite = count;
+	auto toWrite = count;
 	size_t index = 0;
 	ssize_t n = 0;
 	while (toWrite != 0) {
@@ -146,7 +141,7 @@ void Storage::sync(int fd) {
 }
 
 off_t Storage::seek(int fd, off_t offset, int whence) {
-	off_t ret = ::lseek(fd, offset, whence);
+	auto ret = ::lseek(fd, offset, whence);
 	if (ret != (off_t) -1) {
 		return ret;
 	} else {
@@ -156,13 +151,13 @@ off_t Storage::seek(int fd, off_t offset, int whence) {
 
 void Storage::fill(int fd, size_t size, unsigned char c) {
 	unsigned char buffer[4096];
-	size_t bytesleft = size;
+	auto bytesleft = size;
 
 	memset(buffer, c, sizeof(buffer));
 	seek(fd, 0, SEEK_SET);
 
 	while (bytesleft) {
-		size_t toWrite =
+		auto toWrite =
 				(bytesleft > sizeof(buffer)) ? sizeof(buffer) : bytesleft;
 		bytesleft -= write(fd, buffer, toWrite);
 	}
@@ -170,7 +165,7 @@ void Storage::fill(int fd, size_t size, unsigned char c) {
 
 int Storage::readLink(const char *pathname, char *buf, size_t len) {
 	//Read at-most len-1 bytes (readlink doesn't append nul terminator)
-	int ret = readlink(pathname, buf, len - 1);
+	auto ret = readlink(pathname, buf, len - 1);
 	if (ret != -1) {
 		buf[ret] = '\0';
 		return ret;
@@ -179,40 +174,29 @@ int Storage::readLink(const char *pathname, char *buf, size_t len) {
 	}
 }
 
-bool Storage::lock(int fd, bool shared, bool block) noexcept {
-	int flag = 0;
-	if (!block) {
-		flag = LOCK_NB;
-	}
-	if (shared) {
-		flag |= LOCK_SH;
-	} else {
-		flag |= LOCK_EX;
-	}
-
+bool Storage::lock(int fd, bool shared, bool block) {
+	int flag = block ? 0 : LOCK_NB;
+	flag |= shared ? LOCK_SH : LOCK_EX;
 	if (flock(fd, flag) == 0) {
 		return true;
-	} else {
+	} else if (errno == EWOULDBLOCK) {
 		return false;
+	} else {
+		throw SystemException();
 	}
 }
 
-bool Storage::unlock(int fd, bool block) noexcept {
-	int flag = LOCK_UN;
-	if (!block) {
-		flag |= LOCK_NB;
-	}
-
-	if (flock(fd, flag) == 0) {
+bool Storage::unlock(int fd) {
+	if (flock(fd, LOCK_UN) == 0) {
 		return true;
 	} else {
-		return false;
+		throw SystemException();
 	}
 }
 
 void Storage::createDirectory(const char *pathname) {
 	if (pathname && pathname[0]) {
-		char *tmp = WH_strdup(pathname);
+		auto tmp = WH_strdup(pathname);
 		auto ret = _createDirectory(tmp);
 		WH_free(tmp);
 		if (!ret) {
@@ -315,25 +299,22 @@ char* Storage::baseName(char *path) noexcept {
 }
 
 void Storage::canonicalize(char *name) noexcept {
-	char *idx;
-	char c;
-
-	idx = name;
+	auto idx = name;
 	while (*idx) {
-		c = *idx;
+		auto c = *idx;
 
 		if (c == '/' || c == '\\' || c == ':' || c == '*' || c == '?'
 				|| c == '"' || c == '<' || c == '>' || c == '|') {
 			*idx = '_';
 		}
 
-		idx++;
+		++idx;
 	}
 }
 
 bool Storage::createDirectoryForFile(const char *pathname) noexcept {
 	if (pathname && pathname[0]) {
-		char *tmp = WH_strdup(pathname);
+		auto tmp = WH_strdup(pathname);
 		Twiddler::stripLast(tmp, DIR_SEPARATOR);
 		auto ret = _createDirectory(tmp);
 		WH_free(tmp);
@@ -348,7 +329,7 @@ bool Storage::_createDirectory(char *pathname) noexcept {
 		return false;
 	}
 
-	char *mark = pathname;
+	auto mark = pathname;
 	for (; *mark == DIR_SEPARATOR; ++mark) {
 		//skip heading '/'s
 	}
@@ -360,13 +341,12 @@ bool Storage::_createDirectory(char *pathname) noexcept {
 			*mark = 0;
 		}
 		//-----------------------------------------------------------------
-		int ret = testDirectory(pathname);
+		auto ret = testDirectory(pathname);
 		if (ret == -1) {
 			return false;
 		}
 		if (ret == 0) {
-			const mode_t mode = S_IRUSR | S_IWUSR | S_IXUSR | S_IRGRP | S_IXGRP
-					| S_IROTH | S_IXOTH; // 755
+			mode_t mode = S_IRWXU | S_IRGRP | S_IXGRP | S_IROTH | S_IXOTH; // 755
 			ret = mkdir(pathname, mode);
 			if ((ret != 0) && (errno != EEXIST)) {
 				return false;

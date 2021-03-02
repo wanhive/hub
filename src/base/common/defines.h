@@ -82,6 +82,7 @@
 //=================================================================
 /**
  * Macro to string
+ * REF: https://gcc.gnu.org/onlinedocs/cpp/Stringizing.html
  */
 #define WH_STRINGIFY(x) #x
 #define WH_TOSTRING(x) WH_STRINGIFY(x)

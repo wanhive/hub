@@ -26,16 +26,16 @@ namespace wanhive {
 int Network::serverSocket(const char *service, SocketAddress &sa, bool blocking,
 		int type, int family, int protocol) {
 	int sfd;
-	addrinfo *result, *rp;
-	result = getAddrInfo(nullptr, service, family, type, AI_PASSIVE, protocol);
-
+	auto result = getAddrInfo(nullptr, service, family, type, AI_PASSIVE,
+			protocol);
+	auto rp = result; //The iterator
 	/*
 	 * getaddrinfo(3) returns a list of address structures.
 	 * Try each address until we successfully bind(2).
 	 * If socket(2) (or bind(2)) fails, we (close the socket and)
 	 * try the next address.
 	 */
-	for (rp = result; rp != nullptr; rp = rp->ai_next) {
+	for (; rp != nullptr; rp = rp->ai_next) {
 		int sockType =
 				blocking ? rp->ai_socktype : rp->ai_socktype | SOCK_NONBLOCK;
 		sfd = ::socket(rp->ai_family, sockType, rp->ai_protocol);
@@ -65,25 +65,24 @@ int Network::connectedSocket(const char *name, const char *service,
 		SocketAddress &sa, bool blocking, int type, int family, int flags,
 		int protocol) {
 	int sfd = -1;
-	addrinfo *result, *rp;
-	result = getAddrInfo(name, service, family, type, flags, protocol);
-
+	auto result = getAddrInfo(name, service, family, type, flags, protocol);
+	auto rp = result; //The iterator
 	/*
 	 * getaddrinfo(3) returns a list of address structures.
 	 * Try each address until we successfully connect(2).
 	 * If socket(2) (or connect(2)) fails, we (close the socket and)
 	 * try the next address.
 	 */
-	for (rp = result; rp != nullptr; rp = rp->ai_next) {
+	for (; rp != nullptr; rp = rp->ai_next) {
 		//Linux-specific, saves a system call
-		int sockType =
+		auto sockType =
 				blocking ? rp->ai_socktype : rp->ai_socktype | SOCK_NONBLOCK;
 		sfd = ::socket(rp->ai_family, sockType, rp->ai_protocol);
 		if (sfd == -1) {
 			continue;
 		}
 
-		int ret = ::connect(sfd, rp->ai_addr, rp->ai_addrlen);
+		auto ret = ::connect(sfd, rp->ai_addr, rp->ai_addrlen);
 		if (ret == 0 || (!blocking && errno == EINPROGRESS)) {
 			memcpy(&sa.address, rp->ai_addr, rp->ai_addrlen);
 			sa.length = rp->ai_addrlen;
@@ -108,9 +107,9 @@ int Network::connectedSocket(const NameInfo &ni, SocketAddress &sa,
 int Network::socket(const char *name, const char *service, SocketAddress &sa,
 		int type, int family, int flags, int protocol) {
 	int sfd;
-	addrinfo *result, *rp;
-	result = getAddrInfo(name, service, family, type, flags, protocol);
-	for (rp = result; rp != nullptr; rp = rp->ai_next) {
+	auto result = getAddrInfo(name, service, family, type, flags, protocol);
+	auto rp = result; //The iterator
+	for (; rp != nullptr; rp = rp->ai_next) {
 		sfd = ::socket(rp->ai_family, rp->ai_socktype, rp->ai_protocol);
 		if (sfd == -1) {
 			continue;
@@ -148,7 +147,7 @@ void Network::listen(int sfd, int backlog) {
 
 int Network::accept(int listenfd, SocketAddress &sa, int flags) {
 	sa.length = sizeof(sockaddr_storage);
-	int sfd = ::accept4(listenfd, (sockaddr*) &sa.address, &sa.length, flags);
+	auto sfd = ::accept4(listenfd, (sockaddr*) &sa.address, &sa.length, flags);
 	if (sfd != -1) {
 		return sfd;
 	} else if (errno == EWOULDBLOCK || errno == EAGAIN) {
@@ -159,7 +158,7 @@ int Network::accept(int listenfd, SocketAddress &sa, int flags) {
 }
 
 int Network::connect(int sfd, SocketAddress &sa) {
-	int ret = ::connect(sfd, (sockaddr*) (&sa.address), sa.length);
+	auto ret = ::connect(sfd, (sockaddr*) (&sa.address), sa.length);
 	if (ret != -1) {
 		return ret;
 	} else if (errno == EINPROGRESS) {
@@ -178,7 +177,7 @@ int Network::close(int sfd) noexcept {
 }
 
 void Network::setBlocking(int sfd, bool block) {
-	int flags = fcntl(sfd, F_GETFL);
+	auto flags = fcntl(sfd, F_GETFL);
 	if (flags != -1) {
 		if (block) {
 			flags &= ~O_NONBLOCK;
@@ -196,8 +195,8 @@ void Network::setBlocking(int sfd, bool block) {
 }
 
 bool Network::isBlocking(int sfd) {
-	int val;
-	if ((val = fcntl(sfd, F_GETFL, 0)) == -1) {
+	auto val = fcntl(sfd, F_GETFL, 0);
+	if (val == -1) {
 		throw SystemException();
 	} else {
 		return !(val & O_NONBLOCK);
@@ -210,8 +209,8 @@ int Network::unixServerSocket(const char *path, SocketAddress &sa,
 		throw Exception(EX_NULL);
 	}
 
-	int sockType = !blocking ? type | SOCK_NONBLOCK : type;
-	int sfd = ::socket(AF_UNIX, sockType, protocol);
+	auto sockType = blocking ? type : type | SOCK_NONBLOCK;
+	auto sfd = ::socket(AF_UNIX, sockType, protocol);
 	if (sfd == -1) {
 		throw SystemException();
 	}
@@ -242,8 +241,8 @@ int Network::unixConnectedSocket(const char *path, SocketAddress &sa,
 	if (!path) {
 		throw Exception(EX_NULL);
 	}
-	int sockType = !blocking ? type | SOCK_NONBLOCK : type;
-	int sfd = ::socket(AF_UNIX, sockType, protocol);
+	auto sockType = blocking ? type : type | SOCK_NONBLOCK;
+	auto sfd = ::socket(AF_UNIX, sockType, protocol);
 	if (sfd == -1) {
 		throw SystemException();
 	}
@@ -253,7 +252,7 @@ int Network::unixConnectedSocket(const char *path, SocketAddress &sa,
 	remote.sun_family = AF_UNIX;
 	strncpy(remote.sun_path, path, sizeof(remote.sun_path) - 1);
 
-	int ret = ::connect(sfd, (struct sockaddr*) &remote, sizeof(remote));
+	auto ret = ::connect(sfd, (struct sockaddr*) &remote, sizeof(remote));
 	if (ret == 0 || (!blocking && errno == EINPROGRESS)) {
 		memcpy(&sa.address, &remote, sizeof(remote));
 		sa.length = sizeof(remote);
@@ -272,9 +271,8 @@ void Network::socketPair(int sv[2], bool blocking, int type) {
 }
 
 void Network::getNameInfo(const SocketAddress &sa, NameInfo &ni, int flags) {
-	int s;
-	s = getnameinfo((sockaddr*) &sa.address, sa.length, ni.host, NI_MAXHOST,
-			ni.service, NI_MAXSERV, flags);
+	auto s = getnameinfo((sockaddr*) &sa.address, sa.length, ni.host,
+	NI_MAXHOST, ni.service, NI_MAXSERV, flags);
 	if (s) {
 		throw NetworkAddressException(s);
 	}
@@ -295,7 +293,7 @@ void Network::getPeerName(int sfd, SocketAddress &sa) {
 
 size_t Network::sendStream(int sockfd, const unsigned char *buf,
 		size_t length) {
-	size_t toSend = length;
+	auto toSend = length;
 	size_t index = 0;
 	ssize_t n = 0;
 	while (toSend != 0) {
@@ -311,7 +309,7 @@ size_t Network::sendStream(int sockfd, const unsigned char *buf,
 
 size_t Network::receiveStream(int sockfd, unsigned char *buf, size_t length,
 		bool strict) {
-	size_t toRecv = length;
+	auto toRecv = length;
 	size_t index = 0;
 	ssize_t n = 0;
 	while (toRecv != 0) {
@@ -369,7 +367,7 @@ addrinfo* Network::getAddrInfo(const char *name, const char *service,
 	hints.ai_flags = flags;
 	hints.ai_protocol = protocol;
 
-	int s = getaddrinfo(name, service, &hints, &result);
+	auto s = getaddrinfo(name, service, &hints, &result);
 	if (s) {
 		throw NetworkAddressException(s);
 	}

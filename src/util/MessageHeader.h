@@ -13,12 +13,22 @@
 #ifndef WH_UTIL_MESSAGEHEADER_H_
 #define WH_UTIL_MESSAGEHEADER_H_
 #include <cstdint>
+
+namespace wanhive {
+//-----------------------------------------------------------------
+/*
+ * Message's context: {COMMAND, QUALIFIER, STATUS}
+ */
+struct MessageContext {
+	uint8_t command; //Command
+	uint8_t qualifier; //Command's type
+	uint8_t status; //Command's status
+};
+//-----------------------------------------------------------------
 /**
  * Wanhive's fixed size message header
  * Message structure: [{FIXED HEADER}{VARIABLE LENGTH PAYLOAD}]
  */
-namespace wanhive {
-
 class MessageHeader {
 public:
 	MessageHeader() noexcept;
@@ -113,7 +123,7 @@ public:
 			uint8_t session, uint8_t command, uint8_t qualifier, uint8_t status,
 			uint64_t label = 0) noexcept;
 public:
-	//Header size in bytes
+	//Serialized header size in bytes
 	static constexpr unsigned int SIZE = 32;
 private:
 	struct {
@@ -123,9 +133,7 @@ private:
 		uint16_t length; //Length of this message
 		uint16_t sequenceNumber; //Sequence number
 		uint8_t session; //Communication channel
-		uint8_t command; //Command
-		uint8_t qualifier; //Command type
-		uint8_t status; //Command status
+		MessageContext ctx; //The context
 	} header;
 };
 

@@ -79,17 +79,17 @@ public:
 	//Creates a unix domain socket and binds it to the given address
 	static int unixServerSocket(const char *path, SocketAddress &sa,
 			bool blocking, int type = SOCK_STREAM, int protocol = 0);
-	//Connects to a Unix domain socket, returns the socket descriptor (if success or in progress)
+	//Connects to a Unix domain socket (connection may be in progress)
 	static int unixConnectedSocket(const char *path, SocketAddress &sa,
 			bool blocking, int type = SOCK_STREAM, int protocol = 0);
-	// Creates unnamed pair of connected sockets (unix domain)
+	//Creates unnamed pair of connected sockets (unix domain)
 	static void socketPair(int sv[2], bool blocking, int type = SOCK_STREAM);
 	//No costly DNS resolution by default
 	static void getNameInfo(const SocketAddress &sa, NameInfo &ni,
 			int flags = (NI_NUMERICHOST | NI_NUMERICSERV));
-	//returns the current address to which the socket sfd is bound
+	//Returns the current address to which the socket sfd is bound
 	static void getSockName(int sfd, SocketAddress &sa);
-	//returns the address of the peer connected to the socket sfd
+	//Returns the address of the peer connected to the socket sfd
 	static void getPeerName(int sfd, SocketAddress &sa);
 	//=================================================================
 	/**

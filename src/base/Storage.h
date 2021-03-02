@@ -13,6 +13,7 @@
 #ifndef WH_BASE_STORAGE_H_
 #define WH_BASE_STORAGE_H_
 #include <cstdio>
+#include <fcntl.h>
 #include <sys/types.h>
 
 namespace wanhive {
@@ -39,7 +40,7 @@ public:
 	static size_t read(int fd, void *buffer, size_t count, bool strict);
 	//Returns the number of bytes written, throws SystemException
 	static size_t write(int fd, const void *buffer, size_t count);
-	//Wrapper for fsync: Commits the data to the disk
+	//Wrapper for fsync(2): commits the data to the disk
 	static void sync(int fd);
 	//wrapper for lseek(2) system call
 	static off_t seek(int fd, off_t offset, int whence);
@@ -54,17 +55,18 @@ public:
 	static int readLink(const char *pathname, char *buf, size_t len);
 	//=================================================================
 	/**
-	 * Wrappers for flock(2) system call.
+	 * Wrappers for the flock(2) system call.
 	 */
 
 	/*
 	 * Places an advisory lock on the specified file, if <shared> is false then
 	 * an exclusive lock is placed. If <block> is true then the method call
-	 * blocks in case of contention/conflict. Returns true on success.
+	 * blocks in case of contention/conflict. Returns true on success, false
+	 * if the call would block and nonblocking operation was selected.
 	 */
-	static bool lock(int fd, bool shared, bool block) noexcept;
+	static bool lock(int fd, bool shared, bool block = true);
 	//Removes an existing lock held by the process, returns true on success
-	static bool unlock(int fd, bool block) noexcept;
+	static bool unlock(int fd);
 	//=================================================================
 	//Implementation of "mkdir -p"
 	static void createDirectory(const char *pathname);

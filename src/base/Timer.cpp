@@ -12,6 +12,7 @@
 
 #include "Timer.h"
 #include "SystemException.h"
+#include "ds/Twiddler.h"
 #include <cerrno>
 #include <climits>
 #include <unistd.h>
@@ -97,14 +98,7 @@ size_t Timer::refractorTime(char *buffer, size_t size,
 unsigned long long Timer::timeSeed() noexcept {
 	timespec ts;
 	clock_gettime(CLOCK_MONOTONIC, &ts);
-
-	//FVN-1a hash (Fowler–Noll–Vo hash)
-	unsigned char *p = (unsigned char*) &ts;
-	unsigned long long hash = 14695981039346656037ULL;
-	for (size_t i = 0; i < sizeof(ts); ++i) {
-		hash = 1099511628211ULL * (hash ^ p[i]);
-	}
-	return hash;
+	return Twiddler::FVN1aHash(&ts, sizeof(ts));
 }
 
 int Timer::openTimerfd(bool blocking) {
@@ -142,7 +136,7 @@ int Timer::closeTimerfd(int fd) noexcept {
 
 unsigned long long Timer::currentTime() noexcept {
 	timespec ts;
-	//Cannot fail, return value ignored
+	//Cannot fail, returned value ignored
 	clock_gettime(CLOCK_MONOTONIC, &ts);
 	return (((unsigned long long) ts.tv_sec * MS_IN_SEC)
 			+ (ts.tv_nsec / NS_IN_MS));

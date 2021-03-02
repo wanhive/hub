@@ -217,7 +217,7 @@ bool Srp::loadPasswordVerifier() noexcept {
 		return false;
 	}
 
-	BIGNUM *n = BN_new();
+	auto n = BN_new();
 	if (!n) {
 		return false;
 	}
@@ -305,7 +305,7 @@ bool Srp::loadUserNonce() noexcept {
 		return false;
 	}
 
-	BIGNUM *n = BN_new();
+	auto n = BN_new();
 	if (!n) {
 		return false;
 	}
@@ -349,14 +349,14 @@ bool Srp::loadHostNonce() noexcept {
 	}
 
 	//B = kv + g^b
-	BIGNUM *n = BN_new();
+	auto n = BN_new();
 	if (!n) {
 		return false;
 	}
 
 	BN_CTX_start(ctx);
-	BIGNUM *m = BN_CTX_get(ctx); //kv
-	BIGNUM *p = BN_CTX_get(ctx); //g^b
+	auto m = BN_CTX_get(ctx); //kv
+	auto p = BN_CTX_get(ctx); //g^b
 
 	if (!m || !p) {
 		BN_clear_free(n);
@@ -406,8 +406,8 @@ bool Srp::loadRandomScramblingParameter() noexcept {
 	//u = H(PAD(A), PAD(B))
 	unsigned char md[MDSIZE]; //H(PAD(A), PAD(B))
 
-	unsigned int padLenA = group.N.size() - shared.A.size();
-	unsigned int padLenB = group.N.size() - shared.B.size();
+	auto padLenA = group.N.size() - shared.A.size();
+	auto padLenB = group.N.size() - shared.B.size();
 
 	return H.init() && H.update(zeros, padLenA)
 			&& H.update(shared.A.getBinary(), shared.A.size())
@@ -424,15 +424,15 @@ bool Srp::loadSessionKey(bool isHost) noexcept {
 	}
 
 	bool ret = false;
-	BIGNUM *num = BN_new();
+	auto num = BN_new();
 	if (!num) {
 		return false;
 	}
 
 	if (isHost) {
 		BN_CTX_start(ctx);
-		BIGNUM *m = BN_CTX_get(ctx); //v^u
-		BIGNUM *n = BN_CTX_get(ctx); //(Av^u)
+		auto m = BN_CTX_get(ctx); //v^u
+		auto n = BN_CTX_get(ctx); //(Av^u)
 		if (!m || !n) {
 			BN_clear_free(num);
 			BN_CTX_end(ctx);
@@ -448,9 +448,9 @@ bool Srp::loadSessionKey(bool isHost) noexcept {
 		BN_CTX_end(ctx);
 	} else {
 		BN_CTX_start(ctx);
-		BIGNUM *m = BN_CTX_get(ctx); //ux, (B - kg^x)
-		BIGNUM *n = BN_CTX_get(ctx); //(a + ux)
-		BIGNUM *p = BN_CTX_get(ctx); //kg^x
+		auto m = BN_CTX_get(ctx); //ux, (B - kg^x)
+		auto n = BN_CTX_get(ctx); //(a + ux)
+		auto p = BN_CTX_get(ctx); //kg^x
 
 		if (!m || !n || !p) {
 			BN_clear_free(num);
@@ -493,11 +493,11 @@ bool Srp::generateUserProof(const char *I) noexcept {
 	unsigned char H_N[MDSIZE];
 	unsigned char H_g[MDSIZE];
 
-	unsigned int padLeng = group.N.size() - group.g.size();
-	unsigned int padLens = group.N.size() - user.s.size();
-	unsigned int padLenA = group.N.size() - shared.A.size();
-	unsigned int padLenB = group.N.size() - shared.B.size();
-	unsigned int padLenH = group.N.size() - H.length();
+	auto padLeng = group.N.size() - group.g.size();
+	auto padLens = group.N.size() - user.s.size();
+	auto padLenA = group.N.size() - shared.A.size();
+	auto padLenB = group.N.size() - shared.B.size();
+	auto padLenH = group.N.size() - H.length();
 
 	bool ret =
 			(I ? (bool) H.create((const unsigned char*) I, strlen(I), H_I) : true)
@@ -534,8 +534,8 @@ bool Srp::generateHostProof() noexcept {
 	}
 
 	//H(A, M, K)
-	unsigned int padLenA = group.N.size() - shared.A.size();
-	unsigned int padLenH = group.N.size() - H.length();
+	auto padLenA = group.N.size() - shared.A.size();
+	auto padLenH = group.N.size() - H.length();
 	return H.init() && H.update(zeros, padLenA)
 			&& H.update(shared.A.getBinary(), shared.A.size())
 			&& H.update(zeros, padLenH) && H.update(proof.M, H.length())
@@ -553,9 +553,9 @@ bool Srp::generateUserEvidence() noexcept {
 	}
 
 	//H(PAD(A), PAD(B), PAD(S))
-	unsigned int padLenA = group.N.size() - shared.A.size();
-	unsigned int padLenB = group.N.size() - shared.B.size();
-	unsigned int padLenS = group.N.size() - key.S.size();
+	auto padLenA = group.N.size() - shared.A.size();
+	auto padLenB = group.N.size() - shared.B.size();
+	auto padLenS = group.N.size() - key.S.size();
 
 	return H.init() && H.update(zeros, padLenA)
 			&& H.update(shared.A.getBinary(), shared.A.size())
@@ -574,9 +574,9 @@ bool Srp::generateHostEvidence() noexcept {
 	}
 
 	//H(PAD(A), PAD(M), PAD(S))
-	unsigned int padLenA = group.N.size() - shared.A.size();
-	unsigned int padLenH = group.N.size() - H.length();
-	unsigned int padLenS = group.N.size() - key.S.size();
+	auto padLenA = group.N.size() - shared.A.size();
+	auto padLenH = group.N.size() - H.length();
+	auto padLenS = group.N.size() - key.S.size();
 
 	return H.init() && H.update(zeros, padLenA)
 			&& H.update(shared.A.getBinary(), shared.A.size())
@@ -785,9 +785,9 @@ void Srp::test() noexcept {
 	if (!user->loadRandomScramblingParameter()) {
 		printf("Scrambling Parameter not loaded at user\n");
 	}
-	printf("u= ");
+	printf("Computed u = ");
 	host->shared.u.print();
-	printf("Expected u=CE38B9593487DA98554ED47D70A7AE5F462EF019\n");
+	printf("Expected u = CE38B9593487DA98554ED47D70A7AE5F462EF019\n");
 	//-----------------------------------------------------------------
 	//User:  x = H(s, p)                 (user enters password)
 	//User:  S = (B - kg^x) ^ (a + ux)   (computes session key)
@@ -808,9 +808,9 @@ void Srp::test() noexcept {
 	if (memcmp(host->key.K, user->key.K, host->keySize())) {
 		printf("Keys did not match\n");
 	}
-	printf("S= ");
+	printf("Computed S = ");
 	host->key.S.print();
-	printf("Expected S=B0DC82BABCF30674AE450C0287745E7990A3381F63B387AAF271A10D"
+	printf("Expected S = B0DC82BABCF30674AE450C0287745E7990A3381F63B387AAF271A10D"
 			"233861E359B48220F7C4693C9AE12B0A6F67809F0876E2D013800D6C"
 			"41BB59B6D5979B5C00A172B4A2A5903A0BDCAF8A709585EB2AFAFA8F"
 			"3499B200210DCC1F10EB33943CD67FC88A2F39A4BE5BEC4EC0A3212D"
@@ -934,7 +934,7 @@ bool Srp::loadMultiplierParameter() noexcept {
 
 	unsigned char md[MDSIZE];
 	//Multiplier parameter k = H(N, PAD(g))
-	unsigned int padLen = group.N.size() - group.g.size();
+	auto padLen = group.N.size() - group.g.size();
 	return H.init() && H.update(group.N.getBinary(), group.N.size())
 			&& H.update(zeros, padLen)
 			&& H.update(group.g.getBinary(), group.g.size()) && H.final(md)
@@ -947,7 +947,7 @@ bool Srp::checkNotZero(BIGNUM *n) noexcept {
 	}
 
 	BN_CTX_start(ctx);
-	BIGNUM *m = BN_CTX_get(ctx);
+	auto m = BN_CTX_get(ctx);
 
 	if (!m) {
 		BN_CTX_end(ctx);
@@ -1000,7 +1000,7 @@ bool Srp::BigNumber::put(BIGNUM *n) noexcept {
 
 bool Srp::BigNumber::put(const unsigned char *binary,
 		unsigned int length) noexcept {
-	BIGNUM *n = BN_bin2bn(binary, length, this->n);
+	auto n = BN_bin2bn(binary, length, this->n);
 	if (!n) {
 		clear();
 		return false;

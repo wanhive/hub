@@ -7,13 +7,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- MessageContext structure in the MessageHeader.h file.
+- FVN-1a hash (Fowler–Noll–Vo hash) in the Twiddler class.
+
 ### Changed
 
-- Implementation of the **SystemException** class.
+- Source code restructuring and cleanup. Not backward compatible.
+- **Storage::lock** and **Storage::unlock** methods.
+- Improve error message handling in the **SystemException** and **SecurityException** classes.
 
-### Fixed
+### Security
 
-- Handle the XSI-compliant strerror_r correctly.
+- Plug a potential buffer overflow in the **Host::get** method.
 
 ## [2.1.2] - 2021-02-22
 

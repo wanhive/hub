@@ -134,14 +134,13 @@ bool Rsa::generateKeyPair(const char *privateKeyFile, const char *publicKeyFile,
 		return false;
 	}
 
-	RSA *pRSA = generateRSAKey(bits);
+	auto pRSA = generateRSAKey(bits);
 	if (!pRSA) {
 		return false;
 	}
 
-	EVP_PKEY *pPrivKey = generatePrivateKey(pRSA);
-
-	bool status = true;
+	auto pPrivKey = generatePrivateKey(pRSA);
+	bool status = false;
 	if (pPrivKey) {
 		status = generatePem(privateKeyFile, pPrivKey, false, password, nullptr)
 				&& generatePem(publicKeyFile, pPrivKey, true, nullptr, nullptr);
@@ -159,8 +158,7 @@ RSA* Rsa::create(const char *key, bool isPublicKey, char *password) noexcept {
 		return nullptr;
 	}
 
-	BIO *keybio;
-	keybio = BIO_new_mem_buf(key, -1);
+	auto keybio = BIO_new_mem_buf(key, -1);
 	if (keybio == nullptr) {
 		return 0;
 	}
@@ -183,10 +181,11 @@ RSA* Rsa::createFromFile(const char *filename, bool isPublicKey,
 	}
 
 	//Open file for reading in text mode
-	FILE *fp = Storage::openStream(filename, "rt", false);
+	auto fp = Storage::openStream(filename, "r", false);
 	if (fp == nullptr) {
 		return nullptr;
 	}
+
 	RSA *rsa = nullptr;
 	if (isPublicKey) {
 		rsa = PEM_read_RSA_PUBKEY(fp, nullptr, nullptr, nullptr);
@@ -238,15 +237,13 @@ int Rsa::verifyDigest(RSA *rsa, const unsigned char *digest,
 }
 
 RSA* Rsa::generateRSAKey(int bits) noexcept {
-	int exponent = RSA_F4;
-
-	BIGNUM *bigNumber = BN_new();
-	if (!bigNumber || !BN_set_word(bigNumber, exponent)) {
+	auto bigNumber = BN_new();
+	if (!bigNumber || !BN_set_word(bigNumber, RSA_F4)) {
 		BN_clear_free(bigNumber);
 		return nullptr;
 	}
 
-	RSA *rsa = RSA_new();
+	auto rsa = RSA_new();
 	if (!rsa || !RSA_generate_key_ex(rsa, bits, bigNumber, nullptr)
 			|| !RSA_check_key(rsa)) {
 		RSA_free(rsa);
@@ -264,7 +261,7 @@ EVP_PKEY* Rsa::generatePrivateKey(RSA *rsa) noexcept {
 		return nullptr;
 	}
 
-	EVP_PKEY *pkey = EVP_PKEY_new();
+	auto pkey = EVP_PKEY_new();
 	if (!pkey || !EVP_PKEY_assign_RSA(pkey, rsa)) {
 		EVP_PKEY_free(pkey);
 		return nullptr;
@@ -280,12 +277,11 @@ bool Rsa::generatePem(const char *filename, EVP_PKEY *pKey, bool isPublicKey,
 		return false;
 	}
 
-	const EVP_CIPHER *pCipher =
-			password ? ((cipher ? cipher : EVP_aes_256_cbc())) : nullptr;
-	int passPhraseLength = password ? strlen(password) : 0;
+	auto pCipher = password ? ((cipher ? cipher : EVP_aes_256_cbc())) : nullptr;
+	auto passPhraseLength = password ? strlen(password) : 0;
 
 	//Open the file for writing in text mode
-	FILE *pFile = Storage::openStream(filename, "wt", true);
+	auto pFile = Storage::openStream(filename, "w", true);
 	if (!pFile) {
 		return false;
 	}

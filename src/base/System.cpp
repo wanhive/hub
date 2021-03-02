@@ -24,7 +24,7 @@ char* System::executableDirectory(char *buffer, size_t length) {
 }
 
 char* System::currentWorkingDirectory(char *buffer, size_t length) {
-	char *cwd = getcwd(buffer, length);
+	auto cwd = getcwd(buffer, length);
 	if (cwd) {
 		return cwd;
 	} else {

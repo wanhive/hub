@@ -17,7 +17,7 @@
 
 namespace {
 /**
- * Helper functions for writing to the hosts file.
+ * Helper functions for formatting a hosts file.
  */
 static void writeTuple(FILE *f, unsigned long long uid, const char *host,
 		const char *service) noexcept {
@@ -75,7 +75,7 @@ void Host::batchUpdate(const char *path) {
 		throw Exception(EX_RESOURCE);
 	}
 
-	FILE *f = Storage::openStream(path, "rt", false);
+	auto f = Storage::openStream(path, "r", false);
 	if (!f) {
 		throw Exception(EX_INVALIDPARAM);
 	}
@@ -111,7 +111,8 @@ void Host::batchUpdate(const char *path) {
 void Host::batchDump(const char *path, int version) {
 	if (db.conn) {
 		//-----------------------------------------------------------------
-		const char *query = "SELECT uid, name, service, type FROM hosts ORDER BY uid ASC";
+		auto query =
+				"SELECT uid, name, service, type FROM hosts ORDER BY uid ASC";
 		sqlite3_stmt *stmt = nullptr;
 		if (sqlite3_prepare_v2(db.conn, query, strlen(query), &stmt,
 				nullptr) != SQLITE_OK) {
@@ -119,7 +120,7 @@ void Host::batchDump(const char *path, int version) {
 			throw Exception(EX_INVALIDSTATE);
 		}
 		//-----------------------------------------------------------------
-		FILE *f = Storage::openStream(path, "wt", true);
+		auto f = Storage::openStream(path, "w", true);
 		if (!f) {
 			finalize(stmt);
 			throw Exception(EX_INVALIDPARAM);
@@ -127,10 +128,10 @@ void Host::batchDump(const char *path, int version) {
 
 		writeHeading(f, version);
 		while (sqlite3_step(stmt) == SQLITE_ROW) {
-			unsigned long long id = sqlite3_column_int64(stmt, 0);
-			const char *host = (const char*) sqlite3_column_text(stmt, 1);
-			const char *service = (const char*) sqlite3_column_text(stmt, 2);
-			unsigned int type = sqlite3_column_int(stmt, 3);
+			auto id = (unsigned long long) sqlite3_column_int64(stmt, 0);
+			auto host = (const char*) sqlite3_column_text(stmt, 1);
+			auto service = (const char*) sqlite3_column_text(stmt, 2);
+			auto type = sqlite3_column_int(stmt, 3);
 			if (version == 1) {
 				writeTuple(f, id, host, service, type);
 			} else {
@@ -151,10 +152,10 @@ int Host::get(unsigned long long uid, NameInfo &ni) noexcept {
 		memset(&ni, 0, sizeof(ni));
 		sqlite3_bind_int64(db.qStmt, 1, uid);
 		if ((z = sqlite3_step(db.qStmt)) == SQLITE_ROW) {
-			const unsigned char *x = sqlite3_column_text(db.qStmt, 0);
-			strcpy(ni.host, (const char*) x);
-			x = sqlite3_column_text(db.qStmt, 1);
-			strcpy(ni.service, (const char*) x);
+			strncpy(ni.host, (const char*) sqlite3_column_text(db.qStmt, 0),
+					sizeof(ni.host) - 1);
+			strncpy(ni.service, (const char*) sqlite3_column_text(db.qStmt, 1),
+					sizeof(ni.service) - 1);
 			ni.type = sqlite3_column_int(db.qStmt, 2);
 		} else if (z == SQLITE_DONE) {
 			//No record found
@@ -227,9 +228,9 @@ int Host::list(unsigned long long uids[], unsigned int &count,
 }
 
 void Host::createDummy(const char *path, int version) {
-	FILE *f = Storage::openStream(path, "wt", true);
+	auto f = Storage::openStream(path, "w", true);
 	if (f) {
-		const char *host = "127.0.0.1";
+		auto host = "127.0.0.1";
 		char service[32];
 		int type = 0;
 		writeHeading(f, version);
@@ -275,7 +276,7 @@ void Host::closeConnection() noexcept {
 }
 
 void Host::createTable() {
-	const char *tq = "CREATE TABLE IF NOT EXISTS hosts ("
+	auto tq = "CREATE TABLE IF NOT EXISTS hosts ("
 			"uid INTEGER NOT NULL UNIQUE ON CONFLICT REPLACE,"
 			"name TEXT NOT NULL DEFAULT '127.0.0.1',"
 			"service TEXT NOT NULL DEFAULT '9000',"
@@ -290,12 +291,10 @@ void Host::createTable() {
 }
 
 void Host::prepareStatements() {
-	const char *iq =
-			"INSERT INTO hosts (uid, name, service, type) VALUES (?,?,?,?)";
-	const char *sq = "SELECT name, service, type FROM hosts WHERE uid=?";
-	const char *dq = "DELETE FROM hosts WHERE uid=?";
-	const char *lq =
-			"SELECT uid FROM hosts WHERE type=? ORDER BY RANDOM() LIMIT ?";
+	auto iq = "INSERT INTO hosts (uid, name, service, type) VALUES (?,?,?,?)";
+	auto sq = "SELECT name, service, type FROM hosts WHERE uid=?";
+	auto dq = "DELETE FROM hosts WHERE uid=?";
+	auto lq = "SELECT uid FROM hosts WHERE type=? ORDER BY RANDOM() LIMIT ?";
 
 	closeStatements();
 	if (!db.conn
@@ -347,27 +346,24 @@ void Host::finalize(sqlite3_stmt *stmt) noexcept {
 }
 
 void Host::beginTransaction() {
-	const char *begin = "BEGIN";
 	if (!db.conn
-			|| sqlite3_exec(db.conn, begin, nullptr, nullptr, nullptr)
+			|| sqlite3_exec(db.conn, "BEGIN", nullptr, nullptr, nullptr)
 					!= SQLITE_OK) {
 		throw Exception(EX_INVALIDOPERATION);
 	}
 }
 
 void Host::endTransaction() {
-	const char *commit = "COMMIT";
 	if (!db.conn
-			|| sqlite3_exec(db.conn, commit, nullptr, nullptr, nullptr)
+			|| sqlite3_exec(db.conn, "COMMIT", nullptr, nullptr, nullptr)
 					!= SQLITE_OK) {
 		throw Exception(EX_INVALIDOPERATION);
 	}
 }
 
 void Host::cancelTransaction() {
-	const char *rollback = "ROLLBACK";
 	if (!db.conn
-			|| sqlite3_exec(db.conn, rollback, nullptr, nullptr, nullptr)
+			|| sqlite3_exec(db.conn, "ROLLBACK", nullptr, nullptr, nullptr)
 					!= SQLITE_OK) {
 		throw Exception(EX_INVALIDOPERATION);
 	}

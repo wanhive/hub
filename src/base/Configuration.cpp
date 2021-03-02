@@ -53,15 +53,16 @@ bool Configuration::load(const char *filename, unsigned int *lastRow) noexcept {
 	char section[MAX_SECTION_LEN];
 	char key[MAX_KEY_LEN];
 	char value[MAX_VALUE_LEN];
+
 	unsigned int rows = 0;
 	bool success = true;
-	int dirty = data.status; //Back-up
+	auto dirty = data.status; //Back-up
 
 	if (Storage::testFile(filename) != 1) {
 		return false;
 	}
 
-	FILE *fp = Storage::openStream(filename, "rt", false);
+	auto fp = Storage::openStream(filename, "r", false);
 	if (fp == nullptr) {
 		return false;
 	}
@@ -105,7 +106,7 @@ bool Configuration::load(const char *filename, unsigned int *lastRow) noexcept {
 		success = false;
 	}
 
-	//Return the number of rows processed
+	//Return the number of rows processed so far
 	if (lastRow) {
 		*lastRow = rows;
 	}
@@ -119,7 +120,7 @@ bool Configuration::store(const char *filename) noexcept {
 	FILE *fp = nullptr;
 	bool success = true;
 
-	if ((fp = Storage::openStream(filename, "wt", true))) {
+	if ((fp = Storage::openStream(filename, "w", true))) {
 		//Print sections and entries
 		success = print(fp, strrchr(filename, Storage::DIR_SEPARATOR) + 1);
 	} else {
@@ -145,16 +146,16 @@ bool Configuration::print(FILE *stream, const char *name) noexcept {
 	}
 
 	if (name) {
-		char tBuf[64];
-		memset(tBuf, 0, sizeof(tBuf));
-		Timer::refractorTime(tBuf, sizeof(tBuf));
+		char tf[64];
+		memset(tf, 0, sizeof(tf));
+		Timer::refractorTime(tf, sizeof(tf));
 		//Print the header
-		fprintf(stream, "#Configuration %s auto-generated on %s\n", name, tBuf);
+		fprintf(stream, "#Configuration %s auto-generated on %s\n", name, tf);
 	}
 
 	//Print the sections and entries
 	for (unsigned int i = 0; i < data.nSections; ++i) {
-		Section *sec = &data.sections[i];
+		auto sec = &data.sections[i];
 		if (fprintf(stream, "\n#Section: %s\n[%s]\n", sec->name, sec->name)
 				< 0) {
 			return false;
@@ -162,7 +163,7 @@ bool Configuration::print(FILE *stream, const char *name) noexcept {
 
 		//Print the entries
 		for (unsigned int j = 0; j < sec->nEntries; ++j) {
-			Entry *e = &sec->entries[j];
+			auto e = &sec->entries[j];
 			if (fprintf(stream, "%s = %s\n", e->key, e->value) < 0) {
 				return false;
 			}
@@ -176,7 +177,7 @@ bool Configuration::setString(const char *section, const char *option,
 	if (section && option && value) {
 		// Check whether the entry already exists
 		Section *s = nullptr;
-		Entry *e = findEntry(section, option, &s);
+		auto e = findEntry(section, option, &s);
 		if (e == nullptr) {
 			if (s == nullptr) {
 				s = addSection(section);
@@ -199,7 +200,7 @@ bool Configuration::setString(const char *section, const char *option,
 const char* Configuration::getString(const char *section, const char *option,
 		const char *defaultValue) const noexcept {
 	if (section && option) {
-		Entry *entry = findEntry(section, option);
+		auto entry = findEntry(section, option);
 		if (entry) {
 			return entry->value;
 		} else {
@@ -220,10 +221,10 @@ bool Configuration::setNumber(const char *section, const char *option,
 
 unsigned long long Configuration::getNumber(const char *section,
 		const char *option, unsigned long long defaultValue) const noexcept {
-	unsigned long long number;
-	const char *val = getString(section, option);
-	if (val && sscanf(val, "%llu", &number) == 1) {
-		return number;
+	unsigned long long num;
+	auto val = getString(section, option);
+	if (val && sscanf(val, "%llu", &num) == 1) {
+		return num;
 	} else {
 		return defaultValue;
 	}
@@ -239,10 +240,10 @@ bool Configuration::setDouble(const char *section, const char *option,
 
 double Configuration::getDouble(const char *section, const char *option,
 		double defaultValue) const noexcept {
-	double value;
-	const char *val = getString(section, option);
-	if (val && sscanf(val, "%lf", &value) == 1) {
-		return value;
+	double num;
+	auto val = getString(section, option);
+	if (val && sscanf(val, "%lf", &num) == 1) {
+		return num;
 	} else {
 		return defaultValue;
 	}
@@ -255,7 +256,7 @@ bool Configuration::setBoolean(const char *section, const char *option,
 
 bool Configuration::getBoolean(const char *section, const char *option,
 		bool defaultValue) const noexcept {
-	const char *val = getString(section, option);
+	auto val = getString(section, option);
 	if (!val) {
 		return defaultValue;
 	} else if (strcasecmp(val, "TRUE") == 0) {
@@ -297,7 +298,7 @@ char* Configuration::expandPath(const char *pathname) const noexcept {
 		return Storage::expandPathName(pathname);
 	}
 	//-----------------------------------------------------------------
-	char *tmp = WH_strdup(pathname);	//The working copy
+	auto tmp = WH_strdup(pathname);	//The working copy
 	/*
 	 * Resolve the postfix which is the substring
 	 * succeeding the first path separator
@@ -320,7 +321,7 @@ char* Configuration::expandPath(const char *pathname) const noexcept {
 	 * Resolve the initial substring into prefix
 	 */
 	//Resolve using PATHS section inside configuration
-	const char *prefix = getString("PATHS", &tmp[1]);
+	auto prefix = getString("PATHS", &tmp[1]);
 	//-----------------------------------------------------------------
 	/*
 	 * Expand into the full path
@@ -329,14 +330,14 @@ char* Configuration::expandPath(const char *pathname) const noexcept {
 		//Restore the original string
 		tmp[i] = postfix[0] ? Storage::DIR_SEPARATOR : '\0';
 		//Expand into the full path and return
-		char *result = Storage::expandPathName(tmp);
+		auto result = Storage::expandPathName(tmp);
 		WH_free(tmp);
 		return result;
 	} else {
 		//1. Construct the string in format: prefix/postfix
-		unsigned int prefixLen = strlen(prefix);
-		unsigned int postfixLen = strlen(postfix);
-		char *result = (char*) WH_malloc(prefixLen + postfixLen + 2);
+		auto prefixLen = strlen(prefix);
+		auto postfixLen = strlen(postfix);
+		auto result = (char*) WH_malloc(prefixLen + postfixLen + 2);
 		strcpy(result, prefix);
 		if (postfixLen
 				&& (!prefixLen
@@ -367,7 +368,7 @@ Configuration::Section* Configuration::findSection(
 
 Configuration::Entry* Configuration::findEntry(const char *section,
 		const char *key, Section **secP) const noexcept {
-	Section *sec = findSection(section);
+	auto sec = findSection(section);
 	if (secP) {
 		*secP = sec;
 	}

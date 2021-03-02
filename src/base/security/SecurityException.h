@@ -26,9 +26,8 @@ public:
 	const char* what() const noexcept override;
 	int errorCode() const noexcept override;
 private:
-	static constexpr int MSG_LEN = 128; //Must be at least 120 bytes
 	unsigned long error;
-	char buffer[MSG_LEN];
+	char buffer[256]; //Recommended size: at least 256 bytes
 };
 
 } /* namespace wanhive */

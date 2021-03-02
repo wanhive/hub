@@ -13,7 +13,6 @@
 #include "CSPRNG.h"
 #include "../Storage.h"
 #include "../common/Exception.h"
-#include <fcntl.h>
 #include <openssl/rand.h>
 
 namespace wanhive {

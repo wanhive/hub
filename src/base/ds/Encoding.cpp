@@ -208,9 +208,6 @@ unsigned int Encoding::decodedLength64(unsigned int size) noexcept {
 
 unsigned int Encoding::base64Encode(char *dest, const void *src,
 		unsigned int srcLength, unsigned int destLength) noexcept {
-	const unsigned char *data = (const unsigned char*) src;
-	unsigned int length = 0;
-
 	if (!dest || (encodedLength64(srcLength) > destLength)
 			|| (srcLength && !src)) {
 		return 0;
@@ -220,8 +217,10 @@ unsigned int Encoding::base64Encode(char *dest, const void *src,
 	}
 
 	//Consume the input three characters at a time
+	auto data = (const unsigned char*) src;
+	unsigned int length = 0;
 	for (unsigned int x = 0; x < srcLength; x += BASE64_ENCODER_IN) {
-		unsigned int in = srcLength - x;
+		auto in = srcLength - x;
 		if (in > BASE64_ENCODER_IN) {
 			in = BASE64_ENCODER_IN;
 		}
@@ -289,7 +288,7 @@ unsigned int Encoding::base64Decode(unsigned char *dest, const char *src,
 	unsigned int length = 0;
 	unsigned long long buf = 1;
 	for (unsigned int index = 0; index < srcLength; ++index) {
-		unsigned char c = decode64(src[index]);
+		auto c = decode64(src[index]);
 		if (c <= BASE64_MAX_VALUE) {
 			buf = buf << BASE64_GROUP_LENGTH | c;
 
@@ -322,9 +321,6 @@ unsigned int Encoding::base64Decode(unsigned char *dest, const char *src,
 
 unsigned int Encoding::base32Encode(char *dest, const void *src,
 		unsigned int srcLength, unsigned int destLength) noexcept {
-	const unsigned char *data = (const unsigned char*) src;
-	unsigned int length = 0;
-
 	if (!dest || (encodedLength32(srcLength) > destLength)
 			|| (srcLength && !src)) {
 		return 0;
@@ -334,8 +330,10 @@ unsigned int Encoding::base32Encode(char *dest, const void *src,
 	}
 
 	//Consume the input five characters at a time
+	auto data = (const unsigned char*) src;
+	unsigned int length = 0;
 	for (unsigned int x = 0; x < srcLength; x += BASE32_ENCODER_IN) {
-		unsigned int in = srcLength - x;
+		auto in = srcLength - x;
 		if (in > BASE32_ENCODER_IN) {
 			in = BASE32_ENCODER_IN;
 		}
@@ -425,7 +423,7 @@ unsigned int Encoding::base32Decode(unsigned char *dest, const char *src,
 	unsigned int length = 0;
 	unsigned long long buf = 1;
 	for (unsigned int index = 0; index < srcLength; ++index) {
-		unsigned char c = decode32(toupper(src[index]));
+		auto c = decode32(toupper(src[index]));
 		if (c <= BASE32_MAX_VALUE) {
 			buf = buf << BASE32_GROUP_LENGTH | c;
 			//Received 40 bits, split it up into 5-bytes
@@ -470,9 +468,6 @@ unsigned int Encoding::base32Decode(unsigned char *dest, const char *src,
 
 unsigned int Encoding::base16Encode(char *dest, const void *src,
 		unsigned int srcLength, unsigned int destLength) noexcept {
-	const unsigned char *data = (const unsigned char*) src;
-	unsigned int length = 0;
-
 	if (!dest || (encodedLength16(srcLength) > destLength)
 			|| (srcLength && !src)) {
 		return 0;
@@ -482,6 +477,8 @@ unsigned int Encoding::base16Encode(char *dest, const void *src,
 	}
 
 	//Consume the input one characters at a time
+	auto data = (const unsigned char*) src;
+	unsigned int length = 0;
 	for (unsigned int x = 0; x < srcLength; x += BASE16_ENCODER_IN) {
 		//Assemble the 8-bit number
 		unsigned long long n = data[x];
@@ -511,7 +508,7 @@ unsigned int Encoding::base16Decode(unsigned char *dest, const char *src,
 	unsigned int length = 0;
 	unsigned long long buf = 1;
 	for (unsigned int index = 0; index < srcLength; ++index) {
-		unsigned char c = decode16(toupper(src[index]));
+		auto c = decode16(toupper(src[index]));
 		if (c <= BASE16_MAX_VALUE) {
 			buf = buf << BASE16_GROUP_LENGTH | c;
 			//Received 8 bits

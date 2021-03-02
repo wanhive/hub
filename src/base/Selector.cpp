@@ -71,7 +71,7 @@ unsigned int Selector::select(int timeout) {
 	_interrupted = false;
 	_timedOut = false;
 	selected.clear();
-	int n = epoll_pwait(epfd, selected.offset(), selected.space(), timeout,
+	auto n = epoll_pwait(epfd, selected.offset(), selected.space(), timeout,
 			mask);
 	if (n > 0) {
 		selected.setIndex(selected.getIndex() + n);

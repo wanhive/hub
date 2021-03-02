@@ -138,7 +138,7 @@ size_t SSLContext::receiveStream(SSL *ssl, unsigned char *buf, size_t length) {
 	} else if (!length) {
 		return 0;
 	} else {
-		size_t toRecv = length;
+		auto toRecv = length;
 		size_t index = 0;
 		ssize_t n = 0;
 		while (toRecv != 0) {
@@ -160,7 +160,7 @@ size_t SSLContext::sendStream(SSL *ssl, const unsigned char *buf,
 	} else if (!length) {
 		return 0;
 	} else {
-		size_t toSend = length;
+		auto toSend = length;
 		size_t index = 0;
 		ssize_t n = 0;
 		while (toSend != 0) {

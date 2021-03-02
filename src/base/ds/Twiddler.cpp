@@ -115,6 +115,16 @@ unsigned long long Twiddler::mix(unsigned long long l) noexcept {
 	return l;
 }
 
+unsigned long long Twiddler::FVN1aHash(const void *data,
+		unsigned int bytes) noexcept {
+	auto p = (const unsigned char*) data;
+	auto hash = 14695981039346656037ULL;
+	for (size_t i = 0; data && (i < bytes); ++i) {
+		hash = 1099511628211ULL * (hash ^ p[i]);
+	}
+	return hash;
+}
+
 bool Twiddler::isBetween(unsigned int value, unsigned int from,
 		unsigned int to) noexcept {
 	if (from < to) {
@@ -242,7 +252,7 @@ void Twiddler::xorString(unsigned char *dest, const unsigned char *s1,
 
 char* Twiddler::stripLast(char *s, char delimiter) noexcept {
 	if (s) {
-		char *last = strrchr(s, delimiter);
+		auto last = strrchr(s, delimiter);
 		if (last) {
 			*last = '\0';
 			return last;
@@ -252,8 +262,8 @@ char* Twiddler::stripLast(char *s, char delimiter) noexcept {
 }
 
 char* Twiddler::removeWhitespace(char *s) noexcept {
-	char *i = s;
-	char *j = s;
+	auto i = s;
+	auto j = s;
 
 	do {
 		if (!isspace(*i)) {

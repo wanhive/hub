@@ -64,7 +64,7 @@ void Signal::handle(int signum, void (*handler)(int), bool restart) {
 }
 
 void Signal::raise(int signum) {
-	int error = kill(getpid(), signum);
+	auto error = kill(getpid(), signum);
 	if (error) {
 		throw SystemException();
 	}
@@ -177,7 +177,7 @@ void Signal::remove(sigset_t *set, int signum) {
 }
 
 bool Signal::isMember(const sigset_t *set, int signum) {
-	int ret = sigismember(set, signum);
+	auto ret = sigismember(set, signum);
 	if (ret != -1) {
 		return (bool) ret;
 	} else {
@@ -190,7 +190,7 @@ void Signal::setMask(sigset_t *set) {
 }
 
 void Signal::threadMask(int how, const sigset_t *set, sigset_t *oldset) {
-	int error = pthread_sigmask(how, set, oldset);
+	auto error = pthread_sigmask(how, set, oldset);
 	if (error) {
 		throw SystemException(error);
 	}

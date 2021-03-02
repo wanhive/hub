@@ -296,8 +296,8 @@ private:
 		KEY *keys; //Used by HASH-SET
 	} bucket;
 
-	HFN hash; //hash functor
-	EQFN equal; //equality functor
+	HFN hash; //Hash functor (must return unsigned int)
+	EQFN equal; //Equality functor
 
 	//Minimum designated capacity of the hash table
 	static constexpr unsigned int MIN_CAPACITY = 16;
@@ -323,13 +323,13 @@ template<typename KEY, typename VALUE, bool ISMAP, typename HFN, typename EQFN> 
 
 template<typename KEY, typename VALUE, bool ISMAP, typename HFN, typename EQFN> bool wanhive::Khash<
 		KEY, VALUE, ISMAP, HFN, EQFN>::contains(const KEY &key) const noexcept {
-	unsigned int i = get(key);
+	auto i = get(key);
 	return (i != end());
 }
 
 template<typename KEY, typename VALUE, bool ISMAP, typename HFN, typename EQFN> bool wanhive::Khash<
 		KEY, VALUE, ISMAP, HFN, EQFN>::removeKey(const KEY &key) noexcept {
-	unsigned int i = get(key);
+	auto i = get(key);
 	if (i != end()) {
 		remove(i);
 		return true;
@@ -341,7 +341,7 @@ template<typename KEY, typename VALUE, bool ISMAP, typename HFN, typename EQFN> 
 template<typename KEY, typename VALUE, bool ISMAP, typename HFN, typename EQFN> bool wanhive::Khash<
 		KEY, VALUE, ISMAP, HFN, EQFN>::hmGet(const KEY &key,
 		VALUE &val) const noexcept {
-	unsigned int i = get(key);
+	auto i = get(key);
 	if (i != end()) {
 		val = getValue(i);
 		return true;
@@ -368,7 +368,7 @@ bool wanhive::Khash<KEY, VALUE, ISMAP, HFN, EQFN>::hmReplace(const KEY &key,
 		const VALUE &val, VALUE &oldVal) noexcept {
 	if (ISMAP) {
 		int ret;
-		unsigned int i = put(key, ret);
+		auto i = put(key, ret);
 		if (ret) {
 			//Key did not exist
 			valueAt(i) = val;
@@ -392,8 +392,8 @@ template<typename KEY, typename VALUE, bool ISMAP, typename HFN, typename EQFN> 
 		return false;
 	}
 
-	unsigned int fi = get(first);
-	unsigned int si = (first != second) ? get(second) : fi;
+	auto fi = get(first);
+	auto si = (first != second) ? get(second) : fi;
 	//Correct iterators are returned even on failure
 	iterators[0] = fi;
 	iterators[1] = si;
@@ -475,7 +475,7 @@ template<typename KEY, typename VALUE, bool ISMAP, typename HFN, typename EQFN> 
 			if (!isEither(getFlags(), j)) {
 				KEY key = getKey(j);
 				VALUE val;
-				unsigned int newMask = newCapacity - 1;
+				auto newMask = newCapacity - 1;
 				if (ISMAP) {
 					val = valueAt(j);
 				}
@@ -489,9 +489,8 @@ template<typename KEY, typename VALUE, bool ISMAP, typename HFN, typename EQFN> 
 				 * back in the next iteration in similar fashion.
 				 */
 				while (true) {
+					auto i = newMask & (unsigned int) hash(key);
 					unsigned int step = 0;
-					unsigned int k = hash(key);
-					unsigned int i = k & newMask;
 					while (!isEmpty(newFlags, i)) {
 						//Quadratic Probe
 						i = linearProbe(i, (++step), newMask);
@@ -537,9 +536,9 @@ template<typename KEY, typename VALUE, bool ISMAP, typename HFN, typename EQFN> 
 template<typename KEY, typename VALUE, bool ISMAP, typename HFN, typename EQFN> unsigned int wanhive::Khash<
 		KEY, VALUE, ISMAP, HFN, EQFN>::get(const KEY &key) const noexcept {
 	if (capacity()) {
-		unsigned int mask = capacity() - 1;
-		unsigned int index = hash(key) & mask;
-		unsigned int last = index;	//the initial position
+		auto mask = capacity() - 1;
+		auto index = mask & (unsigned int) hash(key);
+		auto last = index;	//the initial position
 		unsigned int step = 0;
 		while (!isEmpty(getFlags(), index)
 				&& (isDeleted(getFlags(), index) || !equal(getKey(index), key))) {
@@ -567,14 +566,14 @@ template<typename KEY, typename VALUE, bool ISMAP, typename HFN, typename EQFN> 
 
 	unsigned int index;
 	{
-		unsigned int mask = capacity() - 1;
-		unsigned int i = hash(key) & mask;
+		auto mask = capacity() - 1;
+		auto i = mask & (unsigned int) hash(key);
 		if (isEmpty(getFlags(), i)) {
 			index = i; /* for speed up */
 		} else {
-			unsigned int start = i;			//save the initial position
-			unsigned int step = 0;			//counter for quadratic probing
-			unsigned int site = end();		//the last deleted slot
+			auto start = i;			//save the initial position
+			auto step = 0;			//counter for quadratic probing
+			auto site = end();		//the last deleted slot
 			index = end();
 			while (!isEmpty(getFlags(), i)
 					&& (isDeleted(getFlags(), i) || !equal(getKey(i), key))) {
@@ -637,7 +636,7 @@ template<typename KEY, typename VALUE, bool ISMAP, typename HFN, typename EQFN> 
 template<typename KEY, typename VALUE, bool ISMAP, typename HFN, typename EQFN> void wanhive::Khash<
 		KEY, VALUE, ISMAP, HFN, EQFN>::iterate(
 		int (*fn)(unsigned int index, void *arg), void *arg) {
-	for (unsigned int k = begin(); fn && (k < end()); ++k) {
+	for (auto k = begin(); fn && (k < end()); ++k) {
 		if (!exists(k)) {
 			continue;
 		}

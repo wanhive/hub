@@ -53,9 +53,9 @@ size_t Serializer::vpack(unsigned char *buf, const char *format,
 	if (!buf || !format) {
 		return 0;
 	}
-	size_t len = 0; //Cannot declare inside switch block (syntax error)
-	//Preserve initial position, will use it to calculate the number of transferred bytes
-	unsigned char *mark = buf;
+
+	size_t len = 0; //Length of an ascii string/blob
+	auto mark = buf; //Preserve the initial position
 
 	for (; *format != '\0'; ++format) {
 		switch (*format) {
@@ -192,11 +192,10 @@ size_t Serializer::vpack(unsigned char *buf, size_t size, const char *format,
 	if (!buf || !size || !format) {
 		return 0;
 	}
-	size_t len = 0; //Cannot declare inside switch block (syntax error)
-	//Preserve initial position, will use it to calculate the number of transferred bytes
-	unsigned char *mark = buf;
-	//Preserve the end position
-	const unsigned char *end = buf + size;
+
+	size_t len = 0; //Length of an ascii string/blob
+	auto mark = buf; //Preserve the initial position
+	auto end = buf + size; //Preserve the end position
 
 	for (; *format != '\0'; ++format) {
 		switch (*format) {
@@ -386,9 +385,8 @@ size_t Serializer::vunpack(const unsigned char *buf, const char *format,
 		return 0;
 	}
 
-	size_t length = 0, maxLength = 0; //Cannot declare inside switch block (syntax error)
-	//Preserve initial position, will use it to calculate the number of transferred bytes
-	const unsigned char *mark = buf;
+	size_t length = 0, maxLength = 0; //Length of an ascii string/blob
+	auto mark = buf; //Preserve the initial position
 
 	for (; *format != '\0'; ++format) {
 		switch (*format) {
@@ -538,11 +536,9 @@ size_t Serializer::vunpack(const unsigned char *buf, size_t size,
 		return 0;
 	}
 
-	size_t length = 0, maxLength = 0; //Cannot declare inside switch block (syntax error)
-	//Preserve initial position, will use it to calculate the number of transferred bytes
-	const unsigned char *mark = buf;
-	//Preserve the end position
-	const unsigned char *end = buf + size;
+	size_t length = 0, maxLength = 0; //Length of an ascii string/blob
+	auto mark = buf; //Preserve the initial position
+	auto end = buf + size; //Preserve the end position
 
 	for (; *format != '\0'; ++format) {
 		switch (*format) {
@@ -735,17 +731,17 @@ void Serializer::packi64(unsigned char *buf, uint64_t i) noexcept {
 }
 
 void Serializer::packf16(unsigned char *buf, long double f) noexcept {
-	unsigned long long value = pack754(f, 16, 5);
+	auto value = pack754(f, 16, 5);
 	packi16(buf, value);
 }
 
 void Serializer::packf32(unsigned char *buf, long double f) noexcept {
-	unsigned long long value = pack754(f, 32, 8);
+	auto value = pack754(f, 32, 8);
 	packi32(buf, value);
 }
 
 void Serializer::packf64(unsigned char *buf, long double f) noexcept {
-	unsigned long long value = pack754(f, 64, 11);
+	auto value = pack754(f, 64, 11);
 	packi64(buf, value);
 }
 
@@ -761,7 +757,7 @@ uint8_t Serializer::unpacku8(const unsigned char *buf) noexcept {
 int8_t Serializer::unpacki8(const unsigned char *buf) noexcept {
 	uint8_t i = *buf;
 
-	// change unsigned number to signed
+	//Change unsigned number to signed
 	if (i <= 0x7f) {
 		return i;
 	} else {
@@ -827,30 +823,30 @@ int64_t Serializer::unpacki64(const unsigned char *buf) noexcept {
 }
 
 float Serializer::unpackf16(const unsigned char *buf) noexcept {
-	unsigned long long value = unpacku16(buf);
+	auto value = unpacku16(buf);
 	return unpack754(value, 16, 5);
 }
 
 float Serializer::unpackf32(const unsigned char *buf) noexcept {
-	unsigned long long value = unpacku32(buf);
+	auto value = unpacku32(buf);
 	return unpack754(value, 32, 8);
 }
 
 double Serializer::unpackf64(const unsigned char *buf) noexcept {
-	unsigned long long value = unpacku64(buf);
+	auto value = unpacku64(buf);
 	return unpack754(value, 64, 11);
 }
 
 unsigned long long Serializer::pack754(long double f, unsigned bits,
 		unsigned expbits) noexcept {
 	if (f == 0.0) {
-		return 0; // get this special case out of the way
+		return 0; //Get this special case out of the way
 	}
 
 	long double fnorm;
 	long long sign;
 
-	// check sign and begin normalization
+	//Check sign and begin normalization
 	if (f < 0) {
 		sign = 1;
 		fnorm = -f;
@@ -859,7 +855,7 @@ unsigned long long Serializer::pack754(long double f, unsigned bits,
 		fnorm = f;
 	}
 
-	// get the normalized form of f and track the exponent
+	//Get the normalized form of f and track the exponent
 	int shift = 0;
 	while (fnorm >= 2.0) {
 		fnorm /= 2.0;
@@ -872,13 +868,13 @@ unsigned long long Serializer::pack754(long double f, unsigned bits,
 	fnorm = fnorm - 1.0;
 
 	unsigned significandbits = bits - expbits - 1; // -1 for sign bit
-	// calculate the binary form (non-float) of the significand data
+	//Calculate the binary form (non-float) of the significand data
 	long long significand = fnorm * ((1LL << significandbits) + 0.5f);
 
-	// get the biased exponent
+	//Get the biased exponent
 	long long exp = shift + ((1 << (expbits - 1)) - 1); // shift + bias
 
-	// return the final answer
+	//Return the final answer
 	return (sign << (bits - 1)) | (exp << (bits - expbits - 1)) | significand;
 }
 
@@ -887,13 +883,13 @@ long double Serializer::unpack754(unsigned long long i, unsigned bits,
 	if (i == 0) {
 		return 0.0;
 	}
-	// pull the significand
+	//Pull the significand
 	unsigned significandbits = bits - expbits - 1; // -1 for sign bit
 	long double result = (i & ((1LL << significandbits) - 1)); // mask
 	result /= (1LL << significandbits); // convert back to float
-	result += 1.0f; // add the one back on
+	result += 1.0f; //Add the one back on
 
-	// deal with the exponent
+	//Deal with the exponent
 	unsigned bias = (1 << (expbits - 1)) - 1;
 	long long shift = ((i >> significandbits) & ((1LL << expbits) - 1)) - bias;
 	while (shift > 0) {
@@ -905,7 +901,7 @@ long double Serializer::unpack754(unsigned long long i, unsigned bits,
 		shift++;
 	}
 
-	// sign it
+	//Sign it
 	result *= (i >> (bits - 1)) & 1 ? -1.0 : 1.0;
 
 	return result;

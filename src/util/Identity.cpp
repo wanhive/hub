@@ -150,13 +150,13 @@ unsigned int Identity::loadIdentifiers(const char *section, const char *option,
 	}
 	//--------------------------------------------------------------------------
 	memset(nodes, 0, length * sizeof(unsigned long long));
-	char *filename = cfg.getPathName(section, option, nullptr);
+	auto filename = cfg.getPathName(section, option, nullptr);
 	if (Storage::testFile(filename) != 1) {
 		WH_free(filename);
 		return 0;
 	}
 
-	FILE *fp = Storage::openStream(filename, "rt", false);
+	auto fp = Storage::openStream(filename, "r", false);
 	WH_free(filename);
 	if (!fp) {
 		return 0;
@@ -490,7 +490,7 @@ char* Identity::locateConfigurationFile() noexcept {
 		}
 
 		//STEP 3: Search in home
-		char *cfgPath = Storage::expandPathName(WH_CONF_PATH);
+		auto cfgPath = Storage::expandPathName(WH_CONF_PATH);
 		if (Storage::testFile(cfgPath) == 1) {
 			return cfgPath;
 		} else {
