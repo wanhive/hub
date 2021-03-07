@@ -90,7 +90,7 @@ void Timer::sleep(unsigned int milliseconds, unsigned int nanoseconds) noexcept 
 size_t Timer::refractorTime(char *buffer, size_t size,
 		const char *format) noexcept {
 	format = format ? format : "%Y-%m-%d %H:%M:%S";
-	time_t timep = time(nullptr);
+	auto timep = time(nullptr);
 	struct tm t;
 	return strftime(buffer, size, format, localtime_r(&timep, &t));
 }

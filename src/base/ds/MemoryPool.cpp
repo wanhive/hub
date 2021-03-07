@@ -81,7 +81,7 @@ unsigned int MemoryPool::destroy() noexcept {
 }
 
 void* MemoryPool::allocate() noexcept {
-	void *result = _head;
+	auto result = _head;
 	if (result) {
 		_head = *(void**) _head;
 		++_allocated;

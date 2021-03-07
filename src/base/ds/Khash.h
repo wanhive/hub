@@ -354,7 +354,7 @@ template<typename KEY, typename VALUE, bool ISMAP, typename HFN, typename EQFN> 
 		const VALUE &val) noexcept {
 	if (ISMAP) {
 		int ret;
-		unsigned int i = put(key, ret);
+		auto i = put(key, ret);
 		if (ret) {
 			valueAt(i) = val;
 			return true;

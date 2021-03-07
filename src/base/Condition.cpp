@@ -88,7 +88,7 @@ void Condition::notify() {
 	auto status = pthread_mutex_lock(&mutex);
 	if (status == 0) {
 		flag = true;
-		int rc = pthread_cond_signal(&condition);
+		auto rc = pthread_cond_signal(&condition);
 		pthread_mutex_unlock(&mutex);
 		if (rc != 0) {
 			throw SystemException(rc);

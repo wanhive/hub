@@ -90,7 +90,7 @@ int AppManager::parseOptions(int argc, char *argv[]) noexcept {
 	programName = strrchr(argv[0], Storage::DIR_SEPARATOR);
 	programName = programName ? (programName + 1) : argv[0];
 	//-----------------------------------------------------------------
-	const char *shortOptions = "c:hmn:t:";
+	auto shortOptions = "c:hmn:t:";
 	const struct option longOptions[] = { { "config", 1, nullptr, 'c' }, {
 			"help", 0, nullptr, 'h' }, { "menu", 0, nullptr, 'm' }, { "name", 1,
 			nullptr, 'n' }, { "type", 1, nullptr, 't' }, { nullptr, 0, nullptr,
