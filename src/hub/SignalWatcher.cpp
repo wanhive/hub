@@ -20,6 +20,7 @@ SignalWatcher::SignalWatcher(bool blocking) {
 	sigset_t mask;
 	Signal::fill(&mask);
 	setHandle(Signal::openSignalfd(-1, mask, blocking));
+	memset(&info, 0, sizeof(info));
 }
 
 SignalWatcher::~SignalWatcher() {
@@ -48,8 +49,7 @@ bool SignalWatcher::publish(void *arg) noexcept {
 }
 
 ssize_t SignalWatcher::read() {
-	memset(&info, 0, sizeof(info));
-
+	memset(&info, 0, sizeof(info)); //Clear out the data
 	ssize_t nRead = Watcher::read(&info, sizeof(info));
 	if (nRead == sizeof(info)) {
 		return nRead;

@@ -1,7 +1,7 @@
 /*
  * ClientHub.h
  *
- * Base class for the wanhive clients
+ * The base class for the Wanhive clients
  *
  *
  * Copyright (C) 2019 Amit Kumar (amitkriit@gmail.com)
@@ -17,7 +17,7 @@
 
 namespace wanhive {
 /**
- * Base class for wanhive hubs acting as clients
+ * Wanhive client implementation
  * Thread safe at class level
  */
 class ClientHub: public Hub {

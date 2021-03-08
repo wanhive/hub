@@ -28,7 +28,7 @@ public:
 	//-----------------------------------------------------------------
 	//Start the clock with the current settings
 	void start() override final;
-	//Disarm the clock, current settings are preserved
+	//Disarm the clock, the current settings are preserved
 	void stop() noexcept override final;
 	//Handle the periodic timer expiration notification
 	bool callback(void *arg) noexcept override final;
@@ -36,13 +36,14 @@ public:
 	bool publish(void *arg) noexcept override final;
 	//-----------------------------------------------------------------
 	/*
-	 * Returns the number of bytes read, possibly zero (buffer full or would block),
-	 * or -1 if the descriptor got closed. Fresh call overwrites the expiration count.
+	 * Returns the number of bytes read, possibly zero (buffer full or would
+	 * block), or -1 if the descriptor was closed. Each new call overwrites
+	 * the expiration count.
 	 */
 	ssize_t read();
 	/*
 	 * Updates clock's settings and restarts it.
-	 * Setting <expiration> to zero (0) will disarm the clock.
+	 * NOTE: setting <expiration> to zero (0) will disarm the clock.
 	 */
 	void reset(unsigned int expiration, unsigned int interval);
 	//-----------------------------------------------------------------

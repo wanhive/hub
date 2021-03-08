@@ -73,14 +73,20 @@ public:
 	//Sets monitor's timeout value
 	void setTimeout(int milliseconds) noexcept;
 private:
-	//Called by Reactor::add before the Watcher <w> is registered
+	/*
+	 * Customizes the Watcher <w> and the associated records before
+	 * adding the Watcher to the reactor's event loop.
+	 */
 	virtual void adapt(Watcher *w) = 0;
 	/*
-	 * Called by Reactor::dispatch when IO events are reported on the Watcher <w>
-	 * Return: <false> if further processing isn't required, <true> otherwise
+	 * Processes the IO events reported on the Watcher <w>. Should return
+	 * <false> if further processing isn't needed, <true> otherwise.
 	 */
 	virtual bool react(Watcher *w) noexcept = 0;
-	//Called by Reactor::remove after the Watcher <w> is removed from the event loop
+	/*
+	 * Cleans up the Watcher <w> and the associated data structures after
+	 * it's removal from the reactor's event loop.
+	 */
 	virtual void stop(Watcher *w) noexcept = 0;
 private:
 	//Release the next watcher from the ready list

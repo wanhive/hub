@@ -19,9 +19,10 @@ namespace wanhive {
 
 Inotifier::Inotifier(bool blocking) :
 		offset(0), limit(0) {
-	int fd = inotify_init1(!blocking ? IN_NONBLOCK : 0);
+	auto fd = inotify_init1(!blocking ? IN_NONBLOCK : 0);
 	if (fd != -1) {
 		setHandle(fd);
+		memset(buffer, 0, sizeof(buffer));
 	} else {
 		throw SystemException();
 	}
@@ -53,7 +54,7 @@ bool Inotifier::publish(void *arg) noexcept {
 }
 
 int Inotifier::add(const char *pathname, uint32_t mask) {
-	int wd = inotify_add_watch(getHandle(), pathname, mask);
+	auto wd = inotify_add_watch(getHandle(), pathname, mask);
 	if (wd != -1) {
 		return wd;
 	} else {
@@ -68,10 +69,12 @@ void Inotifier::remove(int identifier) {
 }
 
 ssize_t Inotifier::read() {
-	memset(buffer, 0, sizeof(buffer));
+	//Clear out the old notifications
 	offset = 0;
 	limit = 0;
-	ssize_t nRead = Watcher::read(buffer, sizeof(buffer));
+
+	//Read new notifications
+	auto nRead = Watcher::read(buffer, sizeof(buffer));
 	if (nRead != -1) {
 		limit = nRead;
 	}
@@ -80,7 +83,7 @@ ssize_t Inotifier::read() {
 
 const InotifyEvent* Inotifier::next() {
 	if (limit && offset < limit) {
-		InotifyEvent *event = (InotifyEvent*) (buffer + offset);
+		auto event = (InotifyEvent*) (buffer + offset);
 		offset += sizeof(InotifyEvent) + event->len;
 		return event;
 	} else {

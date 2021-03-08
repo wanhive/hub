@@ -50,17 +50,16 @@ bool Clock::publish(void *arg) noexcept {
 }
 
 ssize_t Clock::read() {
+	count = 0; //Reset the count
 	uint64_t expiryCount;
-	ssize_t nRead = Watcher::read(&expiryCount, sizeof(uint64_t));
-	if (nRead == sizeof(uint64_t)) {
+	auto nRead = Watcher::read(&expiryCount, sizeof(expiryCount));
+	if (nRead == sizeof(expiryCount)) {
 		count = expiryCount;
 		return nRead;
 	} else if (nRead == 0 || nRead == -1) {
-		count = 0;
 		return nRead;
 	} else {
 		//Something broke
-		count = 0;
 		throw Exception(EX_INVALIDSTATE);
 	}
 }

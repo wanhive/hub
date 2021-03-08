@@ -111,7 +111,7 @@ void MulticastConsumer::handleInvalidMessage(const Message *msg) noexcept {
 }
 
 void MulticastConsumer::subscribe(unsigned int topic) noexcept {
-	Message *message = Message::create();
+	auto message = Message::create();
 	if (message) {
 		message->putHeader(0, 0, Message::HEADER_SIZE, 0, topic,
 				WH_CMD_MULTICAST, WH_QLF_SUBSCRIBE, WH_AQLF_REQUEST);

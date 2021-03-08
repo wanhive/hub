@@ -34,17 +34,19 @@ public:
 	bool publish(void *arg) noexcept override final;
 	//-----------------------------------------------------------------
 	/*
-	 * Returns the number of bytes read, possibly zero (buffer full or would block),
-	 * or -1 if the descriptor got closed. Every new call overwrites the event count.
+	 * Returns the number of bytes read, possibly zero (buffer full or would
+	 * block), or -1 if the descriptor was closed. Each new call overwrites
+	 * the event count.
 	 */
 	ssize_t read();
 	/*
-	 * Returns the number of bytes written, possibly zero (buffer full or would block).
-	 * Clears the write IO event reported on this notifier if the call would block.
+	 * Returns the number of bytes written, possibly zero (buffer full or
+	 * would block). Clears out the write IO event reported on this notifier
+	 * if the write call would block.
 	 */
 	ssize_t write(unsigned long long events);
 	//-----------------------------------------------------------------
-	//Returns the number of times an event was reported
+	//Returns the number of events
 	unsigned long long getCount() const noexcept;
 private:
 	unsigned long long count;//Number of events reported by the most recent <read> op

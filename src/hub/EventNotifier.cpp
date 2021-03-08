@@ -20,7 +20,7 @@ namespace wanhive {
 EventNotifier::EventNotifier(bool semaphore, bool blocking) :
 		count(0) {
 	int flags = (semaphore ? EFD_SEMAPHORE : 0) | (blocking ? 0 : EFD_NONBLOCK);
-	int fd = eventfd(0, flags);
+	auto fd = eventfd(0, flags);
 	if (fd != -1) {
 		setHandle(fd);
 	} else {
@@ -54,25 +54,23 @@ bool EventNotifier::publish(void *arg) noexcept {
 }
 
 ssize_t EventNotifier::read() {
+	count = 0; //Reset the count
 	uint64_t eventCount;
-	ssize_t nRead = Watcher::read(&eventCount, sizeof(uint64_t));
-	count = eventCount;
-	if (nRead == sizeof(uint64_t)) {
+	auto nRead = Watcher::read(&eventCount, sizeof(eventCount));
+	if (nRead == sizeof(eventCount)) {
 		count = eventCount;
 		return nRead;
 	} else if (nRead == 0 || nRead == -1) {
-		count = 0;
 		return nRead;
 	} else {
 		//Something broke
-		count = 0;
 		throw Exception(EX_INVALIDSTATE);
 	}
 }
 
 ssize_t EventNotifier::write(unsigned long long events) {
 	uint64_t eventCount = events;
-	return Watcher::write(&eventCount, sizeof(uint64_t));
+	return Watcher::write(&eventCount, sizeof(eventCount));
 }
 
 unsigned long long EventNotifier::getCount() const noexcept {

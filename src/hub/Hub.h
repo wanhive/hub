@@ -28,7 +28,7 @@
 
 namespace wanhive {
 /**
- * Base class for the Wanhive hubs
+ * The base class for the Wanhive hubs
  * Thread safe at class level
  * NOTE: Few methods are conditionally safe for the worker thread
  */

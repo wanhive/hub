@@ -111,7 +111,7 @@ bool Socket::callback(void *arg) noexcept {
 }
 
 bool Socket::publish(void *arg) noexcept {
-	Message *message = static_cast<Message*>(arg);
+	auto message = static_cast<Message*>(arg);
 	if (message && (!outQueueLimit || out.readSpace() < outQueueLimit)
 			&& out.put(message)) {
 		message->addReferenceCount();
@@ -142,9 +142,9 @@ bool Socket::testTopic(unsigned int index) const noexcept {
 Socket* Socket::accept(bool blocking) {
 	SocketAddress sa;
 	int flag = blocking ? 0 : SOCK_NONBLOCK;
-	int sfd = Network::accept(this->getHandle(), sa, flag);
+	auto sfd = Network::accept(this->getHandle(), sa, flag);
 	if (sfd == -1) {
-		//call would block
+		//Would block
 		clearEvents(IO_READ);
 		return nullptr;
 	}
@@ -259,7 +259,7 @@ Socket* Socket::createSocketPair(int &sfd, bool blocking) {
 	try {
 		Network::socketPair(sv, blocking);
 		sfd = sv[1];
-		Socket *conn = new Socket(sv[0]);
+		auto conn = new Socket(sv[0]);
 		conn->setType(SOCKET_LOCAL);
 		return conn;
 	} catch (BaseException &e) {
@@ -303,10 +303,8 @@ unsigned int Socket::unallocated() noexcept {
 ssize_t Socket::socketRead() {
 	ssize_t nRecv = 0;
 	CircularBufferVector<unsigned char> vector;
-	unsigned int space = in.getWritable(vector);
-
-	//If buffer is not full, receive data
-	if (space) {
+	//Receive data into the read buffer
+	if (in.getWritable(vector)) {
 		int nVectors = 2;
 		if (vector.part[1].length == 0) {
 			nVectors = 1;
@@ -342,10 +340,8 @@ ssize_t Socket::secureRead() {
 
 	ssize_t nRecv = 0;
 	CircularBufferVector<unsigned char> vector;
-	unsigned int space = in.getWritable(vector);
-
-	//Receive data into both segments
-	if (space) {
+	//Receive data into both the segments
+	if (in.getWritable(vector)) {
 		CryptoUtils::clearErrors();
 		for (unsigned int i = 0; i < 2; i++) {
 			auto count = vector.part[i].length;
@@ -523,22 +519,23 @@ void Socket::adjustOutgoingQueue(size_t count) noexcept {
 	auto iovCount = outgoingMessages.space();
 	if (count) {
 		size_t total = 0;
-		Message *msg = nullptr;
 		unsigned int dispatchedMessageCount = 0;
 		for (unsigned int index = 0; index < iovCount; ++index) {
 			total += vec[index].iov_len;
 			if (total > count) {
-				/* This IOVEC has been consumed partially, make adjustments and break out */
+				//This IOVEC has been consumed only partially
 				auto originalLength = vec[index].iov_len;
 				vec[index].iov_len = (total - count);
 				vec[index].iov_base = ((unsigned char*) (vec[index].iov_base))
 						+ (originalLength - (total - count));
 				break;
 			}
-			//We have dispatched this message, recycle it back to the pool
+
+			//We have dispatched this message, recycle it
+			Message *msg = nullptr;
 			out.get(msg);
 			Message::recycle(msg);
-			dispatchedMessageCount++;
+			++dispatchedMessageCount;
 		}
 		outgoingMessages.setIndex(
 				outgoingMessages.getIndex() + dispatchedMessageCount);
@@ -557,8 +554,8 @@ void Socket::clear() noexcept {
 
 void Socket::cleanup() noexcept {
 	SSLContext::destroy(secure.ssl);
-
 	Message::recycle(incomingMessage);
+
 	Message *message;
 	while ((out.get(message))) {
 		Message::recycle(message);

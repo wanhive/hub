@@ -1,7 +1,7 @@
 /*
  * ClientHub.cpp
  *
- * Base class for the wanhive clients
+ * The base class for the Wanhive clients
  *
  *
  * Copyright (C) 2019 Amit Kumar (amitkriit@gmail.com)
@@ -328,7 +328,7 @@ void ClientHub::findRoot() noexcept {
 		Random prng;
 		prng.bytes(rnd, sizeof(rnd));
 		generateNonce(bs.hashFn, rnd[0], rnd[1], &bs.nonce);
-		Message *msg = Protocol::createGetKeyRequest(0,
+		auto msg = Protocol::createGetKeyRequest(0,
 				{ verifyHost() ? getPKI() : nullptr, &bs.nonce }, nullptr);
 		//-----------------------------------------------------------------
 		if (!msg) {
@@ -359,12 +359,12 @@ void ClientHub::initAuthorization() noexcept {
 		if (!isStage(WHC_AUTHORIZE) || !bs.node || (ctx.password && !bs.auth)) {
 			throw Exception(EX_INVALIDSTATE);
 		} else if (bs.auth) {
-			Message *msg = createRegistrationMessage(false);
+			auto msg = createRegistrationMessage(false);
 			msg->setDestination(bs.auth->getUid());
 			Hub::sendMessage(msg);
 			WH_LOG_DEBUG("Initiating authorization");
 		} else {
-			Message *msg = createRegistrationMessage(true);
+			auto msg = createRegistrationMessage(true);
 			msg->setDestination(bs.node->getUid());
 			Hub::sendMessage(msg);
 			WH_LOG_DEBUG("Initiating registration");
@@ -460,7 +460,7 @@ void ClientHub::processAuthenticationResponse(Message *msg) noexcept {
 
 Message* ClientHub::createFindRootRequest() {
 	try {
-		Message *msg = Protocol::createFindRootRequest(0, 0, getUid(), 0);
+		auto msg = Protocol::createFindRootRequest(0, 0, getUid(), 0);
 		if (msg) {
 			return msg;
 		} else {
@@ -505,7 +505,7 @@ void ClientHub::processGetKeyResponse(Message *msg) noexcept {
 
 Message* ClientHub::createRegistrationMessage(bool sign) {
 	try {
-		Message *msg = Protocol::createRegisterRequest(0, getUid(), &bs.nonce,
+		auto msg = Protocol::createRegisterRequest(0, getUid(), &bs.nonce,
 				nullptr);
 		if (msg) {
 			if (sign) {

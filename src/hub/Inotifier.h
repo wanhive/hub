@@ -40,14 +40,15 @@ public:
 	//Removes an identifier (watch descriptor)
 	void remove(int identifier);
 	/*
-	 * Returns the number of bytes read, possibly zero (buffer full or would block),
-	 * or -1 if the descriptor got closed. Fresh call overwrites the old notifications.
+	 * Returns the number of bytes read, possibly zero (buffer full or would
+	 * block), or -1 if the descriptor was closed. Each new call overwrites the
+	 * previous notifications.
 	 */
 	ssize_t read();
 	//Returns the next notification
 	const InotifyEvent* next();
 private:
-	unsigned char buffer[4096];
+	unsigned char buffer[4096];	//MIN: sizeof(inotify_event) + NAME_MAX + 1
 	unsigned int offset;
 	unsigned int limit;
 };

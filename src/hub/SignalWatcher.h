@@ -36,11 +36,12 @@ public:
 	bool publish(void *arg) noexcept override final;
 	//-----------------------------------------------------------------
 	/*
-	 * Returns the number of bytes read, possibly zero (buffer full or would block),
-	 * or -1 if the descriptor got closed. Every new call overwrites the old data.
+	 * Returns the number of bytes read, possibly zero (buffer full or would
+	 * block), or -1 if the descriptor was closed. Each new call overwrites
+	 * the previous notification.
 	 */
 	ssize_t read();
-	//Retrieves information about caught signals
+	//Returns the information about the most recently caught signal
 	const SignalInfo* getSignalInfo() const noexcept;
 private:
 	SignalInfo info;

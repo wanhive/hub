@@ -170,14 +170,13 @@ void Hub::iterateWatchers(int (*fn)(Watcher *w, void *arg), void *arg) {
 }
 
 unsigned int Hub::purgeTemporaryConnections(unsigned int target) noexcept {
-	unsigned int count = 0;
-	Watcher *conn = nullptr;
-	unsigned long long id = 0;
-
 	//Prepare the buffer for reading
 	temporaryConnections.rewind();
+	unsigned int count = 0;
+	unsigned long long id;
 	while (temporaryConnections.get(id)) {
-		if ((conn = watchers.get(id))) {
+		auto conn = watchers.get(id);
+		if (conn) {
 			//This conversion is always safe
 			if ((static_cast<Socket*>(conn))->hasTimedOut(
 					ctx.connectionTimeOut)) {
@@ -207,7 +206,7 @@ unsigned int Hub::purgeTemporaryConnections(unsigned int target) noexcept {
 bool Hub::retainMessage(Message *message) noexcept {
 	if (message && !message->isMarked() && message->validate()
 			&& incomingMessages.put(message)) {
-		message->putFlags(0);
+		message->putFlags(MSG_WAIT_PROCESSING);
 		message->setMarked();
 		return true;
 	} else {
@@ -228,8 +227,8 @@ bool Hub::sendMessage(Message *message) noexcept {
 void Hub::adapt(Watcher *w) {
 	w->start();
 	/*
-	 * Always cast to the base type before converting to void *
-	 * That will allow safe conversion of void * back to the base or the derived type
+	 * Always cast to the base type before converting to (void *). That will
+	 * allow safe conversion of void * back to the base or the derived type
 	 * For example, in a derived class the following line should look like:
 	 * w->setReference(static_cast<Hub*>(this));
 	 */
@@ -250,7 +249,7 @@ void Hub::stop(Watcher *w) noexcept {
 			|| (w == notifiers.signalWatcher);
 
 	if (error) {
-		WH_LOG_ERROR("Irrecoverable component failure, exiting.");
+		WH_LOG_ERROR("Fatal component failure, exiting.");
 		exit(EXIT_FAILURE);
 	} else {
 		auto id = w->getUid();
