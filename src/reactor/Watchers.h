@@ -42,9 +42,9 @@ public:
 	 */
 	bool put(Watcher *w) noexcept;
 	/*
-	 * Same as put, however if another watcher is already registered with the key
-	 * equal to uid of <w> then the old one is kicked out and returned (nullptr is
-	 * returned otherwise).
+	 * Same as Watchers::put, however if another watcher is already registered
+	 * with the same key as the uid of <w> then the existing one is kicked out
+	 * and returned (nullptr is returned otherwise).
 	 */
 	Watcher* replace(Watcher *w) noexcept;
 	//Removes the watcher with the given key from the hash table

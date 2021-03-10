@@ -99,17 +99,22 @@ protected:
 	Watcher* getWatcher(unsigned long long id) const noexcept;
 	//Add watcher to hub's event loop, <flags> are set on success
 	void putWatcher(Watcher *w, uint32_t events, uint32_t flags);
-	//Removes watcher associated with the <id> from hub's event loop
+	/*
+	 * Removes the Watcher identified by <id> from this hub's event loop.
+	 * If the watcher can not be removed immediately then the operation
+	 * will be silently completed in the next iteration.
+	 */
 	void removeWatcher(unsigned long long id) noexcept;
 	/*
-	 * Register a Watcher currently registered with <id> with <newId> and activate it.
-	 * If a Watcher with identifier <newId> is already registered then it is replaced
-	 * and disabled if <replace> is set to true, otherwise the operation fails.
-	 * Returns the newly registered Watcher on success, nullptr otherwise.
+	 * Register a Watcher currently registered as <id> with the <newId> and
+	 * activate it. if <replace> is set to true and another Watcher is already
+	 * registered with the identifier <newId> then it is replaced and disabled,
+	 * otherwise the operation fails. Returns the newly registered Watcher on
+	 * success, nullptr otherwise.
 	 */
 	Watcher* registerWatcher(unsigned long long id, unsigned long long newId,
 			bool replace = false) noexcept;
-	//Iterate over all the watchers monitored by the hub
+	//Iterate over all the watchers monitored by this hub
 	void iterateWatchers(int (*fn)(Watcher *w, void *arg), void *arg);
 	//Purge the timed out temporary Socket connections
 	unsigned int purgeTemporaryConnections(unsigned int target = 0) noexcept;

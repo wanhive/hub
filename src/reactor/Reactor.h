@@ -74,8 +74,8 @@ public:
 	void setTimeout(int milliseconds) noexcept;
 private:
 	/*
-	 * Customizes the Watcher <w> and the associated records before
-	 * adding the Watcher to the reactor's event loop.
+	 * Customizes the Watcher <w> and populates the associated records
+	 * before adding the Watcher to the reactor's event loop.
 	 */
 	virtual void adapt(Watcher *w) = 0;
 	/*
@@ -84,8 +84,8 @@ private:
 	 */
 	virtual bool react(Watcher *w) noexcept = 0;
 	/*
-	 * Cleans up the Watcher <w> and the associated data structures after
-	 * it's removal from the reactor's event loop.
+	 * Cleans up the Watcher <w> and the associated records after
+	 * the given Watcher's removal from the reactor's event loop.
 	 */
 	virtual void stop(Watcher *w) noexcept = 0;
 private:
