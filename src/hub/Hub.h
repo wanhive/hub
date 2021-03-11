@@ -93,11 +93,14 @@ protected:
 	/**
 	 * Watcher management
 	 */
-	//Is watcher with the given <id> being monitored by the hub
+	//Return true if a Watcher with identifier <id> is registered on this hub
 	bool containsWatcher(unsigned long long id) const noexcept;
-	//Return the watcher associated with <id> (NULL if doesn't exist)
+	//Return the Watcher associated with the <id> (nullptr if doesn't exist)
 	Watcher* getWatcher(unsigned long long id) const noexcept;
-	//Add watcher to hub's event loop, <flags> are set on success
+	/*
+	 * Add Watcher <w> to hub's event loop, <flags> are set on success.
+	 * The Watcher will be monitored for IO events described by <events>.
+	 */
 	void putWatcher(Watcher *w, uint32_t events, uint32_t flags);
 	/*
 	 * Removes the Watcher identified by <id> from this hub's event loop.
@@ -116,7 +119,10 @@ protected:
 			bool replace = false) noexcept;
 	//Iterate over all the watchers monitored by this hub
 	void iterateWatchers(int (*fn)(Watcher *w, void *arg), void *arg);
-	//Purge the timed out temporary Socket connections
+	/*
+	 * Purge timed out temporary Socket connections. If <target> is not
+	 * zero (0) then at most <target> number of Watchers will be removed.
+	 */
 	unsigned int purgeTemporaryConnections(unsigned int target = 0) noexcept;
 	//=================================================================
 	/**
@@ -222,9 +228,9 @@ private:
 	/**
 	 * Worker thread management
 	 */
-	//Starts the worker thread: calls Thread::start()
+	//Starts the worker thread
 	void startWorker(void *arg);
-	//Stops the worker thread: calls Thread::interrupt()->Thread::join() in that order
+	//Stops the worker thread
 	void stopWorker();
 	//-----------------------------------------------------------------
 	//Publish the outgoing messages to their intended destinations

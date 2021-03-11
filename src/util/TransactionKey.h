@@ -17,7 +17,7 @@
 
 namespace wanhive {
 /**
- * Key and nonce
+ * Key and nonce pair
  */
 struct TransactionKey {
 	const PKI *keys;

@@ -549,7 +549,7 @@ bool Endpoint::verify(const unsigned char *in, unsigned int length,
 	}
 }
 
-bool Endpoint::verify(Message *msg, const PKI *pki) noexcept {
+bool Endpoint::verify(const Message *msg, const PKI *pki) noexcept {
 	return msg && msg->validate()
 			&& verify(msg->getStorage(), msg->getLength(), pki);
 }

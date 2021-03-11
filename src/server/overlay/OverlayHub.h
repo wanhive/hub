@@ -125,17 +125,17 @@ private:
 	unsigned long long getNextHop(unsigned long long destination) const noexcept;
 	bool allowCommunication(unsigned long long source,
 			unsigned long long destination) const noexcept;
-	//Process a command, called by (route)
+	//Process a command (called by OverlayHub::route)
 	int process(Message *message) noexcept;
 	int handleInvalidRequest(Message *msg) noexcept;
 	//=================================================================
 	/*
-	 * CMD: AUTHENTICATION and INFORMATION
+	 * AUTHENTICATION and INFORMATION
 	 */
 	int handleDescribeNodeRequest(Message *msg) noexcept;
 	//-----------------------------------------------------------------
 	/*
-	 * CMD: CONNECTION MANAGEMENT
+	 * CONNECTION MANAGEMENT
 	 */
 	int handleRegistrationRequest(Message *msg) noexcept;
 	int handleGetKeyRequest(Message *msg) noexcept;
@@ -143,14 +143,14 @@ private:
 	int handleBootstrapRequest(Message *msg) noexcept;
 	//-----------------------------------------------------------------
 	/*
-	 * CMD: MULTICASTING
+	 * MULTICASTING (PUBLISH-SUBSCRIBE)
 	 */
 	int handlePublishRequest(Message *msg) noexcept;
 	int handleSubscribeRequest(Message *msg) noexcept;
 	int handleUnsubscribeRequest(Message *msg) noexcept;
 	//-----------------------------------------------------------------
 	/*
-	 * CMD: BASIC NODE MANAGEMENT
+	 * ROUTE MANAGEMENT
 	 */
 	int handleGetPredecessorRequest(Message *msg) noexcept;
 	int handleSetPredecessorRequest(Message *msg) noexcept;
@@ -162,7 +162,7 @@ private:
 	int handleNotifyRequest(Message *msg) noexcept;
 	//-----------------------------------------------------------------
 	/*
-	 * CMD: DHT MANAGEMENT
+	 * OVERLAY MANAGEMENT
 	 */
 	int handleFindSuccesssorRequest(Message *msg) noexcept;
 	int handlePingNodeRequest(Message *msg) noexcept;
@@ -175,14 +175,18 @@ private:
 			unsigned long long destination) const noexcept;
 	//Can the connection <uid> send privileged requests
 	bool isPrivileged(unsigned long long uid) const noexcept;
-	bool isValidRegistrationRequest(Message *msg) noexcept;
+	//Check the registration request
+	bool isValidRegistrationRequest(const Message *msg) noexcept;
+	//Check the registration request parameters
 	bool allowRegistration(unsigned long long source,
 			unsigned long long requestedId) const noexcept;
-	bool isValidStabilizationResponse(Message *msg) const noexcept;
+	//Check the stabilization response header
+	bool isValidStabilizationResponse(const Message *msg) const noexcept;
+	//Return the identifier associated with the given hash code
 	unsigned long long nonceToId(const Digest *hc) const noexcept;
 	/*
-	 * Builds the response message's header in case the response is to be sent back
-	 * directly to it's originator. Message's source is set to this hub's identifier.
+	 * Builds the response message's header if the response is to be sent
+	 * directly. Message's source is set to this hub's identifier.
 	 * If <length> is not zero then message length is updated to <length>.
 	 */
 	void buildResponseHeader(Message *msg, unsigned int length = 0) noexcept;

@@ -323,7 +323,7 @@ unsigned int Protocol::processIdentificationResponse(
 	}
 }
 
-unsigned int Protocol::processIdentificationResponse(Message *msg,
+unsigned int Protocol::processIdentificationResponse(const Message *msg,
 		unsigned int &saltLength, const unsigned char *&salt,
 		unsigned int &nonceLength, const unsigned char *&nonce) noexcept {
 	if (!msg || !msg->validate()) {
@@ -383,7 +383,7 @@ unsigned int Protocol::processAuthenticationResponse(
 	}
 }
 
-unsigned int Protocol::processAuthenticationResponse(Message *msg,
+unsigned int Protocol::processAuthenticationResponse(const Message *msg,
 		unsigned int &length, const unsigned char *&proof) noexcept {
 	if (!msg || !msg->validate()) {
 		return 0;
@@ -490,7 +490,8 @@ unsigned int Protocol::processGetKeyResponse(const MessageHeader &header,
 	}
 }
 
-unsigned int Protocol::processGetKeyResponse(Message *msg, Digest *hc) noexcept {
+unsigned int Protocol::processGetKeyResponse(const Message *msg,
+		Digest *hc) noexcept {
 	if (!msg || !msg->validate() || !hc) {
 		return 0;
 	} else {
@@ -540,8 +541,7 @@ unsigned int Protocol::processFindRootResponse(const MessageHeader &header,
 		return 0;
 	} else {
 		uint64_t v[2] = { 0, 0 };
-		Serializer::unpack(buf + Message::HEADER_SIZE, (char*) "QQ", &v[0],
-				&v[1]);
+		Serializer::unpack(buf + Message::HEADER_SIZE, "QQ", &v[0], &v[1]);
 		if (v[0] == identity) {
 			root = v[1];
 			return header.getLength();
@@ -552,8 +552,8 @@ unsigned int Protocol::processFindRootResponse(const MessageHeader &header,
 	}
 }
 
-unsigned int Protocol::processFindRootResponse(Message *msg, uint64_t identity,
-		uint64_t &root) noexcept {
+unsigned int Protocol::processFindRootResponse(const Message *msg,
+		uint64_t identity, uint64_t &root) noexcept {
 	if (!msg || !msg->validate()) {
 		return 0;
 	} else {

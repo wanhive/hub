@@ -1472,7 +1472,7 @@ bool OverlayHub::isPrivileged(unsigned long long uid) const noexcept {
 	return isInternalNode(uid) || isWorkerId(uid);
 }
 
-bool OverlayHub::isValidRegistrationRequest(Message *msg) noexcept {
+bool OverlayHub::isValidRegistrationRequest(const Message *msg) noexcept {
 	/*
 	 * 1. Confirm that the requested ID is valid
 	 * 2. Analyze the security features (to prevent attacks)
@@ -1525,7 +1525,7 @@ bool OverlayHub::allowRegistration(unsigned long long source,
 	}
 }
 
-bool OverlayHub::isValidStabilizationResponse(Message *msg) const noexcept {
+bool OverlayHub::isValidStabilizationResponse(const Message *msg) const noexcept {
 	const MessageHeader &sh = worker.header;
 	return msg->getStatus() != WH_DHT_AQLF_REQUEST
 			&& msg->getLabel() == sh.getLabel()

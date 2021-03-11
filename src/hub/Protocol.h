@@ -14,13 +14,12 @@
 #define WH_HUB_PROTOCOL_H_
 #include "../util/Endpoint.h"
 
+namespace wanhive {
 /**
  * Bare minimum Wanhive protocol implementation
  * Expects blocking socket connection
  * Thread safe at class level
  */
-namespace wanhive {
-
 class Protocol: public Endpoint {
 public:
 	Protocol() noexcept;
@@ -120,7 +119,7 @@ public:
 			unsigned int &saltLength, const unsigned char *&salt,
 			unsigned int &nonceLength, const unsigned char *&nonce) noexcept;
 	//Returns message length on success, 0 on failure
-	static unsigned int processIdentificationResponse(Message *msg,
+	static unsigned int processIdentificationResponse(const Message *msg,
 			unsigned int &saltLength, const unsigned char *&salt,
 			unsigned int &nonceLength, const unsigned char *&nonce) noexcept;
 
@@ -138,7 +137,7 @@ public:
 			const MessageHeader &header, const unsigned char *buf,
 			unsigned int &length, const unsigned char *&proof) noexcept;
 	//Returns message length on success, 0 on failure
-	static unsigned int processAuthenticationResponse(Message *msg,
+	static unsigned int processAuthenticationResponse(const Message *msg,
 			unsigned int &length, const unsigned char *&proof) noexcept;
 
 	//Returns message length on success, 0 on failure
@@ -160,7 +159,8 @@ public:
 	static unsigned int processGetKeyResponse(const MessageHeader &header,
 			const unsigned char *buf, Digest *hc) noexcept;
 	//Returns message length on success, 0 on failure (<hc> is the value-result argument)
-	static unsigned int processGetKeyResponse(Message *msg, Digest *hc) noexcept;
+	static unsigned int processGetKeyResponse(const Message *msg,
+			Digest *hc) noexcept;
 
 	//Returns message length on success, 0 on failure
 	static unsigned int createFindRootRequest(uint64_t host, uint64_t uid,
@@ -174,8 +174,8 @@ public:
 			const unsigned char *buf, uint64_t identity,
 			uint64_t &root) noexcept;
 	//Returns message length on success, 0 on failure
-	static unsigned int processFindRootResponse(Message *msg, uint64_t identity,
-			uint64_t &root) noexcept;
+	static unsigned int processFindRootResponse(const Message *msg,
+			uint64_t identity, uint64_t &root) noexcept;
 };
 
 } /* namespace wanhive */

@@ -124,7 +124,7 @@ ssize_t Descriptor::write(const struct iovec *vectors, int count) {
 	if (nWrite != -1) {
 		return nWrite;
 	} else if (errno == EAGAIN || errno == EWOULDBLOCK) {
-		//Would Block, clear WRITE-flag and return immediately
+		//Would Block, clear the WRITE flag and return immediately
 		clearEvents(IO_WRITE);
 		return 0;
 	} else {
@@ -137,7 +137,7 @@ ssize_t Descriptor::write(const void *buf, size_t count) {
 	if (nWrite != -1) {
 		return nWrite;
 	} else if (errno == EAGAIN || errno == EWOULDBLOCK) {
-		//Would Block, clear WRITE-flag and return immediately
+		//Would Block, clear the WRITE flag and return immediately
 		clearEvents(IO_WRITE);
 		return 0;
 	} else {

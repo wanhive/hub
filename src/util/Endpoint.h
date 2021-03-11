@@ -216,7 +216,7 @@ public:
 	static bool verify(const unsigned char *in, unsigned int length,
 			const PKI *pki) noexcept;
 	//Verifies the Message <msg>, always returns true if <pki> is nullptr
-	static bool verify(Message *msg, const PKI *pki) noexcept;
+	static bool verify(const Message *msg, const PKI *pki) noexcept;
 	//-----------------------------------------------------------------
 	/*
 	 * Execute a request-response call over blocking socket connection.

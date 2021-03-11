@@ -100,7 +100,15 @@ MessageHeader& Message::getHeader() noexcept {
 	return this->header;
 }
 
+const MessageHeader& Message::getHeader() const noexcept {
+	return this->header;
+}
+
 unsigned char* Message::getStorage() noexcept {
+	return buffer.offset();
+}
+
+const unsigned char* Message::getStorage() const noexcept {
 	return buffer.offset();
 }
 

@@ -71,21 +71,18 @@ public:
 	//=================================================================
 	/**
 	 * For efficient IO operations
-	 * Following five methods grant direct access to the internal structures.
-	 * These methods violate encapsulation. Use with great care.
+	 * Some of these methods may violate encapsulation.
 	 */
-	//Returns direct reference to the routing header
+	//Returns reference to the routing header
 	MessageHeader& getHeader() noexcept;
+	//Returns const reference to the routing header
+	const MessageHeader& getHeader() const noexcept;
 	//Returns the message buffer offset correctly for data processing
 	unsigned char* getStorage() noexcept;
+	//Returns the message buffer offset correctly for data analysis
+	const unsigned char* getStorage() const noexcept;
 	//Returns the number of bytes waiting for transfer to a data sink
 	unsigned int remaining() const noexcept;
-	//-----------------------------------------------------------------
-	/**
-	 * For efficient IO operations
-	 * Following two methods must be called in the same order while reading
-	 * from a data source. Use with great care.
-	 */
 	//Builds the routing header and readies the object for payload transfer
 	void prepareHeader() noexcept;
 	//Finalizes the object after completion of data transfer

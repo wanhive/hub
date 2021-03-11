@@ -7,10 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- Const versions of the **Message::getHeader** and **Message::getStorage** methods.
+
 ### Changed
 
 - **Hub::retainMessage** sets the Message flag to **MSG_WAIT_PROCESSING**.
 - **Inotifier::read** doesn't unnecessarily zero out the IO buffer.
+- Add const modifier to the method parameters in the **Endpoint** and **Protocol** classes (wherever applicable).
 
 ## [3.0.0] - 2021-03-02
 

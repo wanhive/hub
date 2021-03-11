@@ -25,7 +25,7 @@ public:
 	ClientHub(unsigned long long uid, const char *path = nullptr) noexcept;
 	virtual ~ClientHub();
 
-	//Returns true if connected with the network
+	//Returns true if the client is connected with the network
 	bool isConnected() const noexcept;
 protected:
 	//-----------------------------------------------------------------
@@ -38,7 +38,7 @@ protected:
 	//Allow derived classes to override the values loaded during configuration
 	void setPassword(const unsigned char *password, unsigned int length,
 			unsigned int rounds) noexcept;
-	//Sequence number generator
+	//Sequence number generator for messages
 	unsigned short nextSequenceNumber() noexcept;
 private:
 	//Connect to the authentication node
