@@ -105,19 +105,29 @@ protected:
 	/*
 	 * Removes the Watcher identified by <id> from this hub's event loop.
 	 * If the watcher can not be removed immediately then the operation
-	 * will be silently completed in the next iteration.
+	 * will be scheduled for silent completion and the method call will
+	 * return true, false otherwise.
 	 */
-	void removeWatcher(unsigned long long id) noexcept;
+	bool removeWatcher(unsigned long long id) noexcept;
 	/*
 	 * Register a Watcher currently registered as <id> with the <newId> and
 	 * activate it. if <replace> is set to true and another Watcher is already
 	 * registered with the identifier <newId> then it is replaced and disabled,
-	 * otherwise the operation fails. Returns the newly registered Watcher on
-	 * success, nullptr otherwise.
+	 * otherwise the operation will fail. Returns the newly registered Watcher
+	 * on success, nullptr otherwise.
 	 */
 	Watcher* registerWatcher(unsigned long long id, unsigned long long newId,
 			bool replace = false) noexcept;
-	//Iterate over all the watchers monitored by this hub
+	/*
+	 * Iterate over the lookup table of watchers. Return values of the iterator
+	 * can be one of the following:
+	 * [0]: Continue iteration
+	 * [1]: Remove the watcher from the lookup table and continue
+	 * [Any other value]: Stop iteration
+	 *
+	 * CAUTION: A watcher removed from the lookup table will continue to be
+	 * monitored for IO events until it is removed from the event loop.
+	 */
 	void iterateWatchers(int (*fn)(Watcher *w, void *arg), void *arg);
 	/*
 	 * Purge timed out temporary Socket connections. If <target> is not
@@ -159,7 +169,7 @@ private:
 
 	/*
 	 * Called by Hub::publish if the <message> has MSG_TRAP flag set.
-	 * Return true to drop the message, false otherwise.
+	 * Return true to discard the message, false otherwise.
 	 */
 	virtual bool trapMessage(Message *message) noexcept;
 	//Process the messages

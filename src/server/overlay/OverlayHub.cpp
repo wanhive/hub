@@ -617,7 +617,8 @@ int OverlayHub::removeIfInvalid(Watcher *w, void *arg) noexcept {
 			|| hub->isInternalNode(uid) || hub->isWorkerId(uid))) {
 		hub->disable(w);
 		hub->counter.count++;
-		return 1;
+		//No need to remove from the lookup table
+		return 0;
 	} else {
 		return 0;
 	}
@@ -632,7 +633,8 @@ int OverlayHub::removeIfClient(Watcher *w, void *arg) noexcept {
 			&& !(Socket::isEphemeralId(uid) && w->testFlags(WATCHER_ACTIVE))) {
 		hub->disable(w);
 		hub->counter.count++;
-		return 1;
+		//No need to remove from the lookup table
+		return 0;
 	} else {
 		return 0;
 	}

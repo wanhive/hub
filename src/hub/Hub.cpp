@@ -143,8 +143,8 @@ void Hub::putWatcher(Watcher *w, uint32_t events, uint32_t flags) {
 	}
 }
 
-void Hub::removeWatcher(unsigned long long id) noexcept {
-	disable(getWatcher(id));
+bool Hub::removeWatcher(unsigned long long id) noexcept {
+	return disable(getWatcher(id));
 }
 
 Watcher* Hub::registerWatcher(unsigned long long id, unsigned long long newId,

@@ -72,8 +72,7 @@ private:
 			Digest *nonce) noexcept;
 	/*
 	 * <mode>: 0[TEMPORARY]; 1[INVALID]; 2[CLIENT];DEF[TEMPORARY|CLIENT]
-	 * <target>: function will try to purge at most <target> connections,
-	 * if set to 0 then all connections defined by <mode> will be purged
+	 * <target>: If non-zero then at most <target> connections will be purged.
 	 */
 	unsigned int purgeConnections(int mode = 0,
 			unsigned int target = 0) noexcept;
