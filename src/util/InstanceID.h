@@ -24,7 +24,7 @@ public:
 	~InstanceID();
 	/*
 	 * Generates a nonce suitable for handshaking and stores it inside <nonce>.
-	 * (<salt>, <id>) pair must be unique and <nonce> should be a valid non-NULL pointer.
+	 * (<salt>, <id>) pair must be unique and <nonce> should be a valid pointer.
 	 */
 	void generateNonce(Hash &hash, uint64_t salt, uint64_t id,
 			Digest *nonce) const noexcept;
@@ -33,12 +33,8 @@ public:
 	 */
 	bool verifyNonce(Hash &hash, uint64_t salt, uint64_t id,
 			const Digest *nonce) const noexcept;
-public:
-	//Must be a multiple of 8
-	static constexpr unsigned int SIZE = 32; //256 bits
 private:
-	//Stores the raw Instance ID
-	uint64_t buffer[SIZE / sizeof(uint64_t)];
+	uint64_t buffer[4]; //256 bits of the instance id
 };
 
 } /* namespace wanhive */

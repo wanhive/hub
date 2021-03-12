@@ -12,6 +12,7 @@
 
 #include "InstanceID.h"
 #include "Random.h"
+#include "../base/common/defines.h"
 #include <cstring>
 
 namespace wanhive {
@@ -27,23 +28,29 @@ InstanceID::~InstanceID() {
 
 void InstanceID::generateNonce(Hash &hash, uint64_t salt, uint64_t id,
 		Digest *nonce) const noexcept {
-	uint64_t block[(sizeof(buffer) / sizeof(uint64_t)) + 2];
-	block[0] = salt;
-	block[1] = id;
-	memcpy(&block[2], buffer, sizeof(buffer));
-	hash.create(block, sizeof(block), nonce);
-	memset(block, 0, sizeof(block));
+	if (nonce) {
+		uint64_t block[WH_ARRAYLEN(buffer) + 2];
+		block[0] = salt;
+		block[1] = id;
+		memcpy(&block[2], buffer, sizeof(buffer));
+		hash.create(block, sizeof(block), nonce);
+		memset(block, 0, sizeof(block));
+	}
 }
 
 bool InstanceID::verifyNonce(Hash &hash, uint64_t salt, uint64_t id,
 		const Digest *nonce) const noexcept {
-	uint64_t block[(sizeof(buffer) / sizeof(uint64_t)) + 2];
-	block[0] = salt;
-	block[1] = id;
-	memcpy(&block[2], buffer, sizeof(buffer));
-	auto ret = hash.verify(nonce, block, sizeof(block));
-	memset(block, 0, sizeof(block));
-	return ret;
+	if (nonce) {
+		uint64_t block[WH_ARRAYLEN(buffer) + 2];
+		block[0] = salt;
+		block[1] = id;
+		memcpy(&block[2], buffer, sizeof(buffer));
+		auto ret = hash.verify(nonce, block, sizeof(block));
+		memset(block, 0, sizeof(block));
+		return ret;
+	} else {
+		return false;
+	}
 }
 
 } /* namespace wanhive */

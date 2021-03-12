@@ -11,6 +11,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - **Message::getHeader** and **Message::getStorage** methods with const modifier.
 - Bootstrap using the hosts database or file.
+- Special host-type identifiers in the **Host** class.
 
 ### Changed
 
@@ -19,6 +20,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Inotifier::read** doesn't unnecessarily zero out the IO buffer.
 - Add const modifier to the method parameters in the **Endpoint** and **Protocol** classes (wherever applicable).
 - Rename **Identity::loadIdentifiers** to **Identity::getIdentifiers**.
+
+### Removed
+
+- The **InstanceID::SIZE** public constant.
 
 ## [3.0.0] - 2021-03-02
 
