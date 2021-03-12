@@ -219,8 +219,7 @@ void ClientHub::connectToAuthenticator() noexcept {
 		//-----------------------------------------------------------------
 		//Get the next identifier to probe
 		unsigned long long id;
-		if (!bs.identifiers.get(id)) {
-			WH_LOG_DEBUG("Identifiers list is empty");
+		if (!bs.identifiers.get(id) || !id) {
 			setStage(WHC_ERROR);
 			throw Exception(EX_RESOURCE);
 		}
@@ -265,8 +264,7 @@ void ClientHub::connectToOverlay() noexcept {
 		//-----------------------------------------------------------------
 		//Get the next identifier to probe
 		unsigned long long id;
-		if (!bs.identifiers.get(id)) {
-			WH_LOG_DEBUG("Identifiers list is empty");
+		if (!bs.identifiers.get(id) || !id) {
 			setStage(WHC_ERROR);
 			throw Exception(EX_RESOURCE);
 		}
@@ -580,13 +578,18 @@ void ClientHub::loadIdentifiers(bool auth) {
 		bs.identifiers.setStatus(1);
 		bs.identifiers.clear();
 		unsigned long long buffer[128];
-		auto n = Identity::loadIdentifiers("BOOTSTRAP",
-				(auth ? "auths" : "nodes"), buffer, 128);
+		//-----------------------------------------------------------------
+		auto n = Identity::getIdentifiers("BOOTSTRAP",
+				(auth ? "auths" : "nodes"), buffer, WH_ARRAYLEN(buffer));
+		if (!n) {
+			n = Identity::getIdentifiers(buffer, WH_ARRAYLEN(buffer),
+					(auth ? Host::AUTHENTICATOR : Host::BOOTSTRAP));
+		}
+		//-----------------------------------------------------------------
 		if (n && (n = bs.identifiers.put(buffer, n))) {
 			bs.identifiers.rewind();
 			return;
 		} else {
-			WH_LOG_DEBUG("Identifiers list is empty");
 			throw Exception(EX_RESOURCE);
 		}
 	} catch (BaseException &e) {

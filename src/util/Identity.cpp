@@ -128,28 +128,28 @@ void Identity::getAddress(uint64_t uid, NameInfo &ni) {
 	}
 }
 
-unsigned int Identity::loadIdentifiers(unsigned long long nodes[],
-		unsigned int length, int type) {
-	unsigned int count = length;
-	if (host.list(nodes, count, type) == 0) {
-		return count;
+unsigned int Identity::getIdentifiers(unsigned long long nodes[],
+		unsigned int count, int type) {
+	auto n = count;
+	if (host.list(nodes, n, type) == 0) {
+		return n;
 	} else {
 		throw Exception(EX_INVALIDOPERATION);
 	}
 }
 
-unsigned int Identity::loadIdentifiers(const char *section, const char *option,
-		unsigned long long nodes[], unsigned int length) {
+unsigned int Identity::getIdentifiers(const char *section, const char *option,
+		unsigned long long nodes[], unsigned int count) noexcept {
 	//--------------------------------------------------------------------------
 	//Get these boundary conditions out of the way
-	if (!nodes || !length) {
+	if (!nodes || !count) {
 		return 0;
-	} else if (length == 1) {
+	} else if (count == 1) {
 		nodes[0] = 0;
 		return 0;
 	}
 	//--------------------------------------------------------------------------
-	memset(nodes, 0, length * sizeof(unsigned long long));
+	memset(nodes, 0, count * sizeof(unsigned long long));
 	auto filename = cfg.getPathName(section, option, nullptr);
 	if (Storage::testFile(filename) != 1) {
 		WH_free(filename);
@@ -163,7 +163,7 @@ unsigned int Identity::loadIdentifiers(const char *section, const char *option,
 	}
 	//--------------------------------------------------------------------------
 	unsigned int i = 0;
-	while (i < (length - 1)) {
+	while (i < (count - 1)) {
 		if (fscanf(fp, "%llu", &nodes[i]) == 1 && nodes[i]) {
 			i++;
 		} else {

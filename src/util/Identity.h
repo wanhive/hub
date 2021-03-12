@@ -57,18 +57,18 @@ public:
 	void getAddress(uint64_t uid, NameInfo &ni);
 	/*
 	 * Returns a randomized list of identifiers of the given <type> from the
-	 * hosts database. At most <length> entries are read. Returns the number
+	 * hosts database. At most <count> entries are read. Returns the number
 	 * of entries transferred into <nodes>.
 	 */
-	unsigned int loadIdentifiers(unsigned long long nodes[],
-			unsigned int length, int type);
+	unsigned int getIdentifiers(unsigned long long nodes[], unsigned int count,
+			int type);
 	/*
-	 * Returns a 0-terminated list of identifiers from the path pointed to by
-	 * the configuration file entries. At most (<length>-1) entries are read.
-	 * Returns the number of entries transferred, excluding the 0-terminator.
+	 * Returns a 0-terminated list of identifiers read from the path defined
+	 * by the configuration file entry. At most (<count>-1) entries are read.
+	 * Returns the number of entries transferred (excluding the 0-terminator).
 	 */
-	unsigned int loadIdentifiers(const char *section, const char *option,
-			unsigned long long nodes[], unsigned int length);
+	unsigned int getIdentifiers(const char *section, const char *option,
+			unsigned long long nodes[], unsigned int count) noexcept;
 	//-----------------------------------------------------------------
 	/**
 	 * Absolute paths

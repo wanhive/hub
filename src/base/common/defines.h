@@ -86,5 +86,10 @@
  */
 #define WH_STRINGIFY(x) #x
 #define WH_TOSTRING(x) WH_STRINGIFY(x)
+//=================================================================
+/**
+ * For evaluation of an array's length
+ */
+#define WH_ARRAYLEN(x) (sizeof(x) / sizeof(x[0]))
 
 #endif /* WH_BASE_COMMON_DEFINES_H_ */
