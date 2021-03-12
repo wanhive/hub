@@ -73,9 +73,10 @@ private:
 	void endTransaction();
 	void cancelTransaction();
 public:
-	//Special host types in the Wanhive network
-	static constexpr int BOOTSTRAP = 1;
-	static constexpr int AUTHENTICATOR = 2;
+	//Enumeration of the special host types
+	enum : int {
+		BOOTSTRAP = 1, AUTHENTICATOR = 2
+	};
 private:
 	struct {
 		sqlite3 *conn; //The database connection
