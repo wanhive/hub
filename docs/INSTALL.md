@@ -81,7 +81,7 @@ Read the output carefully.
 
 ## Minimal setup
 
-Follow these steps to create a "bare minimum" functional setup.
+Follow these steps to create a "bare minimum" functional setup for testing.
 
 * Create **$HOME/.config/wanhive** directory.
     
@@ -99,7 +99,7 @@ mkdir -pv $HOME/.config/wanhive
 cp data/{wanhive.conf,hosts,nodes,auths} $HOME/.config/wanhive/
 ```
 
-**NOTE**: All of the above files get copied into the [datadir](https://www.gnu.org/software/automake/manual/html_node/Standard-Directory-Variables.html) during installation.
+**NOTE**: All of the above files are copied into the [datadir](https://www.gnu.org/software/automake/manual/html_node/Standard-Directory-Variables.html) during installation.
 
 ```
 wanhive -to -n 1
@@ -119,22 +119,22 @@ Press **Ctrl+C** to exit the program.
 ## Basic setup
 
 * Install this package.
-    * Sufficient for testing.
+    * Sufficient for [testing](#getting-started).
     * Sufficient for building small IoT applications over a local IP network.
+    * Supports clustering.
     * Does not support user and endpoint management.
     * Does not support authentication.
     * Does not support access control.
     * Does not support device type identification.
-    * Supports clustering.
 
 ## Standard setup
 
 * Install this package.
 * Install Postgresql database server 10 or above.
-* Install **Wanhive IoT web console**.
-* Enable **Network key**.
-* Enable **Client authentication**.
-* Enable **Domain controlled access**.
+* Install the [Wanhive IoT web console](https://github.com/wanhive/webconsole).
+* Install [Network key](#network-key-optional).
+* Enable [Client authentication](#client-authentication-optional).
+* Enable [Domain controlled access](#domain-controlled-access-optional).
 
 # Configuration
 
@@ -154,14 +154,14 @@ The configuration file uses a restricted version of the [INI file](https://en.wi
 * Update the **HOSTS** and **BOOTSTRAP** sections of the configuration file correctly.
     * Do not skip this step.
 * This package includes a sample configuration file (*wanhive.conf*).
-* A sample configuration file (*wanhive.conf*) is copied into the **datadir** during installation.
+* The sample configuration file (*wanhive.conf*) is copied into the **datadir** during installation.
 
 ## Hosts
 
-Wanhive hubs use a special text file to resolve network addresses.
+Wanhive hubs use a special text file to resolve the network addresses.
 
-* Wanhive hub acting as the server uses this file to bind it's listening socket to the correct address.
-* Wanhive hub acting as the client uses this file to find and connect to a server.
+* A server uses this file to bind it's listening socket to the correct address.
+* A client uses this file to find and connect to a server.
 
 The required steps have been summarized below:
 
@@ -199,8 +199,8 @@ A *hosts file* example:
 **NOTES**:
 
 * The **TYPE** column is optional.
-* The listening TCP/IP sockets bind to the wildcard address.
-* Specify **unix** in the **SERVICE** column to create a *Unix domain socket* instead of TCP/IP socket.
+* Servers bind their listening TCP/IP socket to the wildcard address.
+* Specify **unix** in the **SERVICE** column to create a *Unix domain socket*.
 
 
 #### Option 1: Create manually
@@ -212,16 +212,15 @@ Use your favorite text editor to create a small **hosts file**. For example, the
 1	127.0.0.1	9001
 2	127.0.0.1	9002
 3	127.0.0.1	9003
-256	localhost	5555
+256	example.com	5555
 ```
 
-1. Four overlay hubs with identifiers 0, 1, 2, and 3 running on 127.0.0.1 at ports 9000, 9001, 9002, and 9003 in that order.
-2. An authentication hub with identifier 256, running at localhost:5555.
+1. Four hubs with identifiers 0, 1, 2, and 3 running on 127.0.0.1 at ports 9000, 9001, 9002, and 9003 in that order.
+2. A hub with identifier 256 and listening at example.com:5555.
 
 **NOTES**:
 
-* Values in the rows are **TAB-separated**.
-* Hub's function is determined using the **Bootstrap** files described further below.
+* Columns are **TAB-separated**.
 
 #### Option 2: Generate a dummy file
 
@@ -237,31 +236,30 @@ wanhive -m
 
 #### Option 3: Use the default template
 
-* This package includes a sample **hosts** file.
-* A sample **hosts** file is installed into the **datadir**.
-* Edit the file using your favorite text editor.
-* The sample file is sufficient for testing purposes.
+* This package includes a sample **hosts** file for testing purposes.
+* The sample file is installed into the **datadir**.
+* Edit the file in your favorite text editor.
 
 ### The hosts database
 
-A Wanhive hub doesn't use its **hosts file** directly but imports one into the program's in-memory SQLite3 database.
+A **hosts database** is advantageous over the **hosts file** in certain use cases.
 
-Although a **hosts file** is convenient, a **hosts database** is advantageous in certain use cases.
+- Wanhive hub imports the **hosts file** into in-memory database during runtime.
+- You can use a persistent database to reduce the memory consumption.
 
 #### Using a hosts database
 
-Create **hosts database** from a **hosts file**:
+Export the **hosts file** to a **database**:
 
 ```
 wanhive -m
 ```
 
 1. Select *UTILITIES(2)* from the list of available options.
-2. Next, select *Manage hosts(2)* and then,
+2. Next, select *Manage hosts(2)* and then
 3. Select *Dump the "hosts" file into an SQLite3 database(1)*
 4. Follow the instructions.
-
-Update the **HOSTS** section of the configuration file as illustrated below.
+5. Add the host database's information to the configuration file.
 
 ```
 [HOSTS]
@@ -272,20 +270,16 @@ hostsDb = <pathname-of-hosts-database>
 
 ## Bootstrap
 
-1. Create text files:
-    1. Containing a whitespace/newline-separated list of *stable* overlay hub identifiers.
-        * Used by Wanhive clients (for bootstrapping).
-        * Used by overlay hubs for joining a cluster (for bootstrapping).
-        * A sample file named **nodes** has been included with this package.
-        * A sample file named **nodes** is installed into the **datadir**.
-        * The included file is sufficient for testing purposes.
-    2. **OPTIONAL**: Containing a whitespace/newline-separated list of *stable* authentication hub identifiers.
-        * Used by Wanhive clients to discover an authentication hub.
-        * Not needed if client authentication is not desired (**Basic setup**).
-        * A sample file named **auths** has been included with this package.
-        * A sample file named **auths** is installed into the **datadir**.
-        * The included file is sufficient for testing purposes.
-2. Add the files to the section named **BOOTSTRAP** of the configuration file.
+The **bootstrap files** provide a list of *stable* host identifiers to a *joining* Wanhive hub (either server or client).
+
+1. A text file containing a whitespace-separated list of *stable overlay hub* identifiers.
+     - This package includes a sample file named **nodes**.
+     - The sample file is copied into the **datadir** during installation.
+2. A text file containing a whitespace-separated list of *stable authentication hub* identifiers.
+     - This package includes a sample file named **auths**.
+     - The sample file is copied into the **datadir** during installation.
+
+Create both the text files and add their information into the **BOOTSTRAP** section of the configuration file.
 
 ```
 [BOOTSTRAP]
@@ -295,22 +289,20 @@ auths = <pathname-of-auths-file>
 
 **NOTES**:
 
-* All the identifiers are resolved to their physical addresses using the **Hosts** file/database.
-* Do not use the identifier **0** here (reserved for a special purpose).
-* Run few (ideally three or more) "well-known" overlay hubs as bootstrap nodes in a cluster.
+* The identifiers are resolved to their network addresses using the [Hosts file](#hosts).
+* Do not use the identifier **0** here because it is reserved for [special purpose](#clustering-optional).
 
-### Example (for testing)
+### Bootstrap files example
 
-Example of a "nodes" file (two stable overlay hubs).
-Overlay hubs listed below will be contacted randomly during bootstrapping and the first live one will be used.
+The contents of a "nodes" file may look like the following. This example lists four overlay hub identifiers (1, 2, 35 and 8).
 
 ```
-1
-3
+1 2 35
+
+8
 ```
 
-Example of an "auths" file (one single authentication hub).
-Authentication hubs listed in this file will be contacted randomly and the first live one will be used.
+The contents of an "auths" file may look like the following. This example lists a single authentication hub identifier (256).
 
 ```
 256
@@ -318,24 +310,24 @@ Authentication hubs listed in this file will be contacted randomly and the first
 
 ## Network key (optional)
 
-Network keys allow:
+Network keys are used for:
 
-* Mutual authentication in a cluster of overlay hubs.
-* Establishing trust with an *authentication hub* during distributed authentication of clients.
+* Mutual authentication in an [overlay network](#clustering-optional).
+* Distributed [authentication](#client-authentication-optional) of the clients.
 
 
-Follow these instructions to generate a new pair of keys:
+Follow these instructions to generate a key-pair:
 
 ```
 wanhive -m
 ```
 
-1. Select the option *UTILITIES(2)*.
+1. Select *UTILITIES(2)*.
 2. Next, select *Generate keys(2)*.
 3. Follow the instructions.
-4. Install the keys to overlay and authentication hubs:
-    1. Copy keys to all the host machines.
-    2. Update the **KEYS** section of the configuration file(s).
+4. Configure the overlay and authentication hubs:
+    1. Copy the key pair to all the host machines.
+    2. Update the configuration file(s) as illustrated below.
 
 ```
 [KEYS]
@@ -361,11 +353,11 @@ wanhive -to -n 1
 
 ### Clustering (optional)
 
-Overlay hubs can form a cluster in a p2p fashion. When clustering is enabled, publish-subscribe based multicasting gets automatically disabled.
+Overlay hubs can form a p2p cluster. Publish-subscribe-based multicasting is automatically disabled on clustering.
 
 1. Enable message forwarding in the configuration file(s).
-2. Set the *OVERLAY/connectToOverlay* option to TRUE in the configuration file(s).
-3. Create a **controller** which is a special overlay hub having **0** as its identifier:
+2. Set the *OVERLAY/connectToOverlay* option to *TRUE* in the configuration file(s).
+3. Start the **controller** that is an overlay hub having the identifier **0** (zero):
 
 ```
 [HUB]
@@ -380,6 +372,8 @@ forwardRatio = 0.70
 connectToOverlay = YES
 ```
 
+Starting the controller:
+
 ```
 wanhive -to -n 0 -c <configfile>
 
@@ -387,24 +381,25 @@ wanhive -to -n 0 -c <configfile>
 wanhive -to -n 0
 ```
 
-Run few (ideally three or more) "well-known" overlay hubs as bootstrap nodes in a cluster. If multiple bootstrap nodes are desired, then start them in succession to avoid network partitioning.
+Configure and run few (ideally three or more) "well-known" overlay hubs as the [bootstrap nodes](#bootstrap). If multiple bootstrap nodes are desired, then start them in a succession to avoid network partitioning.
 
-Restart all the other overlay hubs. Overlay hubs will automatically organize themselves into a structured overlay network. Overlay hubs can join and leave the network at any time.
+Restart the rest of the overlay hubs. The overlay hubs will automatically organize themselves into a structured overlay network. The overlay hubs are allowed to join and leave the overlay network at any time.
 
 **NOTES**:
 
-* Availability of the *controller* and a few bootstrapping nodes is required for the formation, reorganization, and stabilization of a cluster. However, a stable cluster will survive and continue to function normally despite *controller* failure.
-* Install **Network key** for mutual authentication.
+* Availability of the *controller* and a few bootstrap nodes is required for the formation, reorganization, and stabilization of a cluster.
+* A stable cluster will survive and continue to function normally on temporary *controller* failure.
+* Install the [network key](#network-key-optional) for mutual authentication.
 
 ### Client authentication (optional)
 
-The following instruction is valid for a **Standard setup**.
+The following instructions are valid for a **Standard setup**.
 
-Client authentication is disabled by default, i.e., the overlay hub accepts all well-formed registration requests from the clients.
+Client authentication is disabled by default, i.e., an overlay hub accepts all the well-formed registration requests from it's clients.
 
 To enable client authentication at an overlay hub:
 
-1. Install **Network key**.
+1. Install the [network key](#network-key-optional).
 2. Set the *OVERLAY/authenticateClient* option to TRUE in the configuration file.
 
 ```
@@ -420,7 +415,7 @@ The following instructions are valid for a **Standard setup**.
 
 *Domain controlled access* allows only those clients that belong to the same logical group (**domain**) to communicate with one another.
 
-Set the *OVERLAY/netMask* option to **0xfffffffffffffc00** in the configuration file to activate *domain controlled access* at an overlay hub.
+Set the value of *OVERLAY/netMask* option to **0xfffffffffffffc00** in an overlay hub's configuration file to activate the *domain controlled access*.
 
 ```
 [OVERLAY]
@@ -429,7 +424,7 @@ Set the *OVERLAY/netMask* option to **0xfffffffffffffc00** in the configuration 
 netMask = 0xfffffffffffffc00
 ```
 
-**NOTE**: client-to-client communication is further restricted based on the "client type" (not covered in this documentation).
+**NOTE**: client-to-client communication is further restricted by the "client-type" (not covered in this documentation).
 
 ## Authentication hub (Server)
 
@@ -438,7 +433,7 @@ The following instructions are valid for a **Standard setup**.
 The authentication hub acts as a *trusted third party* during authentication and authorization of the clients.
 
 1. Update *AUTH* section of the configuration file to adjust the database connection parameters.
-2. Install **Network key** to establish trust.
+2. Install the [network key](#network-key-optional) to establish trust.
 
 ```
 [AUTH]
@@ -457,16 +452,16 @@ wanhive -ta -n <identifier> -c <configfile>
 wanhive -ta -n 256
 ```
 
-A large Wanhive network can have multiple authentication hubs to provide redundancy (see **bootstrapping**).
+A large Wanhive network can have multiple authentication hubs to provide [redundancy](#bootstrap).
 
 ## Multicast consumer (client)
 
 The following instructions are valid for a **Basic setup** (for testing purposes only).
 
 1. Run an overlay hub with clustering and client authentication disabled.
-    * Publish-subscribe is automatically disabled on clustering.
-2. Update the configuration file for the client as follows:
-    * Disable *HUB/listen* (comment out).
+    * Publish-subscribe is automatically disabled in a cluster.
+2. Update the configuration file for the client:
+    * Disable *HUB/listen* (comment-out or set to FALSE).
 
 ```
 [HUB]
@@ -490,7 +485,7 @@ Following "additional" instructions are applicable for a **Standard setup** (for
 
 1. Start an authentication hub.
 2. Disable clustering at the overlay hub.
-3. Add a new client (a new thing of type "Processor") and create a password for it inside **Wanhive IoT web console**.
+3. Register a new thing (and create a password for it) in the **Wanhive IoT web console**.
 4. Memorize newly created thing's *identifier* and *password*.
 5. Set the client's password in its configuration file.
 
@@ -509,7 +504,7 @@ wanhive -tm -n <identifier> -c <configfile>
 
 # Data security and privacy (optional)
 
-Wanhive hubs (server/client) support SSL/TLS.
+Wanhive hubs use TLS/SSL for communication security.
 
 ## Enabling SSL (server)
 
@@ -530,7 +525,7 @@ key = <pathname-of-server-key-file>
 
 ## Enabling SSL (client)
 
-1. Enable SSL by setting the *SSL/enable* option to TRUE in the configuration file.
+1. Set the *SSL/enable* option to TRUE in the configuration file.
 2. Install the root certificate by updating the *SSL/trust* option in the configuration file.
 
 ```

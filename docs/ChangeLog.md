@@ -9,17 +9,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-- **Message::getHeader** and **Message::getStorage** methods with const modifier.
 - Bootstrap using the hosts database or file.
-- Special host-type identifiers in the **Host** class.
+- Host type enumeration in the **Host** class.
+- **Message::getHeader** and **Message::getStorage** methods with const modifier.
 
 ### Changed
 
-- **Hub::retainMessage** sets the Message flag to **MSG_WAIT_PROCESSING**.
-- **Hub::removeWatcher** returns boolean value.
-- **Inotifier::read** doesn't unnecessarily zero out the IO buffer.
 - Add const modifier to the method parameters in the **Endpoint** and **Protocol** classes (wherever applicable).
+- **Hub::removeWatcher** returns boolean instead of void.
+- **Hub::retainMessage** sets the Message flag to **MSG_WAIT_PROCESSING**.
+- **Inotifier::read** doesn't unnecessarily zero out the IO buffer.
 - Rename **Identity::loadIdentifiers** to **Identity::getIdentifiers**.
+- Outgoing message queue handling in the **Socket** class.
 
 ### Removed
 
