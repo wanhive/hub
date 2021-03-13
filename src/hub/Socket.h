@@ -174,7 +174,7 @@ public:
 	static constexpr uint64_t MAX_ACTIVE_ID = INT64_MAX;
 	//Set to at least twice of the MTU, must be power of two
 	static constexpr unsigned int READ_BUFFER_SIZE = (Message::MTU << 3);
-	//Must never set a value larger than IOV_MAX, must be power of two
+	//Size of scatter-gather OP buffers, must be power of two
 	static constexpr unsigned int OUT_QUEUE_SIZE = 256;
 private:
 	struct {
@@ -196,7 +196,7 @@ private:
 	StaticCircularBuffer<unsigned char, READ_BUFFER_SIZE> in;
 
 	//Serialized O/P
-	//This buffer collects all outgoing messages
+	//This buffer collects all the outgoing messages
 	StaticCircularBuffer<Message*, OUT_QUEUE_SIZE> out;
 	//Container for scatter-gather O/P
 	StaticBuffer<iovec, OUT_QUEUE_SIZE> outgoingMessages;

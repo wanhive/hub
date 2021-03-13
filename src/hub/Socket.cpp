@@ -318,8 +318,8 @@ ssize_t Socket::socketRead() {
 }
 
 ssize_t Socket::socketWrite() {
-	int iovCount = 0;
-	if ((iovCount = fillOutgoingQueue())) {
+	auto iovCount = Twiddler::min(fillOutgoingQueue(), IOV_MAX);
+	if (iovCount) {
 		auto vec = outgoingMessages.offset();
 		auto nSent = Watcher::write(vec, iovCount);
 		adjustOutgoingQueue(nSent);
@@ -368,8 +368,8 @@ ssize_t Socket::secureWrite() {
 		return secureRead();
 	}
 
-	unsigned int iovCount = 0;
-	if ((iovCount = fillOutgoingQueue())) {
+	auto iovCount = fillOutgoingQueue();
+	if (iovCount) {
 		auto vec = outgoingMessages.offset();
 		ssize_t nSent = 0;
 		CryptoUtils::clearErrors();
@@ -506,8 +506,8 @@ unsigned int Socket::fillOutgoingQueue() noexcept {
 				}
 			}
 			totalOutgoingMessages += iovCount;
-			outgoingMessages.setIndex(iovCount); //position is set at first free slot
-			outgoingMessages.rewind();			//prepare for next read cycle
+			outgoingMessages.setIndex(iovCount); //Move the index forward
+			outgoingMessages.rewind();			//Prepare for next read cycle
 		}
 	}
 
