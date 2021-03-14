@@ -175,7 +175,7 @@ public:
 	//Set to at least twice of the MTU, must be power of two
 	static constexpr unsigned int READ_BUFFER_SIZE = (Message::MTU << 3);
 	//Size of scatter-gather OP buffers, must be power of two
-	static constexpr unsigned int OUT_QUEUE_SIZE = 256;
+	static constexpr unsigned int OUT_QUEUE_SIZE = 1024;
 private:
 	struct {
 		SSL *ssl; //SSL/TLS connection
