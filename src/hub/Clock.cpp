@@ -32,7 +32,7 @@ void Clock::start() {
 void Clock::stop() noexcept {
 	try {
 		Timer::setTimerfd(getHandle(), 0, 0);
-	} catch (BaseException &e) {
+	} catch (const BaseException &e) {
 	}
 }
 

@@ -57,7 +57,7 @@ void ConfigTool::execute() noexcept {
 			std::cout << "Invalid option" << std::endl;
 			break;
 		}
-	} catch (BaseException &e) {
+	} catch (const BaseException &e) {
 		std::cout << "Request denied" << std::endl;
 		WH_LOG_EXCEPTION(e);
 	}
@@ -82,7 +82,7 @@ void ConfigTool::generateKeyPair() {
 		std::cout << "Generating " << PKI::KEY_LENGTH << " bit RSA keys"
 				<< std::endl;
 		PKI::generateKeyPair(skf, pkf);
-	} catch (BaseException &e) {
+	} catch (const BaseException &e) {
 		throw;
 	}
 }
@@ -128,7 +128,7 @@ void ConfigTool::manageHosts() {
 		} else {
 			std::cout << "Invalid option" << std::endl;
 		}
-	} catch (BaseException &e) {
+	} catch (const BaseException &e) {
 		throw;
 	}
 }
@@ -184,7 +184,7 @@ void ConfigTool::generateVerifier() {
 		offset += snprintf(buffer + offset, sizeof(buffer), "\"\n}");
 		std::cerr << buffer << std::endl;
 		delete authenticator;
-	} catch (BaseException &e) {
+	} catch (const BaseException &e) {
 		delete authenticator;
 		throw;
 	}

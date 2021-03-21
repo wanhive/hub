@@ -96,7 +96,7 @@ void Hub::removeFromInotifier(int identifier) noexcept {
 		if (notifiers.inotifier) {
 			notifiers.inotifier->remove(identifier);
 		}
-	} catch (BaseException &e) {
+	} catch (const BaseException &e) {
 		WH_LOG_EXCEPTION(e);
 	}
 }
@@ -339,7 +339,7 @@ void Hub::configure(void *arg) {
 		initEventNotifier();
 		initInotifier();
 		initSignalWatcher();
-	} catch (BaseException &e) {
+	} catch (const BaseException &e) {
 		WH_LOG_EXCEPTION(e);
 		throw;
 	}
@@ -378,7 +378,7 @@ void Hub::cleanup() noexcept {
 		//-----------------------------------------------------------------
 		//6. Print goodbye message
 		WH_LOG_INFO("Shutdown completed.\n\n");
-	} catch (BaseException &e) {
+	} catch (const BaseException &e) {
 		//Memory leak, do not try to recover
 		WH_LOG_EXCEPTION(e);
 		WH_LOG_ERROR("Resource leaked, aborting.");
@@ -454,7 +454,7 @@ bool Hub::handle(Clock *clock) noexcept {
 			processClockNotification(uid, clock->getCount());
 		}
 		return clock->isReady();
-	} catch (BaseException &e) {
+	} catch (const BaseException &e) {
 		WH_LOG_EXCEPTION(e);
 		return disable(clock);
 	}
@@ -476,7 +476,7 @@ bool Hub::handle(EventNotifier *enotifier) noexcept {
 			processEventNotification(uid, enotifier->getCount());
 		}
 		return enotifier->isReady();
-	} catch (BaseException &e) {
+	} catch (const BaseException &e) {
 		WH_LOG_EXCEPTION(e);
 		return disable(enotifier);
 	}
@@ -499,7 +499,7 @@ bool Hub::handle(Inotifier *inotifier) noexcept {
 			processInotification(uid, event);
 		}
 		return inotifier->isReady();
-	} catch (BaseException &e) {
+	} catch (const BaseException &e) {
 		WH_LOG_EXCEPTION(e);
 		return disable(inotifier);
 	}
@@ -524,7 +524,7 @@ bool Hub::handle(SignalWatcher *signalWatcher) noexcept {
 			processSignalNotification(uid, signalWatcher->getSignalInfo());
 		}
 		return signalWatcher->isReady();
-	} catch (BaseException &e) {
+	} catch (const BaseException &e) {
 		WH_LOG_EXCEPTION(e);
 		return disable(signalWatcher);
 	}
@@ -547,7 +547,7 @@ void Hub::run(void *arg) noexcept {
 		setup(arg);
 		loop();
 		healthy = true; //terminated without error
-	} catch (BaseException &e) {
+	} catch (const BaseException &e) {
 		healthy = false; //terminated due to error
 		WH_LOG_EXCEPTION(e);
 	}
@@ -594,7 +594,7 @@ void Hub::initBuffers() {
 		outgoingMessages.initialize(ctx.messagePoolSize);
 		//Stores temporary connection identifiers
 		temporaryConnections.initialize(ctx.maxNewConnnections);
-	} catch (BaseException &e) {
+	} catch (const BaseException &e) {
 		WH_LOG_EXCEPTION(e);
 		throw;
 	}
@@ -603,7 +603,7 @@ void Hub::initBuffers() {
 void Hub::initReactor() {
 	try {
 		Reactor::initialize(ctx.maxIOEvents, !ctx.signal);
-	} catch (BaseException &e) {
+	} catch (const BaseException &e) {
 		WH_LOG_EXCEPTION(e);
 		throw;
 	}
@@ -638,7 +638,7 @@ void Hub::initListener() {
 		putWatcher(listener, IO_READ, WATCHER_ACTIVE);
 		notifiers.listener = listener;
 		WH_LOG_INFO("Hub %llu listening on port: %s", getUid(), serviceName);
-	} catch (BaseException &e) {
+	} catch (const BaseException &e) {
 		WH_LOG_EXCEPTION(e);
 		delete listener;
 		throw;
@@ -661,7 +661,7 @@ void Hub::initClock() {
 			notifiers.clock = nullptr;
 			return;
 		}
-	} catch (BaseException &e) {
+	} catch (const BaseException &e) {
 		WH_LOG_EXCEPTION(e);
 		delete clock;
 		throw;
@@ -678,7 +678,7 @@ void Hub::initEventNotifier() {
 		enotifier = new EventNotifier(ctx.semaphore);
 		putWatcher(enotifier, IO_READ, WATCHER_ACTIVE);
 		notifiers.enotifier = enotifier;
-	} catch (BaseException &e) {
+	} catch (const BaseException &e) {
 		WH_LOG_EXCEPTION(e);
 		delete enotifier;
 		throw;
@@ -695,7 +695,7 @@ void Hub::initInotifier() {
 		inotifier = new Inotifier();
 		putWatcher(inotifier, IO_READ, WATCHER_ACTIVE);
 		notifiers.inotifier = inotifier;
-	} catch (BaseException &e) {
+	} catch (const BaseException &e) {
 		WH_LOG_EXCEPTION(e);
 		delete inotifier;
 		throw;
@@ -718,7 +718,7 @@ void Hub::initSignalWatcher() {
 			notifiers.signalWatcher = nullptr;
 			return;
 		}
-	} catch (BaseException &e) {
+	} catch (const BaseException &e) {
 		WH_LOG_EXCEPTION(e);
 		delete signalWatcher;
 		throw;
@@ -738,7 +738,7 @@ void Hub::startWorker(void *arg) {
 		} else {
 			WH_LOG_DEBUG("No worker thread");
 		}
-	} catch (BaseException &e) {
+	} catch (const BaseException &e) {
 		WH_LOG_EXCEPTION(e);
 		throw;
 	} catch (...) {
@@ -757,7 +757,7 @@ void Hub::stopWorker() {
 			stopWork();
 			WH_LOG_INFO("Worker thread stopped");
 		}
-	} catch (BaseException &e) {
+	} catch (const BaseException &e) {
 		WH_LOG_EXCEPTION(e);
 		throw;
 	}
@@ -863,7 +863,7 @@ bool Hub::acceptConnection(Socket *listener) noexcept {
 		} else {
 			throw Exception(EX_OVERFLOW);
 		}
-	} catch (BaseException &e) {
+	} catch (const BaseException &e) {
 		WH_LOG_EXCEPTION(e);
 		delete newConn;
 	}
@@ -917,7 +917,7 @@ bool Hub::processConnection(Socket *connection) noexcept {
 		//-----------------------------------------------------------------
 		return connection->isReady()
 				|| (ctx.cycleInputLimit && (msgCount == cycleLimit));
-	} catch (BaseException &e) {
+	} catch (const BaseException &e) {
 		WH_LOG_EXCEPTION(e);
 		return disable(connection);
 	}

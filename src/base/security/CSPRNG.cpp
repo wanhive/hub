@@ -24,7 +24,7 @@ public:
 		try {
 			random = Storage::open("/dev/random", O_RDONLY, S_IRUSR, false);
 			urandom = Storage::open("/dev/urandom", O_RDONLY, S_IRUSR, false);
-		} catch (BaseException &e) {
+		} catch (const BaseException &e) {
 			Storage::close(random);
 			Storage::close(urandom);
 			random = -1;
@@ -58,7 +58,7 @@ void CSPRNG::random(void *block, unsigned int count, bool strong) {
 
 bool CSPRNG::seed(const void *buf, int count) noexcept {
 	RAND_seed(buf, count);
-	return (RAND_status()==1);
+	return (RAND_status() == 1);
 }
 
 } /* namespace wanhive */

@@ -25,7 +25,7 @@ SSLContext::SSLContext(const char *certificate, const char *privateKey) :
 		ctx(nullptr) {
 	try {
 		initialize(certificate, privateKey);
-	} catch (BaseException &e) {
+	} catch (const BaseException &e) {
 		//Clean up the partially initialized object
 		clear();
 		throw;

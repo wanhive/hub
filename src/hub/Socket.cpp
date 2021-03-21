@@ -45,7 +45,7 @@ Socket::Socket(const NameInfo &ni, bool blocking, int timeoutMils) {
 			Network::setSocketTimeout(getHandle(), timeoutMils, timeoutMils);
 		}
 		setType(SOCKET_PROXY);
-	} catch (BaseException &e) {
+	} catch (const BaseException &e) {
 		closeHandle();
 		throw;
 	}
@@ -61,7 +61,7 @@ Socket::Socket(const char *service, int backlog, bool isUnix, bool blocking) {
 		}
 		Network::listen(getHandle(), backlog);
 		setType(SOCKET_LISTENER);
-	} catch (BaseException &e) {
+	} catch (const BaseException &e) {
 		closeHandle();
 		throw;
 	}
@@ -151,7 +151,7 @@ Socket* Socket::accept(bool blocking) {
 
 	try {
 		return new Socket(sfd, sa);
-	} catch (BaseException &e) {
+	} catch (const BaseException &e) {
 		Network::close(sfd);
 		throw;
 	}
@@ -262,7 +262,7 @@ Socket* Socket::createSocketPair(int &sfd, bool blocking) {
 		auto conn = new Socket(sv[0]);
 		conn->setType(SOCKET_LOCAL);
 		return conn;
-	} catch (BaseException &e) {
+	} catch (const BaseException &e) {
 		if (sv[0] != -1) {
 			Network::close(sv[0]);
 		}

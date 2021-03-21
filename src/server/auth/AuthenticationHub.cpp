@@ -57,7 +57,7 @@ void AuthenticationHub::configure(void *arg) {
 		WH_LOG_DEBUG(
 				"Authentication hub settings:\nCONNINFO= \"%s\"\nQUERY= \"%s\"\nSALT= \"%s\"\n",
 				ctx.connInfo, ctx.query, ctx.salt);
-	} catch (BaseException &e) {
+	} catch (const BaseException &e) {
 		WH_LOG_EXCEPTION(e);
 		throw;
 	}

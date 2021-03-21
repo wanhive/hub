@@ -61,7 +61,7 @@ void Agent::bootstrap(uint64_t id, int timeout) {
 		} else {
 			throw Exception(EX_INVALIDOPERATION);
 		}
-	} catch (BaseException &e) {
+	} catch (const BaseException &e) {
 		WH_LOG_EXCEPTION(e);
 		throw;
 	}
@@ -73,7 +73,7 @@ bool Agent::authenticate() {
 		useKeyPair(getPKI());
 		return getKeyRequest(hostId, &hc, verifyHost())
 				&& registerRequest(hostId, getSource(), &hc);
-	} catch (BaseException &e) {
+	} catch (const BaseException &e) {
 		WH_LOG_EXCEPTION(e);
 		throw;
 	}
@@ -84,7 +84,7 @@ void Agent::connect(uint64_t id, int timeout) {
 		NameInfo ni;
 		Identity::getAddress(id, ni);
 		Protocol::connect(ni, timeout);
-	} catch (BaseException &e) {
+	} catch (const BaseException &e) {
 		WH_LOG_EXCEPTION(e);
 		throw;
 	}

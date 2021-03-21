@@ -77,7 +77,7 @@ void ClientHub::configure(void *arg) {
 				"Client hub settings:\nPASSWORD=\"%s\", HASHROUNDS=%u, TIMEOUT=%ums, RETRYINTERVAL=%ums\n",
 				ctx.password, ctx.passwordHashRounds, ctx.timeOut,
 				ctx.retryInterval);
-	} catch (BaseException &e) {
+	} catch (const BaseException &e) {
 		WH_LOG_EXCEPTION(e);
 		throw;
 	}
@@ -233,7 +233,7 @@ void ClientHub::connectToAuthenticator() noexcept {
 		putWatcher(s, IO_WR, WATCHER_ACTIVE);
 		bs.auth = s;
 		WH_LOG_DEBUG("Contacting authentication node %llu", bs.auth->getUid());
-	} catch (BaseException &e) {
+	} catch (const BaseException &e) {
 		WH_LOG_EXCEPTION(e);
 		delete s;
 	}
@@ -278,7 +278,7 @@ void ClientHub::connectToOverlay() noexcept {
 		putWatcher(s, IO_WR, WATCHER_ACTIVE);
 		bs.node = s;
 		WH_LOG_DEBUG("Contacting bootstrap node %llu", bs.node->getUid());
-	} catch (BaseException &e) {
+	} catch (const BaseException &e) {
 		WH_LOG_EXCEPTION(e);
 		delete s;
 	}
@@ -298,7 +298,7 @@ void ClientHub::initAuthentication() noexcept {
 			WH_LOG_DEBUG("Authentication initiated");
 		}
 
-	} catch (BaseException &e) {
+	} catch (const BaseException &e) {
 		WH_LOG_EXCEPTION(e);
 		setStage(WHC_ERROR);
 	}
@@ -345,7 +345,7 @@ void ClientHub::findRoot() noexcept {
 		//-----------------------------------------------------------------
 		setStage(WHC_GETKEY);
 		WH_LOG_DEBUG("Requesting session key");
-	} catch (BaseException &e) {
+	} catch (const BaseException &e) {
 		WH_LOG_EXCEPTION(e);
 		delete s;
 		setStage(WHC_ERROR);
@@ -367,7 +367,7 @@ void ClientHub::initAuthorization() noexcept {
 			Hub::sendMessage(msg);
 			WH_LOG_DEBUG("Initiating registration");
 		}
-	} catch (BaseException &e) {
+	} catch (const BaseException &e) {
 		WH_LOG_EXCEPTION(e);
 		setStage(WHC_ERROR);
 	}
@@ -386,7 +386,7 @@ Message* ClientHub::createIdentificationRequest() {
 		} else {
 			return msg;
 		}
-	} catch (BaseException &e) {
+	} catch (const BaseException &e) {
 		WH_LOG_EXCEPTION(e);
 		throw;
 	}
@@ -433,7 +433,7 @@ Message* ClientHub::createAuthenticationRequest() {
 		} else {
 			return msg;
 		}
-	} catch (BaseException &e) {
+	} catch (const BaseException &e) {
 		WH_LOG_EXCEPTION(e);
 		throw;
 	}
@@ -464,7 +464,7 @@ Message* ClientHub::createFindRootRequest() {
 		} else {
 			throw Exception(EX_ALLOCFAILED);
 		}
-	} catch (BaseException &e) {
+	} catch (const BaseException &e) {
 		WH_LOG_EXCEPTION(e);
 		throw;
 	}
@@ -513,7 +513,7 @@ Message* ClientHub::createRegistrationMessage(bool sign) {
 		} else {
 			throw Exception(EX_ALLOCFAILED);
 		}
-	} catch (BaseException &e) {
+	} catch (const BaseException &e) {
 		WH_LOG_EXCEPTION(e);
 		throw;
 	}
@@ -592,7 +592,7 @@ void ClientHub::loadIdentifiers(bool auth) {
 		} else {
 			throw Exception(EX_RESOURCE);
 		}
-	} catch (BaseException &e) {
+	} catch (const BaseException &e) {
 		WH_LOG_EXCEPTION(e);
 		clearIdentifiers();
 		setStage(WHC_ERROR);

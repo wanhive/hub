@@ -35,7 +35,7 @@ void OverlayTool::run() noexcept {
 	try {
 		setup();
 		execute();
-	} catch (BaseException &e) {
+	} catch (const BaseException &e) {
 		WH_LOG_EXCEPTION(e);
 	}
 }
@@ -160,7 +160,7 @@ void OverlayTool::execute() noexcept {
 				running = false;
 				break;
 			}
-		} catch (BaseException &e) {
+		} catch (const BaseException &e) {
 			disconnect();
 			WH_LOG_EXCEPTION(e);
 		}
@@ -184,7 +184,7 @@ void OverlayTool::connect() {
 		std::cout << "Connected with the host: " << host << std::endl;
 		hostId = host;
 		destinationId = host;
-	} catch (BaseException &e) {
+	} catch (const BaseException &e) {
 		std::cout << "Connection denied by the host: " << host << std::endl;
 		throw;
 	}
@@ -252,7 +252,7 @@ void OverlayTool::identifyCmd() {
 		} else {
 			std::cout << "IDENTIFY FAILED" << std::endl;
 		}
-	} catch (BaseException &e) {
+	} catch (const BaseException &e) {
 		std::cout << "IDENTIFY FAILED" << std::endl;
 		throw;
 	}
@@ -274,7 +274,7 @@ void OverlayTool::authenticateCmd() {
 		} else {
 			std::cout << "AUTHENTICATE FAILED" << std::endl;
 		}
-	} catch (BaseException &e) {
+	} catch (const BaseException &e) {
 		std::cout << "AUTHENTICATE FAILED" << std::endl;
 		throw;
 	}
@@ -374,7 +374,7 @@ void OverlayTool::describeCmd() {
 		} else {
 			std::cout << "DESCRIBE FAILED" << std::endl;
 		}
-	} catch (BaseException &e) {
+	} catch (const BaseException &e) {
 		std::cout << "DESCRIBE FAILED" << std::endl;
 		throw;
 	}
@@ -401,7 +401,7 @@ void OverlayTool::registerCmd() {
 		} else {
 			std::cout << "REGISTER FAILED FOR ID: " << newId << std::endl;
 		}
-	} catch (BaseException &e) {
+	} catch (const BaseException &e) {
 		std::cout << "REGISTER FAILED FOR ID: " << newId << std::endl;
 		throw;
 	}
@@ -422,7 +422,7 @@ void OverlayTool::getKeyCmd() {
 		} else {
 			std::cout << "GETKEY FAILED" << std::endl;
 		}
-	} catch (BaseException &e) {
+	} catch (const BaseException &e) {
 		std::cout << "GETKEY FAILED" << std::endl;
 		throw;
 	}
@@ -446,7 +446,7 @@ void OverlayTool::findRoot() {
 		} else {
 			std::cout << "FINDROOT FAILED" << std::endl;
 		}
-	} catch (BaseException &e) {
+	} catch (const BaseException &e) {
 		std::cout << "FINDROOT FAILED" << std::endl;
 		throw;
 	}
@@ -468,7 +468,7 @@ void OverlayTool::findBootstrapNode() {
 		} else {
 			std::cout << "BOOTSTRAP FAILED" << std::endl;
 		}
-	} catch (BaseException &e) {
+	} catch (const BaseException &e) {
 		std::cout << "BOOTSTRAP FAILED" << std::endl;
 		throw;
 	}
@@ -504,7 +504,7 @@ void OverlayTool::publishCmd() {
 		} else {
 			std::cout << "PUBLISH FAILED" << std::endl;
 		}
-	} catch (BaseException &e) {
+	} catch (const BaseException &e) {
 		std::cout << "PUBLISH FAILED" << std::endl;
 		throw;
 	}
@@ -531,7 +531,7 @@ void OverlayTool::subscribeCmd() {
 		} else {
 			std::cout << "SUBSCRIBE FAILED" << std::endl;
 		}
-	} catch (BaseException &e) {
+	} catch (const BaseException &e) {
 		std::cout << "SUBSCRIBE FAILED" << std::endl;
 		throw;
 	}
@@ -558,7 +558,7 @@ void OverlayTool::unsubscribeCmd() {
 		} else {
 			std::cout << "UNSUBSCRIBE FAILED" << std::endl;
 		}
-	} catch (BaseException &e) {
+	} catch (const BaseException &e) {
 		std::cout << "UNSUBSCRIBE FAILED" << std::endl;
 		throw;
 	}
@@ -574,7 +574,7 @@ void OverlayTool::getPredecessorCmd() {
 		} else {
 			std::cout << "GETPREDECESSOR FAILED" << std::endl;
 		}
-	} catch (BaseException &e) {
+	} catch (const BaseException &e) {
 		std::cout << "GETPREDECESSOR FAILED" << std::endl;
 		throw;
 	}
@@ -597,7 +597,7 @@ void OverlayTool::setPredecessorCmd() {
 		} else {
 			std::cout << "SETPREDECESSOR FAILED" << std::endl;
 		}
-	} catch (BaseException &e) {
+	} catch (const BaseException &e) {
 		std::cout << "SETPREDECESSOR FAILED" << std::endl;
 		throw;
 	}
@@ -613,7 +613,7 @@ void OverlayTool::getSuccessorCmd() {
 		} else {
 			std::cout << "GETSUCCESSOR FAILED" << std::endl;
 		}
-	} catch (BaseException &e) {
+	} catch (const BaseException &e) {
 		std::cout << "GETSUCCESSOR FAILED" << std::endl;
 		throw;
 	}
@@ -636,7 +636,7 @@ void OverlayTool::setSuccessorCmd() {
 		} else {
 			std::cout << "SETSUCCESSOR FAILED" << std::endl;
 		}
-	} catch (BaseException &e) {
+	} catch (const BaseException &e) {
 		std::cout << "SETSUCCESSOR FAILED" << std::endl;
 		throw;
 	}
@@ -660,7 +660,7 @@ void OverlayTool::getFingerCmd() {
 		} else {
 			std::cout << "GETFINGER FAILED" << std::endl;
 		}
-	} catch (BaseException &e) {
+	} catch (const BaseException &e) {
 		std::cout << "GETFINGER FAILED" << std::endl;
 		throw;
 	}
@@ -691,7 +691,7 @@ void OverlayTool::setFingerCmd() {
 		} else {
 			std::cout << "SETFINGER FAILED" << std::endl;
 		}
-	} catch (BaseException &e) {
+	} catch (const BaseException &e) {
 		std::cout << "SETFINGER FAILED" << std::endl;
 		throw;
 	}
@@ -709,7 +709,7 @@ void OverlayTool::getNeighboursCmd() {
 		} else {
 			std::cout << "GETNEIGHBOURS FAILED" << std::endl;
 		}
-	} catch (BaseException &e) {
+	} catch (const BaseException &e) {
 		std::cout << "GETNEIGHBOURS FAILED" << std::endl;
 		throw;
 	}
@@ -731,7 +731,7 @@ void OverlayTool::notifyCmd() {
 		} else {
 			std::cout << "NOTIFY FAILED" << std::endl;
 		}
-	} catch (BaseException &e) {
+	} catch (const BaseException &e) {
 		std::cout << "NOTIFY FAILED" << std::endl;
 		throw;
 	}
@@ -754,7 +754,7 @@ void OverlayTool::findSuccessorCmd() {
 		} else {
 			std::cout << "FINDSUCCESSOR FAILED" << std::endl;
 		}
-	} catch (BaseException &e) {
+	} catch (const BaseException &e) {
 		std::cout << "FINDSUCCESSOR FAILED" << std::endl;
 		throw;
 	}
@@ -769,7 +769,7 @@ void OverlayTool::pingCmd() {
 		} else {
 			std::cout << "PING FAILED" << std::endl;
 		}
-	} catch (BaseException &e) {
+	} catch (const BaseException &e) {
 		std::cout << "PING FAILED" << std::endl;
 		throw;
 	}
@@ -784,7 +784,7 @@ void OverlayTool::mapCmd() {
 		} else {
 			std::cout << "MAP FAILED" << std::endl;
 		}
-	} catch (BaseException &e) {
+	} catch (const BaseException &e) {
 		std::cout << "MAP FAILED" << std::endl;
 		throw;
 	}

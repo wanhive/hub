@@ -228,7 +228,7 @@ void AppManager::executeHub() noexcept {
 		} else {
 			WH_LOG_ERROR("Hub was terminated due to error");
 		}
-	} catch (BaseException &e) {
+	} catch (const BaseException &e) {
 		WH_LOG_EXCEPTION(e);
 	} catch (...) {
 		WH_LOG_EXCEPTION_U();

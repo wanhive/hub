@@ -62,7 +62,7 @@ void OverlayHub::configure(void *arg) {
 				ctx.requestTimeout, ctx.retryInterval, netmaskStr, ctx.groupId);
 		installSettingsMonitor();
 		installService();
-	} catch (BaseException &e) {
+	} catch (const BaseException &e) {
 		WH_LOG_EXCEPTION(e);
 		throw;
 	}
@@ -178,7 +178,7 @@ void OverlayHub::doWork(void *arg) noexcept {
 				continue;
 			}
 		}
-	} catch (BaseException &e) {
+	} catch (const BaseException &e) {
 		WH_LOG_EXCEPTION(e);
 	}
 	/*
@@ -233,7 +233,7 @@ void OverlayHub::installSettingsMonitor() {
 			wd[7].identifier = addToInotifier(getSSLHostKeyFile(), events);
 		}
 
-	} catch (BaseException &e) {
+	} catch (const BaseException &e) {
 		WH_LOG_EXCEPTION(e);
 		throw;
 	}
@@ -351,7 +351,7 @@ Watcher* OverlayHub::connect(int &sfd, bool blocking, int timeout) {
 		putWatcher(local, IO_WR, WATCHER_ACTIVE);
 		sfd = socket;
 		return local;
-	} catch (BaseException &e) {
+	} catch (const BaseException &e) {
 		WH_LOG_EXCEPTION(e);
 		Network::close(socket);
 		delete local;
@@ -381,7 +381,7 @@ Watcher* OverlayHub::createProxyConnection(unsigned long long id,
 		conn->publish(msg);
 		conn->setUid(id);
 		putWatcher(conn, IO_WR, 0);
-	} catch (BaseException &e) {
+	} catch (const BaseException &e) {
 		WH_LOG_EXCEPTION(e);
 		delete conn;
 		conn = nullptr;
@@ -607,7 +607,7 @@ void OverlayHub::updateSettings(int index) noexcept {
 			WH_LOG_DEBUG("Martian attack!");
 			break;
 		}
-	} catch (BaseException &e) {
+	} catch (const BaseException &e) {
 		//Hub has been damaged, report problem and abort
 		WH_LOG_EXCEPTION(e);
 		abort();

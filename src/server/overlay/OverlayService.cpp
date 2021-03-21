@@ -78,7 +78,7 @@ bool OverlayService::execute() {
 		//STEP 5: success
 		delay = ctx.updateCycle;
 		return true;
-	} catch (BaseException &e) {
+	} catch (const BaseException &e) {
 		WH_LOG_EXCEPTION(e);
 		throw;
 	}
@@ -87,7 +87,7 @@ bool OverlayService::execute() {
 bool OverlayService::wait() {
 	try {
 		return condition.timedWait(delay);
-	} catch (BaseException &e) {
+	} catch (const BaseException &e) {
 		WH_LOG_EXCEPTION(e);
 		throw;
 	}
@@ -96,7 +96,7 @@ bool OverlayService::wait() {
 void OverlayService::notify() noexcept {
 	try {
 		condition.notify();
-	} catch (BaseException &e) {
+	} catch (const BaseException &e) {
 		WH_LOG_EXCEPTION(e);
 	}
 }
@@ -140,7 +140,7 @@ bool OverlayService::join(uint64_t id, uint64_t startNode) noexcept {
 		} else {
 			return false;
 		}
-	} catch (BaseException &e) {
+	} catch (const BaseException &e) {
 		return false;
 	}
 }
@@ -163,7 +163,7 @@ bool OverlayService::checkPredecessor(uint64_t id) {
 			//Controller failure
 			return false;
 		}
-	} catch (BaseException &e) {
+	} catch (const BaseException &e) {
 		WH_LOG_EXCEPTION(e);
 		throw;
 	}
@@ -204,7 +204,7 @@ bool OverlayService::stabilize(uint64_t id) {
 		//Update one of the backup successors (round-robin)
 		fixSuccessorsList(id);
 		return true;
-	} catch (BaseException &e) {
+	} catch (const BaseException &e) {
 		WH_LOG_EXCEPTION(e);
 		//Stabilization failed, try to recover
 		return repairSuccessor(id);
@@ -227,7 +227,7 @@ bool OverlayService::fixFingerTable(uint64_t id) noexcept {
 		} else {
 			return true;
 		}
-	} catch (BaseException &e) {
+	} catch (const BaseException &e) {
 		WH_LOG_EXCEPTION(e);
 		return false;
 	}
@@ -245,7 +245,7 @@ bool OverlayService::fixSuccessorsList(uint64_t id) noexcept {
 			//First backup successor is fixed during stabilization
 			return true;
 		}
-	} catch (BaseException &e) {
+	} catch (const BaseException &e) {
 		sIndex = 0;
 		return false;
 	}
@@ -273,7 +273,7 @@ bool OverlayService::repairSuccessor(uint64_t id) {
 		}
 		//Could not recover, bail out
 		throw Exception(EX_INVALIDSTATE);
-	} catch (BaseException &e) {
+	} catch (const BaseException &e) {
 		WH_LOG_EXCEPTION(e);
 		throw;
 	}
@@ -352,7 +352,7 @@ void OverlayService::setup() {
 		}
 		WH_LOG_ERROR("Could not join the overlay network");
 		throw Exception(EX_INVALIDSTATE);
-	} catch (BaseException &e) {
+	} catch (const BaseException &e) {
 		WH_LOG_EXCEPTION(e);
 		throw;
 	}

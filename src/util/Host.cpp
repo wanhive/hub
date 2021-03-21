@@ -63,7 +63,7 @@ void Host::open(const char *path, bool readOnly) {
 			createTable();
 		}
 		prepareStatements();
-	} catch (BaseException &e) {
+	} catch (const BaseException &e) {
 		//Clean up to prevent resource leak
 		clear();
 		throw;
@@ -102,7 +102,7 @@ void Host::batchUpdate(const char *path) {
 		Storage::closeStream(f);
 		//-----------------------------------------------------------------
 		endTransaction();
-	} catch (BaseException &e) {
+	} catch (const BaseException &e) {
 		Storage::closeStream(f);
 		throw;
 	}

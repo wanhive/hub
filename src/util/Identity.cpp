@@ -67,7 +67,7 @@ void Identity::initialize() {
 		loadHosts();
 		loadKeys();
 		loadSSL();
-	} catch (BaseException &e) {
+	} catch (const BaseException &e) {
 		WH_LOG_EXCEPTION(e);
 		throw;
 	}
@@ -222,12 +222,12 @@ void Identity::generateInstanceId() {
 		instanceId = nullptr;
 		instanceId = new InstanceID();
 		WH_LOG_INFO("Instance identifier generated");
-	} catch (BaseException &e) {
+	} catch (const BaseException &e) {
 		WH_LOG_EXCEPTION(e);
 		throw;
 	} catch (...) {
 		WH_LOG_EXCEPTION_U();
-		throw Exception(EX_SECURITY);
+		throw Exception(EX_ALLOCFAILED);
 	}
 }
 
@@ -249,7 +249,7 @@ void Identity::loadConfiguration() {
 			paths.configurationFileName = nullptr;
 			throw Exception(EX_INVALIDPARAM);
 		}
-	} catch (BaseException &e) {
+	} catch (const BaseException &e) {
 		WH_LOG_EXCEPTION(e);
 		throw;
 	}
@@ -274,7 +274,7 @@ void Identity::loadHosts() {
 			loadHostsFile();
 		}
 		WH_LOG_INFO("Hosts initialized");
-	} catch (BaseException &e) {
+	} catch (const BaseException &e) {
 		WH_LOG_EXCEPTION(e);
 		WH_free(paths.hostsDatabaseName);
 		paths.hostsDatabaseName = nullptr;
@@ -314,7 +314,7 @@ void Identity::loadKeys() {
 				throw Exception(EX_SECURITY);
 			}
 		}
-	} catch (BaseException &e) {
+	} catch (const BaseException &e) {
 		WH_LOG_EXCEPTION(e);
 		auth.enabled = false;
 		auth.verify = false;
@@ -345,7 +345,7 @@ void Identity::loadSSL() {
 				paths.SSLHostKeyFileName);
 		ssl.ctx.loadTrustedPaths(paths.SSLTrustedCertificateFileName, nullptr);
 		WH_LOG_INFO("SSL/TLS enabled");
-	} catch (BaseException &e) {
+	} catch (const BaseException &e) {
 		WH_LOG_EXCEPTION(e);
 		WH_free(paths.SSLTrustedCertificateFileName);
 		paths.SSLTrustedCertificateFileName = nullptr;
@@ -366,7 +366,7 @@ void Identity::loadHostsDatabase() {
 			host.open(paths.hostsDatabaseName, true);
 			WH_LOG_DEBUG("Hosts loaded from %s", paths.hostsDatabaseName);
 		}
-	} catch (BaseException &e) {
+	} catch (const BaseException &e) {
 		WH_LOG_EXCEPTION(e);
 		throw;
 	}
@@ -382,7 +382,7 @@ void Identity::loadHostsFile() {
 			host.batchUpdate(paths.hostsFileName);
 			WH_LOG_DEBUG("Hosts loaded from %s", paths.hostsFileName);
 		}
-	} catch (BaseException &e) {
+	} catch (const BaseException &e) {
 		WH_LOG_EXCEPTION(e);
 		throw;
 	}
@@ -399,7 +399,7 @@ void Identity::loadPrivateKey() {
 		} else {
 			throw Exception(EX_SECURITY);
 		}
-	} catch (BaseException &e) {
+	} catch (const BaseException &e) {
 		WH_LOG_EXCEPTION(e);
 		throw;
 	}
@@ -415,7 +415,7 @@ void Identity::loadPublicKey() {
 		} else {
 			throw Exception(EX_SECURITY);
 		}
-	} catch (BaseException &e) {
+	} catch (const BaseException &e) {
 		WH_LOG_EXCEPTION(e);
 		throw;
 	}
@@ -440,7 +440,7 @@ void Identity::loadSSLCertificate() {
 			WH_LOG_DEBUG("SSL/TLS certificate loaded from %s",
 					paths.SSLCertificateFileName);
 		}
-	} catch (BaseException &e) {
+	} catch (const BaseException &e) {
 		WH_LOG_EXCEPTION(e);
 		throw;
 	}
@@ -458,7 +458,7 @@ void Identity::loadSSLHostKey() {
 			WH_LOG_DEBUG("SSL/TLS private key loaded from %s",
 					paths.SSLHostKeyFileName);
 		}
-	} catch (BaseException &e) {
+	} catch (const BaseException &e) {
 		WH_LOG_EXCEPTION(e);
 		throw;
 	}
@@ -505,7 +505,7 @@ char* Identity::locateConfigurationFile() noexcept {
 
 		//All attempts exhausted
 		return nullptr;
-	} catch (BaseException &e) {
+	} catch (const BaseException &e) {
 		WH_LOG_EXCEPTION(e);
 		return nullptr;
 	}

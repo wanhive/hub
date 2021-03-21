@@ -134,7 +134,7 @@ Watcher* Reactor::release() noexcept {
 void Reactor::remove(Watcher *w) noexcept {
 	try {
 		selector.remove(w->getHandle());
-	} catch (BaseException &e) {
+	} catch (const BaseException &e) {
 
 	}
 

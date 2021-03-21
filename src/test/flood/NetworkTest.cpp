@@ -90,7 +90,7 @@ void NetworkTest::test(const char *path) noexcept {
 			std::cout << "Unknown option" << std::endl;
 			break;
 		}
-	} catch (BaseException &e) {
+	} catch (const BaseException &e) {
 		WH_LOG_EXCEPTION(e);
 	} catch (...) {
 		WH_LOG_EXCEPTION_U();
@@ -115,7 +115,7 @@ void NetworkTest::flood(uint64_t destination, unsigned int iterations) {
 				<< ", Loss: "
 				<< ((double) (nSent - nReceived)) * 100 / ((double) nSent)
 				<< "%" << std::endl;
-	} catch (BaseException &e) {
+	} catch (const BaseException &e) {
 		WH_LOG_EXCEPTION(e);
 		throw;
 	}
@@ -128,7 +128,7 @@ void NetworkTest::echo(unsigned int iterations) {
 		setSocketTimeout(0, 0);
 		this->iterations = iterations;
 		pong();
-	} catch (BaseException &e) {
+	} catch (const BaseException &e) {
 		WH_LOG_EXCEPTION(e);
 		throw;
 	}
@@ -155,7 +155,7 @@ void NetworkTest::produce() noexcept {
 			}
 		}
 
-	} catch (BaseException &e) {
+	} catch (const BaseException &e) {
 		WH_LOG_EXCEPTION(e);
 	}
 	std::cerr << "\n=============PACKETS SENT===========\n";
@@ -180,7 +180,7 @@ void NetworkTest::consume() noexcept {
 				i++;
 			}
 		}
-	} catch (BaseException &e) {
+	} catch (const BaseException &e) {
 		WH_LOG_EXCEPTION(e);
 	}
 	nReceived = i;

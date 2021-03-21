@@ -50,7 +50,7 @@ void Endpoint::connect(const NameInfo &ni, int timeoutMils) {
 		SocketAddress sa;
 		socket = connect(ni, sa, timeoutMils);
 		setSocket(socket);
-	} catch (BaseException &e) {
+	} catch (const BaseException &e) {
 		Network::close(socket);
 		throw;
 	}
@@ -81,7 +81,7 @@ void Endpoint::setSocket(int socket) {
 		disconnect();
 		this->sockfd = socket;
 		this->ssl = ssl;
-	} catch (BaseException &e) {
+	} catch (const BaseException &e) {
 		throw;
 	}
 }
@@ -362,7 +362,7 @@ int Endpoint::connect(const NameInfo &ni, SocketAddress &sa, int timeoutMils) {
 			sfd = Network::connectedSocket(ni, sa, true);
 		}
 		Network::setSocketTimeout(sfd, timeoutMils, timeoutMils);
-	} catch (BaseException &e) {
+	} catch (const BaseException &e) {
 		if (sfd != -1) {
 			Network::close(sfd);
 		}
