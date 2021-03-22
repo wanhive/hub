@@ -48,19 +48,18 @@ private:
 
 	//Used by <maintain>
 	bool fixController() noexcept;
-	void fixRoutingTable() noexcept;
-	void removeDeadProxies(unsigned long long proxies[],
-			unsigned int count) noexcept;
+	bool fixRoutingTable() noexcept;
+	bool connectToRoute(unsigned long long id, Digest *hc) noexcept;
 	//=================================================================
-	//Establish connection with the remote hub <id> asynchronously
-	Watcher* connect(unsigned long long id, Digest *hc);
 	/*
 	 * Create and register a local unix socket, return the other end in <sfd>
 	 * If <blocking> is set to true then <sfd> is configured as a blocking socket
 	 * with the given <timeout>. Setting <timeout> to zero (0) will make <sfd> to
-	 * block forever. Returned Watcher is always nonblocking.
+	 * block forever. The returned Watcher is always nonblocking.
 	 */
 	Watcher* connect(int &sfd, bool blocking = false, int timeout = 0);
+	//Establish connection with the remote hub <id> asynchronously
+	Watcher* connect(unsigned long long id, Digest *hc);
 	/*
 	 * Helper function for <connect>
 	 * Creates an outgoing Socket connection from the local node to a remote node
@@ -68,8 +67,7 @@ private:
 	 * Returns a unique session ID in <hc> which should be stored by the derived
 	 * class to complete the registration process (see nonceToId).
 	 */
-	Watcher* createProxyConnection(unsigned long long id,
-			Digest *nonce) noexcept;
+	Watcher* createProxyConnection(unsigned long long id, Digest *nonce);
 	/*
 	 * <mode>: 0[TEMPORARY]; 1[INVALID]; 2[CLIENT];DEF[TEMPORARY|CLIENT]
 	 * <target>: If non-zero then at most <target> connections will be purged.

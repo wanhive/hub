@@ -71,7 +71,7 @@ void OverlayHub::configure(void *arg) {
 void OverlayHub::cleanup() noexcept {
 	Watcher *w = nullptr;
 	if (!isHostId(getWorkerId()) && (w = getWatcher(getWorkerId()))) {
-		//Shut down this end, the worker will take care of it's end of the connection
+		//Shut down hub's end of the socket pair
 		w->stop();
 		stabilizer.notify();
 	}
@@ -89,10 +89,10 @@ void OverlayHub::route(Message *message) noexcept {
 	//-----------------------------------------------------------------
 	/*
 	 * Intercept and handle registration requests, <createRoute> will modify
-	 * the message and produce authentication failure otherwise
+	 * the message and produce authentication failure otherwise.
 	 */
 	if (message->getCommand() == WH_DHT_CMD_BASIC) {
-		uint8_t qlf = message->getQualifier();
+		auto qlf = message->getQualifier();
 		if (qlf == WH_DHT_QLF_REGISTER) {
 			handleRegistrationRequest(message);
 			message->setGroup(0); //Ignore the group ID
@@ -105,23 +105,24 @@ void OverlayHub::route(Message *message) noexcept {
 	}
 	//-----------------------------------------------------------------
 	/*
-	 * [FLOW CONTROL]
-	 * Stamp the message with correct SOURCE and LABEL
+	 * [FLOW CONTROL]: Set the correct SOURCE and LABEL
 	 */
 	auto origin = message->getOrigin();
 	auto source = message->getSource();
 	if (isExternalNode(origin) && !isWorkerId(origin)) {
-		message->updateLabel(message->getGroup()); //Preserve group ID at insertion
+		//Preserve the group ID at insertion
+		message->updateLabel(message->getGroup());
+		//Assign the correct source ID
 		message->putSource(origin);
 	} else if (isInternalNode(origin) && isExternalNode(source)) {
-		message->setGroup(message->getLabel()); //Retrieve group ID during routing
+		//Retrieve the group ID during routing
+		message->setGroup(message->getLabel());
 	} else if (source && isInternalNode(source) && !isHostId(source)) {
 		cacheNode(source);
 	}
 	//-----------------------------------------------------------------
 	/*
-	 * [ROUTING]
-	 * Hub's ID is the sink
+	 * [ROUTING]: Hub's ID is the sink
 	 */
 	createRoute(message);
 
@@ -136,7 +137,7 @@ void OverlayHub::route(Message *message) noexcept {
 	 * [DELIVERY]
 	 */
 	if (isExternalNode(message->getDestination())) {
-		message->updateLabel(0); //Clean up before final delivery
+		message->updateLabel(0); //Clean up the label
 	}
 }
 
@@ -256,86 +257,46 @@ void OverlayHub::installService() {
 }
 
 bool OverlayHub::fixController() noexcept {
-	//Try to activate this Entry
-	if (Socket::unallocated() && Message::unallocated()) {
-		return connect(CONTROLLER, &sKeys[TABLESIZE]);
-	} else {
-		//Connection pool exhausted, reclaim and retry
-		if (!Socket::unallocated()) {
-			purgeConnections(3, 2);
-		}
-		setStable(false);
-		return false;
-	}
+	//Establish a connection with the controller
+	return connectToRoute(CONTROLLER, &sKeys[TABLESIZE]);
 }
 
-void OverlayHub::fixRoutingTable() noexcept {
-	unsigned int count = 0;
-	unsigned long long oldNodes[TABLESIZE];
-
-	//Fall through the table and fix errors
+bool OverlayHub::fixRoutingTable() noexcept {
+	//Fall through the routing table and fix the errors
 	for (unsigned int i = 0; i < TABLESIZE; i++) {
-		auto newNodeId = get(i);
-
 		if (!isConsistent(i)) {
-			//Prepare list of all old nodes
-			oldNodes[count++] = makeConsistent(i);
+			auto old = makeConsistent(i);
+			if (!isInRoute(old)) {
+				auto conn = getWatcher(old);
+				//Take care of the reference asymmetry
+				if (conn && conn->isType(SOCKET_PROXY)) {
+					disable(conn);
+				}
+			}
 		}
 
-		//Activate this entry
-		if (Socket::unallocated() && Message::unallocated()) {
-			setConnected(i, connect(newNodeId, &sKeys[i]));
-		} else {
-			if (!Socket::unallocated()) {
-				purgeConnections(3, 2);
-			}
-			//Retry
-			setStable(false);
-		}
+		//Update the connection status
+		setConnected(i, connectToRoute(get(i), &sKeys[i]));
 	}
-	//-----------------------------------------------------------------
-	//Remove those proxies which are no longer in use
-	removeDeadProxies(oldNodes, count);
 
 	//If the predecessor has changed, certain connections need to be removed
 	if (predessorChanged()) {
 		makePredecessorConsistent();
 		purgeConnections(1);
 	}
+
+	return true;
 }
 
-void OverlayHub::removeDeadProxies(unsigned long long proxies[],
-		unsigned int count) noexcept {
-	for (unsigned int i = 0; i < count; i++) {
-		if (!isInRoute(proxies[i])) {
-			/*
-			 * Remove this connection only if it is outgoing (Proxy).
-			 * Resolves the reference asymmetry in certain DHTs like CHORD
-			 */
-			auto conn = getWatcher(proxies[i]);
-			if (conn && conn->isType(SOCKET_PROXY)) {
-				disable(conn);
-			}
+bool OverlayHub::connectToRoute(unsigned long long id, Digest *hc) noexcept {
+	try {
+		return connect(id, hc);
+	} catch (const BaseException &e) {
+		if (!Socket::unallocated()) {
+			purgeConnections(3, 2);
+			setStable(false);
 		}
-	}
-}
-
-Watcher* OverlayHub::connect(unsigned long long id, Digest *hc) {
-	Watcher *conn = nullptr;
-	if (!(conn = getWatcher(id))) {
-		WH_LOG_DEBUG("Connecting to %llu", id);
-		createProxyConnection(id, hc);
-		//Connection isn't activated yet
-		return nullptr;
-	} else if (conn->testFlags(WATCHER_ACTIVE)) {
-		//WATCHER_ACTIVE bit is set only after successful registration
-		return conn;
-	} else if (((Socket*) conn)->hasTimedOut(ctx.requestTimeout)) {
-		disable(conn);
-		return nullptr;
-	} else {
-		//wait for activation or time-out
-		return nullptr;
+		return false;
 	}
 }
 
@@ -359,19 +320,38 @@ Watcher* OverlayHub::connect(int &sfd, bool blocking, int timeout) {
 	}
 }
 
-Watcher* OverlayHub::createProxyConnection(unsigned long long id,
-		Digest *nonce) noexcept {
-	if (getUid() == id || !nonce) {
+Watcher* OverlayHub::connect(unsigned long long id, Digest *hc) {
+	Watcher *conn = nullptr;
+	if (!(conn = getWatcher(id))) {
+		WH_LOG_DEBUG("Connecting to %llu", id);
+		createProxyConnection(id, hc);
+		//Not registered yet
+		return nullptr;
+	} else if (conn->testFlags(WATCHER_ACTIVE)) {
+		//Registration completed
+		return conn;
+	} else if (((Socket*) conn)->hasTimedOut(ctx.requestTimeout)) {
+		disable(conn);
+		return nullptr;
+	} else {
+		//wait for registration or time-out
 		return nullptr;
 	}
+}
 
+Watcher* OverlayHub::createProxyConnection(unsigned long long id,
+		Digest *nonce) {
 	Socket *conn = nullptr;
 	try {
+		if (getUid() == id || !nonce) {
+			throw Exception(EX_INVALIDPARAM);
+		}
+
 		NameInfo ni;
 		Identity::getAddress(id, ni);
 		conn = new Socket(ni);
 		//-----------------------------------------------------------------
-		//Once a connection is established, a getKey message is automatically sent
+		//A getKey request is automatically sent out
 		generateNonce(hashFn, conn->getUid(), getUid(), nonce);
 		Message *msg = Protocol::createGetKeyRequest(id,
 				{ verifyHost() ? getPKI() : nullptr, nonce }, nullptr);
@@ -381,12 +361,12 @@ Watcher* OverlayHub::createProxyConnection(unsigned long long id,
 		conn->publish(msg);
 		conn->setUid(id);
 		putWatcher(conn, IO_WR, 0);
+		return conn;
 	} catch (const BaseException &e) {
 		WH_LOG_EXCEPTION(e);
 		delete conn;
-		conn = nullptr;
+		throw;
 	}
-	return conn;
 }
 
 unsigned int OverlayHub::purgeConnections(int mode, unsigned target) noexcept {
@@ -403,7 +383,7 @@ unsigned int OverlayHub::purgeConnections(int mode, unsigned target) noexcept {
 		return counter.count;
 	default:
 		counter.count = purgeTemporaryConnections(target);
-		if (counter.count < target) {
+		if (!target || counter.count < target) {
 			iterateWatchers(removeIfClient, this);
 		}
 		return counter.count;
@@ -480,7 +460,7 @@ void OverlayHub::onRegistration(Watcher *w) noexcept {
 	} else if (isInternalNode(id)) {
 		w->setFlags(SOCKET_OVERLAY);
 		((Socket*) w)->setOutputQueueLimit(0);
-		update(id, true);
+		Node::update(id, true);
 	} else {
 		return;
 	}
@@ -494,7 +474,7 @@ void OverlayHub::onRecycle(Watcher *w) noexcept {
 
 	//Remove from the routing table
 	if (isInternalNode(w->getUid())) {
-		update(w->getUid(), false);
+		Node::update(w->getUid(), false);
 	}
 
 	//Remove from the topics
@@ -647,7 +627,7 @@ int OverlayHub::removeIfClient(Watcher *w, void *arg) noexcept {
 }
 
 int OverlayHub::createRoute(Message *message) noexcept {
-	//Once set, origin is never modified
+	//Message's origin is immutable
 	auto origin = message->getOrigin();
 	auto destination = message->getDestination();
 	//-----------------------------------------------------------------

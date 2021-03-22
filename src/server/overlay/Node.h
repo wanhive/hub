@@ -37,11 +37,11 @@ public:
 	unsigned int get(unsigned int index) const noexcept;
 	//Sets a key <id> at the given <index>
 	bool set(unsigned int index, unsigned int id) noexcept;
-	//Was the modification in key at given <index> committed
+	//Has the new key at the given <index> been committed
 	bool isConsistent(unsigned int index) const noexcept;
-	//Commits the change in key's value at give <index> and returns the old value
+	//Commits the new key at the given <index> and returns the old key
 	unsigned int makeConsistent(unsigned int index) noexcept;
-	//Is the finger at given <index> in connected state
+	//Is the finger at the given <index> in connected state
 	bool isConnected(unsigned int index) const noexcept;
 	//Updates the connected <status> of the finger at the given <index>
 	void setConnected(unsigned int index, bool status) noexcept;
@@ -109,11 +109,14 @@ public:
 			bool checkConnected = false) const noexcept;
 	//<id> is the successor of this node
 	void join(unsigned int id) noexcept;
-	//<id> is current successor's predecessor, returns true on success, false on error
+	//<id> is current successor's predecessor, returns true on success
 	bool stabilize(unsigned int id) noexcept;
 	//<id> might be this node's predecessor
 	bool notify(unsigned int id) noexcept;
-	//Node <id> has either joined or left the network, returns true if internal records modified
+	/*
+	 * Node <id> has either joined or left the network. Update the routing table
+	 * information accordingly. Returns true if the routing table was updated.
+	 */
 	bool update(unsigned int id, bool joined) noexcept;
 	//Returns true if <id> exists in the internal records (incl. 0 and node's key)
 	bool isInRoute(unsigned int id) const noexcept;
@@ -129,11 +132,6 @@ private:
 	 */
 	bool setFinger(Finger &f, unsigned int id, bool checkConsistent = true,
 			bool checkConnected = true) noexcept;
-	/*
-	 * Clean up records associated with <id> in the routing table
-	 * Returns true if a record was found and subsequently removed
-	 */
-	bool removeNode(unsigned int id) noexcept;
 public:
 	//Limit on key length in bits (this is an architectural limit)
 	static constexpr unsigned int MAXKEYLENGTH = DHT::IDENTIFIER_LENGTH;
@@ -152,9 +150,9 @@ public:
 private:
 	//This node's key
 	const unsigned int _key;
-	//Current predecessor
+	//The current predecessor
 	Finger _predecessor;
-	//table[0] is the immediate successor
+	//Routing table starting with the immediate successor
 	Finger table[TABLESIZE];
 	//On update <stable> is set to false
 	bool stable;

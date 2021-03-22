@@ -196,11 +196,21 @@ bool Node::notify(unsigned int id) noexcept {
 }
 
 bool Node::update(unsigned int id, bool joined) noexcept {
-	if (joined) {
-		return true;
-	} else {
-		return removeNode(id);
+	auto found = false;
+	//If the predecessor has failed then invalidate the predecessor
+	if (getPredecessor() == id && !joined) {
+		setPredecessor(0);
+		found = true;
 	}
+
+	//Update the finger table
+	for (unsigned int i = 0; i < TABLESIZE; ++i) {
+		if (table[i].getId() == id) {
+			table[i].setConnected(joined);
+			found = true;
+		}
+	}
+	return found;
 }
 
 bool Node::isInRoute(unsigned int id) const noexcept {
@@ -259,23 +269,6 @@ bool Node::setFinger(Finger &f, unsigned int id, bool checkConsistent,
 	} else {
 		return false;
 	}
-}
-
-bool Node::removeNode(unsigned int id) noexcept {
-	auto found = false;
-	//If the predecessor has failed/disconnected then invalidate the predecessor
-	if (getPredecessor() == id) {
-		setPredecessor(0);
-		found = true;
-	}
-	//If a finger has failed then set it's connected status to false
-	for (unsigned int i = 0; i < TABLESIZE; ++i) {
-		if (table[i].getId() == id) {
-			table[i].setConnected(false);
-			found = true;
-		}
-	}
-	return found;
 }
 
 } /* namespace wanhive */
