@@ -80,27 +80,29 @@ public:
 	void setSocketTimeout(int recvTimeout, int sendTimeout) const;
 	//-----------------------------------------------------------------
 	/**
-	 * Header and message management
+	 * Header and message buffer management
 	 * NOTE: The format string follows the Serializer class.
 	 */
-	//Message's source identifier will be set to <source>
+	//Source identifier of all the requests will be set to <source>
 	void setSource(uint64_t source) noexcept;
-	//Current message source identifier
+	//Current source identifier for all the requests
 	uint64_t getSource() const noexcept;
-	//Reset the sequence number counter to the given value
+	//Set the sequence number counter to the given value
 	void setSequenceNumber(uint16_t sequenceNumber = 0) noexcept;
-	//Current sequence number set in the counter
+	//Current value of the sequence number counter
 	uint16_t getSequenceNumber() const noexcept;
 	//Return and increment the sequence number
 	uint16_t nextSequenceNumber() noexcept;
-	//Set session identifier
+	//Set the active session identifier
 	void setSession(uint8_t session = 0) noexcept;
-	//Currently active session
+	//Currently active session identifier
 	uint8_t getSession() const noexcept;
+
+	//The message header
 	const MessageHeader& getHeader() const noexcept;
 	//Pointer to the offset within the IO buffer (nullptr on overflow)
 	const unsigned char* getBuffer(unsigned int offset = 0) const noexcept;
-	//Pointer to offset within the payload (nullptr on overflow)
+	//Pointer to the offset within the payload (nullptr on overflow)
 	const unsigned char* getPayload(unsigned int offset = 0) const noexcept;
 
 	//Copy and serialize the <header> and the <payload>, <payload> can be nullptr
@@ -115,11 +117,12 @@ public:
 	//Append the data at the end of the message and update message's length
 	bool append(const char *format, ...) noexcept;
 	bool append(const char *format, va_list ap) noexcept;
-	//Deserialize the message header from the buffer
+	//Deserialize the message header from the IO buffer
 	void unpackHeader(MessageHeader &header) const noexcept;
 	//Deserialize the payload data
 	bool unpack(const char *format, ...) const noexcept;
 	bool unpack(const char *format, va_list ap) const noexcept;
+
 	//Verify that message's context are correctly set in the header
 	bool checkCommand(uint8_t command, uint8_t qualifier) const noexcept;
 	//Verify that message's context are correctly set in the header
@@ -130,18 +133,17 @@ public:
 	 * Blocking message IO
 	 * NOTE: Internal PKI object is used for both signing and verification.
 	 */
-	//Send out a message, message length is taken from the message header
+	//Send out a message, message length is taken from the deserialized message header
 	void send(bool sign = false);
 	//Receive a message, if <sequenceNumber> is not 0 then messages are discarded until a match
 	void receive(unsigned int sequenceNumber = 0, bool verify = false);
-	//Execute a request and receive the response, returns true if the target accepted the request
+	//Execute a request and receive the response, returns true on success
 	bool executeRequest(bool sign = false, bool verify = false);
-	//Generates a pong for a ping (for testing purposes)
+	//Waits for receipt of a ping and responds with a pong (for testing)
 	void sendPong();
 protected:
 	/**
-	 * Following two methods grant the derived classes direct access to the
-	 * internal structures for efficient implementation of additional protocols.
+	 * For efficient implementation of additional protocols in the subclasses.
 	 * These methods violate encapsulation and must be used with great care
 	 * because incorrect usage can introduce hard to debug issues.
 	 */
@@ -235,10 +237,12 @@ private:
 	int sockfd; //The underlying socket
 	SSL *ssl;  //The underlying SSL/TLS connection
 	SSLContext *sslContext;
+
 	const PKI *pki; //PKI for message signing and verification
-	uint64_t sourceId; //Default source identifier of the outgoing messages
+	uint64_t sourceId; //Default source identifier
 	uint16_t sequenceNumber;
 	uint8_t session;
+
 	MessageHeader _header; //The deserialized message header
 	unsigned char _buffer[Message::MTU]; //The IO buffer
 };

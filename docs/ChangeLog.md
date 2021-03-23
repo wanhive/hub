@@ -9,20 +9,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-- Bootstrap using the hosts database or file.
-- Host type enumeration in the **Host** class.
-- **Message::getHeader** and **Message::getStorage** methods with const modifier.
+- Wanhive hubs can bootstrap themselves using the hosts database or file.
 
 ### Changed
 
-- Routing table maintenance routines in the OverlayHub.
-- Add const modifier to the method parameters in the **Endpoint** and **Protocol** classes (wherever applicable).
+- Update the **Endpoint** class and it's subclasses.
 - **Hub::removeWatcher** returns boolean instead of void.
 - **Hub::retainMessage** sets the Message flag to **MSG_WAIT_PROCESSING**.
 - **Hub::purgeTemporaryConnections** takes an additional parameter.
 - **Inotifier::read** doesn't unnecessarily zero out the IO buffer.
 - Rename **Identity::loadIdentifiers** to **Identity::getIdentifiers**.
 - Outgoing message queue handling in the **Socket** class.
+- Routing table maintenance in the **OverlayHub** class.
 
 ### Removed
 
