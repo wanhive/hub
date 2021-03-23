@@ -154,7 +154,7 @@ unsigned int Protocol::processBootstrapResponse(uint64_t keys[],
 	} else {
 		auto n = Serializer::unpacku32(buffer() + Message::HEADER_SIZE);
 		limit = Twiddler::min(n, limit);
-		unsigned int offset = sizeof(uint32_t);
+		auto offset = sizeof(uint32_t);
 		for (unsigned int i = 0; i < limit; i++) {
 			keys[i] = Serializer::unpacku64(
 					buffer() + Message::HEADER_SIZE + offset);

@@ -140,10 +140,10 @@ public:
 	void sendPong();
 protected:
 	/**
-	 * Following two methods grant the derived classes direct access to the internal
-	 * structures for efficient implementation of additional protocols. These methods
-	 * violate encapsulation and must be used with great care because incorrect usage
-	 * can introduce hard to debug issues into the application.
+	 * Following two methods grant the derived classes direct access to the
+	 * internal structures for efficient implementation of additional protocols.
+	 * These methods violate encapsulation and must be used with great care
+	 * because incorrect usage can introduce hard to debug issues.
 	 */
 	//Deserialized message header
 	MessageHeader& header() noexcept;

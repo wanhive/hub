@@ -248,13 +248,13 @@ public:
 	/*
 	 * For debugging purposes, header is printed to stderr.
 	 * If <deep> is true then the serialized header from IO buffer is
-	 * extracted and printed otherwise the message header is printed.
+	 * extracted and printed otherwise the routing header is printed.
 	 */
 	void printHeader(bool deep = false) const noexcept;
 	//=================================================================
 	//Returns true if <length> is a valid message length
 	static bool testLength(unsigned int length) noexcept;
-	//Returns number of messages required to transmit <bytes> of data
+	//Returns the number of messages required to transmit <bytes> of data
 	static unsigned int packets(unsigned int bytes) noexcept;
 public:
 	//Message header size in bytes
