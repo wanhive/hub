@@ -132,8 +132,11 @@ protected:
 	/*
 	 * Purge timed out temporary Socket connections. If <target> is not
 	 * zero (0) then at most <target> number of Watchers will be removed.
+	 * If <force> is true then all temporary connections will be treated
+	 * as timed-out connections.
 	 */
-	unsigned int purgeTemporaryConnections(unsigned int target = 0) noexcept;
+	unsigned int purgeTemporaryConnections(unsigned int target = 0, bool force =
+			false) noexcept;
 	//=================================================================
 	/**
 	 * Message queuing

@@ -64,10 +64,14 @@ void Timer::now() noexcept {
 
 bool Timer::hasTimedOut(unsigned int milliseconds,
 		unsigned int nanoseconds) const noexcept {
-	auto mark = currentTime();
-	auto diff = ((unsigned long long) milliseconds) * MS_IN_MILS
-			+ (nanoseconds / NS_IN_MS);
-	return (mark < t) || ((mark - t) > diff);
+	if (milliseconds || nanoseconds) {
+		auto diff = ((unsigned long long) milliseconds) * MS_IN_MILS
+				+ (nanoseconds / NS_IN_MS);
+		auto mark = currentTime();
+		return (mark < t) || ((mark - t) > diff);
+	} else {
+		return true;
+	}
 }
 
 void Timer::sleep(unsigned int milliseconds, unsigned int nanoseconds) noexcept {

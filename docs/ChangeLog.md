@@ -15,9 +15,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- Routing table maintenance routines in the OverlayHub.
 - Add const modifier to the method parameters in the **Endpoint** and **Protocol** classes (wherever applicable).
 - **Hub::removeWatcher** returns boolean instead of void.
 - **Hub::retainMessage** sets the Message flag to **MSG_WAIT_PROCESSING**.
+- **Hub::purgeTemporaryConnections** takes an additional parameter.
 - **Inotifier::read** doesn't unnecessarily zero out the IO buffer.
 - Rename **Identity::loadIdentifiers** to **Identity::getIdentifiers**.
 - Outgoing message queue handling in the **Socket** class.

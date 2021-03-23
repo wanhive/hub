@@ -169,32 +169,32 @@ void Hub::iterateWatchers(int (*fn)(Watcher *w, void *arg), void *arg) {
 	watchers.iterate(fn, arg);
 }
 
-unsigned int Hub::purgeTemporaryConnections(unsigned int target) noexcept {
+unsigned int Hub::purgeTemporaryConnections(unsigned int target,
+		bool force) noexcept {
 	//Prepare the buffer for reading
 	temporaryConnections.rewind();
+	auto timeout = force ? 0 : ctx.connectionTimeOut;
+
 	unsigned int count = 0;
 	unsigned long long id;
 	while (temporaryConnections.get(id)) {
-		auto conn = watchers.get(id);
-		if (conn) {
-			//This conversion is always safe
-			if ((static_cast<Socket*>(conn))->hasTimedOut(
-					ctx.connectionTimeOut)) {
-				disable(conn);
-				count++;
-			} else {
-				/*
-				 * Move back and break-out. Connections are added in chronological
-				 * order, hence if the current connection hasn't timed-out then
-				 * neither have the successors.
-				 */
-				temporaryConnections.setIndex(
-						temporaryConnections.getIndex() - 1);
+		//This conversion is always safe
+		auto conn = static_cast<Socket*>(watchers.get(id));
+		if (!conn) {
+			continue;
+		} else if (conn->hasTimedOut(timeout)) {
+			disable(conn);
+			++count;
+			if (target && count >= target) {
 				break;
 			}
-		}
-
-		if (target && count >= target) {
+		} else {
+			/*
+			 * Move back and break-out. Connections are added in chronological
+			 * order, hence if this connection hasn't timed-out then neither
+			 * have the successors.
+			 */
+			temporaryConnections.setIndex(temporaryConnections.getIndex() - 1);
 			break;
 		}
 	}
@@ -838,7 +838,7 @@ void Hub::processMessages() noexcept {
 bool Hub::acceptConnection(Socket *listener) noexcept {
 	//Limited protection against flooding of new connections
 	if (!temporaryConnections.hasSpace()) {
-		//Remove timed out temporary connections
+		//Clean up timed out temporary connections
 		purgeTemporaryConnections();
 	}
 	//-----------------------------------------------------------------

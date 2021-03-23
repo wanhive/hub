@@ -292,7 +292,7 @@ bool OverlayHub::connectToRoute(unsigned long long id, Digest *hc) noexcept {
 	try {
 		return connect(id, hc);
 	} catch (const BaseException &e) {
-		if (!Socket::unallocated()) {
+		if (!Socket::unallocated() || !Message::unallocated()) {
 			purgeConnections(3, 2);
 			setStable(false);
 		}
@@ -382,7 +382,7 @@ unsigned int OverlayHub::purgeConnections(int mode, unsigned target) noexcept {
 		iterateWatchers(removeIfClient, this);
 		return counter.count;
 	default:
-		counter.count = purgeTemporaryConnections(target);
+		counter.count = purgeTemporaryConnections(target, true);
 		if (!target || counter.count < target) {
 			iterateWatchers(removeIfClient, this);
 		}
