@@ -179,7 +179,7 @@ unsigned int Hub::purgeTemporaryConnections(unsigned int target,
 	unsigned long long id;
 	while (temporaryConnections.get(id)) {
 		//This conversion is always safe
-		auto conn = static_cast<Socket*>(watchers.get(id));
+		auto conn = static_cast<Socket*>(getWatcher(id));
 		if (!conn) {
 			continue;
 		} else if (conn->hasTimedOut(timeout)) {
@@ -793,7 +793,7 @@ void Hub::publish() noexcept {
 
 		//Verify the destination
 		if (msg->getDestination() == getUid()
-				|| !(w = watchers.get(msg->getDestination()))
+				|| !(w = getWatcher(msg->getDestination()))
 				|| w->testGroup(msg->getGroup())) {
 			//Destination is sink or not found or group conflict
 			Message::recycle(msg);

@@ -70,8 +70,8 @@ void ClientHub::configure(void *arg) {
 			ctx.passwordLength = 0;
 		}
 		ctx.passwordHashRounds = conf.getNumber("CLIENT", "passwordHashRounds");
-		ctx.timeOut = conf.getNumber("CLIENT", "timeOut", 2000);
-		ctx.retryInterval = conf.getNumber("CLIENT", "retryInterval", 5000);
+		ctx.timeOut = conf.getNumber("CLIENT", "timeOut", 5000);
+		ctx.retryInterval = conf.getNumber("CLIENT", "retryInterval", 10000);
 
 		WH_LOG_DEBUG(
 				"Client hub settings:\nPASSWORD=\"%s\", HASHROUNDS=%u, TIMEOUT=%ums, RETRYINTERVAL=%ums\n",
