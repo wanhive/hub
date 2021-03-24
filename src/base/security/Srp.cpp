@@ -11,7 +11,6 @@
  */
 
 #include "Srp.h"
-#include "../common/Exception.h"
 #include <cstring>
 #include <new>
 
