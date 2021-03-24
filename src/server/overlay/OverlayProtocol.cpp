@@ -41,7 +41,7 @@ unsigned int OverlayProtocol::processDescribeResponse(
 		return 0;
 	}
 	//-----------------------------------------------------------------
-	//ID(8) -> MTU(2) -> MAX_CONN(4) -> CONN(4) -> MAX_MSGS(4) -> MSGS(4) -> UPTIME (Lf)
+	//ID(8)->MTU(2)->MAX_CONN(4)->CONN(4)->MAX_MSGS(4)->MSGS(4)->UPTIME (8)
 	unsigned int index = 0;
 	info.uid = Serializer::unpacku64(getPayload(index)); //KEY
 	index += sizeof(uint64_t);
@@ -58,7 +58,7 @@ unsigned int OverlayProtocol::processDescribeResponse(
 	info.stat.uptime = Serializer::unpackf64(getPayload(index));
 	index += sizeof(uint64_t);
 	//-----------------------------------------------------------------
-	//IN_PACKETS(8) -> IN_BYTES(8) -> DROPPED_PACKETS(8) -> DROPPED_BYTES(8)
+	//IN_PACKETS(8)->IN_BYTES(8)->DROPPED_PACKETS(8)->DROPPED_BYTES(8)
 	info.stat.receivedPackets = Serializer::unpacku64(getPayload(index));
 	index += sizeof(uint64_t);
 	info.stat.receivedBytes = Serializer::unpacku64(getPayload(index));
@@ -68,7 +68,7 @@ unsigned int OverlayProtocol::processDescribeResponse(
 	info.stat.droppedBytes = Serializer::unpacku64(getPayload(index));
 	index += sizeof(uint64_t);
 	//-----------------------------------------------------------------
-	//Predecessor(8) -> Successor(8) -> STABLE_FLAG(1) -> TABLE_SIZE(1)
+	//Predecessor(8)->Successor(8)->STABLE_FLAG(1)->TABLE_SIZE(1)
 	info.predecessor = Serializer::unpacku64(getPayload(index)); //Predecessor
 	index += sizeof(uint64_t);
 	info.successor = Serializer::unpacku64(getPayload(index)); //Successor
@@ -285,7 +285,8 @@ bool OverlayProtocol::getFingerRequest(uint64_t id, uint32_t index,
 		uint64_t &key) {
 	/*
 	 * HEADER: SRC=0, DEST=X, ....CMD=3, QLF=4, AQLF=0/1/127
-	 * BODY: 4 bytes in Request as <index>; 4 bytes as <index> + 8 bytes as <finger> in Response
+	 * BODY: 4 bytes in Request as <index>; 4 bytes as <index> + 8 bytes
+	 * as <finger> in Response
 	 * TOTAL: 32+4=36 bytes in Request; 32+4+8=44 bytes in Response
 	 */
 	return createGetFingerRequest(id, index) && executeRequest()
@@ -361,7 +362,8 @@ bool OverlayProtocol::getNeighboursRequest(uint64_t id, uint64_t &predecessor,
 		uint64_t &successor) {
 	/*
 	 * HEADER: SRC=0, DEST=X, ....CMD=3, QLF=6, AQLF=0/1/127
-	 * BODY: 0 bytes in REQ; 8 bytes as <predecessor> + 8 bytes as <successor> in Response
+	 * BODY: 0 bytes in REQ; 8 bytes as <predecessor> + 8 bytes
+	 * as <successor> in Response
 	 * TOTAL: 32 bytes in Request; 32+8+8=48 bytes in Response
 	 */
 	return createGetNeighboursRequest(id) && executeRequest()
@@ -432,7 +434,8 @@ bool OverlayProtocol::findSuccessorRequest(uint64_t id, uint64_t uid,
 		uint64_t &key) {
 	/*
 	 * HEADER: SRC=0, DEST=X, ....CMD=4, QLF=0, AQLF=0/1/127
-	 * BODY: 8 bytes as <id> in Request; 8 bytes as <id> and 8 bytes as <successor> in Response
+	 * BODY: 8 bytes as <id> in Request; 8 bytes as <id> and 8 bytes
+	 * as <successor> in Response
 	 * TOTAL: 32+8=40 bytes in Request; 32+8+8=48 bytes in Response
 	 */
 	return createFindSuccessorRequest(id, uid) && executeRequest()

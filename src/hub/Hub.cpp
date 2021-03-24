@@ -242,7 +242,7 @@ bool Hub::react(Watcher *w) noexcept {
 void Hub::stop(Watcher *w) noexcept {
 	/*
 	 * Bail out if any one of these ever fails. This provision allows the
-	 * worker thread to safely interact with the event loop via these watchers.
+	 * worker thread to safely interact with these watchers.
 	 */
 	bool error = (w == notifiers.listener) || (w == notifiers.clock)
 			|| (w == notifiers.enotifier) || (w == notifiers.inotifier)
@@ -330,7 +330,7 @@ void Hub::configure(void *arg) {
 				Logger::describeLevel(Logger::getDefault().getLevel()));
 		//-----------------------------------------------------------------
 		/*
-		 * Initialization of core data structures
+		 * Initialization of the core data structures
 		 */
 		initBuffers();
 		initReactor();

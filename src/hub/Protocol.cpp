@@ -129,7 +129,8 @@ unsigned int Protocol::processFindRootResponse(uint64_t uid,
 bool Protocol::findRootRequest(uint64_t id, uint64_t uid, uint64_t &root) {
 	/*
 	 * HEADER: SRC=0, DEST=X, ....CMD=1, QLF=2, AQLF=0/1/127
-	 * BODY: 8 bytes as <id> in Request; 8 bytes as <id> and 8 bytes as <successor> in Response
+	 * BODY: 8 bytes as <id> in Request; 8 bytes as <id> and 8 bytes as
+	 * <successor> in Response
 	 * TOTAL: 32+8=40 bytes in Request; 32+8+8=48 bytes in Response
 	 */
 	return createFindRootRequest(id, uid) && executeRequest()
@@ -167,7 +168,8 @@ unsigned int Protocol::processBootstrapResponse(uint64_t keys[],
 bool Protocol::bootstrapRequest(uint64_t id, uint64_t keys[], uint32_t &limit) {
 	/*
 	 * HEADER: SRC=0, DEST=X, ....CMD=1, QLF=3, AQLF=0/1/127
-	 * BODY: 0 in Request; 4 bytes as count + 8*NODECACHE_SIZE bytes as IDs in Response
+	 * BODY: 0 in Request; 4 bytes as count + 8*NODECACHE_SIZE bytes as IDs
+	 * in Response
 	 * TOTAL: 32 bytes in Request; 32+4+8*NODECACHE_SIZE bytes in Response
 	 */
 	return createBootstrapRequest(id) && executeRequest()

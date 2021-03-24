@@ -504,10 +504,10 @@ void OverlayHub::updateSettings(int index) noexcept {
 		//Associated file will no longer be monitored
 		wd[index].identifier = -1;
 		wd[index].events = 0;
-	} else if (!(wd[index].events & IN_CLOSE_WRITE)) { //check for write-close
+	} else if (!(wd[index].events & IN_CLOSE_WRITE)) { //Write-close
 		return;
-	} else if (!(wd[index].events & (IN_MODIFY | IN_ATTRIB))) { //check for modification
-		//Closed without modification (e.g. open in write mode and close immediately)
+	} else if (!(wd[index].events & (IN_MODIFY | IN_ATTRIB))) { //Modification
+		//Closed without modification
 		wd[index].events = 0;
 		return;
 	} else {
@@ -794,7 +794,7 @@ int OverlayHub::handleDescribeNodeRequest(Message *msg) noexcept {
 	//-----------------------------------------------------------------
 	//This function can be extended to include more data
 	//-----------------------------------------------------------------
-	//ID(8)-> MTU(2) -> MAX_CONN(4) -> CONN(4) -> MAX_MSGS(4) -> MSGS(4) -> UPTIME (Lf)
+	//ID(8)->MTU(2)->MAX_CONN(4)->CONN(4)->MAX_MSGS(4)->MSGS(4)->UPTIME (8)
 	unsigned int index = 0;
 	msg->setData64(index, getUid()); //KEY
 	index += sizeof(uint64_t);
@@ -811,7 +811,7 @@ int OverlayHub::handleDescribeNodeRequest(Message *msg) noexcept {
 	msg->setDouble(index, getUptime());
 	index += sizeof(uint64_t);
 	//-----------------------------------------------------------------
-	//IN_PACKETS(8) -> IN_BYTES(8) -> DROPPED_PACKETS(8) -> DROPPED_BYTES(8)
+	//IN_PACKETS(8)->IN_BYTES(8)->DROPPED_PACKETS(8)->DROPPED_BYTES(8)
 	msg->setData64(index, messagesReceived());
 	index += sizeof(uint64_t);
 	msg->setData64(index, bytesReceived());
@@ -821,14 +821,14 @@ int OverlayHub::handleDescribeNodeRequest(Message *msg) noexcept {
 	msg->setData64(index, bytesDropped());
 	index += sizeof(uint64_t);
 	//-----------------------------------------------------------------
-	//Predecessor(8)-> Successor(8)-> STABLE_FLAG(1) -> TABLE_SIZE(1)
+	//Predecessor(8)->Successor(8)->STABLE_FLAG(1)->TABLE_SIZE(1)
 	msg->setData64(index, getPredecessor()); //Predecessor
 	index += sizeof(uint64_t);
 	msg->setData64(index, getSuccessor()); //Successor
 	index += sizeof(uint64_t);
-	msg->setData8(index, (isStable() ? (uint8_t) 1 : (uint8_t) 0)); //Routing Table Status
+	msg->setData8(index, (isStable() ? (uint8_t) 1 : (uint8_t) 0)); //Table Status
 	index += sizeof(uint8_t);
-	msg->setData8(index, (uint8_t) TABLESIZE); //Size of Finger Table
+	msg->setData8(index, (uint8_t) TABLESIZE); //Size of Routing Table
 	index += sizeof(uint8_t);
 	//-----------------------------------------------------------------
 	for (unsigned int i = 0; i < TABLESIZE; i++) {
@@ -947,8 +947,8 @@ int OverlayHub::handleGetKeyRequest(Message *msg) noexcept {
 	}
 	//-----------------------------------------------------------------
 	/*
-	 * This call succeeds if the caller is a temporary connection and the message is of
-	 * proper size, otherwise a failure message is sent back.
+	 * This call succeeds if the caller is a temporary connection and the
+	 * message is of proper size, otherwise a failure message is sent back.
 	 */
 	if (Socket::isEphemeralId(origin)
 			&& msg->getPayloadLength() <= Hash::SIZE) {
@@ -988,14 +988,15 @@ int OverlayHub::handleGetKeyRequest(Message *msg) noexcept {
 int OverlayHub::handleFindRootRequest(Message *msg) noexcept {
 	/*
 	 * HEADER: SRC=0, DEST=X, ....CMD=1, QLF=2, AQLF=0/1/127
-	 * BODY: 8 bytes as <id> in Request; 8 bytes as <id> and 8 bytes as <successor> in Response
+	 * BODY: 8 bytes as <id> in Request; 8 bytes as <id> and 8 bytes
+	 * as <successor> in Response
 	 * TOTAL: 32+8=40 bytes in Request; 32+8+8=48 bytes in Response
 	 */
 	//At this point we know that this hub was the intended destination
 	auto origin = msg->getOrigin();
 	auto source = msg->getSource();
 	//-----------------------------------------------------------------
-	//We have received the result, perform a clean-up and forward to the originator
+	//We have received the result, perform a clean-up and deliver
 	if (msg->getStatus() == WH_DHT_AQLF_ACCEPTED) {
 		if (isInternalNode(origin)
 				&& msg->getPayloadLength() == (4 * sizeof(uint64_t))) {
@@ -1040,7 +1041,7 @@ int OverlayHub::handleFindRootRequest(Message *msg) noexcept {
 					&& msg->getStatus() == WH_DHT_AQLF_REQUEST) {
 				msg->putLength(Message::HEADER_SIZE + 4 * sizeof(uint64_t));
 				msg->setData64(2 * sizeof(uint64_t), origin); //Record the origin
-				msg->setData64(3 * sizeof(uint64_t), source); //Record the final destination
+				msg->setData64(3 * sizeof(uint64_t), source); //Final destination
 				msg->updateSource(getUid()); //Result will be looped back here
 			} else {
 				return handleInvalidRequest(msg);
@@ -1056,7 +1057,8 @@ int OverlayHub::handleFindRootRequest(Message *msg) noexcept {
 int OverlayHub::handleBootstrapRequest(Message *msg) noexcept {
 	/*
 	 * HEADER: SRC=0, DEST=X, ....CMD=1, QLF=3, AQLF=0/1/127
-	 * BODY: 0 in Request; 4 bytes as count + 8*NODECACHE_SIZE bytes as IDs in Response
+	 * BODY: 0 in Request; 4 bytes as count + 8*NODECACHE_SIZE bytes
+	 * as IDs in Response
 	 * TOTAL: 32 bytes in Request; 32+4+8*NODECACHE_SIZE bytes in Response
 	 */
 	auto origin = msg->getOrigin();
@@ -1249,7 +1251,8 @@ int OverlayHub::handleSetSuccessorRequest(Message *msg) noexcept {
 int OverlayHub::handleGetFingerRequest(Message *msg) noexcept {
 	/*
 	 * HEADER: SRC=0, DEST=X, ....CMD=3, QLF=4, AQLF=0/1/127
-	 * BODY: 4 bytes in Request as <index>; 4 bytes as <index> + 8 bytes as <finger> in Response
+	 * BODY: 4 bytes in Request as <index>; 4 bytes as <index> + 8 bytes
+	 * as <finger> in Response
 	 * TOTAL: 32+4=36 bytes in Request; 32+4+8=44 bytes in Response
 	 */
 	if (msg->getPayloadLength() != sizeof(uint32_t)) {
@@ -1293,7 +1296,8 @@ int OverlayHub::handleSetFingerRequest(Message *msg) noexcept {
 int OverlayHub::handleGetNeighboursRequest(Message *msg) noexcept {
 	/*
 	 * HEADER: SRC=0, DEST=X, ....CMD=3, QLF=6, AQLF=0/1/127
-	 * BODY: 0 bytes in REQ; 8 bytes as <predecessor> + 8 bytes as <successor> in Response
+	 * BODY: 0 bytes in REQ; 8 bytes as <predecessor> + 8 bytes
+	 * as <successor> in Response
 	 * TOTAL: 32 bytes in Request; 32+8+8=48 bytes in Response
 	 */
 	if (msg->getLength() != Message::HEADER_SIZE) {
@@ -1326,7 +1330,8 @@ int OverlayHub::handleNotifyRequest(Message *msg) noexcept {
 int OverlayHub::handleFindSuccesssorRequest(Message *msg) noexcept {
 	/*
 	 * HEADER: SRC=0, DEST=X, ....CMD=4, QLF=0, AQLF=0/1/127
-	 * BODY: 8 bytes as <id> in Request; 8 bytes as <id> and 8 bytes as <successor> in Response
+	 * BODY: 8 bytes as <id> in Request; 8 bytes as <id> and 8 bytes
+	 * as <successor> in Response
 	 * TOTAL: 32+8=40 bytes in Request; 32+8+8=48 bytes in Response
 	 */
 	auto origin = msg->getOrigin();

@@ -48,13 +48,13 @@ public:
 	Socket(int fd) noexcept;
 	Socket(int fd, const SocketAddress &sa) noexcept;
 	/*
-	 * Creates a connected Socket, type is set to SOCKET_PROXY
-	 * If ni.service is "unix" then a unix domain socket is created
+	 * Creates a connected Socket and sets it's type to SOCKET_PROXY.
+	 * If ni.service is "unix" then a unix domain socket is created.
 	 */
 	Socket(const NameInfo &ni, bool blocking = false, int timeoutMils = -1);
 	/*
-	 * Creates a server Socket, type is set to SOCKET_LISTENER
-	 * If <isUnix> is set then a unix domain socket is created
+	 * Creates a server Socket and sets it's type to SOCKET_LISTENER.
+	 * If <isUnix> is true then a unix domain socket is created.
 	 */
 	Socket(const char *service, int backlog, bool isUnix = false,
 			bool blocking = false);
@@ -195,11 +195,11 @@ private:
 	//This buffer stores the incoming raw bytes
 	StaticCircularBuffer<unsigned char, READ_BUFFER_SIZE> in;
 
-	//Serialized O/P
 	//This buffer collects all the outgoing messages
 	StaticCircularBuffer<Message*, OUT_QUEUE_SIZE> out;
 	//Container for scatter-gather O/P
 	StaticBuffer<iovec, OUT_QUEUE_SIZE> outgoingMessages;
+	//-----------------------------------------------------------------
 	//Subscriptions
 	Topic subscriptions;
 	//-----------------------------------------------------------------

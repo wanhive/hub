@@ -19,7 +19,7 @@ namespace wanhive {
 /**
  * Agent can connect with an existing overlay network via
  * any participant node including the controller.
- * Extend this class to build network test tools.
+ * Extend this class to build network testing tools.
  * Only asymmetric key based authentication supported.
  */
 class Agent: protected Identity, protected Protocol {
