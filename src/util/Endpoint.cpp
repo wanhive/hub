@@ -349,8 +349,20 @@ MessageHeader& Endpoint::header() noexcept {
 	return _header;
 }
 
-unsigned char* Endpoint::buffer() noexcept {
-	return _buffer;
+unsigned char* Endpoint::buffer(unsigned int offset) noexcept {
+	if (offset < Message::MTU) {
+		return (_buffer + offset);
+	} else {
+		return nullptr;
+	}
+}
+
+unsigned char* Endpoint::payload(unsigned int offset) noexcept {
+	if (offset < Message::PAYLOAD_SIZE) {
+		return (_buffer + Message::HEADER_SIZE + offset);
+	} else {
+		return nullptr;
+	}
 }
 
 int Endpoint::connect(const NameInfo &ni, SocketAddress &sa, int timeoutMils) {

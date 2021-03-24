@@ -80,7 +80,7 @@ public:
 	void setSocketTimeout(int recvTimeout, int sendTimeout) const;
 	//-----------------------------------------------------------------
 	/**
-	 * Header and message buffer management
+	 * Header and IO buffer management
 	 * NOTE: The format string follows the Serializer class.
 	 */
 	//Source identifier of all the requests will be set to <source>
@@ -102,7 +102,7 @@ public:
 	const MessageHeader& getHeader() const noexcept;
 	//Pointer to the offset within the IO buffer (nullptr on overflow)
 	const unsigned char* getBuffer(unsigned int offset = 0) const noexcept;
-	//Pointer to the offset within the payload (nullptr on overflow)
+	//Pointer to payload's offset within the IO buffer (nullptr on overflow)
 	const unsigned char* getPayload(unsigned int offset = 0) const noexcept;
 
 	//Copy and serialize the <header> and the <payload>, <payload> can be nullptr
@@ -133,9 +133,9 @@ public:
 	 * Blocking message IO
 	 * NOTE: Internal PKI object is used for both signing and verification.
 	 */
-	//Send out a message, message length is taken from the deserialized message header
+	//Send out a message, message length is taken from the deserialized header
 	void send(bool sign = false);
-	//Receive a message, if <sequenceNumber> is not 0 then messages are discarded until a match
+	//Receive a message matching the <sequenceNumber> (set to 0 to ignore)
 	void receive(unsigned int sequenceNumber = 0, bool verify = false);
 	//Execute a request and receive the response, returns true on success
 	bool executeRequest(bool sign = false, bool verify = false);
@@ -149,15 +149,15 @@ protected:
 	 */
 	//Deserialized message header
 	MessageHeader& header() noexcept;
-	//Serialized IO buffer
-	unsigned char* buffer() noexcept;
+	//Pointer to <offset> within the IO buffer (nullptr on overflow)
+	unsigned char* buffer(unsigned int offset = 0) noexcept;
+	//Pointer to payload's <offset> within the IO buffer (nullptr on overflow)
+	unsigned char* payload(unsigned int offset = 0) noexcept;
 public:
 	/*
-	 * Establish TCP connection with the host <ni>.
-	 * if <blocking> is true then the socket is configured for blocking IO (default),
-	 * IO will fail after <timeoutMils> miliseconds (0 to block forever, -1 to ignore).
-	 * Otherwise connect will be completed in background,
-	 * use Selector to check whether connect returned successfully or not.
+	 * Establish a blocking TCP socket connection with the host <ni>.
+	 * <timeoutMils> specifies the IO timeout value in milliseconds
+	 * (0 to block forever, -1 to ignore).
 	 */
 	static int connect(const NameInfo &ni, SocketAddress &sa, int timeoutMils =
 			-1);
@@ -171,23 +171,22 @@ public:
 	static void send(SSL *ssl, unsigned char *buf, unsigned int length,
 			const PKI *pki = nullptr);
 	/*
-	 * If PKI is provided then the message will be verified using PKI's public key
-	 * If <sequenceNumber> == 0 received message's sequence number is not verified
-	 * <sockfd> should be blocking
+	 * If <pki> is provided then the message will be verified using it's public
+	 * key. If <sequenceNumber> is 0 then received message's sequence number is
+	 * not verified. <sockfd> should be a blocking TCP/IP socket descriptor.
 	 */
 	static void receive(int sockfd, unsigned char *buf, MessageHeader &header,
 			unsigned int sequenceNumber = 0, const PKI *pki = nullptr);
-	//Same as the above but uses SSL/TLS connection
+	//Same as above but uses a secure SSL/TLS connection
 	static void receive(SSL *ssl, unsigned char *buf, MessageHeader &header,
 			unsigned int sequenceNumber = 0, const PKI *pki = nullptr);
 	//-----------------------------------------------------------------
 	/**
 	 * Following functions pack and unpack a message (header and payload) to and
 	 * from the <buffer>. <format> specifies the message payload format. If the
-	 * payload is empty then the format must be nullptr. All functions return the
-	 * number of bytes transferred to/from the <buffer>, 0 on error.
-	 * NOTE 1: Caller must ensure that <buffer> points to a valid memory region
-	 * of sufficient size.
+	 * payload is empty then the format must be nullptr. All the functions return
+	 * the number of bytes transferred to/from the <buffer>, 0 on error.
+	 * NOTE 1: <buffer> should point to valid memory of sufficient size.
 	 * NOTE 2: The format string follows the Serializer class.
 	 */
 	//Message length is always automatically calculated
@@ -221,15 +220,15 @@ public:
 	static bool verify(const Message *msg, const PKI *pki) noexcept;
 	//-----------------------------------------------------------------
 	/*
-	 * Execute a request-response call over blocking socket connection.
+	 * Execute a request-response call over a blocking socket connection.
 	 * If <signer> is provided then it's private key will be used for signing
 	 * the message. If <verifier> is provided then it's public key will be used
-	 * for message verification. Returns true if the request was accepted.
+	 * for message verification. Returns true on success.
 	 */
 	static bool executeRequest(int sfd, MessageHeader &header,
 			unsigned char *buf, const PKI *signer = nullptr,
 			const PKI *verifier = nullptr);
-	//Same as the above but uses SSL/TLS connection
+	//Same as the above but uses a secure SSL/TLS connection
 	static bool executeRequest(SSL *ssl, MessageHeader &header,
 			unsigned char *buf, const PKI *signer = nullptr,
 			const PKI *verifier = nullptr);

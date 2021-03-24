@@ -184,7 +184,7 @@ unsigned int Protocol::createPublishRequest(uint64_t id, uint8_t topic,
 				WH_AQLF_REQUEST);
 		auto len = header().serialize(buffer());
 		if (payload) {
-			Serializer::packib(buffer() + len, payload, payloadLength);
+			Serializer::packib(buffer(len), payload, payloadLength);
 		}
 		return header().getLength();
 	}

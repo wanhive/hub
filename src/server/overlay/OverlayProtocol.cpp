@@ -147,7 +147,7 @@ unsigned int OverlayProtocol::createSetPredecessorRequest(uint64_t id,
 			nextSequenceNumber(), getSession(), WH_DHT_CMD_NODE,
 			WH_DHT_QLF_SETPREDECESSOR, WH_DHT_AQLF_REQUEST);
 	header().serialize(buffer());
-	Serializer::pack(buffer() + Message::HEADER_SIZE, "Q", key);
+	Serializer::pack(payload(), "Q", key);
 	return header().getLength();
 }
 
@@ -218,7 +218,7 @@ unsigned int OverlayProtocol::createSetSuccessorRequest(uint64_t id,
 			nextSequenceNumber(), getSession(), WH_DHT_CMD_NODE,
 			WH_DHT_QLF_SETSUCCESSOR, WH_DHT_AQLF_REQUEST);
 	header().serialize(buffer());
-	Serializer::pack(buffer() + Message::HEADER_SIZE, "Q", key);
+	Serializer::pack(payload(), "Q", key);
 	return header().getLength();
 }
 
@@ -256,7 +256,7 @@ unsigned int OverlayProtocol::createGetFingerRequest(uint64_t id,
 			nextSequenceNumber(), getSession(), WH_DHT_CMD_NODE,
 			WH_DHT_QLF_GETFINGER, WH_DHT_AQLF_REQUEST);
 	header().serialize(buffer());
-	Serializer::pack(buffer() + Message::HEADER_SIZE, "L", index);
+	Serializer::pack(payload(), "L", index);
 	return header().getLength();
 }
 
@@ -299,7 +299,7 @@ unsigned int OverlayProtocol::createSetFingerRequest(uint64_t id,
 			nextSequenceNumber(), getSession(), WH_DHT_CMD_NODE,
 			WH_DHT_QLF_SETFINGER, WH_DHT_AQLF_REQUEST);
 	header().serialize(buffer());
-	Serializer::pack(buffer() + Message::HEADER_SIZE, "LQ", index, key);
+	Serializer::pack(payload(), "LQ", index, key);
 	return header().getLength();
 }
 
@@ -374,7 +374,7 @@ unsigned int OverlayProtocol::createNotifyRequest(uint64_t id,
 			nextSequenceNumber(), getSession(), WH_DHT_CMD_NODE,
 			WH_DHT_QLF_NOTIFY, WH_DHT_AQLF_REQUEST);
 	header().serialize(buffer());
-	Serializer::pack(buffer() + Message::HEADER_SIZE, "Q", predecessor);
+	Serializer::pack(payload(), "Q", predecessor);
 	return header().getLength();
 }
 
@@ -404,7 +404,7 @@ unsigned int OverlayProtocol::createFindSuccessorRequest(uint64_t id,
 			nextSequenceNumber(), getSession(), WH_DHT_CMD_OVERLAY,
 			WH_DHT_QLF_FINDSUCCESSOR, WH_DHT_AQLF_REQUEST);
 	header().serialize(buffer());
-	Serializer::pack(buffer() + Message::HEADER_SIZE, "Q", uid);
+	Serializer::pack(payload(), "Q", uid);
 	return header().getLength();
 }
 
