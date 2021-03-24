@@ -56,9 +56,9 @@ void OverlayHub::configure(void *arg) {
 
 		WH_LOG_DEBUG(
 				"Overlay hub settings: \n" "ENABLE_REGISTRATION=%s, AUTHENTICATE_CLIENTS=%s, CONNECT_TO_OVERLAY=%s,\n" "TABLE_UPDATE_CYCLE=%ums, BLOCKING_IO_TIMEOUT=%ums, RETRY_INTERVAL=%ums,\n" "NETMASK=%s, GROUP_ID=%u\n",
-				(ctx.enableRegistration ? "YES" : "NO"),
-				(ctx.authenticateClient ? "YES" : "NO"),
-				(ctx.connectToOverlay ? "YES" : "NO"), ctx.updateCycle,
+				WH_BOOLF(ctx.enableRegistration),
+				WH_BOOLF(ctx.authenticateClient),
+				WH_BOOLF(ctx.connectToOverlay), ctx.updateCycle,
 				ctx.requestTimeout, ctx.retryInterval, netmaskStr, ctx.groupId);
 		installSettingsMonitor();
 		installService();
@@ -794,7 +794,7 @@ int OverlayHub::handleDescribeNodeRequest(Message *msg) noexcept {
 	//-----------------------------------------------------------------
 	//This function can be extended to include more data
 	//-----------------------------------------------------------------
-	//ID(8)->MTU(2)->MAX_CONN(4)->CONN(4)->MAX_MSGS(4)->MSGS(4)->UPTIME (8)
+	//ID(8)->MTU(2)->MAX_CONN(4)->CONN(4)->MAX_MSGS(4)->MSGS(4)->UPTIME(8)
 	unsigned int index = 0;
 	msg->setData64(index, getUid()); //KEY
 	index += sizeof(uint64_t);
@@ -826,13 +826,13 @@ int OverlayHub::handleDescribeNodeRequest(Message *msg) noexcept {
 	index += sizeof(uint64_t);
 	msg->setData64(index, getSuccessor()); //Successor
 	index += sizeof(uint64_t);
-	msg->setData8(index, (isStable() ? (uint8_t) 1 : (uint8_t) 0)); //Table Status
+	msg->setData8(index, (isStable() ? 1 : 0)); //Routing table atatus
 	index += sizeof(uint8_t);
-	msg->setData8(index, (uint8_t) TABLESIZE); //Size of Routing Table
+	msg->setData8(index, (uint8_t) TABLESIZE); //Size of routing table
 	index += sizeof(uint8_t);
 	//-----------------------------------------------------------------
 	for (unsigned int i = 0; i < TABLESIZE; i++) {
-		//START(8) -> ID(8) -> OLD_ID(8) -> CONNECTED(1)
+		//START(8)->ID(8)->OLD_ID(8)->CONNECTED(1)
 		auto f = getFinger(i);
 		msg->setData64(index, f->getStart());
 		index += sizeof(uint64_t);
@@ -840,7 +840,7 @@ int OverlayHub::handleDescribeNodeRequest(Message *msg) noexcept {
 		index += sizeof(uint64_t);
 		msg->setData64(index, f->getOldId());
 		index += sizeof(uint64_t);
-		msg->setData8(index, (f->isConnected() ? (uint8_t) 1 : (uint8_t) 0));
+		msg->setData8(index, (f->isConnected() ? 1 : 0));
 		index += sizeof(uint8_t);
 	}
 	//-----------------------------------------------------------------

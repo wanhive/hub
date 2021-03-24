@@ -147,7 +147,7 @@ unsigned int MessageHeader::serialize(unsigned char *buffer) const noexcept {
 
 void MessageHeader::print() const noexcept {
 	fprintf(stderr,
-			"LABEL:%" PRIx64 " SRC:%" PRIu64 " DEST:%" PRIu64 " LENGTH:%u SEQN:%u SESSION:%u CMD:%u QLF:%u STATUS:%u\n",
+			"LABEL:%#" PRIx64 " SRC:%" PRIu64 " DEST:%" PRIu64 " LENGTH:%u SEQN:%u SESSION:%u CMD:%u QLF:%u STATUS:%u\n",
 			header.label, header.source, header.destination, header.length,
 			header.sequenceNumber, header.session, header.ctx.command,
 			header.ctx.qualifier, header.ctx.status);

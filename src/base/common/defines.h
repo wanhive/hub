@@ -88,6 +88,11 @@
 #define WH_TOSTRING(x) WH_STRINGIFY(x)
 //=================================================================
 /**
+ * Boolean value to string literal
+ */
+#define WH_BOOLF(expr) ((expr) ? "YES" : "NO")
+//=================================================================
+/**
  * For evaluation of an array's length
  */
 #define WH_ARRAYLEN(x) (sizeof(x) / sizeof(x[0]))

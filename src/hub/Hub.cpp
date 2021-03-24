@@ -318,14 +318,14 @@ void Hub::configure(void *arg) {
 		//-----------------------------------------------------------------
 		WH_LOG_DEBUG(
 				"Hub setings:\n" "LISTEN=%s, BACKLOG=%d, SERVICENAME=%s, SERVICETYPE=%s,\n" "MAX_IO_EVENTS=%u, TIMER_EXPIRATION=%ums, TIMER_INTERVAL=%ums, SEMAPHORE=%s,\n" "SYNCHRONOUS_SIGNAL=%s, CONNECTION_POOL_SIZE=%u, MESSAGE_POOL_SIZE=%u,\n" "MAX_NEW_CONNECTIONS=%u, TMP_CONNECTION_TIMEOUT=%ums, CYCLEINLIMIT=%u,\n" "OUTQUEUELIMIT=%u THROTTLE=%s, RESERVED_MESSAGES=%u, ALLOW_PACKET_DROP=%s,\n" "MESSAGE_TTL=%u, ANSWER_RATIO=%f, FORWARD_RATIO=%f, LOG_LEVEL=%s\n",
-				(ctx.listen ? "YES" : "NO"), ctx.backlog, ctx.serviceName,
+				WH_BOOLF(ctx.listen), ctx.backlog, ctx.serviceName,
 				ctx.serviceType, ctx.maxIOEvents, ctx.timerExpiration,
-				ctx.timerInterval, (ctx.semaphore ? "YES" : "NO"),
-				(ctx.signal ? "YES" : "NO"), ctx.connectionPoolSize,
+				ctx.timerInterval, WH_BOOLF(ctx.semaphore),
+				WH_BOOLF(ctx.signal), ctx.connectionPoolSize,
 				ctx.messagePoolSize, ctx.maxNewConnnections,
 				ctx.connectionTimeOut, ctx.cycleInputLimit,
-				ctx.outputQueueLimit, (ctx.throttle ? "YES" : "NO"),
-				ctx.reservedMessages, (ctx.allowPacketDrop ? "YES" : "NO"),
+				ctx.outputQueueLimit, WH_BOOLF(ctx.throttle),
+				ctx.reservedMessages, WH_BOOLF(ctx.allowPacketDrop),
 				ctx.messageTTL, ctx.answerRatio, ctx.forwardRatio,
 				Logger::describeLevel(Logger::getDefault().getLevel()));
 		//-----------------------------------------------------------------

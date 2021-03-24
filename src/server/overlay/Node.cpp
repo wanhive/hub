@@ -227,21 +227,19 @@ bool Node::isInRoute(unsigned int id) const noexcept {
 }
 
 void Node::print() noexcept {
-	fprintf(stderr, "\n=======================================\n");
-	fprintf(stderr, "NODE SETTINGS\n");
+	fprintf(stderr, "\n==========================================\n");
 	fprintf(stderr, "KEY: %u\n", _key);
-	fprintf(stderr, "PREDECESSOR: %u, SUCCESSOR: %u\n", getPredecessor(),
+	fprintf(stderr, "PREDECESSOR: %u, SUCCESSOR: %u\n\n", getPredecessor(),
 			getSuccessor());
-	fprintf(stderr, "FINGER TABLE [STATUS= %s]:\n",
-			(isStable() ? "STABLE" : "UNSTABLE"));
-	fprintf(stderr, "------------------------------------\n");
-	fprintf(stderr, " SN    START  CURRENT  HISTORY   CONN\n");
+	fprintf(stderr, "FINGER TABLE [STABLE: %s]\n", WH_BOOLF(isStable()));
+	fprintf(stderr, "------------------------------------------\n");
+	fprintf(stderr, " SN    START  CURRENT  HISTORY   CONNECTED\n");
 	for (unsigned int i = 0; i < TABLESIZE; ++i) {
 		auto f = getFinger(i);
-		fprintf(stderr, "%3u%9u%9u%9u   %4s\n", (i + 1), f->getStart(),
-				f->getId(), f->getOldId(), (f->isConnected() ? "Y" : "N"));
+		fprintf(stderr, "%3u%9u%9u%9u   %9s\n", (i + 1), f->getStart(),
+				f->getId(), f->getOldId(), WH_BOOLF(f->isConnected()));
 	}
-	fprintf(stderr, "\n=======================================\n");
+	fprintf(stderr, "\n==========================================\n");
 }
 
 void Node::initialize() noexcept {
