@@ -33,6 +33,16 @@ Socket::Socket(int fd, const SocketAddress &sa) noexcept :
 	address = sa;
 }
 
+Socket::Socket(SSL *ssl) {
+	clear();
+	if (ssl && sslCtx && sslCtx->inContext(ssl)) {
+		secure.ssl = ssl;
+		setHandle(SSLContext::getSocket(ssl));
+	} else {
+		throw Exception(EX_SECURITY);
+	}
+}
+
 Socket::Socket(const NameInfo &ni, bool blocking, int timeoutMils) {
 	try {
 		clear();
@@ -64,16 +74,6 @@ Socket::Socket(const char *service, int backlog, bool isUnix, bool blocking) {
 	} catch (const BaseException &e) {
 		closeHandle();
 		throw;
-	}
-}
-
-Socket::Socket(SSL *ssl) {
-	clear();
-	if (ssl && sslCtx && sslCtx->inContext(ssl)) {
-		secure.ssl = ssl;
-		setHandle(SSLContext::getSocket(ssl));
-	} else {
-		throw Exception(EX_SECURITY);
 	}
 }
 
@@ -543,13 +543,13 @@ void Socket::adjustOutgoingQueue(size_t count) noexcept {
 }
 
 void Socket::clear() noexcept {
+	memset(&address, 0, sizeof(address));
 	memset(&secure, 0, sizeof(secure));
 	incomingMessage = nullptr;
 	totalIncomingMessages = 0;
 	totalOutgoingMessages = 0;
 	outQueueLimit = 0;
 	outgoingMessages.rewind();
-	memset(&address, 0, sizeof(address));
 }
 
 void Socket::cleanup() noexcept {

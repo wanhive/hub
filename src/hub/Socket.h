@@ -47,21 +47,19 @@ class Socket: public Watcher {
 public:
 	Socket(int fd) noexcept;
 	Socket(int fd, const SocketAddress &sa) noexcept;
+	Socket(SSL *ssl);
 	/*
-	 * Creates a connected Socket and sets it's type to SOCKET_PROXY.
-	 * If ni.service is "unix" then a unix domain socket is created.
+	 * Creates a connected Socket of type SOCKET_PROXY. If ni.service is "unix"
+	 * then a unix domain socket is created. Set the blocking IO timeout in
+	 * <timeoutMils> (-1 to ignore, 0 to block forever).
 	 */
 	Socket(const NameInfo &ni, bool blocking = false, int timeoutMils = -1);
 	/*
-	 * Creates a server Socket and sets it's type to SOCKET_LISTENER.
-	 * If <isUnix> is true then a unix domain socket is created.
+	 * Creates a server Socket of type SOCKET_LISTENER. If <isUnix> is true
+	 * then a unix domain socket is created.
 	 */
 	Socket(const char *service, int backlog, bool isUnix = false,
 			bool blocking = false);
-	/*
-	 * Creates a SSL/TLS socket
-	 */
-	Socket(SSL *ssl);
 
 	virtual ~Socket();
 
@@ -123,12 +121,12 @@ public:
 	SSL* getSecureSocket() const noexcept;
 	//=================================================================
 	/*
-	 * Create a unix domain socket pair, encapsulates one end of it into
-	 * a new Socket and stores the other end into <sfd> on success.
-	 * Type of the returned Socket is set to SOCKET_LOCAL
+	 * Creates a unix domain socket pair, encapsulates one end of it into a new
+	 * Socket and stores the other end into <sfd>.Type of the newly created
+	 * Socket is set to SOCKET_LOCAL.
 	 */
 	static Socket* createSocketPair(int &sfd, bool blocking = false);
-	//Set context for SSL connections
+	//Set the context for SSL connections
 	static void setSSLContext(SSLContext *ctx) noexcept;
 	//=================================================================
 	static void initPool(unsigned int size);
@@ -177,6 +175,14 @@ public:
 	//Size of scatter-gather OP buffers, must be power of two
 	static constexpr unsigned int OUT_QUEUE_SIZE = 1024;
 private:
+	//-----------------------------------------------------------------
+	//When was this connection created
+	Timer timer;
+	//Current socket connection's address
+	SocketAddress address;
+	//Subscriptions
+	Topic subscriptions;
+	//-----------------------------------------------------------------
 	struct {
 		SSL *ssl; //SSL/TLS connection
 		bool callRead; //Call read instead of write
@@ -199,14 +205,6 @@ private:
 	StaticCircularBuffer<Message*, OUT_QUEUE_SIZE> out;
 	//Container for scatter-gather O/P
 	StaticBuffer<iovec, OUT_QUEUE_SIZE> outgoingMessages;
-	//-----------------------------------------------------------------
-	//Subscriptions
-	Topic subscriptions;
-	//-----------------------------------------------------------------
-	//Address associated with the current connection
-	SocketAddress address;
-	//When was this connection created
-	Timer timer;
 	//-----------------------------------------------------------------
 	static MemoryPool pool;
 	static SSLContext *sslCtx; //SSL/TLS context
