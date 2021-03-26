@@ -28,11 +28,11 @@ namespace wanhive {
 enum SocketFlag : uint32_t {
 	SOCKET_PRIORITY = 128,	//Priority connection
 	SOCKET_OVERLAY = 256,	//Overlay connection
+	SOCKET_LOCAL = 512 //Local unix domain socket
 };
 
 enum SocketType {
 	SOCKET_LISTENER = 1, //A listening socket
-	SOCKET_LOCAL = 2, //A local unix domain socket
 	SOCKET_PROXY = 3	//An outgoing connection socket
 };
 //-----------------------------------------------------------------
@@ -80,9 +80,9 @@ public:
 	bool testTopic(unsigned int index) const noexcept override final;
 	//=================================================================
 	/*
-	 * Wrapper for Network::accept. Returns the newly created connection.
-	 * If <blocking> is true then the new connection will block on IO.
-	 * Returns NULL if accept would block.
+	 * Wrapper for Network::accept. Returns the newly created connection on
+	 * success. If <blocking> is true then the new connection is configured
+	 * for blocking IO. Returns nullptr if the call would block.
 	 */
 	Socket* accept(bool blocking = false);
 	/*
@@ -123,7 +123,7 @@ public:
 	/*
 	 * Creates a unix domain socket pair, encapsulates one end of it into a new
 	 * Socket and stores the other end into <sfd>.Type of the newly created
-	 * Socket is set to SOCKET_LOCAL.
+	 * Socket is set to SOCKET_PROXY.
 	 */
 	static Socket* createSocketPair(int &sfd, bool blocking = false);
 	//Set the context for SSL connections

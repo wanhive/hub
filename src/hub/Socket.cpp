@@ -48,6 +48,7 @@ Socket::Socket(const NameInfo &ni, bool blocking, int timeoutMils) {
 		clear();
 		if (!strcasecmp(ni.service, "unix")) {
 			setHandle(Network::unixConnectedSocket(ni.host, address, blocking));
+			setFlags(SOCKET_LOCAL);
 		} else {
 			setHandle(Network::connectedSocket(ni, address, blocking));
 		}
@@ -68,6 +69,7 @@ Socket::Socket(const char *service, int backlog, bool isUnix, bool blocking) {
 			setHandle(Network::serverSocket(service, address, blocking));
 		} else {
 			setHandle(Network::unixServerSocket(service, address, blocking));
+			setFlags(SOCKET_LOCAL);
 		}
 		Network::listen(getHandle(), backlog);
 		setType(SOCKET_LISTENER);
@@ -140,17 +142,20 @@ bool Socket::testTopic(unsigned int index) const noexcept {
 }
 
 Socket* Socket::accept(bool blocking) {
-	SocketAddress sa;
-	int flag = blocking ? 0 : SOCK_NONBLOCK;
-	auto sfd = Network::accept(this->getHandle(), sa, flag);
-	if (sfd == -1) {
-		//Would block
-		clearEvents(IO_READ);
-		return nullptr;
-	}
-
+	auto sfd = -1;
 	try {
-		return new Socket(sfd, sa);
+		auto flag = blocking ? 0 : SOCK_NONBLOCK;
+		SocketAddress sa;
+		sfd = Network::accept(this->getHandle(), sa, flag);
+		if (sfd == -1) {
+			clearEvents(IO_READ); //Would block
+			return nullptr;
+		}
+		auto s = new Socket(sfd, sa);
+		if (testFlags(SOCKET_LOCAL)) {
+			s->setFlags(SOCKET_LOCAL);
+		}
+		return s;
 	} catch (const BaseException &e) {
 		Network::close(sfd);
 		throw;
@@ -162,7 +167,7 @@ int Socket::shutdown(int how) noexcept {
 }
 
 ssize_t Socket::read() {
-	if (!sslCtx || isType(SOCKET_LOCAL)) {
+	if (!sslCtx || testFlags(SOCKET_LOCAL)) {
 		return socketRead();
 	} else {
 		return secureRead();
@@ -170,7 +175,7 @@ ssize_t Socket::read() {
 }
 
 ssize_t Socket::write() {
-	if (!sslCtx || isType(SOCKET_LOCAL)) {
+	if (!sslCtx || testFlags(SOCKET_LOCAL)) {
 		return socketWrite();
 	} else {
 		return secureWrite();
@@ -260,7 +265,8 @@ Socket* Socket::createSocketPair(int &sfd, bool blocking) {
 		Network::socketPair(sv, blocking);
 		sfd = sv[1];
 		auto conn = new Socket(sv[0]);
-		conn->setType(SOCKET_LOCAL);
+		conn->setFlags(SOCKET_LOCAL);
+		conn->setType(SOCKET_PROXY);
 		return conn;
 	} catch (const BaseException &e) {
 		if (sv[0] != -1) {

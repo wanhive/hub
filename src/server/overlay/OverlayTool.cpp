@@ -42,7 +42,6 @@ void OverlayTool::run() noexcept {
 
 void OverlayTool::setup() {
 	Identity::initialize();
-	Endpoint::setSSLContext(Identity::getSSLContext());
 }
 
 void OverlayTool::execute() noexcept {
@@ -180,6 +179,7 @@ void OverlayTool::connect() {
 	try {
 		NameInfo ni;
 		Identity::getAddress(host, ni);
+		Endpoint::setSSLContext(Identity::getSSLContext());
 		Endpoint::connect(ni, timeout);
 		std::cout << "Connected with the host: " << host << std::endl;
 		hostId = host;

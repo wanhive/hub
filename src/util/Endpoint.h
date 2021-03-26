@@ -43,9 +43,14 @@ public:
 	/**
 	 * Connection management
 	 */
-	//Establish a new connection, old connection is terminated
+
+	/*
+	 * Establish a new connection after terminating the existing connection.
+	 * If the new connection is a unix domain socket connection then the SSL
+	 * context is cleared.
+	 */
 	void connect(const NameInfo &ni, int timeoutMils = -1);
-	//Terminate the existing connection
+	//Terminate any existing connection
 	void disconnect();
 
 	//Return the socket associated with this object
@@ -53,13 +58,13 @@ public:
 	//Return the SSL connection associated with this object
 	SSL* getSecureSocket() const noexcept;
 	/*
-	 * Close the connection in use and set a new one,
-	 * throws exception on SSL/TLS connection error.
+	 * Close the connection in use and set a new one. Throws an exception on
+	 * SSL/TLS connection error.
 	 */
 	void setSocket(int socket);
 	/*
-	 * Close the connection in use and set a new one,
-	 * throws exception on SSL/TLS connection error.
+	 * Close the connection in use and set a new one. Throws an exception
+	 * on SSL/TLS connection error.
 	 */
 	void setSecureSocket(SSL *ssl);
 	//Release the underlying connection and return it
@@ -67,13 +72,13 @@ public:
 	//Release the underlying connection and return it
 	SSL* releaseSecureSocket() noexcept;
 	/*
-	 * Swap the underlying socket with <socket> and return it,
-	 * throws exception on SSL/TLS connection error.
+	 * Swap the underlying socket with <socket> and return it. Throws an
+	 * exception on SSL/TLS connection error.
 	 */
 	int swapSocket(int socket);
 	/*
-	 * Swap the underlying connection with <ssl> and return it,
-	 * throws exception on SSL/TLS connection error.
+	 * Swap the underlying connection with <ssl> and return it. Throws an
+	 * exception on SSL/TLS connection error.
 	 */
 	SSL* swapSecureSocket(SSL *ssl);
 	//Set receive and send timeout (milliseconds)
@@ -105,7 +110,7 @@ public:
 	//Pointer to payload's offset within the IO buffer (nullptr on overflow)
 	const unsigned char* getPayload(unsigned int offset = 0) const noexcept;
 
-	//Copy and serialize the <header> and the <payload>, <payload> can be nullptr
+	//Copy and serialize the <header> and the <payload> (can be nullptr)
 	bool pack(const MessageHeader &header,
 			const unsigned char *payload) noexcept;
 	//Copy the full message consisting of serialized header and payload
@@ -131,7 +136,7 @@ public:
 	//-----------------------------------------------------------------
 	/**
 	 * Blocking message IO
-	 * NOTE: Internal PKI object is used for both signing and verification.
+	 * NOTE: Assign a PKI object for signing and verification.
 	 */
 	//Send out a message, message length is taken from the deserialized header
 	void send(bool sign = false);
@@ -162,8 +167,8 @@ public:
 	static int connect(const NameInfo &ni, SocketAddress &sa, int timeoutMils =
 			-1);
 	/*
-	 * If PKI is provided then the message will be signed using PKI's private key
-	 * <sockfd> should be blocking
+	 * If <pki> is provided then the message will be signed with its
+	 * private key. <sockfd> should be configured for blocking IO.
 	 */
 	static void send(int sockfd, unsigned char *buf, unsigned int length,
 			const PKI *pki = nullptr);
@@ -173,7 +178,7 @@ public:
 	/*
 	 * If <pki> is provided then the message will be verified using it's public
 	 * key. If <sequenceNumber> is 0 then received message's sequence number is
-	 * not verified. <sockfd> should be a blocking TCP/IP socket descriptor.
+	 * not verified. <sockfd> should be configured for blocking IO.
 	 */
 	static void receive(int sockfd, unsigned char *buf, MessageHeader &header,
 			unsigned int sequenceNumber = 0, const PKI *pki = nullptr);
@@ -203,9 +208,9 @@ public:
 			va_list list) noexcept;
 	//-----------------------------------------------------------------
 	/**
-	 * Message authentication functions, return true on success, false on error.
-	 * <pki> can be nullptr in which case the functions are noop and always return
-	 * true. Functions may fail if invalid length or null pointer detected.
+	 * Message authentication functions which return true on success and false
+	 * on error. <pki> can be nullptr in which case the functions are no-op and
+	 * always return true.
 	 */
 	//<length> is a value-result argument, always returns true if <pki> is nullptr
 	static bool sign(unsigned char *out, unsigned int &length,
@@ -220,7 +225,7 @@ public:
 	static bool verify(const Message *msg, const PKI *pki) noexcept;
 	//-----------------------------------------------------------------
 	/*
-	 * Execute a request-response call over a blocking socket connection.
+	 * Execute a request-response sequence over a blocking socket connection.
 	 * If <signer> is provided then it's private key will be used for signing
 	 * the message. If <verifier> is provided then it's public key will be used
 	 * for message verification. Returns true on success.

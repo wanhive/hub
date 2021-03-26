@@ -135,26 +135,26 @@ void NetworkTest::echo(unsigned int iterations) {
 }
 
 void NetworkTest::produce() noexcept {
-	unsigned char *outbuf = iobuf;
+	auto outbuf = iobuf;
 	unsigned int i = 0;
+
 	MessageHeader h;
 	h.load(getSource(), destinationId, msgLen, 0, 0, 0, 0, 0);
 	pack(h, outbuf, "s", defaultMsg);
 	try {
-		if (!Identity::getSSLContext()) {
-			int sfd = getSocket();
-			while (!iterations || i < iterations) {
-				send(sfd, outbuf, msgLen);
-				++i;
-			}
-		} else {
-			SSL *ssl = getSecureSocket();
+		auto ssl = getSecureSocket();
+		if (ssl) {
 			while (!iterations || i < iterations) {
 				send(ssl, outbuf, msgLen);
 				++i;
 			}
+		} else {
+			auto sfd = getSocket();
+			while (!iterations || i < iterations) {
+				send(sfd, outbuf, msgLen);
+				++i;
+			}
 		}
-
 	} catch (const BaseException &e) {
 		WH_LOG_EXCEPTION(e);
 	}
@@ -163,20 +163,21 @@ void NetworkTest::produce() noexcept {
 }
 
 void NetworkTest::consume() noexcept {
-	unsigned char *inbuf = iobuf + Message::MTU;
+	auto inbuf = iobuf + Message::MTU;
 	unsigned int i = 0;
-	MessageHeader h;
+
 	try {
-		if (!Identity::getSSLContext()) {
-			int sfd = getSocket();
+		MessageHeader h;
+		auto ssl = getSecureSocket();
+		if (ssl) {
 			while (!iterations || i < iterations) {
-				receive(sfd, inbuf, h);
+				receive(ssl, inbuf, h);
 				i++;
 			}
 		} else {
-			SSL *ssl = getSecureSocket();
+			auto sfd = getSocket();
 			while (!iterations || i < iterations) {
-				receive(ssl, inbuf, h);
+				receive(sfd, inbuf, h);
 				i++;
 			}
 		}

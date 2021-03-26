@@ -49,6 +49,9 @@ void Endpoint::connect(const NameInfo &ni, int timeoutMils) {
 	try {
 		SocketAddress sa;
 		socket = connect(ni, sa, timeoutMils);
+		if (sa.address.ss_family == AF_UNIX) {
+			setSSLContext(nullptr);
+		}
 		setSocket(socket);
 	} catch (const BaseException &e) {
 		Network::close(socket);
@@ -311,7 +314,7 @@ bool Endpoint::checkCommand(uint8_t command, uint8_t qualifier,
 }
 
 void Endpoint::send(bool sign) {
-	if (!sslContext) {
+	if (!ssl) {
 		Endpoint::send(sockfd, _buffer, _header.getLength(),
 				sign ? pki : nullptr);
 	} else {
@@ -320,7 +323,7 @@ void Endpoint::send(bool sign) {
 }
 
 void Endpoint::receive(unsigned int sequenceNumber, bool verify) {
-	if (!sslContext) {
+	if (!ssl) {
 		Endpoint::receive(sockfd, _buffer, _header, sequenceNumber,
 				verify ? pki : nullptr);
 	} else {

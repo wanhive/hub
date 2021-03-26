@@ -34,7 +34,6 @@ uint64_t Agent::getHostId() const noexcept {
 void Agent::bootstrap(uint64_t id, int timeout) {
 	try {
 		Identity::initialize();
-		Protocol::setSSLContext(Identity::getSSLContext());
 		//-----------------------------------------------------------------
 		//Connect with the bootstrap node
 		WH_LOG_INFO("Connecting to the bootstrap node: % " PRIu64, id);
@@ -83,6 +82,7 @@ void Agent::connect(uint64_t id, int timeout) {
 	try {
 		NameInfo ni;
 		Identity::getAddress(id, ni);
+		Endpoint::setSSLContext(Identity::getSSLContext());
 		Protocol::connect(ni, timeout);
 	} catch (const BaseException &e) {
 		WH_LOG_EXCEPTION(e);
