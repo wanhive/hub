@@ -65,7 +65,7 @@ void AppManager::printHelp(FILE *stream) noexcept {
 	fprintf(stream, "-h --help               \tDisplay this information.\n");
 	fprintf(stream,
 			"-m --menu               \tDisplay menu of available options.\n");
-	fprintf(stream, "-n --name   <identifier>\tSet hub's identifier.\n");
+	fprintf(stream, "-n --name   <identity>  \tSet hub's identity.\n");
 	fprintf(stream, "-t --type   <type>      \tSet hub's type.\n");
 
 	fprintf(stream, "\n%s requires an external configuration file.\n"
@@ -76,7 +76,7 @@ void AppManager::printHelp(FILE *stream) noexcept {
 			Identity::CONF_PATH, Identity::CONF_SYSTEM_PATH);
 
 	fprintf(stream, "\nurl: %s   email: %s\n\n", WH_RELEASE_URL,
-			WH_RELEASE_EMAIL);
+	WH_RELEASE_EMAIL);
 }
 
 int AppManager::parseOptions(int argc, char *argv[]) noexcept {
@@ -133,7 +133,7 @@ int AppManager::parseOptions(int argc, char *argv[]) noexcept {
 }
 
 void AppManager::processOptions() noexcept {
-	int option = 1; //Default option
+	auto option = 1; //Default option
 	if (menu) {
 		std::cout << "Select an option\n" << "1. WANHIVE HUB\n"
 				<< "2. UTILITIES\n" << "3. PROTOCOL TEST\n"
@@ -172,7 +172,7 @@ void AppManager::processOptions() noexcept {
 
 void AppManager::executeHub() noexcept {
 	hub = nullptr;
-	unsigned int mode = 0;
+	auto mode = 0;
 	if (hubType == 'o') {
 		mode = 1;
 	} else if (hubType == 'a') {
@@ -193,7 +193,7 @@ void AppManager::executeHub() noexcept {
 	}
 
 	if (hubId == (unsigned long long) -1) {
-		std::cout << "Enter hub's identifier: ";
+		std::cout << "Hub's identity: ";
 		std::cin >> hubId;
 		if (CommandLine::inputError()) {
 			return;
@@ -207,11 +207,18 @@ void AppManager::executeHub() noexcept {
 			hub = new AuthenticationHub(hubId, configPath);
 		} else if (mode == 3) {
 			unsigned int topic;
-			std::cout << "Enter the topic:";
+			std::cout << "Topic [" << Topic::MIN_ID << "-" << Topic::MAX_ID
+					<< "]: ";
 			std::cin >> topic;
 			if (CommandLine::inputError()) {
 				return;
 			}
+
+			if (topic > Topic::MAX_ID) {
+				std::cerr << "Invalid topic" << std::endl;
+				return;
+			}
+
 			hub = new MulticastConsumer(hubId, topic, configPath);
 		} else {
 			std::cerr << "Invalid option" << std::endl;

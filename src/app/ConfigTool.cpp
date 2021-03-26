@@ -36,7 +36,7 @@ void ConfigTool::execute() noexcept {
 	std::cout << "Select an option\n" << "1. Generate keys\n"
 			<< "2. Manage hosts\n" << "3. Generate verifier\n" << "::";
 
-	unsigned int mode = 0;
+	int mode;
 	std::cin >> mode;
 	if (CommandLine::inputError()) {
 		return;
@@ -67,13 +67,13 @@ void ConfigTool::generateKeyPair() {
 	char pkf[1024];
 	char skf[1024];
 	try {
-		std::cout << "Enter pathname of the public key file: ";
+		std::cout << "Pathname of the public key file: ";
 		std::cin.ignore();
 		std::cin.getline(pkf, sizeof(pkf));
 		if (CommandLine::inputError()) {
 			return;
 		}
-		std::cout << "Enter pathname of the secret key file: ";
+		std::cout << "Pathname of the secret key file: ";
 		std::cin.getline(skf, sizeof(skf));
 		if (CommandLine::inputError()) {
 			return;
@@ -88,13 +88,15 @@ void ConfigTool::generateKeyPair() {
 }
 
 void ConfigTool::manageHosts() {
-	unsigned int mode = 0;
 	char hf[1024];
 	char sf[1024];
+	unsigned int mode; //Require unsigned
+
 	std::cout << "Select operation\n"
 			<< "1: Dump the \"hosts\" file into an SQLite3 database\n"
 			<< "2: Dump the SQLite3 \"hosts\" database into a file\n"
 			<< "3: Generate a sample \"hosts\" file\n:: ";
+
 	std::cin >> mode;
 	if (CommandLine::inputError()) {
 		return;
@@ -102,7 +104,7 @@ void ConfigTool::manageHosts() {
 
 	std::cin.ignore();
 	if (mode <= 3) {
-		std::cout << "Enter pathname of the \"hosts\" file: ";
+		std::cout << "Pathname of the \"hosts\" file: ";
 		std::cin.getline(hf, sizeof(hf));
 		if (CommandLine::inputError()) {
 			return;
@@ -110,7 +112,7 @@ void ConfigTool::manageHosts() {
 	}
 
 	if (mode <= 2) {
-		std::cout << "Enter pathname of the \"hosts\" database: ";
+		std::cout << "Pathname of the \"hosts\" database: ";
 		std::cin.getline(sf, sizeof(sf));
 		if (CommandLine::inputError()) {
 			return;
@@ -138,20 +140,20 @@ void ConfigTool::generateVerifier() {
 	char password[64];
 	unsigned int rounds;
 
-	std::cout << "Enter identity: ";
+	std::cout << "Identity: ";
 	std::cin.ignore();
 	std::cin.getline(name, sizeof(name));
 	if (CommandLine::inputError()) {
 		return;
 	}
 
-	std::cout << "Enter password: ";
+	std::cout << "Password: ";
 	std::cin.getline(password, sizeof(password));
 	if (CommandLine::inputError()) {
 		return;
 	}
 
-	std::cout << "Enter password hashing rounds: ";
+	std::cout << "Password hashing rounds: ";
 	std::cin >> rounds;
 	if (CommandLine::inputError()) {
 		return;
@@ -159,7 +161,7 @@ void ConfigTool::generateVerifier() {
 
 	Authenticator *authenticator = nullptr;
 	try {
-		bool success = (authenticator = new (std::nothrow) Authenticator(true))
+		auto success = (authenticator = new (std::nothrow) Authenticator(true))
 				&& authenticator->generateVerifier(name,
 						(const unsigned char*) password, strlen(password),
 						rounds);
@@ -171,7 +173,7 @@ void ConfigTool::generateVerifier() {
 		char buffer[4096];
 		const unsigned char *binary;
 		unsigned int bytes;
-		int offset = snprintf(buffer, sizeof(buffer),
+		auto offset = snprintf(buffer, sizeof(buffer),
 				"{\n   \"id\": \"%s\",\n   \"salt\": \"", name);
 		authenticator->getSalt(binary, bytes);
 		offset += Encoding::base16Encode(buffer + offset, binary, bytes,
@@ -191,7 +193,7 @@ void ConfigTool::generateVerifier() {
 }
 
 void ConfigTool::createDummyHostsFile(const char *path) {
-	std::cout << "Generating dummy \"hosts\" file..." << std::endl;
+	std::cout << "Generating a sample \"hosts\" file..." << std::endl;
 	Host::createDummy(path);
 }
 

@@ -232,13 +232,12 @@ void Host::createDummy(const char *path, int version) {
 	if (f) {
 		auto host = "127.0.0.1";
 		char service[32];
-		int type = 0;
 		writeHeading(f, version);
 		for (unsigned long long id = 0; id < 256; id++) {
 			unsigned int port = (9001 + id);
 			snprintf(service, sizeof(service), "%d", port);
 			if (version == 1) {
-				writeTuple(f, id, host, service, type);
+				writeTuple(f, id, host, service, 0);
 			} else {
 				writeTuple(f, id, host, service);
 			}

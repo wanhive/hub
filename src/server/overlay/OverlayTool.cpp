@@ -50,14 +50,14 @@ void OverlayTool::execute() noexcept {
 	bool running = true;
 	while (running) {
 		std::cout << "[" << getSource() << "@" << hostId << ":" << destinationId
-				<< "] " << "Enter command: ";
+				<< "] " << "Enter a command: ";
 		std::cin >> command;
 		if (CommandLine::inputError()) {
 			break;
 		}
 		if (command <= 4) {
 			std::cout << "[" << getSource() << "@" << hostId << ":"
-					<< destinationId << "] " << "Enter qualifier: ";
+					<< destinationId << "] " << "Enter a qualifier: ";
 			std::cin >> qualifier;
 			if (CommandLine::inputError()) {
 				continue;
@@ -135,7 +135,7 @@ void OverlayTool::execute() noexcept {
 				}
 				break;
 			case 5:
-				std::cout << "Enter target's identifier: ";
+				std::cout << "Target's identity: ";
 				std::cin >> destinationId;
 				if (CommandLine::inputError()) {
 					continue;
@@ -170,7 +170,7 @@ void OverlayTool::execute() noexcept {
 
 void OverlayTool::connect() {
 	unsigned long long host = 0;
-	std::cout << "Enter host's identifier: ";
+	std::cout << "Host's identity: ";
 	std::cin >> host;
 	if (CommandLine::inputError()) {
 		return;
@@ -209,20 +209,20 @@ void OverlayTool::identifyCmd() {
 	char password[64];
 	unsigned int rounds = 1;
 
-	std::cout << "Enter identity: ";
+	std::cout << "Identity: ";
 	std::cin >> identity;
 	if (CommandLine::inputError()) {
 		return;
 	}
 
-	std::cout << "Enter password: ";
+	std::cout << "Password: ";
 	std::cin.ignore();
 	std::cin.getline(password, sizeof(password));
 	if (CommandLine::inputError()) {
 		return;
 	}
 
-	std::cout << "Enter password hashing rounds: ";
+	std::cout << "Password hashing rounds: ";
 	std::cin >> rounds;
 	if (CommandLine::inputError()) {
 		return;
@@ -378,7 +378,7 @@ void OverlayTool::registerCmd() {
 	std::cout << "CMD: [REGISTER]" << std::endl;
 	uint64_t id = destinationId;
 	uint64_t newId = 0;
-	std::cout << "Enter identifier: ";
+	std::cout << "Identity: ";
 	std::cin >> newId;
 	if (CommandLine::inputError()) {
 		return;
@@ -426,7 +426,7 @@ void OverlayTool::findRoot() {
 	std::cout << "CMD: [FINDROOT]" << std::endl;
 	uint64_t startNode = destinationId;
 	uint64_t id = 0;
-	std::cout << "Enter identifier: ";
+	std::cout << "Identity: ";
 	std::cin >> id;
 	if (CommandLine::inputError()) {
 		return;
@@ -473,7 +473,7 @@ void OverlayTool::publishCmd() {
 	uint64_t id = destinationId;
 
 	unsigned int topic = 0;
-	std::cout << "Enter topic [0-255]: ";
+	std::cout << "Topic [" << Topic::MIN_ID << "-" << Topic::MAX_ID << "]: ";
 	std::cin >> topic;
 	if (CommandLine::inputError()) {
 		return;
@@ -485,7 +485,7 @@ void OverlayTool::publishCmd() {
 	}
 
 	char s[128];
-	std::cout << "Enter message (max 100 characters): ";
+	std::cout << "Message (max 100 characters): ";
 	std::cin.ignore();
 	std::cin.getline(s, sizeof(s));
 	if (CommandLine::inputError()) {
@@ -508,7 +508,7 @@ void OverlayTool::subscribeCmd() {
 	std::cout << "CMD: [SUBSCRIBE]" << std::endl;
 	uint64_t id = destinationId;
 	unsigned int topic = 0;
-	std::cout << "Enter topic [0-255]: ";
+	std::cout << "Topic [" << Topic::MIN_ID << "-" << Topic::MAX_ID << "]: ";
 	std::cin >> topic;
 	if (CommandLine::inputError()) {
 		return;
@@ -535,7 +535,7 @@ void OverlayTool::unsubscribeCmd() {
 	std::cout << "CMD: [UNSUBSCRIBE]" << std::endl;
 	uint64_t id = destinationId;
 	unsigned int topic = 0;
-	std::cout << "Enter topic [0-255]: ";
+	std::cout << "Topic [" << Topic::MIN_ID << "-" << Topic::MAX_ID << "]: ";
 	std::cin >> topic;
 	if (CommandLine::inputError()) {
 		return;
@@ -578,7 +578,7 @@ void OverlayTool::setPredecessorCmd() {
 	std::cout << "CMD: [SETPREDECESSOR]" << std::endl;
 	uint64_t id = destinationId;
 	uint64_t newPredecessor = 0;
-	std::cout << "Enter predecessor's identifier: ";
+	std::cout << "Predecessor's identity: ";
 	std::cin >> newPredecessor;
 	if (CommandLine::inputError()) {
 		return;
@@ -617,7 +617,7 @@ void OverlayTool::setSuccessorCmd() {
 	std::cout << "CMD: [SETSUCCESSOR]" << std::endl;
 	uint64_t id = destinationId;
 	uint64_t newSuccessor = 0;
-	std::cout << "Enter successor's identifier: ";
+	std::cout << "Successor's identity: ";
 	std::cin >> newSuccessor;
 	if (CommandLine::inputError()) {
 		return;
@@ -640,7 +640,7 @@ void OverlayTool::getFingerCmd() {
 	std::cout << "CMD: [GETFINGER]" << std::endl;
 	uint64_t id = destinationId;
 	uint32_t index = 0;
-	std::cout << "Enter index: ";
+	std::cout << "Finger's index: ";
 	std::cin >> index;
 	if (CommandLine::inputError()) {
 		return;
@@ -666,13 +666,13 @@ void OverlayTool::setFingerCmd() {
 	uint32_t index = 0;
 	uint64_t finger = 0;
 
-	std::cout << "Enter index: ";
+	std::cout << "Finger's index: ";
 	std::cin >> index;
 	if (CommandLine::inputError()) {
 		return;
 	}
 
-	std::cout << "Enter identifier: ";
+	std::cout << "Finger's identity: ";
 	std::cin >> finger;
 	if (CommandLine::inputError()) {
 		return;
@@ -713,7 +713,7 @@ void OverlayTool::notifyCmd() {
 	std::cout << "CMD: [NOTIFY]" << std::endl;
 	uint64_t id = destinationId;
 	uint64_t newPredecessor = 0;
-	std::cout << "Enter predecessor's identifier: ";
+	std::cout << "Predecessor's identity: ";
 	std::cin >> newPredecessor;
 	if (CommandLine::inputError()) {
 		return;
@@ -735,7 +735,7 @@ void OverlayTool::findSuccessorCmd() {
 	std::cout << "CMD: [FINDSUCCESSOR]" << std::endl;
 	uint64_t startNode = destinationId;
 	uint64_t id = 0;
-	std::cout << "Enter identifier: ";
+	std::cout << "Identity: ";
 	std::cin >> id;
 	if (CommandLine::inputError()) {
 		return;
