@@ -31,7 +31,7 @@ public:
 	 * error. If <lastRow> is not nullptr then it contains the number of rows
 	 * processed. <lastRow> points to the row number which produced the error.
 	 */
-	bool load(const char *filename, unsigned int *lastRow = nullptr) noexcept;
+	bool load(const char *filename, size_t *lastRow = nullptr) noexcept;
 	//Dumps the configuration into the given file
 	bool store(const char *filename) noexcept;
 	//Prints the configuration to the given stream

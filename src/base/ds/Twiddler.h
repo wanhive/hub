@@ -144,6 +144,8 @@ public:
 	static char* stripLast(char *s, char delimiter) noexcept;
 	//Removes all whitespace characters from an ASCII string
 	static char* removeWhitespace(char *s) noexcept;
+	//Trim the ASCII string (the final string length is copied into <len>)
+	static char* trim(char *s, unsigned int &len) noexcept;
 private:
 	//Pre-calculated lookup table of number of bits in a 8-bit byte
 	static const unsigned char bitCount_[256];

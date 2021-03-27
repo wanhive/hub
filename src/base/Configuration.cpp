@@ -15,6 +15,7 @@
 #include "Timer.h"
 #include "common/Exception.h"
 #include "ds/Array.h"
+#include "ds/Twiddler.h"
 #include <cctype>
 #include <cstring>
 
@@ -48,15 +49,15 @@ void Configuration::clear() noexcept {
 	memset(&data, 0, sizeof(data));
 }
 
-bool Configuration::load(const char *filename, unsigned int *lastRow) noexcept {
+bool Configuration::load(const char *filename, size_t *lastRow) noexcept {
 	char buffer[MAX_LINE_LEN * 2];
 	char section[MAX_SECTION_LEN];
 	char key[MAX_KEY_LEN];
 	char value[MAX_VALUE_LEN];
 
-	unsigned int rows = 0;
-	bool success = true;
+	auto success = true;
 	auto dirty = data.status; //Back-up
+	unsigned int rows = 0; //Number of rows processed
 
 	if (Storage::testFile(filename) != 1) {
 		return false;
@@ -68,28 +69,20 @@ bool Configuration::load(const char *filename, unsigned int *lastRow) noexcept {
 	}
 
 	section[0] = '\0';	//Default section name
+	//-----------------------------------------------------------------
 	while (fgets(buffer, sizeof(buffer), fp)) {
-		char *line = buffer;
-		int eol = 0;
 		rows++;
-		//-----------------------------------------------------------------
-		//Remove leading white-spaces (space, tab, CR, LF etc)
-		for (; isspace(*line); ++line) {
-		}
 
-		//Remove tailing white-spaces (space, tab, CR, LF etc)
-		for (eol = (strlen(line) - 1); (eol >= 0) && (isspace(line[eol]));
-				--eol) {
-			line[eol] = '\0';
-		}
-		//-----------------------------------------------------------------
+		unsigned int eol = 0;
+		auto line = Twiddler::trim(buffer, eol);
 		if (line[0] == '#' || line[0] == '%' || line[0] == '!' || line[0] == ';'
 				|| line[0] == '\0') {
 			//Skip comment/empty line
 			continue;
 		} else if (line[0] == '[') {
 			section[0] = '\0';
-			if (line[eol] != ']' || sscanf(line, SECTION_REGEX, section) == EOF) {
+			if (line[eol - 1]
+					!= ']'|| sscanf(line, SECTION_REGEX, section) == EOF) {
 				success = false;
 				break;
 			}
@@ -100,7 +93,7 @@ bool Configuration::load(const char *filename, unsigned int *lastRow) noexcept {
 			break;
 		}
 	}
-
+	//-----------------------------------------------------------------
 	//Close the file
 	if (Storage::closeStream(fp)) {
 		success = false;
@@ -118,7 +111,7 @@ bool Configuration::load(const char *filename, unsigned int *lastRow) noexcept {
 
 bool Configuration::store(const char *filename) noexcept {
 	FILE *fp = nullptr;
-	bool success = true;
+	auto success = true;
 
 	if ((fp = Storage::openStream(filename, "w", true))) {
 		//Print sections and entries
@@ -303,8 +296,8 @@ char* Configuration::expandPath(const char *pathname) const noexcept {
 	 * Resolve the postfix which is the substring
 	 * succeeding the first path separator
 	 */
-	unsigned int i = 0;	//Index of the first path separator or the NUL terminator
-	const char *postfix;//Points to the substring after the first path separator
+	unsigned int i = 0;	//Index of the first path separator or NUL terminator
+	const char *postfix = nullptr;	//Substring after the first path separator
 
 	while (tmp[i] && (tmp[i] != Storage::DIR_SEPARATOR)) {
 		i++;

@@ -274,4 +274,23 @@ char* Twiddler::removeWhitespace(char *s) noexcept {
 	return s;
 }
 
+char* Twiddler::trim(char *s, unsigned int &len) noexcept {
+	for (; isspace(*s); ++s) {
+		//Remove the leading white-spaces
+	}
+
+	unsigned int sl = strlen(s);
+	if (sl) {
+		for (sl = (sl - 1); sl && isspace(s[sl]); --sl) {
+			//Remove the trailing white-spaces
+			s[sl] = '\0';
+		}
+		len = sl + 1;
+		return s;
+	} else { //All spaces
+		len = 0;
+		return s;
+	}
+}
+
 } /* namespace wanhive */
