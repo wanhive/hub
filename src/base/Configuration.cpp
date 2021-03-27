@@ -57,7 +57,7 @@ bool Configuration::load(const char *filename, size_t *lastRow) noexcept {
 
 	auto success = true;
 	auto dirty = data.status; //Back-up
-	unsigned int rows = 0; //Number of rows processed
+	size_t rows = 0; //Processed rows count
 
 	if (Storage::testFile(filename) != 1) {
 		return false;

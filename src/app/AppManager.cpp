@@ -133,7 +133,7 @@ int AppManager::parseOptions(int argc, char *argv[]) noexcept {
 }
 
 void AppManager::processOptions() noexcept {
-	auto option = 1; //Default option
+	int option = 1; //Default option
 	if (menu) {
 		std::cout << "Select an option\n" << "1. WANHIVE HUB\n"
 				<< "2. UTILITIES\n" << "3. PROTOCOL TEST\n"
@@ -172,7 +172,7 @@ void AppManager::processOptions() noexcept {
 
 void AppManager::executeHub() noexcept {
 	hub = nullptr;
-	auto mode = 0;
+	int mode = 0;
 	if (hubType == 'o') {
 		mode = 1;
 	} else if (hubType == 'a') {

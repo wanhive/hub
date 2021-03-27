@@ -40,7 +40,7 @@ int Network::serverSocket(const char *service, SocketAddress &sa, bool blocking,
 		}
 
 		int yes = 1;
-		setsockopt(sfd, SOL_SOCKET, SO_REUSEADDR, &yes, sizeof(int));
+		setsockopt(sfd, SOL_SOCKET, SO_REUSEADDR, &yes, sizeof(yes));
 
 		if (::bind(sfd, rp->ai_addr, rp->ai_addrlen) == 0) {
 			memcpy(&sa.address, rp->ai_addr, rp->ai_addrlen);

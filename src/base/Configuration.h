@@ -29,7 +29,7 @@ public:
 	/*
 	 * Loads configuration from given file, returns true on success, false on
 	 * error. If <lastRow> is not nullptr then it contains the number of rows
-	 * processed. <lastRow> points to the row number which produced the error.
+	 * processed.
 	 */
 	bool load(const char *filename, size_t *lastRow = nullptr) noexcept;
 	//Dumps the configuration into the given file

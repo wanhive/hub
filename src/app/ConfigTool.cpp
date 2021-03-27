@@ -90,7 +90,7 @@ void ConfigTool::generateKeyPair() {
 void ConfigTool::manageHosts() {
 	char hf[1024];
 	char sf[1024];
-	unsigned int mode; //Require unsigned
+	unsigned int mode; //unsigned
 
 	std::cout << "Select operation\n"
 			<< "1: Dump the \"hosts\" file into an SQLite3 database\n"
