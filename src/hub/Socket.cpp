@@ -144,9 +144,8 @@ bool Socket::testTopic(unsigned int index) const noexcept {
 Socket* Socket::accept(bool blocking) {
 	auto sfd = -1;
 	try {
-		auto flag = blocking ? 0 : SOCK_NONBLOCK;
 		SocketAddress sa;
-		sfd = Network::accept(this->getHandle(), sa, flag);
+		sfd = Network::accept(this->getHandle(), sa, blocking);
 		if (sfd == -1) {
 			clearEvents(IO_READ); //Would block
 			return nullptr;

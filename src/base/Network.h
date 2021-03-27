@@ -57,10 +57,10 @@ public:
 	//Listen for incoming connections
 	static void listen(int sfd, int backlog);
 	/*
-	 * Accept an incoming connection
-	 * Useful flag=SOCK_NONBLOCK (linux specific)
+	 * Accept an incoming connection. If <blocking> is true then the new
+	 * connection is configured for blocking IO.
 	 */
-	static int accept(int listenfd, SocketAddress &sa, int flags = 0);
+	static int accept(int listenfd, SocketAddress &sa, bool blocking);
 	/*
 	 * Wrapper for the system call connect(2).
 	 * Connects to a server, if the call fails then retry with a new socket.

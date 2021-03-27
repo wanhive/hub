@@ -32,7 +32,7 @@ int Network::serverSocket(const char *service, SocketAddress &sa, bool blocking,
 
 	//Try each address until we successfully bind(2).
 	for (; rp != nullptr; rp = rp->ai_next) {
-		int sockType =
+		auto sockType =
 				blocking ? rp->ai_socktype : rp->ai_socktype | SOCK_NONBLOCK;
 		sfd = ::socket(rp->ai_family, sockType, rp->ai_protocol);
 		if (sfd == -1) {
@@ -138,8 +138,9 @@ void Network::listen(int sfd, int backlog) {
 	}
 }
 
-int Network::accept(int listenfd, SocketAddress &sa, int flags) {
+int Network::accept(int listenfd, SocketAddress &sa, bool blocking) {
 	sa.length = sizeof(sockaddr_storage);
+	auto flags = blocking ? 0 : SOCK_NONBLOCK;
 	auto sfd = ::accept4(listenfd, (sockaddr*) &sa.address, &sa.length, flags);
 	if (sfd != -1) {
 		return sfd;
