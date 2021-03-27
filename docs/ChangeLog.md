@@ -13,14 +13,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- Disable SSL for unix domain socket connections (directory permission is a zero-overhead solution).
+- Increase the outgoing message queue size in **Socket** to improve performance.
+- Update the **Inotifier::read** method to improve performance.
+- Update the routing table maintenance routines in **OverlayHub**.
 - Major updates in the **Endpoint** class and it's subclasses.
-- Outgoing message queue handling in the **Socket**.
-- Routing table maintenance in the **OverlayHub**.
-- **Inotifier::read** doesn't unnecessarily zero out the IO buffer (improve performance).
-- Rename the **Identity::loadIdentifiers** method to **Identity::getIdentifiers**.
-- **Hub::removeWatcher** method returns boolean instead of void.
-- **Hub::retainMessage** method sets the Message flag to **MSG_WAIT_PROCESSING**.
-- **Hub::purgeTemporaryConnections** method takes an additional parameter.
+- Rename **Identity::loadIdentifiers** to **Identity::getIdentifiers**.
+- **Hub::removeWatcher** returns boolean instead of void.
+- **Hub::retainMessage** sets the Message flag to **MSG_WAIT_PROCESSING**.
+- **Hub::purgeTemporaryConnections** takes an additional parameter.
 
 ### Removed
 
