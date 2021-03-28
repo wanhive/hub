@@ -87,7 +87,7 @@ bool Descriptor::isReady(bool outgoing) const noexcept {
 	return (getEvents() && ((getEvents() != IO_WRITE) || outgoing));
 }
 
-ssize_t Descriptor::read(const struct iovec *vectors, int count) {
+ssize_t Descriptor::readv(const iovec *vectors, unsigned int count) {
 	auto nRead = ::readv(fd, vectors, count);
 	if (nRead > 0) {
 		return nRead;
@@ -119,8 +119,8 @@ ssize_t Descriptor::read(void *buf, size_t count) {
 	}
 }
 
-ssize_t Descriptor::write(const struct iovec *vectors, int count) {
-	auto nWrite = writev(fd, vectors, count);
+ssize_t Descriptor::writev(const iovec *vectors, unsigned int count) {
+	auto nWrite = ::writev(fd, vectors, count);
 	if (nWrite != -1) {
 		return nWrite;
 	} else if (errno == EAGAIN || errno == EWOULDBLOCK) {

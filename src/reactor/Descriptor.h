@@ -54,13 +54,13 @@ protected:
 	 * -1 on EOF and 0 if the file descriptor is non-blocking and the operation
 	 * would block.
 	 */
-	ssize_t read(const iovec *vector, int count);
+	ssize_t readv(const iovec *vector, unsigned int count);
 	ssize_t read(void *buf, size_t count);
 	/*
 	 * Write operations return the number of bytes written on success (possibly 0),
 	 * and 0 if the file descriptor is non-blocking and the operation would block.
 	 */
-	ssize_t write(const iovec *iov, int count);
+	ssize_t writev(const iovec *iov, unsigned int count);
 	ssize_t write(const void *buf, size_t count);
 private:
 	//UID generator (thread safe)

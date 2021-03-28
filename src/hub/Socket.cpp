@@ -310,12 +310,8 @@ ssize_t Socket::socketRead() {
 	CircularBufferVector<unsigned char> vector;
 	//Receive data into the read buffer
 	if (in.getWritable(vector)) {
-		int nVectors = 2;
-		if (vector.part[1].length == 0) {
-			nVectors = 1;
-		}
-
-		if ((nRecv = Watcher::read((const iovec*) &vector, nVectors)) > 0) {
+		auto nVectors = (vector.part[1].length) ? 2 : 1;
+		if ((nRecv = Watcher::readv((const iovec*) &vector, nVectors)) > 0) {
 			in.skipWrite(nRecv);
 		}
 	}
@@ -326,7 +322,7 @@ ssize_t Socket::socketWrite() {
 	auto iovCount = Twiddler::min(fillOutgoingQueue(), IOV_MAX);
 	if (iovCount) {
 		auto vec = outgoingMessages.offset();
-		auto nSent = Watcher::write(vec, iovCount);
+		auto nSent = Watcher::writev(vec, iovCount);
 		adjustOutgoingQueue(nSent);
 		return nSent;
 	} else {
