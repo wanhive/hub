@@ -25,7 +25,7 @@ namespace wanhive {
 
 int Network::serverSocket(const char *service, SocketAddress &sa, bool blocking,
 		int type, int family, int protocol) {
-	int sfd;
+	auto sfd = -1; //The socket file descriptor
 	auto result = getAddrInfo(nullptr, service, family, type, AI_PASSIVE,
 			protocol);
 	auto rp = result; //The iterator
@@ -60,7 +60,7 @@ int Network::serverSocket(const char *service, SocketAddress &sa, bool blocking,
 int Network::connectedSocket(const char *name, const char *service,
 		SocketAddress &sa, bool blocking, int type, int family, int flags,
 		int protocol) {
-	int sfd = -1;
+	auto sfd = -1; //The socket file descriptor
 	auto result = getAddrInfo(name, service, family, type, flags, protocol);
 	auto rp = result; //The iterator
 
@@ -98,7 +98,7 @@ int Network::connectedSocket(const NameInfo &ni, SocketAddress &sa,
 
 int Network::socket(const char *name, const char *service, SocketAddress &sa,
 		int type, int family, int flags, int protocol) {
-	int sfd;
+	auto sfd = -1; //The socket file descriptor
 	auto result = getAddrInfo(name, service, family, type, flags, protocol);
 	auto rp = result; //The iterator
 

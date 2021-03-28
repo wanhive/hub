@@ -667,7 +667,7 @@ bool Message::testLength(unsigned int length) noexcept {
 }
 
 unsigned int Message::packets(unsigned int bytes) noexcept {
-	return (bytes + PAYLOAD_SIZE - 1) / PAYLOAD_SIZE;
+	return ((size_t) bytes + PAYLOAD_SIZE - 1) / PAYLOAD_SIZE;
 }
 
 } /* namespace wanhive */

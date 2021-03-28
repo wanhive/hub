@@ -140,7 +140,7 @@ bool Rsa::generateKeyPair(const char *privateKeyFile, const char *publicKeyFile,
 	}
 
 	auto pPrivKey = generatePrivateKey(pRSA);
-	bool status = false;
+	auto status = false;
 	if (pPrivKey) {
 		status = generatePem(privateKeyFile, pPrivKey, false, password, nullptr)
 				&& generatePem(publicKeyFile, pPrivKey, true, nullptr, nullptr);

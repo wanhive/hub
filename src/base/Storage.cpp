@@ -175,7 +175,7 @@ int Storage::readLink(const char *pathname, char *buf, size_t len) {
 }
 
 bool Storage::lock(int fd, bool shared, bool block) {
-	int flag = block ? 0 : LOCK_NB;
+	auto flag = block ? 0 : LOCK_NB;
 	flag |= shared ? LOCK_SH : LOCK_EX;
 	if (flock(fd, flag) == 0) {
 		return true;

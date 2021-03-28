@@ -45,16 +45,16 @@ const PKI* Endpoint::getKeyPair() const noexcept {
 }
 
 void Endpoint::connect(const NameInfo &ni, int timeoutMils) {
-	int socket = -1;
+	auto sfd = -1;
 	try {
 		SocketAddress sa;
-		socket = connect(ni, sa, timeoutMils);
+		sfd = connect(ni, sa, timeoutMils);
 		if (sa.address.ss_family == AF_UNIX) {
 			setSSLContext(nullptr);
 		}
-		setSocket(socket);
+		setSocket(sfd);
 	} catch (const BaseException &e) {
-		Network::close(socket);
+		Network::close(sfd);
 		throw;
 	}
 }
@@ -369,7 +369,7 @@ unsigned char* Endpoint::payload(unsigned int offset) noexcept {
 }
 
 int Endpoint::connect(const NameInfo &ni, SocketAddress &sa, int timeoutMils) {
-	int sfd = -1;
+	auto sfd = -1;
 	try {
 		if (!strcasecmp(ni.service, "unix")) {
 			sfd = Network::unixConnectedSocket(ni.host, sa, true);
@@ -537,7 +537,7 @@ bool Endpoint::sign(unsigned char *out, unsigned int &length,
 bool Endpoint::sign(Message *msg, const PKI *pki) noexcept {
 	if (msg && msg->validate()) {
 		unsigned int length = msg->getLength();
-		bool ret = sign(msg->getStorage(), length, pki);
+		auto ret = sign(msg->getStorage(), length, pki);
 		//Update the message length
 		msg->putLength(length);
 		return ret;

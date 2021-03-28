@@ -35,7 +35,7 @@ bool Authenticator::identify(unsigned long long identity,
 		return false;
 	}
 
-	bool success = initialize() && loadSalt(salt)
+	auto success = initialize() && loadSalt(salt)
 			&& loadPasswordVerifier(verifier) && loadHostSecret()
 			&& loadHostNonce() && loadUserNonce(nonce, nonceLength)
 			&& loadRandomScramblingParameter() && loadSessionKey(true)
@@ -65,7 +65,7 @@ bool Authenticator::createIdentity(unsigned long long identity,
 	if (!rounds) {
 		rounds = DEFAULT_ROUNDS;
 	}
-	bool success = loadSalt(salt, saltLength)
+	auto success = loadSalt(salt, saltLength)
 			&& loadPrivateKey(identityString, password, passwordLength, rounds)
 			&& loadPasswordVerifier() && loadHostNonce(nonce, nonceLength)
 			&& loadRandomScramblingParameter() && loadSessionKey(false)

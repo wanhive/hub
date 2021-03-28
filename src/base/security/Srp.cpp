@@ -197,7 +197,7 @@ bool Srp::loadPrivateKey(const char *I, const unsigned char *p,
 
 	//x = H(s | H ( I | ":" | p) )
 	unsigned char x[MDSIZE];
-	bool success = H.init()
+	auto success = H.init()
 			&& (I ? H.update(I, strlen(I)) && H.update(":", 1) : true)
 			&& H.update(p, pLength) && H.final(x); //H ( I | ":" | p)
 
@@ -363,7 +363,7 @@ bool Srp::loadHostNonce() noexcept {
 		return false;
 	}
 
-	bool ret = BN_mul(m, group.k.get(), user.v.get(), ctx) //kv
+	auto ret = BN_mul(m, group.k.get(), user.v.get(), ctx) //kv
 	&& BN_mod_exp(p, group.g.get(), secret.b.get(), group.N.get(), ctx) //g^b mod N
 			&& BN_mod_add(n, m, p, group.N.get(), ctx); //(kv + g^b) mod N
 	BN_CTX_end(ctx);
@@ -422,7 +422,7 @@ bool Srp::loadSessionKey(bool isHost) noexcept {
 		return false;
 	}
 
-	bool ret = false;
+	auto ret = false;
 	auto num = BN_new();
 	if (!num) {
 		return false;
@@ -498,7 +498,7 @@ bool Srp::generateUserProof(const char *I) noexcept {
 	auto padLenB = group.N.size() - shared.B.size();
 	auto padLenH = group.N.size() - H.length();
 
-	bool ret =
+	auto ret =
 			(I ? (bool) H.create((const unsigned char*) I, strlen(I), H_I) : true)
 					&& H.create(group.N.getBinary(), group.N.size(), H_N)
 					&& H.init() && H.update(zeros, padLeng)
@@ -809,7 +809,8 @@ void Srp::test() noexcept {
 	}
 	printf("Computed S = ");
 	host->key.S.print();
-	printf("Expected S = B0DC82BABCF30674AE450C0287745E7990A3381F63B387AAF271A10D"
+	printf("Expected S = "
+			"B0DC82BABCF30674AE450C0287745E7990A3381F63B387AAF271A10D"
 			"233861E359B48220F7C4693C9AE12B0A6F67809F0876E2D013800D6C"
 			"41BB59B6D5979B5C00A172B4A2A5903A0BDCAF8A709585EB2AFAFA8F"
 			"3499B200210DCC1F10EB33943CD67FC88A2F39A4BE5BEC4EC0A3212D"
@@ -953,7 +954,7 @@ bool Srp::checkNotZero(BIGNUM *n) noexcept {
 		return false;
 	}
 
-	bool ret = BN_nnmod(m, n, group.N.get(), ctx) && !BN_is_zero(m);
+	auto ret = BN_nnmod(m, n, group.N.get(), ctx) && !BN_is_zero(m);
 	BN_CTX_end(ctx);
 
 	return ret;

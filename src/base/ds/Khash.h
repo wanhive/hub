@@ -445,7 +445,7 @@ template<typename KEY, typename VALUE, bool ISMAP, typename HFN, typename EQFN> 
 		KEY, VALUE, ISMAP, HFN, EQFN>::resize(unsigned int newCapacity) noexcept {
 	/* This function uses 0.25*nBuckets bytes of working space instead of [sizeof(key_t+val_t)+.25]*nBuckets. */
 	uint32_t *newFlags = nullptr;
-	bool rehash = true;
+	auto rehash = true;
 	{
 		newCapacity = Twiddler::power2Ceil(newCapacity);
 		if (newCapacity < MIN_CAPACITY) {

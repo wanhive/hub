@@ -306,7 +306,7 @@ void ClientHub::initAuthentication() noexcept {
 
 void ClientHub::findRoot() noexcept {
 	Socket *s = nullptr;
-	bool fresh = false;
+	auto fresh = false;
 	try {
 		if (!isStage(WHC_ROOT) || !bs.root || !bs.node) {
 			throw Exception(EX_INVALIDSTATE);

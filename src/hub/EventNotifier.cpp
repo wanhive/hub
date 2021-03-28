@@ -19,7 +19,8 @@ namespace wanhive {
 
 EventNotifier::EventNotifier(bool semaphore, bool blocking) :
 		count(0) {
-	int flags = (semaphore ? EFD_SEMAPHORE : 0) | (blocking ? 0 : EFD_NONBLOCK);
+	auto flags = (semaphore ? EFD_SEMAPHORE : 0)
+			| (blocking ? 0 : EFD_NONBLOCK);
 	auto fd = eventfd(0, flags);
 	if (fd != -1) {
 		setHandle(fd);
