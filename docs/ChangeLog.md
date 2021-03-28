@@ -13,7 +13,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
-- Disable SSL for unix domain socket connections (directory permission is a zero-overhead solution).
+- Always disable TLS/SSL on unix domain socket (directory permission is a zero-overhead solution).
 - Increase the outgoing message queue size in **Socket** to improve performance.
 - Update the **Inotifier::read** method to improve performance.
 - Update the routing table maintenance routines in **OverlayHub**.
@@ -22,6 +22,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Hub::removeWatcher** returns boolean instead of void.
 - **Hub::retainMessage** sets the Message flag to **MSG_WAIT_PROCESSING**.
 - **Hub::purgeTemporaryConnections** takes an additional parameter.
+
+### Fixed
+
+- Potential integer overflow in **Message.packets**.
 
 ### Removed
 
