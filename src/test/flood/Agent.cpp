@@ -83,7 +83,7 @@ void Agent::connect(uint64_t id, int timeout) {
 		NameInfo ni;
 		Identity::getAddress(id, ni);
 		Endpoint::setSSLContext(Identity::getSSLContext());
-		Protocol::connect(ni, timeout);
+		Endpoint::connect(ni, timeout);
 	} catch (const BaseException &e) {
 		WH_LOG_EXCEPTION(e);
 		throw;

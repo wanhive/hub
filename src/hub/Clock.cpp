@@ -52,7 +52,7 @@ bool Clock::publish(void *arg) noexcept {
 ssize_t Clock::read() {
 	count = 0; //Reset the count
 	uint64_t expiryCount;
-	auto nRead = Watcher::read(&expiryCount, sizeof(expiryCount));
+	auto nRead = Descriptor::read(&expiryCount, sizeof(expiryCount));
 	if (nRead == sizeof(expiryCount)) {
 		count = expiryCount;
 		return nRead;

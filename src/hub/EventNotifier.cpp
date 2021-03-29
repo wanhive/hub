@@ -57,7 +57,7 @@ bool EventNotifier::publish(void *arg) noexcept {
 ssize_t EventNotifier::read() {
 	count = 0; //Reset the count
 	uint64_t eventCount;
-	auto nRead = Watcher::read(&eventCount, sizeof(eventCount));
+	auto nRead = Descriptor::read(&eventCount, sizeof(eventCount));
 	if (nRead == sizeof(eventCount)) {
 		count = eventCount;
 		return nRead;
@@ -71,7 +71,7 @@ ssize_t EventNotifier::read() {
 
 ssize_t EventNotifier::write(unsigned long long events) {
 	uint64_t eventCount = events;
-	return Watcher::write(&eventCount, sizeof(eventCount));
+	return Descriptor::write(&eventCount, sizeof(eventCount));
 }
 
 unsigned long long EventNotifier::getCount() const noexcept {

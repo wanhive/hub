@@ -74,7 +74,7 @@ ssize_t Inotifier::read() {
 	limit = 0;
 
 	//Read new notifications
-	auto nRead = Watcher::read(buffer, sizeof(buffer));
+	auto nRead = Descriptor::read(buffer, sizeof(buffer));
 	if (nRead != -1) {
 		limit = nRead;
 	}

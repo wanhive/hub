@@ -50,7 +50,7 @@ bool SignalWatcher::publish(void *arg) noexcept {
 
 ssize_t SignalWatcher::read() {
 	memset(&info, 0, sizeof(info)); //Clear out the data
-	auto nRead = Watcher::read(&info, sizeof(info));
+	auto nRead = Descriptor::read(&info, sizeof(info));
 	if (nRead == sizeof(info)) {
 		return nRead;
 	} else if (nRead == 0 || nRead == -1) {
