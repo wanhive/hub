@@ -20,7 +20,7 @@ Select **PROTOCOL TEST(3)** from the list of available options.
 Table of commands:
 
 ```
-| SLN     | INDEX     | NAME                            | REMARKS
+| SLN     | COMMAND   | NAME                            | REMARKS
 | :------ | --------: | :------------------------------ | :--------------------------
 | 1       | **0**     | NULL_CMD                        | 
 |         | 0         | NULL                            | Always fails

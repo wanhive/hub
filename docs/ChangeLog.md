@@ -9,11 +9,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-- Wanhive hub can bootstrap itself using the hosts database/file.
+- Bootstrap using the hosts database/file.
 
 ### Changed
 
-- Always disable TLS/SSL on unix domain socket (directory permission is a zero-overhead solution).
+- Disable TLS/SSL on unix domain socket (directory permission is a zero-overhead solution).
 - Increase the outgoing message queue size in **Socket** to improve performance.
 - Update the **Inotifier::read** method to improve performance.
 - Update the routing table maintenance routines in **OverlayHub**.
