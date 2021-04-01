@@ -111,7 +111,7 @@ For example, setting the value of the macro **WH_DHT_KEYLEN** to 12 will increas
 
 ### How to calculate the capacity reservation ratios.
 
-The *capacity reservation ratios* determine the portions of a hub's computational resource for *answering* and *forwarding* the messages. Use the following equations to calculate their values:
+The *capacity reservation ratios* determine the allocation of a hub's computational resources for *answering* and *forwarding* the messages. Use the following formulas to calculate their values:
 
 ```
 2*answerRatio + forwardRatio <= 1
