@@ -74,23 +74,29 @@ SSL* Endpoint::getSecureSocket() const noexcept {
 	return ssl;
 }
 
-void Endpoint::setSocket(int socket) {
+void Endpoint::setSocket(int sfd) {
 	try {
-		SSL *ssl = nullptr;
-		if (sslContext) {
-			ssl = sslContext->connect(socket);
+		if (sfd == this->sockfd) {
+			return;
+		} else {
+			SSL *ssl = nullptr;
+			if (sslContext) {
+				ssl = sslContext->connect(sfd);
+			}
+			//No error
+			disconnect();
+			this->sockfd = sfd;
+			this->ssl = ssl;
 		}
-		//No error
-		disconnect();
-		this->sockfd = socket;
-		this->ssl = ssl;
 	} catch (const BaseException &e) {
 		throw;
 	}
 }
 
 void Endpoint::setSecureSocket(SSL *ssl) {
-	if (ssl && sslContext && sslContext->inContext(ssl)) {
+	if (ssl == this->ssl) {
+		return;
+	} else if (ssl && sslContext && sslContext->inContext(ssl)) {
 		disconnect();
 		this->sockfd = SSLContext::getSocket(ssl);
 		this->ssl = ssl;
@@ -118,10 +124,12 @@ SSL* Endpoint::releaseSecureSocket() noexcept {
 	}
 }
 
-int Endpoint::swapSocket(int socket) {
-	if (!ssl || SSLContext::setSocket(ssl, socket)) {
+int Endpoint::swapSocket(int sfd) {
+	if (sfd == this->sockfd) {
+		return sfd;
+	} else if (!ssl || SSLContext::setSocket(ssl, sfd)) {
 		auto tmp = sockfd;
-		sockfd = socket;
+		sockfd = sfd;
 		return tmp;
 	} else {
 		throw Exception(EX_SECURITY);
@@ -129,7 +137,9 @@ int Endpoint::swapSocket(int socket) {
 }
 
 SSL* Endpoint::swapSecureSocket(SSL *ssl) {
-	if (ssl && this->ssl && sslContext && sslContext->inContext(ssl)
+	if (ssl == this->ssl) {
+		return ssl;
+	} else if (ssl && this->ssl && sslContext && sslContext->inContext(ssl)
 			&& this->sockfd == SSLContext::getSocket(this->ssl)) {
 		auto tmp = this->ssl;
 		this->ssl = ssl;
@@ -386,14 +396,14 @@ int Endpoint::connect(const NameInfo &ni, SocketAddress &sa, int timeoutMils) {
 	return sfd;
 }
 
-void Endpoint::send(int sockfd, unsigned char *buf, unsigned int length,
+void Endpoint::send(int sfd, unsigned char *buf, unsigned int length,
 		const PKI *pki) {
 	if (!buf || !Message::testLength(length)) {
 		throw Exception(EX_INVALIDPARAM);
 	} else if (!sign(buf, length, pki)) {
 		throw Exception(EX_SECURITY);
 	} else {
-		Network::sendStream(sockfd, buf, length);
+		Network::sendStream(sfd, buf, length);
 	}
 }
 
@@ -408,20 +418,20 @@ void Endpoint::send(SSL *ssl, unsigned char *buf, unsigned int length,
 	}
 }
 
-void Endpoint::receive(int sockfd, unsigned char *buf, MessageHeader &header,
+void Endpoint::receive(int sfd, unsigned char *buf, MessageHeader &header,
 		unsigned int sequenceNumber, const PKI *pki) {
 	if (!buf) { //take the exceptional case out of the way
 		throw Exception(EX_NULL);
 	}
 
 	while (true) {
-		Network::receiveStream(sockfd, buf, Message::HEADER_SIZE);
+		Network::receiveStream(sfd, buf, Message::HEADER_SIZE);
 		header.deserialize(buf);
 		if (!Message::testLength(header.getLength())) {
 			throw Exception(EX_INVALIDRANGE);
 		}
 
-		Network::receiveStream(sockfd, (buf + Message::HEADER_SIZE),
+		Network::receiveStream(sfd, (buf + Message::HEADER_SIZE),
 				(header.getLength() - Message::HEADER_SIZE));
 
 		if (!sequenceNumber || (header.getSequenceNumber() == sequenceNumber)) {

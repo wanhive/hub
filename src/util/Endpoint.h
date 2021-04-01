@@ -47,7 +47,8 @@ public:
 	/*
 	 * Establish a new connection after terminating the existing connection.
 	 * If the new connection is a unix domain socket connection then the SSL
-	 * context is cleared.
+	 * context is cleared. <timeoutMils> specifies the IO timeout value in
+	 * milliseconds (0 to block forever, -1 to ignore).
 	 */
 	void connect(const NameInfo &ni, int timeoutMils = -1);
 	//Terminate any existing connection
@@ -58,12 +59,12 @@ public:
 	//Return the SSL connection associated with this object
 	SSL* getSecureSocket() const noexcept;
 	/*
-	 * Close the connection in use and set a new one. Throws an exception on
+	 * Close the existing connection and set a new one. Throws an exception on
 	 * SSL/TLS connection error.
 	 */
-	void setSocket(int socket);
+	void setSocket(int sfd);
 	/*
-	 * Close the connection in use and set a new one. Throws an exception
+	 * Close the existing connection and set a new one. Throws an exception
 	 * on SSL/TLS connection error.
 	 */
 	void setSecureSocket(SSL *ssl);
@@ -72,12 +73,12 @@ public:
 	//Release the underlying connection and return it
 	SSL* releaseSecureSocket() noexcept;
 	/*
-	 * Swap the underlying socket with <socket> and return it. Throws an
+	 * Swap the underlying socket with <sfd> and return it. Throws an
 	 * exception on SSL/TLS connection error.
 	 */
-	int swapSocket(int socket);
+	int swapSocket(int sfd);
 	/*
-	 * Swap the underlying connection with <ssl> and return it. Throws an
+	 * Swap the underlying SSL object with <ssl> and return it. Throws an
 	 * exception on SSL/TLS connection error.
 	 */
 	SSL* swapSecureSocket(SSL *ssl);
@@ -160,17 +161,17 @@ protected:
 	unsigned char* payload(unsigned int offset = 0) noexcept;
 public:
 	/*
-	 * Establish a blocking TCP socket connection with the host <ni>.
-	 * <timeoutMils> specifies the IO timeout value in milliseconds
-	 * (0 to block forever, -1 to ignore).
+	 * Establish a blocking TCP socket connection with the host <ni> and return
+	 * the socket file descriptor. <timeoutMils> specifies the IO timeout value
+	 * in milliseconds (0 to block forever, -1 to ignore).
 	 */
 	static int connect(const NameInfo &ni, SocketAddress &sa, int timeoutMils =
 			-1);
 	/*
 	 * If <pki> is provided then the message will be signed with its
-	 * private key. <sockfd> should be configured for blocking IO.
+	 * private key. <sfd> should be configured for blocking IO.
 	 */
-	static void send(int sockfd, unsigned char *buf, unsigned int length,
+	static void send(int sfd, unsigned char *buf, unsigned int length,
 			const PKI *pki = nullptr);
 	//Same as above however uses SSL/TLS connection
 	static void send(SSL *ssl, unsigned char *buf, unsigned int length,
@@ -178,9 +179,9 @@ public:
 	/*
 	 * If <pki> is provided then the message will be verified using it's public
 	 * key. If <sequenceNumber> is 0 then received message's sequence number is
-	 * not verified. <sockfd> should be configured for blocking IO.
+	 * not verified. <sfd> should be configured for blocking IO.
 	 */
-	static void receive(int sockfd, unsigned char *buf, MessageHeader &header,
+	static void receive(int sfd, unsigned char *buf, MessageHeader &header,
 			unsigned int sequenceNumber = 0, const PKI *pki = nullptr);
 	//Same as above but uses a secure SSL/TLS connection
 	static void receive(SSL *ssl, unsigned char *buf, MessageHeader &header,
