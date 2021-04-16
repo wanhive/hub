@@ -185,7 +185,7 @@ IDENTITY	HOST	SERVICE		[TYPE]
 
 Each row maps an **identifier** to a **network address** and a **type (optional)**.
 
-A *hosts file* example:
+For example:
 
 ```
 0	/home/user/wh0.uds	unix
@@ -198,14 +198,14 @@ A *hosts file* example:
 
 **NOTES**:
 
-* The **TYPE** column is optional.
-* Servers bind their listening TCP/IP socket to the wildcard address.
+* **IDENTITY** and **TYPE** should be non-negative integers.
+* **TYPE** is optional.
+* Server applications bind their listening TCP/IP socket to the wildcard address.
 * Specify **unix** in the **SERVICE** column to create a *Unix domain socket*.
-
 
 #### Option 1: Create manually
 
-Use your favorite text editor to create a small **hosts file**. For example, the following **hosts file** describes five hubs:
+You can use a text editor to create or edit a **hosts file**. For example, the following **hosts file** describes five hubs:
 
 ```
 0	127.0.0.1	9000
@@ -249,7 +249,7 @@ A **hosts database** is advantageous over the **hosts file** in certain use case
 
 #### Using a hosts database
 
-Export the **hosts file** to a **database**:
+Export the **hosts file** as a SQLite3 **database**:
 
 ```
 wanhive -m
@@ -258,8 +258,8 @@ wanhive -m
 1. Select *UTILITIES(2)* from the list of available options.
 2. Next, select *Manage hosts(2)* and then
 3. Select *Dump the "hosts" file into an SQLite3 database(1)*
-4. Follow the instructions.
-5. Add the host database's information to the configuration file.
+4. Follow further instructions.
+5. Add the database file's pathname to the configuration file.
 
 ```
 [HOSTS]
@@ -289,7 +289,7 @@ auths = <pathname-of-auths-file>
 
 **NOTES**:
 
-* The identifiers are resolved to their network addresses using the [Hosts file](#hosts).
+* The identifiers are resolved to their network addresses using the [hosts file](#hosts).
 * Do not use the identifier **0** here because it is reserved for [special purpose](#clustering-optional).
 
 ### Bootstrap files example
@@ -316,7 +316,7 @@ Network keys are used for:
 * Distributed [authentication](#client-authentication-optional) of the clients.
 
 
-Follow these instructions to generate a key-pair:
+Follow these instructions to generate a network key-pair:
 
 ```
 wanhive -m
@@ -339,7 +339,7 @@ publicKey = <pathname-of-public-key-file>
 
 ## Overlay hub (Server)
 
-Every Wanhive hub (server and client), including an overlay hub, has a *unique numerical identifier*.
+Every overlay hub possesses a *unique numerical identifier*.
 
 Starting an overlay hub:
 
