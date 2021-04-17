@@ -163,7 +163,7 @@ void Storage::fill(int fd, size_t size, unsigned char c) {
 	}
 }
 
-int Storage::readLink(const char *pathname, char *buf, size_t len) {
+ssize_t Storage::readLink(const char *pathname, char *buf, size_t len) {
 	//Read at-most len-1 bytes (readlink doesn't append nul terminator)
 	auto ret = readlink(pathname, buf, len - 1);
 	if (ret != -1) {

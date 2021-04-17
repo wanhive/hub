@@ -34,7 +34,7 @@ public:
 	static int open(const char *path, int flags, mode_t mode, bool createPath);
 	//Wrapper for close(2) system call, returns 0 on success, -1 on error
 	static int close(int fd) noexcept;
-	//Wrapper for fdopen, opens a file as stream
+	//Wrapper for fdopen(3), opens a file as stream
 	static FILE* getStream(int fd, const char *modes);
 	//If <strict> flag is set, then fails if <count> bytes could not be read
 	static size_t read(int fd, void *buffer, size_t count, bool strict);
@@ -44,7 +44,7 @@ public:
 	static void sync(int fd);
 	//wrapper for lseek(2) system call
 	static off_t seek(int fd, off_t offset, int whence);
-	//Fills the file <fd> with character <c>
+	//Fills the file <fd> with the character <c>
 	static void fill(int fd, size_t size, unsigned char c);
 	/*
 	 * Returns the resolved symbolic link
@@ -52,7 +52,7 @@ public:
 	 * Returns the number of bytes copied, and if it equals the <len>
 	 * then we cannot tell whether the full name was copied or not.
 	 */
-	static int readLink(const char *pathname, char *buf, size_t len);
+	static ssize_t readLink(const char *pathname, char *buf, size_t len);
 	//=================================================================
 	/**
 	 * Wrappers for the flock(2) system call.
