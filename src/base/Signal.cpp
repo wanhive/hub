@@ -147,9 +147,11 @@ void Signal::dummyHandler(int signum) noexcept {
 }
 
 void Signal::sigchildHandler(int signum) noexcept {
+	auto savedErrno = errno; //Save the errno
 	while (waitpid(-1, nullptr, WNOHANG) > 0) {
-		//Clean up all ther zombies
+		//Clean up all the zombies
 	}
+	errno = savedErrno; //Restore the errno
 }
 
 void Signal::empty(sigset_t *set) {
