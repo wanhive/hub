@@ -203,7 +203,7 @@ void ClientHub::connectToAuthenticator() noexcept {
 			return;
 		}
 		//-----------------------------------------------------------------
-		//Check for timeout on the existing authentication node
+		//Check for timed-out connection
 		if (bs.auth) {
 			if (bs.auth->hasTimedOut(ctx.timeOut)) {
 				WH_LOG_DEBUG("Connection timed out");
@@ -212,7 +212,7 @@ void ClientHub::connectToAuthenticator() noexcept {
 			return;
 		}
 		//-----------------------------------------------------------------
-		//Load the list of identifiers if necessary
+		//Load the identifiers list if necessary
 		if (!bs.identifiers.hasSpace()) {
 			loadIdentifiers(true);
 		}
@@ -248,7 +248,7 @@ void ClientHub::connectToOverlay() noexcept {
 			throw Exception(EX_INVALIDSTATE);
 		}
 		//-----------------------------------------------------------------
-		//Check for timeout on the existing authentication node
+		//Check for timed-out connection
 		if (bs.node) {
 			if (bs.node->hasTimedOut(ctx.timeOut)) {
 				WH_LOG_DEBUG("Connection timed out");
@@ -257,7 +257,7 @@ void ClientHub::connectToOverlay() noexcept {
 			return;
 		}
 		//-----------------------------------------------------------------
-		//Load the list of identifiers if necessary
+		//Load the identifiers list if necessary
 		if (!bs.identifiers.hasSpace()) {
 			loadIdentifiers(false);
 		}
