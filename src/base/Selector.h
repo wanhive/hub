@@ -21,7 +21,7 @@ namespace wanhive {
 //Treat this as an opaque object, use the methods provided by Selector
 using SelectionEvent=epoll_event;
 //Events listed in the epoll man page
-enum SelectorEvent {
+enum SelectorEvent : uint32_t {
 	IO_READ = EPOLLIN, IO_WRITE = EPOLLOUT, IO_WR = (EPOLLIN | EPOLLOUT),
 	//Hang-up happened, can't write to the descriptor
 	IO_HUP = EPOLLHUP,
@@ -32,7 +32,7 @@ enum SelectorEvent {
 	IO_ERROR = EPOLLERR,
 	IO_ALL = (IO_WR | IO_CLOSE | IO_PRIORITY | IO_ERROR)
 };
-enum SelectorFlag {
+enum SelectorFlag: uint32_t {
 	TRIGGER_EDGE = EPOLLET, TRIGGER_ONCE = EPOLLONESHOT
 };
 //-----------------------------------------------------------------
