@@ -16,11 +16,11 @@
 
 namespace wanhive {
 
-const char *Logger::logLevelString[] = { "EMERGENCY", "ALERT", "CRITICAL",
+const char *Logger::logLevelStrings[] = { "EMERGENCY", "ALERT", "CRITICAL",
 		"ERROR", "WARNING", "NOTICE", "INFO", "DEBUG" };
 
-Logger::Logger() noexcept :
-		level(WH_LOGLEVEL_DEBUG) {
+Logger::Logger(bool sysLog) noexcept :
+		sysLog(sysLog), level(WH_LOGLEVEL_DEBUG) {
 
 }
 
@@ -60,6 +60,10 @@ void Logger::setLevel(unsigned int level) noexcept {
 	}
 }
 
+void Logger::setLevel(LogLevel level) noexcept {
+	this->level = level;
+}
+
 LogLevel Logger::getLevel() const noexcept {
 	return level;
 }
@@ -68,8 +72,12 @@ void Logger::log(LogLevel level, const char *fmt, ...) const noexcept {
 	if (level <= Logger::level) {
 		va_list ap;
 		va_start(ap, fmt);
-		//POSIX compliant vfprintf is thread safe
-		vfprintf(stderr, fmt, ap);
+		if (sysLog) {
+			vsyslog(level, fmt, ap);
+		} else {
+			//POSIX-compliant vfprintf is thread safe
+			vfprintf(stderr, fmt, ap);
+		}
 		va_end(ap);
 	} else {
 		return;
@@ -77,12 +85,12 @@ void Logger::log(LogLevel level, const char *fmt, ...) const noexcept {
 }
 
 Logger& Logger::getDefault() noexcept {
-	static Logger instance; //Thread safe in c++11
-	return instance;
+	static Logger logger(false); //Thread safe in c++11
+	return logger;
 }
 
 const char* Logger::describeLevel(LogLevel level) noexcept {
-	return logLevelString[level];
+	return logLevelStrings[level];
 }
 
 } /* namespace wanhive */

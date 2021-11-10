@@ -35,11 +35,12 @@ enum LogLevel : unsigned char {
 
 class Logger {
 public:
-	Logger() noexcept;
+	Logger(bool sysLog = false) noexcept;
 	~Logger();
 	//-----------------------------------------------------------------
 	//Sets the level filter
 	void setLevel(unsigned int level) noexcept;
+	void setLevel(LogLevel level) noexcept;
 	//Returns the current level filter
 	LogLevel getLevel() const noexcept;
 	//Write a log message to the stderr
@@ -50,8 +51,9 @@ public:
 	//Returns a string describing the <level>
 	static const char* describeLevel(LogLevel level) noexcept;
 private:
+	const bool sysLog;
 	volatile LogLevel level;
-	static const char *logLevelString[];
+	static const char *logLevelStrings[];
 };
 
 //=================================================================
@@ -60,9 +62,10 @@ private:
  * The given syntax is not portable, however, it is supported
  * by all the major compilers (gcc, llvm/clang and VS).
  */
-#define WH_LOG(l, format, ...) Logger::getDefault().log(l, format "\n", ##__VA_ARGS__)
-#define WH_LOGL(l, format, ...) Logger::getDefault().log(l, "[%s]: " format "\n", Logger::describeLevel(l), ##__VA_ARGS__)
-#define WH_LOGLF(l, format, ...) Logger::getDefault().log(l, "[%s] [%s]: " format "\n", Logger::describeLevel(l), WH_FUNCTION, ##__VA_ARGS__)
+#define WH_DEF_LOGGER Logger::getDefault()
+#define WH_LOG(l, format, ...) WH_DEF_LOGGER.log(l, format "\n", ##__VA_ARGS__)
+#define WH_LOGL(l, format, ...) WH_DEF_LOGGER.log(l, "[%s]: " format "\n", Logger::describeLevel(l), ##__VA_ARGS__)
+#define WH_LOGLF(l, format, ...) WH_DEF_LOGGER.log(l, "[%s] [%s]: " format "\n", Logger::describeLevel(l), WH_FUNCTION, ##__VA_ARGS__)
 
 //General logging
 #define WH_LOG_DEBUG(format, ...) WH_LOGLF(WH_LOGLEVEL_DEBUG, format, ##__VA_ARGS__)

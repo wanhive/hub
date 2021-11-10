@@ -234,7 +234,7 @@ int Storage::testFile(const char *pathname) noexcept {
 
 int Storage::testLink(const char *pathname) noexcept {
 	struct stat linkstat;
-	if (stat(pathname, &linkstat) == 0) {
+	if (lstat(pathname, &linkstat) == 0) {
 		return S_ISLNK(linkstat.st_mode) ? 1 : 0;
 	} else {
 		return -1;
