@@ -77,7 +77,7 @@ public:
 	static int testDirectory(const char *pathname) noexcept;
 	// Returns 1 if file, 0 otherwise, -1 on error
 	static int testFile(const char *pathname) noexcept;
-	//Returns 1 if path is a symbolic link, 0 otherwise, -1 on error
+	//Returns 1 if a symbolic link, 0 otherwise, -1 on error
 	static int testLink(const char *pathname) noexcept;
 	//=================================================================
 	/*

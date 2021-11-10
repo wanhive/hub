@@ -215,59 +215,29 @@ void Storage::removeDirectory(const char *pathname) {
 }
 
 int Storage::testDirectory(const char *pathname) noexcept {
-	struct stat filestat;
-	if (!pathname) {
+	struct stat data;
+	if (stat(pathname, &data) == 0) {
+		return S_ISDIR(data.st_mode) ? 1 : 0;
+	} else {
 		return -1;
-	} else if (stat(pathname, &filestat) != 0) {
-		if (errno != ENOENT) {
-			return -1;
-		} else {
-			return 0;
-		}
-	} else if (!S_ISDIR(filestat.st_mode)) {
-		return 0;
-	} else if (access(pathname, F_OK)) {
-		return -1;
-	} else { //passed all tests
-		return 1;
 	}
 }
 
 int Storage::testFile(const char *pathname) noexcept {
-	struct stat filestat;
-	if (!pathname) {
+	struct stat data;
+	if (stat(pathname, &data) == 0) {
+		return S_ISREG(data.st_mode) ? 1 : 0;
+	} else {
 		return -1;
-	} else if (stat(pathname, &filestat) != 0) {
-		if (errno != ENOENT) {
-			return -1;
-		} else {
-			return 0;
-		}
-	} else if (!S_ISREG(filestat.st_mode)) {
-		return 0;
-	} else if (access(pathname, F_OK) < 0) {
-		return -1;
-	} else { //passed all tests
-		return 1;
 	}
 }
 
 int Storage::testLink(const char *pathname) noexcept {
 	struct stat linkstat;
-	if (!pathname) {
+	if (stat(pathname, &linkstat) == 0) {
+		return S_ISLNK(linkstat.st_mode) ? 1 : 0;
+	} else {
 		return -1;
-	} else if (lstat(pathname, &linkstat) != 0) {
-		if (errno != ENOENT) {
-			return -1;
-		} else {
-			return 0;
-		}
-	} else if (!S_ISLNK(linkstat.st_mode)) {
-		return 0;
-	} else if (access(pathname, F_OK) < 0) {
-		return -1;
-	} else { //passed all tests
-		return 1;
 	}
 }
 
@@ -341,16 +311,14 @@ bool Storage::_createDirectory(char *pathname) noexcept {
 			*mark = 0;
 		}
 		//-----------------------------------------------------------------
-		auto ret = testDirectory(pathname);
-		if (ret == -1) {
-			return false;
-		}
-		if (ret == 0) {
+		if (access(pathname, F_OK) == -1) {
+			//Directory doesn't exist, try to create one
 			mode_t mode = S_IRWXU | S_IRGRP | S_IXGRP | S_IROTH | S_IXOTH; // 755
-			ret = mkdir(pathname, mode);
-			if ((ret != 0) && (errno != EEXIST)) {
+			if (mkdir(pathname, mode) == -1) {
 				return false;
 			}
+		} else if (testDirectory(pathname) != 1) {
+			return false; //Not a directory
 		}
 		//-----------------------------------------------------------------
 		if (mark) {
