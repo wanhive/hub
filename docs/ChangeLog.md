@@ -13,14 +13,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
-- Return type of **Storage::readLink** changed from **int** to **ssize_t**.
-- **Timer::hasTimedOut** restricted to milliseconds resolution.
+- **Timer::hasTimedOut** method restricted to milliseconds resolution.
 - The Hub configuration parameter **cycleInputLimit** defaults to zero (0).
 
 ### Fixed
 
-- **Signal::sigchildHandler** preserves the errno.
-- **Selector** event and flag enumerations have the correct data-type.
+- Return type of **Storage::readLink** should be **ssize_t**.
+- **Signal::sigchildHandler** should preserve the errno.
+- Data types of **Selector** event and flag enumerations should be 32-bit unsigned int.
 
 ## [4.0.0] - 2021-04-01
 
