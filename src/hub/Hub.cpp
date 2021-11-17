@@ -297,7 +297,7 @@ void Hub::configure(void *arg) {
 		ctx.connectionTimeOut = conf.getNumber("HUB", "connectionTimeOut",
 				2000);
 
-		ctx.cycleInputLimit = conf.getNumber("HUB", "cycleInputLimit", 8);
+		ctx.cycleInputLimit = conf.getNumber("HUB", "cycleInputLimit");
 		ctx.outputQueueLimit = conf.getNumber("HUB", "outputQueueLimit");
 		ctx.outputQueueLimit = Twiddler::min(ctx.outputQueueLimit,
 				(Socket::OUT_QUEUE_SIZE - 1));
@@ -309,6 +309,7 @@ void Hub::configure(void *arg) {
 
 		ctx.allowPacketDrop = conf.getBoolean("HUB", "allowPacketDrop");
 		ctx.messageTTL = conf.getNumber("HUB", "messageTTL");
+
 		ctx.answerRatio = conf.getDouble("HUB", "answerRatio", 0.5);
 		ctx.forwardRatio = conf.getDouble("HUB", "forwardRatio", 0);
 
@@ -934,22 +935,22 @@ unsigned int Hub::throttle(const Socket *connection) const noexcept {
 	 * [Congestion Control]: set limit on the number of messages the given
 	 * connection may deliver in the current event loop
 	 */
-	auto remaining = Message::unallocated();
+	auto available = Message::unallocated();
 	//Few messages are reserved for overlay management
-	if (remaining > ctx.reservedMessages) {
-		remaining -= ctx.reservedMessages;
+	if (available > ctx.reservedMessages) {
+		available -= ctx.reservedMessages;
 		if (!connection->testFlags(SOCKET_OVERLAY | SOCKET_PRIORITY)) {
 			//A normal client connection
-			auto ratio = ((double) remaining) / Message::poolSize();
+			auto ratio = ((double) available) / Message::poolSize();
 			auto limit = (unsigned int) (ctx.cycleInputLimit * ratio);
-			return Twiddler::min(limit, remaining);
+			return Twiddler::min(limit, available);
 		} else {
 			//An important connection
-			return Twiddler::min(ctx.cycleInputLimit, remaining);
+			return Twiddler::min(ctx.cycleInputLimit, available);
 		}
 	} else if (connection->testFlags(SOCKET_PRIORITY)) {
 		//A priority connection
-		return Twiddler::min(ctx.reservedMessages, remaining);
+		return Twiddler::min(ctx.reservedMessages, available);
 	} else {
 		//Everything else
 		return 0;
