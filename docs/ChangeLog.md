@@ -5,6 +5,23 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Added
+
+- **Logger** can write messages to the **syslog** facility.
+
+### Changed
+
+- Return type of **Storage::readLink** changed from **int** to **ssize_t**.
+- **Timer::hasTimedOut** restricted to milliseconds resolution.
+- The Hub configuration parameter **cycleInputLimit** defaults to zero (0).
+
+### Fixed
+
+- **Signal::sigchildHandler** preserves the errno.
+- **Selector** event and flag enumerations have the correct data-type.
+
 ## [4.0.0] - 2021-04-01
 
 ### Added
