@@ -300,7 +300,7 @@ void Hub::configure(void *arg) {
 		ctx.cycleInputLimit = conf.getNumber("HUB", "cycleInputLimit", 8);
 		ctx.outputQueueLimit = conf.getNumber("HUB", "outputQueueLimit");
 		ctx.outputQueueLimit = Twiddler::min(ctx.outputQueueLimit,
-				Socket::OUT_QUEUE_SIZE - 1);
+				(Socket::OUT_QUEUE_SIZE - 1));
 
 		ctx.throttle = conf.getBoolean("HUB", "throttle");
 		ctx.reservedMessages = conf.getNumber("HUB", "reservedMessages");
@@ -932,23 +932,26 @@ bool Hub::dropMessage(Message *message) const noexcept {
 unsigned int Hub::throttle(const Socket *connection) const noexcept {
 	/*
 	 * [Congestion Control]: set limit on the number of messages the given
-	 * connection may deliver in the current cycle
+	 * connection may deliver in the current event loop
 	 */
 	auto remaining = Message::unallocated();
 	//Few messages are reserved for overlay management
 	if (remaining > ctx.reservedMessages) {
 		remaining -= ctx.reservedMessages;
 		if (!connection->testFlags(SOCKET_OVERLAY | SOCKET_PRIORITY)) {
-			//Client connection
-			auto ratio = ((double) (remaining)) / Message::poolSize();
-			return Twiddler::min(ctx.cycleInputLimit * ratio, remaining);
+			//A normal client connection
+			auto ratio = ((double) remaining) / Message::poolSize();
+			auto limit = (unsigned int) (ctx.cycleInputLimit * ratio);
+			return Twiddler::min(limit, remaining);
 		} else {
+			//An important connection
 			return Twiddler::min(ctx.cycleInputLimit, remaining);
 		}
-
 	} else if (connection->testFlags(SOCKET_PRIORITY)) {
+		//A priority connection
 		return Twiddler::min(ctx.reservedMessages, remaining);
 	} else {
+		//Everything else
 		return 0;
 	}
 }
