@@ -13,29 +13,31 @@
 #ifndef WH_BASE_LOGGER_H_
 #define WH_BASE_LOGGER_H_
 #include "common/defines.h"
-#include <syslog.h>
 
 namespace wanhive {
 /**
  * Application logger
- * Log messages are written to the stderr
  * Thread safe
  */
 
 enum LogLevel : unsigned char {
-	WH_LOGLEVEL_EMERGENCY = LOG_EMERG,
-	WH_LOGLEVEL_ALERT = LOG_ALERT,
-	WH_LOGLEVEL_CRITICAL = LOG_CRIT,
-	WH_LOGLEVEL_ERROR = LOG_ERR,
-	WH_LOGLEVEL_WARNING = LOG_WARNING,
-	WH_LOGLEVEL_NOTICE = LOG_NOTICE,
-	WH_LOGLEVEL_INFO = LOG_INFO,
-	WH_LOGLEVEL_DEBUG = LOG_DEBUG
+	WH_LOGLEVEL_EMERGENCY,
+	WH_LOGLEVEL_ALERT,
+	WH_LOGLEVEL_CRITICAL,
+	WH_LOGLEVEL_ERROR,
+	WH_LOGLEVEL_WARNING,
+	WH_LOGLEVEL_NOTICE,
+	WH_LOGLEVEL_INFO,
+	WH_LOGLEVEL_DEBUG
+};
+
+enum LogTarget : unsigned char {
+	WH_LOG_STDERR, WH_LOG_SYS
 };
 
 class Logger {
 public:
-	Logger(bool sysLog = false) noexcept;
+	Logger() noexcept;
 	~Logger();
 	//-----------------------------------------------------------------
 	//Sets the level filter
@@ -43,17 +45,23 @@ public:
 	void setLevel(LogLevel level) noexcept;
 	//Returns the current level filter
 	LogLevel getLevel() const noexcept;
+	//Sets the target filter
+	void setTarget(unsigned int target) noexcept;
+	void setTarget(LogTarget target) noexcept;
+	//Returns the current target filter
+	LogTarget getTarget() const noexcept;
 	//Write a log message to the stderr
 	void log(LogLevel level, const char *fmt, ...) const noexcept;
 	//-----------------------------------------------------------------
-	//Returns the default logger, thread safe
+	//Returns the default logger (writes to stderr), thread safe
 	static Logger& getDefault() noexcept;
 	//Returns a string describing the <level>
-	static const char* describeLevel(LogLevel level) noexcept;
+	static const char* levelString(LogLevel level) noexcept;
+	//Returns a string describing the <target>
+	static const char* targetString(LogTarget target) noexcept;
 private:
-	const bool sysLog;
 	volatile LogLevel level;
-	static const char *logLevelStrings[];
+	volatile LogTarget target;
 };
 
 //=================================================================
@@ -63,9 +71,11 @@ private:
  * by all the major compilers (gcc, llvm/clang and VS).
  */
 #define WH_DEF_LOGGER Logger::getDefault()
+#define WH_LOG_LEVEL_STR(l) Logger::levelString(l)
+
 #define WH_LOG(l, format, ...) WH_DEF_LOGGER.log(l, format "\n", ##__VA_ARGS__)
-#define WH_LOGL(l, format, ...) WH_DEF_LOGGER.log(l, "[%s]: " format "\n", Logger::describeLevel(l), ##__VA_ARGS__)
-#define WH_LOGLF(l, format, ...) WH_DEF_LOGGER.log(l, "[%s] [%s]: " format "\n", Logger::describeLevel(l), WH_FUNCTION, ##__VA_ARGS__)
+#define WH_LOGL(l, format, ...) WH_DEF_LOGGER.log(l, "[%s]: " format "\n", WH_LOG_LEVEL_STR(l), ##__VA_ARGS__)
+#define WH_LOGLF(l, format, ...) WH_DEF_LOGGER.log(l, "[%s] [%s]: " format "\n", WH_LOG_LEVEL_STR(l), WH_FUNCTION, ##__VA_ARGS__)
 
 //General logging
 #define WH_LOG_DEBUG(format, ...) WH_LOGLF(WH_LOGLEVEL_DEBUG, format, ##__VA_ARGS__)

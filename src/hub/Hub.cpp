@@ -328,7 +328,7 @@ void Hub::configure(void *arg) {
 				ctx.outputQueueLimit, WH_BOOLF(ctx.throttle),
 				ctx.reservedMessages, WH_BOOLF(ctx.allowPacketDrop),
 				ctx.messageTTL, ctx.answerRatio, ctx.forwardRatio,
-				Logger::describeLevel(Logger::getDefault().getLevel()));
+				Logger::levelString(Logger::getDefault().getLevel()));
 		//-----------------------------------------------------------------
 		/*
 		 * Initialization of the core data structures
