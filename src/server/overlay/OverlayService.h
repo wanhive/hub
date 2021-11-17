@@ -27,29 +27,34 @@ public:
 	virtual ~OverlayService();
 	//-----------------------------------------------------------------
 	/**
-	 * Settings
+	 * Loads new settings
 	 */
-	void setBootstrapNodes(const unsigned long long *nodes) noexcept;
-	void setConnection(int connection) noexcept;
-	void setRetryInterval(unsigned int retryInterval) noexcept;
-	void setUpdateCycle(unsigned int updateCycle) noexcept;
+	void configure(int connection, const unsigned long long *nodes,
+			unsigned int updateCycle, unsigned int retryInterval) noexcept;
 	//-----------------------------------------------------------------
 	/*
-	 * Execute this periodically to keep the network stable.
+	 * Executes the stabilization routines periodically in a loop until
+	 * an exception occurs or a notification is delivered. Calls the
+	 * cleanup routine on exit.
+	 */
+	void periodic() noexcept;
+	/*
+	 * Execute this periodically to maintain network stability.
 	 * Returns true on success, false on non-fatal error.
 	 */
 	bool execute();
 	/*
-	 * Wait for timeout or notification.
-	 * Returns true if a notification was received.
+	 * Waits for timeout or notification.
+	 * Returns false on timeout, true on receipt of a notification.
 	 */
 	bool wait();
 	/*
-	 * Generate a notification.
+	 * Delivers a notification to this object. Returns true on success,
+	 * false otherwise.
 	 */
-	void notify() noexcept;
+	bool notify() noexcept;
 	/*
-	 * Cleans up the resources (prevents resource leak)
+	 * Cleans up the resources and closes the existing connection.
 	 */
 	void cleanup() noexcept;
 private:
@@ -82,6 +87,11 @@ private:
 	void setup();
 	//Cleans up the internal structures
 	void clear() noexcept;
+	//-----------------------------------------------------------------
+	void setConnection(int connection) noexcept;
+	void setBootstrapNodes(const unsigned long long *nodes) noexcept;
+	void setUpdateCycle(unsigned int updateCycle) noexcept;
+	void setRetryInterval(unsigned int retryInterval) noexcept;
 private:
 	//Identifier of the hub
 	const unsigned long long uid;
@@ -93,7 +103,7 @@ private:
 	unsigned int delay;
 	//Set to true if connection with controller failed
 	bool controllerFailed;
-	//Whether the object was initialized
+	//Initialization status
 	bool initialized;
 	//The condition variable for thread synchronization
 	Condition condition;
@@ -108,18 +118,18 @@ private:
 	uint64_t successors[SUCCESSOR_LIST_LEN];
 	//-----------------------------------------------------------------
 	/**
-	 * Configuration
-	 * No shared states with the outside world except the socket connection
+	 * Configuration parameters: No shared states with the outside world
+	 * except the socket connection.
 	 */
 	struct {
 		//Bootstrap nodes
 		unsigned long long nodes[16];
-		//Socket connection for running the protocol
+		//The socket connection descriptor
 		int connection;
-		//Wait period after stabilization error
-		unsigned int retryInterval;
-		//Wait period between routing table updates
+		//Wait period in milliseconds between routing table updates
 		unsigned int updateCycle;
+		//Wait period in milliseconds after stabilization error
+		unsigned int retryInterval;
 	} ctx;
 };
 

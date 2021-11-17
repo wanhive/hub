@@ -26,25 +26,25 @@ OverlayService::~OverlayService() {
 	cleanup();
 }
 
-void OverlayService::setBootstrapNodes(const unsigned long long *nodes) noexcept {
-	unsigned int i = 0;
-	for (; nodes && nodes[i] && (i < (WH_ARRAYLEN(ctx.nodes) - 1)); ++i) {
-		ctx.nodes[i] = nodes[i];
+void OverlayService::configure(int connection, const unsigned long long *nodes,
+		unsigned int updateCycle, unsigned int retryInterval) noexcept {
+	cleanup();
+	setConnection(connection);
+	setBootstrapNodes(nodes);
+	setUpdateCycle(updateCycle);
+	setRetryInterval(retryInterval);
+}
+
+void OverlayService::periodic() noexcept {
+	try {
+		do {
+			execute();
+		} while (!wait());
+	} catch (BaseException &e) {
+		WH_LOG_EXCEPTION(e);
 	}
 
-	ctx.nodes[i] = 0;
-}
-
-void OverlayService::setConnection(int connection) noexcept {
-	ctx.connection = connection;
-}
-
-void OverlayService::setRetryInterval(unsigned int retryInterval) noexcept {
-	ctx.retryInterval = retryInterval;
-}
-
-void OverlayService::setUpdateCycle(unsigned int updateCycle) noexcept {
-	ctx.updateCycle = updateCycle;
+	cleanup(); //Close the connection
 }
 
 bool OverlayService::execute() {
@@ -93,11 +93,12 @@ bool OverlayService::wait() {
 	}
 }
 
-void OverlayService::notify() noexcept {
+bool OverlayService::notify() noexcept {
 	try {
 		condition.notify();
+		return true;
 	} catch (const BaseException &e) {
-		WH_LOG_EXCEPTION(e);
+		return false;
 	}
 }
 
@@ -295,13 +296,13 @@ void OverlayService::setup() {
 			throw Exception(EX_INVALIDOPERATION);
 		}
 
-		//Set the flag for book keeping
+		//Set the flag for book-keeping
 		initialized = true;
 		//This socket will be automatically closed on exit
 		setSocket(ctx.connection);
 		//All the messages will carry this source ID
 		setSource(uid);
-		//Wait for this long is asked
+		//Wait for this long
 		delay = ctx.updateCycle;
 		//-----------------------------------------------------------------
 		/*
@@ -367,6 +368,27 @@ void OverlayService::clear() noexcept {
 	memset(successors, 0, sizeof(successors));
 	memset(&ctx, 0, sizeof(ctx));
 	ctx.connection = -1;
+}
+
+void OverlayService::setConnection(int connection) noexcept {
+	ctx.connection = connection;
+}
+
+void OverlayService::setBootstrapNodes(const unsigned long long *nodes) noexcept {
+	unsigned int i = 0;
+	for (; nodes && nodes[i] && (i < (WH_ARRAYLEN(ctx.nodes) - 1)); ++i) {
+		ctx.nodes[i] = nodes[i];
+	}
+
+	ctx.nodes[i] = 0;
+}
+
+void OverlayService::setUpdateCycle(unsigned int updateCycle) noexcept {
+	ctx.updateCycle = updateCycle;
+}
+
+void OverlayService::setRetryInterval(unsigned int retryInterval) noexcept {
+	ctx.retryInterval = retryInterval;
 }
 
 } /* namespace wanhive */

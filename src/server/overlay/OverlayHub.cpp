@@ -170,29 +170,15 @@ bool OverlayHub::enableWorker() const noexcept {
 }
 
 void OverlayHub::doWork(void *arg) noexcept {
-	try {
-		while (true) {
-			stabilizer.execute();
-			if (stabilizer.wait()) {
-				break;
-			} else {
-				continue;
-			}
-		}
-	} catch (const BaseException &e) {
-		WH_LOG_EXCEPTION(e);
-	}
-	/*
-	 * Initiate shutdown sequence by closing stabilizer's end
-	 * of the socket pair.
-	 */
-	stabilizer.cleanup();
+	//Execute the stabilization loop
+	stabilizer.periodic();
 }
 
 void OverlayHub::stopWork() noexcept {
 	/*
 	 * Just in case the worker thread failed to start and hence did
-	 * not perform cleanup on exit.
+	 * not perform a cleanup on exit. No race condition because the
+	 * worker thread has already exited.
 	 */
 	stabilizer.cleanup();
 }
@@ -247,10 +233,8 @@ void OverlayHub::installService() {
 		onRegistration(w);
 
 		worker.id = w->getUid();
-		stabilizer.setBootstrapNodes(ctx.bootstrapNodes);
-		stabilizer.setConnection(fd);
-		stabilizer.setRetryInterval(ctx.retryInterval);
-		stabilizer.setUpdateCycle(ctx.updateCycle);
+		stabilizer.configure(fd, ctx.bootstrapNodes, ctx.updateCycle,
+				ctx.retryInterval);
 	} else {
 		//Worker thread not required
 	}
