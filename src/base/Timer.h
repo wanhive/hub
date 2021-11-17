@@ -28,8 +28,7 @@ public:
 	//Reset the timer, load it with current time
 	void now() noexcept;
 	//Returns true if a timeout was detected since the last reset
-	bool hasTimedOut(unsigned int milliseconds,
-			unsigned int nanoseconds = 0) const noexcept;
+	bool hasTimedOut(unsigned int milliseconds) const noexcept;
 	//Sleep for specified duration (cannot be interrupted by signal)
 	static void sleep(unsigned int milliseconds,
 			unsigned int nanoseconds = 0) noexcept;
