@@ -59,7 +59,7 @@ ssize_t SignalWatcher::read() {
 	}
 }
 
-const SignalInfo* SignalWatcher::getSignalInfo() const noexcept {
+const SignalInfo* SignalWatcher::getInfo() const noexcept {
 	return &info;
 }
 

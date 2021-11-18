@@ -522,7 +522,7 @@ bool Hub::handle(SignalWatcher *signalWatcher) noexcept {
 			auto uid = (
 					signalWatcher == notifiers.signalWatcher ?
 							0 : signalWatcher->getUid());
-			processSignalNotification(uid, signalWatcher->getSignalInfo());
+			processSignalNotification(uid, signalWatcher->getInfo());
 		}
 		return signalWatcher->isReady();
 	} catch (const BaseException &e) {
