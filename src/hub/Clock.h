@@ -54,6 +54,13 @@ public:
 	//Return the number of times the periodic timer expired
 	unsigned long long getCount() const noexcept;
 private:
+	//Creates a new Timer file descriptor
+	void create(bool blocking);
+	//Updates the settings
+	void update(unsigned int expiration, unsigned int interval);
+	//Fetches the settings
+	void settings(unsigned int &expiration, unsigned int &interval);
+private:
 	unsigned int expiration;	//Initial expiration in miliseconds
 	unsigned int interval;	//Interval for periodic timer in miliseconds
 	unsigned long long count; //Timer expirations count

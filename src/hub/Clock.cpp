@@ -12,13 +12,30 @@
 
 #include "Clock.h"
 #include "Hub.h"
+#include "../base/SystemException.h"
 #include "../base/Timer.h"
+#include <sys/timerfd.h>
+
+namespace {
+
+void milsToSpec(unsigned int milliseconds, timespec &ts) {
+	ts.tv_sec = milliseconds / wanhive::Timer::MILS_IN_SEC;
+	ts.tv_nsec = (milliseconds - (ts.tv_sec * wanhive::Timer::MILS_IN_SEC))
+			* wanhive::Timer::NS_IN_MILS;
+}
+
+long long specToMils(timespec &ts) {
+	return (((long long) ts.tv_sec * wanhive::Timer::MILS_IN_SEC)
+			+ (ts.tv_nsec / wanhive::Timer::NS_IN_MILS));
+}
+
+}  // namespace
 
 namespace wanhive {
 
 Clock::Clock(unsigned int expiration, unsigned int interval, bool blocking) :
 		expiration(expiration), interval(interval), count(0) {
-	setHandle(Timer::openTimerfd(blocking));
+	create(blocking);
 }
 
 Clock::~Clock() {
@@ -26,12 +43,12 @@ Clock::~Clock() {
 }
 
 void Clock::start() {
-	Timer::setTimerfd(getHandle(), expiration, interval);
+	update(expiration, interval);
 }
 
 void Clock::stop() noexcept {
 	try {
-		Timer::setTimerfd(getHandle(), 0, 0);
+		update(0, 0);
 	} catch (const BaseException &e) {
 	}
 }
@@ -65,7 +82,7 @@ ssize_t Clock::read() {
 }
 
 void Clock::reset(unsigned int expiration, unsigned int interval) {
-	Timer::setTimerfd(getHandle(), expiration, interval);
+	update(expiration, interval);
 	//Update the settings only if the system call succeeded
 	this->expiration = expiration;
 	this->interval = interval;
@@ -81,6 +98,34 @@ unsigned int Clock::getInterval() const noexcept {
 
 unsigned long long Clock::getCount() const noexcept {
 	return count;
+}
+
+void Clock::create(bool blocking) {
+	auto fd = timerfd_create(CLOCK_MONOTONIC, blocking ? 0 : TFD_NONBLOCK);
+	if (fd != -1) {
+		setHandle(fd);
+	} else {
+		throw SystemException();
+	}
+}
+
+void Clock::update(unsigned int expiration, unsigned int interval) {
+	struct itimerspec time;
+	milsToSpec(expiration, time.it_value);
+	milsToSpec(interval, time.it_interval);
+	if (timerfd_settime(getHandle(), 0, &time, nullptr)) {
+		throw SystemException();
+	}
+}
+
+void Clock::settings(unsigned int &expiration, unsigned int &interval) {
+	struct itimerspec time;
+	if (timerfd_gettime(getHandle(), &time) == 0) {
+		expiration = specToMils(time.it_value);
+		interval = specToMils(time.it_interval);
+	} else {
+		throw SystemException();
+	}
 }
 
 } /* namespace wanhive */

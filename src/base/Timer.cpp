@@ -15,34 +15,8 @@
 #include "ds/Twiddler.h"
 #include <cerrno>
 #include <climits>
+#include <time.h>
 #include <unistd.h>
-#include <sys/time.h>
-#include <sys/timerfd.h>
-
-namespace {
-//Nanoseconds in a Second
-constexpr long NS_IN_SEC = 1000000000L;
-//Microseconds in a Second
-constexpr long MS_IN_SEC = 1000000L;
-//Milliseconds in a Second
-constexpr long MILS_IN_SEC = 1000L;
-//Nanoseconds in a Microsecond
-constexpr long NS_IN_MS = (NS_IN_SEC / MS_IN_SEC);
-//Nanoseconds in a Millisecond
-constexpr long NS_IN_MILS = (NS_IN_SEC / MILS_IN_SEC);
-//Microseconds in a Millisecond
-constexpr long MS_IN_MILS = (MS_IN_SEC / MILS_IN_SEC);
-
-void milsToSpec(unsigned int milliseconds, timespec &ts) {
-	ts.tv_sec = milliseconds / MILS_IN_SEC;
-	ts.tv_nsec = (milliseconds - (ts.tv_sec * MILS_IN_SEC)) * NS_IN_MILS;
-}
-
-long long specToMils(timespec &ts) {
-	return (((long long) ts.tv_sec * MILS_IN_SEC) + (ts.tv_nsec / NS_IN_MILS));
-}
-
-}  // namespace
 
 namespace wanhive {
 
@@ -101,39 +75,6 @@ unsigned long long Timer::timeSeed() noexcept {
 	timespec ts;
 	clock_gettime(CLOCK_MONOTONIC, &ts);
 	return Twiddler::FVN1aHash(&ts, sizeof(ts));
-}
-
-int Timer::openTimerfd(bool blocking) {
-	auto fd = timerfd_create(CLOCK_MONOTONIC, blocking ? 0 : TFD_NONBLOCK);
-	if (fd != -1) {
-		return fd;
-	} else {
-		throw SystemException();
-	}
-}
-
-void Timer::setTimerfd(int fd, unsigned int expiration, unsigned int interval) {
-	struct itimerspec time;
-	milsToSpec(expiration, time.it_value);
-	milsToSpec(interval, time.it_interval);
-	if (timerfd_settime(fd, 0, &time, nullptr)) {
-		throw SystemException();
-	}
-}
-
-void Timer::getTimerfdSettings(int fd, unsigned int &expiration,
-		unsigned int &interval) {
-	struct itimerspec time;
-	if (timerfd_gettime(fd, &time) == 0) {
-		expiration = specToMils(time.it_value);
-		interval = specToMils(time.it_interval);
-	} else {
-		throw SystemException();
-	}
-}
-
-int Timer::closeTimerfd(int fd) noexcept {
-	return close(fd);
 }
 
 unsigned long long Timer::currentTime() noexcept {
