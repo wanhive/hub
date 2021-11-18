@@ -13,6 +13,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- The **SignalWatcher::getSignalInfo** method renamed to **SignalWatcher::getInfo**.
 - **Timer::hasTimedOut** method restricted to milliseconds resolution.
 - The Hub configuration parameter **cycleInputLimit** defaults to zero (0).
 
