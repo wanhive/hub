@@ -27,7 +27,7 @@ public:
 	virtual ~OverlayService();
 	//-----------------------------------------------------------------
 	/**
-	 * Loads new settings
+	 * Performs cleanup and then loads new settings
 	 */
 	void configure(int connection, const unsigned long long *nodes,
 			unsigned int updateCycle, unsigned int retryInterval) noexcept;
