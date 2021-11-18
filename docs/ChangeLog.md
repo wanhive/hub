@@ -19,12 +19,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 
 - Return type of **Storage::readLink** should be **ssize_t**.
-- **Signal::sigchildHandler** should preserve the errno.
 - Data types of **Selector** event and flag enumerations should be 32-bit unsigned int.
 
 ### Removed
 
 - All the **timerfd** related methods from the **Timer** class.
+- All the **signalfd** related methods from the **Signal** class.
+- The **Signal::sigchildHandler** method.
 
 ## [4.0.0] - 2021-04-01
 

@@ -44,6 +44,8 @@ public:
 	//Returns the information about the most recently caught signal
 	const SignalInfo* getSignalInfo() const noexcept;
 private:
+	void create(bool blocking);
+private:
 	SignalInfo info;
 };
 

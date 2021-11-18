@@ -12,14 +12,12 @@
 
 #include "SignalWatcher.h"
 #include "Hub.h"
-#include "../base/Signal.h"
+#include "../base/SystemException.h"
 
 namespace wanhive {
 
 SignalWatcher::SignalWatcher(bool blocking) {
-	sigset_t mask;
-	Signal::fill(&mask);
-	setHandle(Signal::openSignalfd(-1, mask, blocking));
+	create(blocking);
 	memset(&info, 0, sizeof(info));
 }
 
@@ -63,6 +61,18 @@ ssize_t SignalWatcher::read() {
 
 const SignalInfo* SignalWatcher::getSignalInfo() const noexcept {
 	return &info;
+}
+
+void SignalWatcher::create(bool blocking) {
+	int fd;
+	sigset_t mask;
+	if (sigfillset(&mask) == -1) {
+		throw SystemException();
+	} else if ((fd = signalfd(-1, &mask, blocking ? 0 : SFD_NONBLOCK)) == -1) {
+		throw SystemException();
+	} else {
+		setHandle(fd);
+	}
 }
 
 } /* namespace wanhive */

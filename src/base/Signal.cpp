@@ -15,9 +15,6 @@
 #include <cerrno>
 #include <cstring>
 #include <unistd.h>
-#include <sys/signalfd.h>
-#include <sys/types.h>
-#include <sys/wait.h>
 
 namespace wanhive {
 
@@ -130,28 +127,8 @@ void Signal::wait(int signum) {
 	}
 }
 
-int Signal::openSignalfd(int fd, const sigset_t &mask, bool blocking) {
-	fd = signalfd(fd, &mask, blocking ? 0 : SFD_NONBLOCK);
-	if (fd != -1) {
-		return fd;
-	} else {
-		throw SystemException();
-	}
-}
-
-int Signal::closeSignalfd(int fd) noexcept {
-	return close(fd);
-}
-
 void Signal::dummyHandler(int signum) noexcept {
-}
 
-void Signal::sigchildHandler(int signum) noexcept {
-	auto savedErrno = errno; //Save the errno
-	while (waitpid(-1, nullptr, WNOHANG) > 0) {
-		//Clean up all the zombies
-	}
-	errno = savedErrno; //Restore the errno
 }
 
 void Signal::empty(sigset_t *set) {

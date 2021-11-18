@@ -61,16 +61,8 @@ public:
 	//Same as the above, but waits for a particular signal
 	static void wait(int signum);
 
-	//set <fd> to -1 to create a new descriptor, returns the file descriptor
-	static int openSignalfd(int fd, const sigset_t &mask,
-			bool blocking = false);
-	//Closes a signal file descriptor
-	static int closeSignalfd(int fd) noexcept;
-
-	//Dummy signal handler
+	//Dummy signal handler which does nothing
 	static void dummyHandler(int signum) noexcept;
-	//POSIX-compliant sigchild handler
-	static void sigchildHandler(int signum) noexcept;
 
 	static void empty(sigset_t *set);
 	static void fill(sigset_t *set);
