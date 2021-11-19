@@ -1,0 +1,66 @@
+.TH WANHIVE 1 2021-11-19 "Wanhive Hub" "Wanhive Hub documentation"
+.SH NAME
+\fBwanhive\fR \-   build secure multimedia\-based internet of things.
+.SH SYNOPSIS
+.B wanhive
+[ \-hmSv ] [ \-c pathname ] [ \-n identity ] [ \-t type ]
+.SH DESCRIPTION
+.B  Wanhive Hub
+can be executed as
+.br
+1. An \fIauthentication hub\fR (server), for identification, authentication, and authorization of the IoT endpoints.
+.br
+or
+.br
+2. An \fIoverlay hub\fR (server), which acts as an intermediary between the IoT endpoints and ensures movement of data between the connected devices.
+.SH OPTIONS
+.TP
+.B \-c <pathname>
+.TQ
+.B \-\-config <pathname>
+.br
+Full \fIpathname\fR of the external configuration file.
+
+If not supplied via the command line then the program will try to read 
+\fIwanhive.conf\fR from the 'current working directory', the 'executable directory', 
+\fI~/.config/wanhive/wanhive.conf\fR, or the 'system configuration directory' in that order.
+.TP
+.B \-h
+.TQ
+.B \-\-help
+.br
+Show brief documentation.
+.TP
+.B \-m
+.TQ
+.B \-\-menu
+.br
+Show the application menu.
+.TP
+.B \-n <identity>
+.TQ
+.B \-\-name <identity>
+.br
+Assign a unique \fIidentity\fR to the hub. The identity should be a \fInon\-negative number\fR.
+.TP
+.B \-S
+.TQ
+.B \-\-syslog
+.br
+Write the log messages to the \fIsyslog\fR facility instead of \fIstderr\fR (default).
+.TP
+.B \-t <type>
+.TQ
+.B \-\-type <type>
+.br
+Specify hub's type. The type can be one of \fIauthentication hub\fR (\fB\-t a\fR) or \fIoverlay hub\fR (\fB\-t o\fR).
+.TP
+.B \-v
+.TQ
+.B \-\-version
+.br
+Show information about name, version, origin, and legal status.
+.SH BUGS
+No known bugs.
+.SH AUTHORS
+Wanhive Systems (www.wanhive.com)
