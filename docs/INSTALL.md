@@ -323,7 +323,7 @@ wanhive -m
 ```
 
 1. Select *UTILITIES(2)*.
-2. Next, select *Generate keys(2)*.
+2. Next, select *Generate keys(1)*.
 3. Follow the instructions.
 4. Configure the overlay and authentication hubs:
     1. Copy the key pair to all the host machines.
