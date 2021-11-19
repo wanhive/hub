@@ -325,14 +325,13 @@ void AppManager::printVersion(FILE *stream) noexcept {
 void AppManager::printUsage(FILE *stream) noexcept {
 	fprintf(stream, "Usage: %s [OPTIONS]\n", programName);
 	fprintf(stream, "OPTIONS\n");
-	fprintf(stream,
-			"-c --config <path>      \tPathname of configuration file.\n");
-	fprintf(stream, "-h --help               \tDisplay product information.\n");
-	fprintf(stream, "-m --menu               \tDisplay application menu.\n");
-	fprintf(stream, "-n --name   <identity>  \tSet hub's identity.\n");
-	fprintf(stream, "-S --syslog             \tUse syslog.\n");
-	fprintf(stream, "-t --type   <type>      \tSet hub's type.\n");
-	fprintf(stream, "-v --version            \tDisplay version information.\n");
+	fprintf(stream, "-c --config   <path>      \tConfiguration file's path.\n");
+	fprintf(stream, "-h --help                 \tDisplay usage information.\n");
+	fprintf(stream, "-m --menu                 \tShow the application menu.\n");
+	fprintf(stream, "-n --name     <identity>  \tSet hub's identity.\n");
+	fprintf(stream, "-S --syslog               \tUse syslog.\n");
+	fprintf(stream, "-t --type     <type>      \tSet hub's type.\n");
+	fprintf(stream, "-v --version              \tPrint the version number.\n");
 
 	fprintf(stream, "\n%s requires an external configuration file.\n"
 			"If none is supplied via the command line then the program will\n"
