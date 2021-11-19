@@ -33,7 +33,7 @@ This package includes
 
 Download the source code archive recommended for **production use** from [here](https://www.wanhive.com/solutions.php#hub). This project doesn't distribute precompiled binaries.
 
-Download the source code archives of the official releases from [here](https://github.com/wanhive/hub/releases).
+Download the source code archives of the official releases from [here](https://github.com/wanhive/hub/tags).
 
 ## For development and testing
 
