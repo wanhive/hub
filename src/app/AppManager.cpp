@@ -51,34 +51,6 @@ void AppManager::execute(int argc, char *argv[]) noexcept {
 	}
 }
 
-void AppManager::printHelp(FILE *stream) noexcept {
-	fprintf(stream, "\n%s %s version %s\nCopyright \u00A9 %s %s.\n",
-	WH_PRODUCT_NAME, WH_RELEASE_NAME, WH_RELEASE_VERSION,
-	WH_RELEASE_YEAR, WH_RELEASE_AUTHOR);
-
-	fprintf(stderr, "LICENSE %s\n\n", WH_LICENSE_TEXT);
-
-	fprintf(stream, "Usage: %s [OPTIONS]\n", programName);
-	fprintf(stream, "OPTIONS\n");
-	fprintf(stream,
-			"-c --config <path>      \tPathname of configuration file.\n");
-	fprintf(stream, "-h --help               \tDisplay this information.\n");
-	fprintf(stream,
-			"-m --menu               \tDisplay menu of available options.\n");
-	fprintf(stream, "-n --name   <identity>  \tSet hub's identity.\n");
-	fprintf(stream, "-t --type   <type>      \tSet hub's type.\n");
-
-	fprintf(stream, "\n%s requires an external configuration file.\n"
-			"If none is supplied via the command line then the program will\n"
-			"try to read '%s' from the 'current working directory',\n"
-			"the 'executable directory', %s, or\n"
-			"%s in that order.\n\n", WH_PRODUCT_NAME, Identity::CONF_FILE,
-			Identity::CONF_PATH, Identity::CONF_SYSTEM_PATH);
-
-	fprintf(stream, "\nurl: %s   email: %s\n\n", WH_RELEASE_URL,
-	WH_RELEASE_EMAIL);
-}
-
 int AppManager::parseOptions(int argc, char *argv[]) noexcept {
 	programName = nullptr;
 	menu = false;
@@ -90,11 +62,11 @@ int AppManager::parseOptions(int argc, char *argv[]) noexcept {
 	programName = strrchr(argv[0], Storage::DIR_SEPARATOR);
 	programName = programName ? (programName + 1) : argv[0];
 	//-----------------------------------------------------------------
-	auto shortOptions = "c:hmn:t:";
+	auto shortOptions = "c:hmn:St:v";
 	const struct option longOptions[] = { { "config", 1, nullptr, 'c' }, {
 			"help", 0, nullptr, 'h' }, { "menu", 0, nullptr, 'm' }, { "name", 1,
-			nullptr, 'n' }, { "type", 1, nullptr, 't' }, { nullptr, 0, nullptr,
-			0 } };
+			nullptr, 'n' }, { "syslog", 0, nullptr, 'S' }, { "type", 1, nullptr,
+			't' }, { "version", 0, nullptr, 'v' }, { nullptr, 0, nullptr, 0 } };
 	//-----------------------------------------------------------------
 	int nextOption;
 	do {
@@ -113,9 +85,15 @@ int AppManager::parseOptions(int argc, char *argv[]) noexcept {
 		case 'n':
 			sscanf(optarg, "%llu", &hubId);
 			break;
+		case 'S':
+			Logger::getDefault().setTarget(WH_LOG_SYS);
+			break;
 		case 't':
 			sscanf(optarg, "%c", &hubType);
 			break;
+		case 'v':
+			printVersion(stderr);
+			return 1;
 		case -1:	//We are done
 			break;
 		case '?': //Unknown option
@@ -231,9 +209,9 @@ void AppManager::executeHub() noexcept {
 		 */
 		installSignals();
 		if (hub->execute(nullptr)) {
-			WH_LOG_INFO("Hub was terminated normally");
+			WH_LOG_INFO("Hub was terminated normally.");
 		} else {
-			WH_LOG_ERROR("Hub was terminated due to error");
+			WH_LOG_ERROR("Hub was terminated due to error.");
 		}
 	} catch (const BaseException &e) {
 		WH_LOG_EXCEPTION(e);
@@ -328,6 +306,45 @@ void AppManager::installSignals() {
 
 void AppManager::shutdown(int signum) noexcept {
 	hub->cancel();
+}
+
+void AppManager::printHelp(FILE *stream) noexcept {
+	printVersion(stream);
+	printUsage(stream);
+	printContact(stream);
+}
+
+void AppManager::printVersion(FILE *stream) noexcept {
+	fprintf(stream, "\n%s %s version %s\nCopyright \u00A9 %s %s.\n",
+	WH_PRODUCT_NAME, WH_RELEASE_NAME, WH_RELEASE_VERSION,
+	WH_RELEASE_YEAR, WH_RELEASE_AUTHOR);
+
+	fprintf(stderr, "LICENSE %s\n\n", WH_LICENSE_TEXT);
+}
+
+void AppManager::printUsage(FILE *stream) noexcept {
+	fprintf(stream, "Usage: %s [OPTIONS]\n", programName);
+	fprintf(stream, "OPTIONS\n");
+	fprintf(stream,
+			"-c --config <path>      \tPathname of configuration file.\n");
+	fprintf(stream, "-h --help               \tDisplay product information.\n");
+	fprintf(stream, "-m --menu               \tDisplay application menu.\n");
+	fprintf(stream, "-n --name   <identity>  \tSet hub's identity.\n");
+	fprintf(stream, "-S --syslog             \tUse syslog.\n");
+	fprintf(stream, "-t --type   <type>      \tSet hub's type.\n");
+	fprintf(stream, "-v --version            \tDisplay version information.\n");
+
+	fprintf(stream, "\n%s requires an external configuration file.\n"
+			"If none is supplied via the command line then the program will\n"
+			"try to read '%s' from the 'current working directory',\n"
+			"the 'executable directory', %s, or\n"
+			"%s in that order.\n\n", WH_PRODUCT_NAME, Identity::CONF_FILE,
+			Identity::CONF_PATH, Identity::CONF_SYSTEM_PATH);
+}
+
+void AppManager::printContact(FILE *stream) noexcept {
+	fprintf(stream, "\nurl: %s   email: %s\n\n", WH_RELEASE_URL,
+	WH_RELEASE_EMAIL);
 }
 
 }

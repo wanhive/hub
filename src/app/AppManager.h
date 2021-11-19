@@ -25,7 +25,6 @@ public:
 	~AppManager();
 	static void execute(int argc, char *argv[]) noexcept;
 private:
-	static void printHelp(FILE *stream) noexcept;
 	static int parseOptions(int argc, char *argv[]) noexcept;
 	static void processOptions() noexcept;
 	//-----------------------------------------------------------------
@@ -38,6 +37,11 @@ private:
 	//-----------------------------------------------------------------
 	static void installSignals();
 	static void shutdown(int signum) noexcept;
+	//-----------------------------------------------------------------
+	static void printHelp(FILE *stream) noexcept;
+	static void printVersion(FILE *stream) noexcept;
+	static void printUsage(FILE *stream) noexcept;
+	static void printContact(FILE *stream) noexcept;
 private:
 	static const char *programName;
 	static bool menu;
