@@ -6,6 +6,7 @@ pkgincludedir=@includedir@/@PACKAGE@
 
 Name: @PACKAGE@
 Description: Development files
+URL: @PACKAGE_URL@
 Version: @VERSION@
 Requires.private: openssl >= 1.1.0 sqlite3 >= 3.5.1
 Cflags: -I${includedir}
