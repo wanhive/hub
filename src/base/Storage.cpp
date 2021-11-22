@@ -44,6 +44,16 @@ const char *Storage::NEWLINE = "\n";
 
 FILE* Storage::openStream(const char *path, const char *modes,
 		bool createPath) noexcept {
+	auto cf = false;
+	for (auto x = modes; x && *x; ++x) {
+		auto c = *x;
+		if (c == 'w' || c == 'a') {
+			cf = true;
+			break;
+		}
+	}
+
+	createPath &= cf; //Adjust
 	FILE *f = nullptr;
 	while ((f = fopen(path, modes)) == nullptr) {
 		if (errno == ENOENT && createPath && createDirectoryForFile(path)) {
@@ -71,6 +81,7 @@ int Storage::getDescriptor(FILE *stream) {
 int Storage::open(const char *path, int flags, mode_t mode, bool createPath) {
 	if (path && path[0]) {
 		int fd = -1;
+		createPath &= (flags & O_CREAT); //Adjust
 		while ((fd = ::open(path, flags, mode)) == -1) {
 			if (errno == ENOENT && createPath && createDirectoryForFile(path)) {
 				continue;
