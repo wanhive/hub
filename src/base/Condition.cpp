@@ -24,11 +24,11 @@ Condition::Condition() noexcept {
 }
 
 Condition::~Condition() {
-	if (pthread_cond_destroy(&condition)) {
+	if (pthread_cond_destroy(&condition) != 0) {
 		abort();
 	}
 
-	if (pthread_mutex_destroy(&mutex)) {
+	if (pthread_mutex_destroy(&mutex) != 0) {
 		abort();
 	}
 }
@@ -88,10 +88,12 @@ void Condition::notify() {
 	auto status = pthread_mutex_lock(&mutex);
 	if (status == 0) {
 		flag = true;
-		auto rc = pthread_cond_signal(&condition);
 		pthread_mutex_unlock(&mutex);
+		auto rc = pthread_cond_signal(&condition);
 		if (rc != 0) {
 			throw SystemException(rc);
+		} else {
+			return;
 		}
 	} else {
 		throw SystemException(status);
