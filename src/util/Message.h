@@ -96,7 +96,7 @@ public:
 	 ** updateX: modifies the IO buffer (serialized data)
 	 ** putX: combines setX and updateX in a single call.
 	 *
-	 * NOTE: Functions returning boolean perform sanity test
+	 * NOTE: Functions returning boolean value perform sanity test
 	 * and return true on success, false otherwise.
 	 */
 	uint64_t getLabel() const noexcept;
@@ -207,12 +207,12 @@ public:
 	bool setDouble(unsigned int index, double data) noexcept;
 	bool appendDouble(double data) noexcept;
 
-	bool getBytes(unsigned int index, unsigned char *block,
+	bool getBytes(unsigned int index, unsigned char *data,
 			unsigned int length) const noexcept;
 	const unsigned char* getBytes(unsigned int index) const noexcept;
-	bool setBytes(unsigned int index, const unsigned char *block,
+	bool setBytes(unsigned int index, const unsigned char *data,
 			unsigned int length) noexcept;
-	bool appendBytes(const unsigned char *block, unsigned int length) noexcept;
+	bool appendBytes(const unsigned char *data, unsigned int length) noexcept;
 	//=================================================================
 	/**
 	 * Following two functions pack <header> and data into this Message using

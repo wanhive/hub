@@ -358,8 +358,8 @@ uint64_t Message::getData64(unsigned int index) const noexcept {
 	return data;
 }
 bool Message::getData64(unsigned int index, uint64_t &data) const noexcept {
-	auto offset = HEADER_SIZE + index;
-	if ((offset + sizeof(uint64_t)) <= MTU) {
+	if (index <= (PAYLOAD_SIZE - sizeof(uint64_t))) {
+		auto offset = HEADER_SIZE + index;
 		data = Serializer::unpacku64(buffer.array() + offset);
 		return true;
 	} else {
@@ -367,8 +367,8 @@ bool Message::getData64(unsigned int index, uint64_t &data) const noexcept {
 	}
 }
 bool Message::setData64(unsigned int index, uint64_t data) noexcept {
-	auto offset = HEADER_SIZE + index;
-	if ((offset + sizeof(uint64_t)) <= MTU) {
+	if (index <= (PAYLOAD_SIZE - sizeof(uint64_t))) {
+		auto offset = HEADER_SIZE + index;
 		Serializer::packi64((buffer.array() + offset), data);
 		return true;
 	} else {
@@ -391,8 +391,8 @@ uint32_t Message::getData32(unsigned int index) const noexcept {
 	return data;
 }
 bool Message::getData32(unsigned int index, uint32_t &data) const noexcept {
-	auto offset = HEADER_SIZE + index;
-	if ((offset + sizeof(uint32_t)) <= MTU) {
+	if (index <= (PAYLOAD_SIZE - sizeof(uint32_t))) {
+		auto offset = HEADER_SIZE + index;
 		data = Serializer::unpacku32(buffer.array() + offset);
 		return true;
 	} else {
@@ -400,8 +400,8 @@ bool Message::getData32(unsigned int index, uint32_t &data) const noexcept {
 	}
 }
 bool Message::setData32(unsigned int index, uint32_t data) noexcept {
-	auto offset = HEADER_SIZE + index;
-	if ((offset + sizeof(uint32_t)) <= MTU) {
+	if (index <= (PAYLOAD_SIZE - sizeof(uint32_t))) {
+		auto offset = HEADER_SIZE + index;
 		Serializer::packi32((buffer.array() + offset), data);
 		return true;
 	} else {
@@ -424,8 +424,8 @@ uint16_t Message::getData16(unsigned int index) const noexcept {
 	return data;
 }
 bool Message::getData16(unsigned int index, uint16_t &data) const noexcept {
-	auto offset = HEADER_SIZE + index;
-	if ((offset + sizeof(uint16_t)) <= MTU) {
+	if (index <= (PAYLOAD_SIZE - sizeof(uint16_t))) {
+		auto offset = HEADER_SIZE + index;
 		data = Serializer::unpacku16(buffer.array() + offset);
 		return true;
 	} else {
@@ -433,8 +433,8 @@ bool Message::getData16(unsigned int index, uint16_t &data) const noexcept {
 	}
 }
 bool Message::setData16(unsigned int index, uint16_t data) noexcept {
-	auto offset = HEADER_SIZE + index;
-	if ((offset + sizeof(uint16_t)) <= MTU) {
+	if (index <= (PAYLOAD_SIZE - sizeof(uint16_t))) {
+		auto offset = HEADER_SIZE + index;
 		Serializer::packi16((buffer.array() + offset), data);
 		return true;
 	} else {
@@ -457,8 +457,8 @@ uint8_t Message::getData8(unsigned int index) const noexcept {
 	return data;
 }
 bool Message::getData8(unsigned int index, uint8_t &data) const noexcept {
-	auto offset = HEADER_SIZE + index;
-	if ((offset + sizeof(uint8_t)) <= MTU) {
+	if (index <= (PAYLOAD_SIZE - sizeof(uint8_t))) {
+		auto offset = HEADER_SIZE + index;
 		data = Serializer::unpacku8(buffer.array() + offset);
 		return true;
 	} else {
@@ -466,8 +466,8 @@ bool Message::getData8(unsigned int index, uint8_t &data) const noexcept {
 	}
 }
 bool Message::setData8(unsigned int index, uint8_t data) noexcept {
-	auto offset = HEADER_SIZE + index;
-	if ((offset + sizeof(uint8_t)) <= MTU) {
+	if (index <= (PAYLOAD_SIZE - sizeof(uint8_t))) {
+		auto offset = HEADER_SIZE + index;
 		Serializer::packi8((buffer.array() + offset), data);
 		return true;
 	} else {
@@ -490,8 +490,8 @@ double Message::getDouble(unsigned int index) const noexcept {
 	return data;
 }
 bool Message::getDouble(unsigned int index, double &data) const noexcept {
-	auto offset = HEADER_SIZE + index;
-	if ((offset + sizeof(uint64_t)) <= MTU) {
+	if (index <= (PAYLOAD_SIZE - sizeof(uint64_t))) {
+		auto offset = HEADER_SIZE + index;
 		data = Serializer::unpackf64(buffer.array() + offset);
 		return true;
 	} else {
@@ -499,8 +499,8 @@ bool Message::getDouble(unsigned int index, double &data) const noexcept {
 	}
 }
 bool Message::setDouble(unsigned int index, double data) noexcept {
-	auto offset = HEADER_SIZE + index;
-	if ((offset + sizeof(uint64_t)) <= MTU) {
+	if (index <= (PAYLOAD_SIZE - sizeof(uint64_t))) {
+		auto offset = HEADER_SIZE + index;
 		Serializer::packf64((buffer.array() + offset), data);
 		return true;
 	} else {
@@ -517,39 +517,48 @@ bool Message::appendDouble(double data) noexcept {
 	}
 }
 
-bool Message::getBytes(unsigned int index, unsigned char *block,
+bool Message::getBytes(unsigned int index, unsigned char *data,
 		unsigned int length) const noexcept {
-	auto offset = HEADER_SIZE + index;
-	if (block && (offset + length) <= MTU) {
-		Serializer::unpackib(block, (buffer.array() + offset), length);
+	if (length && data && (length <= PAYLOAD_SIZE)
+			&& (index <= (PAYLOAD_SIZE - length))) {
+		auto offset = HEADER_SIZE + index;
+		Serializer::unpackib(data, (buffer.array() + offset), length);
+		return true;
+	} else if (!length) {
 		return true;
 	} else {
 		return false;
 	}
 }
 const unsigned char* Message::getBytes(unsigned int index) const noexcept {
-	auto offset = HEADER_SIZE + index;
-	if (offset < MTU) {
+	if (index < PAYLOAD_SIZE) {
+		auto offset = HEADER_SIZE + index;
 		return buffer.array() + offset;
 	} else {
 		return nullptr;
 	}
 }
-bool Message::setBytes(unsigned int index, const unsigned char *block,
+bool Message::setBytes(unsigned int index, const unsigned char *data,
 		unsigned int length) noexcept {
-	auto offset = HEADER_SIZE + index;
-	if ((offset + length) <= MTU) {
-		Serializer::packib((buffer.array() + offset), block, length);
+	if (length && data && (length <= PAYLOAD_SIZE)
+			&& (index <= (PAYLOAD_SIZE - length))) {
+		auto offset = HEADER_SIZE + index;
+		Serializer::packib((buffer.array() + offset), data, length);
+		return true;
+	} else if (!length) {
 		return true;
 	} else {
 		return false;
 	}
 }
-bool Message::appendBytes(const unsigned char *block,
+bool Message::appendBytes(const unsigned char *data,
 		unsigned int length) noexcept {
 	auto offset = getLength();
-	if (putLength(offset + length)) {
-		Serializer::packib((buffer.array() + offset), block, length);
+	if (length && data && (length <= PAYLOAD_SIZE)
+			&& putLength(offset + length)) {
+		Serializer::packib((buffer.array() + offset), data, length);
+		return true;
+	} else if (!length) {
 		return true;
 	} else {
 		return false;
