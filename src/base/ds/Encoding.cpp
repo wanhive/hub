@@ -623,22 +623,21 @@ void Encoding::printConversionTable(EncodingBase base) noexcept {
 
 void Encoding::test() noexcept {
 	unsigned char u[128];
-	char s[sizeof(testVectors) / sizeof(const char*)][128];
-	unsigned int length = 0;
+	char s[128];
 	printf("\nBASE64 test\n");
 	printf("-----------\n");
 	for (unsigned int i = 0; testVectors[i]; ++i) {
 		memset(u, 0, sizeof(u));
-		auto slen = strlen(testVectors[i]);
-		length = base64Encode(s[i], testVectors[i], slen, 128);
-		printf("ENC(\"%s\")= \"%s\" [%u]\n", testVectors[i], s[i], length);
-		if (!validate64(s[i], length)
-				|| encodedLength64(slen) != (length + 1)) {
+		memset(s, 0, sizeof(s));
+		auto vlen = strlen(testVectors[i]);
+		auto len = base64Encode(s, testVectors[i], vlen, 128);
+		printf("ENC(\"%s\") = \"%s\" [%u]\n", testVectors[i], s, len);
+		if (!validate64(s, len) || encodedLength64(vlen) != (len + 1)) {
 			printf("Encoding error\n");
 		}
-		length = base64Decode(u, s[i], strlen(s[i]), 128);
-		printf("DEC(\"%s\")= \"%s\" [%u]\n", s[i], u, length);
-		if (length != (slen) || memcmp(testVectors[i], u, length)) {
+		len = base64Decode(u, s, len, 128);
+		printf("DEC(\"%s\") = \"%s\" [%u]\n", s, u, len);
+		if ((len != vlen) || memcmp(testVectors[i], u, len)) {
 			printf("Decoding error\n");
 		}
 	}
@@ -647,16 +646,16 @@ void Encoding::test() noexcept {
 	printf("-----------\n");
 	for (unsigned int i = 0; testVectors[i]; ++i) {
 		memset(u, 0, sizeof(u));
-		auto slen = strlen(testVectors[i]);
-		length = base32Encode(s[i], testVectors[i], slen, 128);
-		printf("ENC(\"%s\")= \"%s\" [%u]\n", testVectors[i], s[i], length);
-		if (!validate32(s[i], length)
-				|| encodedLength32(slen) != (length + 1)) {
+		memset(s, 0, sizeof(s));
+		auto vlen = strlen(testVectors[i]);
+		auto len = base32Encode(s, testVectors[i], vlen, 128);
+		printf("ENC(\"%s\") = \"%s\" [%u]\n", testVectors[i], s, len);
+		if (!validate32(s, len) || encodedLength32(vlen) != (len + 1)) {
 			printf("Encoding error\n");
 		}
-		length = base32Decode(u, s[i], strlen(s[i]), 128);
-		printf("DEC(\"%s\")= \"%s\" [%u]\n", s[i], u, length);
-		if (length != (slen) || memcmp(testVectors[i], u, length)) {
+		len = base32Decode(u, s, len, 128);
+		printf("DEC(\"%s\") = \"%s\" [%u]\n", s, u, len);
+		if ((len != vlen) || memcmp(testVectors[i], u, len)) {
 			printf("Decoding error\n");
 		}
 	}
@@ -665,16 +664,16 @@ void Encoding::test() noexcept {
 	printf("-----------\n");
 	for (unsigned int i = 0; testVectors[i]; ++i) {
 		memset(u, 0, sizeof(u));
-		auto slen = strlen(testVectors[i]);
-		length = base16Encode(s[i], testVectors[i], slen, 128);
-		printf("ENC(\"%s\")= \"%s\" [%u]\n", testVectors[i], s[i], length);
-		if (!validate16(s[i], length)
-				|| encodedLength16(slen) != (length + 1)) {
+		memset(s, 0, sizeof(s));
+		auto vlen = strlen(testVectors[i]);
+		auto len = base16Encode(s, testVectors[i], vlen, 128);
+		printf("ENC(\"%s\") = \"%s\" [%u]\n", testVectors[i], s, len);
+		if (!validate16(s, len) || encodedLength16(vlen) != (len + 1)) {
 			printf("Encoding error\n");
 		}
-		length = base16Decode(u, s[i], strlen(s[i]), 128);
-		printf("DEC(\"%s\")= \"%s\" [%u]\n", s[i], u, length);
-		if (length != (slen) || memcmp(testVectors[i], u, length)) {
+		len = base16Decode(u, s, len, 128);
+		printf("DEC(\"%s\") = \"%s\" [%u]\n", s, u, len);
+		if ((len != vlen) || memcmp(testVectors[i], u, len)) {
 			printf("Decoding error\n");
 		}
 	}
