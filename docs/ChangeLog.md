@@ -9,8 +9,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-- Command-line option to enable message logging to **Syslog**.
+- Command-line option for message logging to the **Syslog**.
 - Man page **wanhive(1)**.
+
+### Changed
+
+- Improve sanity checks in the payload data handler methods of the **Message** class.
 
 ## [5.0.0] - 2021-11-18
 
