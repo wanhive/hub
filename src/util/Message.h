@@ -184,10 +184,10 @@ public:
 	 * returning boolean return true on success, false otherwise.
 	 *
 	 ** setDataxx/setDouble/setBytes: inserts data into the payload at the
-	 ** given ndex. Doesn't modify the message length. Returns true on success,
+	 ** given index. Doesn't modify the message length. Returns true on success,
 	 * false otherwise.
 	 *
-	 ** appendDataxx/appendDouble/appendBytes: appends the data at the end of
+	 ** appendDataxx/appendDouble/appendBytes: appends data at the end of
 	 * the payload and updates the message length accordingly. Returns true
 	 * on success, false otherwise.
 	 *

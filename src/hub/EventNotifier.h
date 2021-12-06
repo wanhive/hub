@@ -16,8 +16,8 @@
 
 namespace wanhive {
 /**
- * Abstraction of linux's eventfd(2) that can be used as an
- * event wait/notify mechanism
+ * Abstraction of linux's event wait/notify mechanism
+ * REF: eventfd(2)
  */
 class EventNotifier: public Watcher {
 public:
@@ -41,15 +41,15 @@ public:
 	ssize_t read();
 	/*
 	 * Returns the number of bytes written, possibly zero (buffer full or
-	 * would block). Clears out the write IO event reported on this notifier
-	 * if the write call would block.
+	 * would block). Clears out the write IO event reported on this watcher
+	 * if the call would block.
 	 */
 	ssize_t write(unsigned long long events);
 	//-----------------------------------------------------------------
 	//Returns the number of events
 	unsigned long long getCount() const noexcept;
 private:
-	unsigned long long count;//Number of events reported by the most recent <read> op
+	unsigned long long count;	//Events count
 };
 
 } /* namespace wanhive */
