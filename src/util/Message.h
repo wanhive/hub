@@ -70,22 +70,32 @@ public:
 	uint64_t getOrigin() const noexcept;
 	//=================================================================
 	/**
-	 * For efficient IO operations
+	 * For efficient IO operations:
 	 * Some of these methods may violate encapsulation.
+	 * Application developers should not bother about these methods.
 	 */
 	//Returns reference to the routing header
-	MessageHeader& getHeader() noexcept;
+	[[deprecated("Use Message::header().")]] MessageHeader& getHeader() noexcept;
 	//Returns const reference to the routing header
-	const MessageHeader& getHeader() const noexcept;
+	[[deprecated("Use Message::header().")]] const MessageHeader& getHeader() const noexcept;
 	//Returns the message buffer offset correctly for data processing
-	unsigned char* getStorage() noexcept;
+	[[deprecated("Use Message::buffer().")]] unsigned char* getStorage() noexcept;
 	//Returns the message buffer offset correctly for data analysis
-	const unsigned char* getStorage() const noexcept;
+	[[deprecated("Use Message::buffer().")]] const unsigned char* getStorage() const noexcept;
+
+	//Returns reference to the routing header
+	MessageHeader& header() noexcept;
+	//Returns const reference to the routing header
+	const MessageHeader& header() const noexcept;
+	//Returns a pointer to the message buffer (with correct offset)
+	unsigned char* buffer() noexcept;
+	//Returns a const pointer to the message buffer (with correct offset)
+	const unsigned char* buffer() const noexcept;
 	//Returns the number of bytes waiting for transfer to a data sink
 	unsigned int remaining() const noexcept;
 	//Builds the routing header and readies the object for payload transfer
 	void prepareHeader() noexcept;
-	//Finalizes the object after completion of data transfer
+	//Finalizes the object after the completion of payload transfer
 	void prepareData() noexcept;
 	//=================================================================
 	/**
@@ -268,8 +278,8 @@ private:
 	unsigned int ttl; //TTL up-counter
 
 	const uint64_t origin; //The local source
-	MessageHeader header; //The routing header
-	StaticBuffer<unsigned char, MTU> buffer; //The raw bytes
+	MessageHeader _header; //The routing header
+	StaticBuffer<unsigned char, MTU> _buffer; //The raw bytes
 
 	static MemoryPool pool;
 };

@@ -547,7 +547,7 @@ bool Endpoint::sign(unsigned char *out, unsigned int &length,
 bool Endpoint::sign(Message *msg, const PKI *pki) noexcept {
 	if (msg && msg->validate()) {
 		unsigned int length = msg->getLength();
-		auto ret = sign(msg->getStorage(), length, pki);
+		auto ret = sign(msg->buffer(), length, pki);
 		//Update the message length
 		msg->putLength(length);
 		return ret;
@@ -576,7 +576,7 @@ bool Endpoint::verify(const unsigned char *in, unsigned int length,
 
 bool Endpoint::verify(const Message *msg, const PKI *pki) noexcept {
 	return msg && msg->validate()
-			&& verify(msg->getStorage(), msg->getLength(), pki);
+			&& verify(msg->buffer(), msg->getLength(), pki);
 }
 
 bool Endpoint::executeRequest(int sfd, MessageHeader &header,

@@ -286,11 +286,11 @@ Message* Protocol::createIdentificationRequest(uint64_t host, uint64_t uid,
 	if (!msg) {
 		return nullptr;
 	} else if (!createIdentificationRequest(host, uid, sequenceNumber, nonce,
-			nonceLength, msg->getHeader(), msg->getStorage())) {
+			nonceLength, msg->header(), msg->buffer())) {
 		Message::recycle(msg);
 		return nullptr;
 	} else {
-		msg->updateLength(msg->getHeader().getLength());
+		msg->updateLength(msg->header().getLength());
 		return msg;
 	}
 }
@@ -331,8 +331,8 @@ unsigned int Protocol::processIdentificationResponse(const Message *msg,
 	if (!msg || !msg->validate()) {
 		return 0;
 	} else {
-		return processIdentificationResponse(msg->getHeader(),
-				msg->getStorage(), saltLength, salt, nonceLength, nonce);
+		return processIdentificationResponse(msg->header(), msg->buffer(),
+				saltLength, salt, nonceLength, nonce);
 	}
 }
 
@@ -360,11 +360,11 @@ Message* Protocol::createAuthenticationRequest(uint64_t host,
 	if (!msg) {
 		return nullptr;
 	} else if (!createAuthenticationRequest(host, sequenceNumber, proof, length,
-			msg->getHeader(), msg->getStorage())) {
+			msg->header(), msg->buffer())) {
 		Message::recycle(msg);
 		return nullptr;
 	} else {
-		msg->updateLength(msg->getHeader().getLength());
+		msg->updateLength(msg->header().getLength());
 		return msg;
 	}
 }
@@ -390,8 +390,8 @@ unsigned int Protocol::processAuthenticationResponse(const Message *msg,
 	if (!msg || !msg->validate()) {
 		return 0;
 	} else {
-		return processAuthenticationResponse(msg->getHeader(),
-				msg->getStorage(), length, proof);
+		return processAuthenticationResponse(msg->header(), msg->buffer(),
+				length, proof);
 	}
 }
 
@@ -423,8 +423,8 @@ Message* Protocol::createRegisterRequest(uint64_t host, uint64_t uid,
 	}
 
 	if (msg) {
-		MessageHeader &header = msg->getHeader();
-		createRegisterRequest(host, uid, 0, hc, header, msg->getStorage());
+		MessageHeader &header = msg->header();
+		createRegisterRequest(host, uid, 0, hc, header, msg->buffer());
 		msg->updateLength(header.getLength());
 	}
 	return msg;
@@ -466,8 +466,8 @@ Message* Protocol::createGetKeyRequest(uint64_t host, const TransactionKey &tk,
 	}
 
 	if (msg) {
-		MessageHeader &header = msg->getHeader();
-		createGetKeyRequest(host, 0, tk, header, msg->getStorage());
+		MessageHeader &header = msg->header();
+		createGetKeyRequest(host, 0, tk, header, msg->buffer());
 		msg->updateLength(header.getLength());
 	}
 	return msg;
@@ -497,7 +497,7 @@ unsigned int Protocol::processGetKeyResponse(const Message *msg,
 	if (!msg || !msg->validate() || !hc) {
 		return 0;
 	} else {
-		return processGetKeyResponse(msg->getHeader(), msg->getStorage(), hc);
+		return processGetKeyResponse(msg->header(), msg->buffer(), hc);
 	}
 }
 
@@ -522,11 +522,11 @@ Message* Protocol::createFindRootRequest(uint64_t host, uint64_t uid,
 	if (!msg) {
 		return nullptr;
 	} else if (!createFindRootRequest(host, uid, identity, sequenceNumber,
-			msg->getHeader(), msg->getStorage())) {
+			msg->header(), msg->buffer())) {
 		Message::recycle(msg);
 		return nullptr;
 	} else {
-		msg->updateLength(msg->getHeader().getLength());
+		msg->updateLength(msg->header().getLength());
 		return msg;
 	}
 }
@@ -559,8 +559,8 @@ unsigned int Protocol::processFindRootResponse(const Message *msg,
 	if (!msg || !msg->validate()) {
 		return 0;
 	} else {
-		return processFindRootResponse(msg->getHeader(), msg->getStorage(),
-				identity, root);
+		return processFindRootResponse(msg->header(), msg->buffer(), identity,
+				root);
 	}
 }
 

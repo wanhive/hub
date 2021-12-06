@@ -200,7 +200,7 @@ Message* Socket::getMessage() {
 	switch (incomingMessage->getFlags()) {
 	case MSG_WAIT_HEADER:
 		if (in.readSpace() >= Message::HEADER_SIZE) {
-			in.read(incomingMessage->getStorage(), Message::HEADER_SIZE);
+			in.read(incomingMessage->buffer(), Message::HEADER_SIZE);
 			incomingMessage->prepareHeader();
 			incomingMessage->putFlags(MSG_WAIT_DATA);
 		} else {
@@ -212,7 +212,7 @@ Message* Socket::getMessage() {
 			if (in.readSpace() < incomingMessage->getPayloadLength()) {
 				return nullptr;
 			} else {
-				in.read(incomingMessage->getStorage(),
+				in.read(incomingMessage->buffer(),
 						incomingMessage->getPayloadLength());
 				incomingMessage->prepareData();
 				incomingMessage->putFlags(MSG_WAIT_PROCESSING);
@@ -500,8 +500,7 @@ unsigned int Socket::fillOutgoingQueue() noexcept {
 				for (unsigned int j = 0;
 						((j < vector.part[i].length) && (iovCount < space));
 						++j) {
-					vec[iovCount].iov_base =
-							vector.part[i].base[j]->getStorage();
+					vec[iovCount].iov_base = vector.part[i].base[j]->buffer();
 					vec[iovCount].iov_len = vector.part[i].base[j]->remaining();
 					iovCount++;
 				}
