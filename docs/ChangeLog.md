@@ -14,7 +14,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
-- Improve sanity checks in the payload data handler methods of the **Message** class.
+- Deprecate **Message::getHeader** and **Message::getStorage** methods.
+- Improve sanity checks in the **Message** class.
 
 ## [5.0.0] - 2021-11-18
 
