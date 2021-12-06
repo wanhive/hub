@@ -46,38 +46,38 @@ void MessageHeader::setLabel(uint64_t label) noexcept {
 }
 
 uint64_t MessageHeader::getSource() const noexcept {
-	return header.source;
+	return header.addr.source;
 }
 void MessageHeader::setSource(uint64_t source) noexcept {
-	header.source = source;
+	header.addr.source = source;
 }
 
 uint64_t MessageHeader::getDestination() const noexcept {
-	return header.destination;
+	return header.addr.destination;
 }
 void MessageHeader::setDestination(uint64_t destination) noexcept {
-	header.destination = destination;
+	header.addr.destination = destination;
 }
 
 uint16_t MessageHeader::getLength() const noexcept {
-	return header.length;
+	return header.ctrl.length;
 }
 void MessageHeader::setLength(uint16_t length) noexcept {
-	header.length = length;
+	header.ctrl.length = length;
 }
 
 uint16_t MessageHeader::getSequenceNumber() const noexcept {
-	return header.sequenceNumber;
+	return header.ctrl.sequenceNumber;
 }
 void MessageHeader::setSequenceNumber(uint16_t sequenceNumber) noexcept {
-	header.sequenceNumber = sequenceNumber;
+	header.ctrl.sequenceNumber = sequenceNumber;
 }
 
 uint8_t MessageHeader::getSession() const noexcept {
-	return header.session;
+	return header.ctrl.session;
 }
 void MessageHeader::setSession(uint8_t session) noexcept {
-	header.session = session;
+	header.ctrl.session = session;
 }
 
 uint8_t MessageHeader::getCommand() const noexcept {
@@ -104,53 +104,60 @@ void MessageHeader::setStatus(uint8_t status) noexcept {
 void MessageHeader::load(uint64_t source, uint64_t destination, uint16_t length,
 		uint16_t sequenceNumber, uint8_t session, uint8_t command,
 		uint8_t qualifier, uint8_t status, uint64_t label) noexcept {
-	header.label = label;
-	header.source = source;
-	header.destination = destination;
-	header.length = length;
-	header.sequenceNumber = sequenceNumber;
-	header.session = session;
-	header.ctx.command = command;
-	header.ctx.qualifier = qualifier;
-	header.ctx.status = status;
+	setLabel(label);
+	//Address fields
+	setSource(source);
+	setDestination(destination);
+	//Control fields
+	setLength(length);
+	setSequenceNumber(sequenceNumber);
+	setSession(session);
+	//Context fields
+	setCommand(command);
+	setQualifier(qualifier);
+	setStatus(status);
 }
 
 unsigned int MessageHeader::deserialize(const unsigned char *buffer) noexcept {
-	header.label = getLabel(buffer);
-	header.source = getSource(buffer);
-	header.destination = getDestination(buffer);
+	setLabel(getLabel(buffer));
+	//Address fields
+	setSource(getSource(buffer));
+	setDestination(getDestination(buffer));
+	//Control fields
+	setLength(getLength(buffer));
+	setSequenceNumber(getSequenceNumber(buffer));
+	setSession(getSession(buffer));
+	//Context fields
+	setCommand(getCommand(buffer));
+	setQualifier(getQualifier(buffer));
+	setStatus(getStatus(buffer));
 
-	header.length = getLength(buffer);
-	header.sequenceNumber = getSequenceNumber(buffer);
-	header.session = getSession(buffer);
-
-	header.ctx.command = getCommand(buffer);
-	header.ctx.qualifier = getQualifier(buffer);
-	header.ctx.status = getStatus(buffer);
 	return SIZE;
 }
 
 unsigned int MessageHeader::serialize(unsigned char *buffer) const noexcept {
-	setLabel(buffer, header.label);
-	setSource(buffer, header.source);
-	setDestination(buffer, header.destination);
+	setLabel(buffer, getLabel());
+	//Address fields
+	setSource(buffer, getSource());
+	setDestination(buffer, getDestination());
+	//Control fields
+	setLength(buffer, getLength());
+	setSequenceNumber(buffer, getSequenceNumber());
+	setSession(buffer, getSession());
+	//Context fields
+	setCommand(buffer, getCommand());
+	setQualifier(buffer, getQualifier());
+	setStatus(buffer, getStatus());
 
-	setLength(buffer, header.length);
-	setSequenceNumber(buffer, header.sequenceNumber);
-	setSession(buffer, header.session);
-
-	setCommand(buffer, header.ctx.command);
-	setQualifier(buffer, header.ctx.qualifier);
-	setStatus(buffer, header.ctx.status);
 	return SIZE;
 }
 
 void MessageHeader::print() const noexcept {
 	fprintf(stderr,
 			"LABEL:%#" PRIx64 " SRC:%" PRIu64 " DEST:%" PRIu64 " LENGTH:%u SEQN:%u SESSION:%u CMD:%u QLF:%u STATUS:%u\n",
-			header.label, header.source, header.destination, header.length,
-			header.sequenceNumber, header.session, header.ctx.command,
-			header.ctx.qualifier, header.ctx.status);
+			getLabel(), getSource(), getDestination(), getLength(),
+			getSequenceNumber(), getSession(), getCommand(), getQualifier(),
+			getStatus());
 }
 
 uint64_t MessageHeader::getLabel(const unsigned char *buffer) noexcept {
@@ -225,16 +232,18 @@ unsigned int MessageHeader::serialize(unsigned char *buffer, uint64_t source,
 		uint8_t session, uint8_t command, uint8_t qualifier, uint8_t status,
 		uint64_t label) noexcept {
 	setLabel(buffer, label);
+	//Address fields
 	setSource(buffer, source);
 	setDestination(buffer, destination);
-
+	//Control fields
 	setLength(buffer, length);
 	setSequenceNumber(buffer, sequenceNumber);
 	setSession(buffer, session);
-
+	//Context fields
 	setCommand(buffer, command);
 	setQualifier(buffer, qualifier);
 	setStatus(buffer, status);
+
 	return SIZE;
 }
 

@@ -17,7 +17,23 @@
 namespace wanhive {
 //-----------------------------------------------------------------
 /*
- * Message's context: {COMMAND, QUALIFIER, STATUS}
+ * Message's addresses: {source, destination}
+ */
+struct MessageAddress {
+	uint64_t source; //Source identifier
+	uint64_t destination; //Destination identifier
+};
+
+/*
+ * Message's flow control: {length, sequence, session}
+ */
+struct MessageControl {
+	uint16_t length; //Length in bytes
+	uint16_t sequenceNumber; //Sequence number
+	uint8_t session; //Communication channel
+};
+/*
+ * Message's context: {command, qualifier, status}
  */
 struct MessageContext {
 	uint8_t command; //Command
@@ -26,8 +42,8 @@ struct MessageContext {
 };
 //-----------------------------------------------------------------
 /**
- * Wanhive's fixed size message header
- * Message structure: [{FIXED HEADER}{VARIABLE LENGTH PAYLOAD}]
+ * Wanhive's fixed length message header
+ * Message structure: [{FIXED LENGTH HEADER}{VARIABLE LENGTH PAYLOAD}]
  */
 class MessageHeader {
 public:
@@ -128,12 +144,9 @@ public:
 private:
 	struct {
 		uint64_t label; //Application dependent
-		uint64_t source; //Source of this message
-		uint64_t destination; //Destination of this message
-		uint16_t length; //Length of this message
-		uint16_t sequenceNumber; //Sequence number
-		uint8_t session; //Communication channel
-		MessageContext ctx; //The context
+		MessageAddress addr; //Address fields
+		MessageControl ctrl; //Control fields
+		MessageContext ctx; //Context fields
 	} header;
 };
 
