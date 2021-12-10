@@ -95,10 +95,10 @@ int AuthenticationHub::handleIdentificationRequest(Message *message) noexcept {
 	 * BODY: variable in Request and Response
 	 * TOTAL: at least 32 bytes in Request and Response
 	 */
-	auto source = message->getOrigin();
+	auto origin = message->getOrigin();
 	auto nonceLength = message->getPayloadLength();
 	//-----------------------------------------------------------------
-	if (!nonceLength || session.contains(source)) {
+	if (!nonceLength || session.contains(origin)) {
 		return handleInvalidRequest(message);
 	}
 	//-----------------------------------------------------------------
@@ -108,7 +108,7 @@ int AuthenticationHub::handleIdentificationRequest(Message *message) noexcept {
 	bool success = !isBanned(identity) && (authenticator =
 			new (std::nothrow) Authenticator(true))
 			&& loadIdentity(authenticator, identity, nonce, nonceLength)
-			&& session.hmPut(source, authenticator);
+			&& session.hmPut(origin, authenticator);
 	//-----------------------------------------------------------------
 	if (success) {
 		unsigned int saltLength = 0;
@@ -123,7 +123,7 @@ int AuthenticationHub::handleIdentificationRequest(Message *message) noexcept {
 	} else {
 		//Free up the memory and stop the <source> from making further requests
 		delete authenticator;
-		session.hmPut(source, nullptr);
+		session.hmPut(origin, nullptr);
 
 		if (ctx.salt && ctx.saltLength) {
 			/*
@@ -153,10 +153,10 @@ int AuthenticationHub::handleAuthenticationRequest(Message *message) noexcept {
 	 * BODY: variable in Request and Response
 	 * TOTAL: at least 32 bytes in Request and Response
 	 */
-	auto source = message->getOrigin();
+	auto origin = message->getOrigin();
 	Authenticator *authenticator = nullptr;
 	//-----------------------------------------------------------------
-	if (!session.hmGet(source, authenticator) || !authenticator) {
+	if (!session.hmGet(origin, authenticator) || !authenticator) {
 		return handleInvalidRequest(message);
 	}
 	//-----------------------------------------------------------------
@@ -177,15 +177,15 @@ int AuthenticationHub::handleAuthenticationRequest(Message *message) noexcept {
 	} else {
 		//Free up the memory and stop the <source> from making further requests
 		delete authenticator;
-		session.hmReplace(source, nullptr, authenticator);
+		session.hmReplace(origin, nullptr, authenticator);
 		return handleInvalidRequest(message);
 	}
 }
 
 int AuthenticationHub::handleAuthorizationRequest(Message *message) noexcept {
-	auto source = message->getOrigin();
+	auto origin = message->getOrigin();
 	Authenticator *authenticator = nullptr;
-	session.hmGet(source, authenticator);
+	session.hmGet(origin, authenticator);
 
 	if (!authenticator || !authenticator->isAuthenticated()) {
 		return handleInvalidRequest(message);

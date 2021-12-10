@@ -1530,13 +1530,12 @@ unsigned long long OverlayHub::nonceToId(const Digest *nonce) const noexcept {
 }
 
 void OverlayHub::buildResponseHeader(Message *msg, unsigned int length) noexcept {
-	//Get the UID of the connection object from which this message was received
-	auto origin = msg->getOrigin();
-	auto source = msg->getSource();
+	auto origin = msg->getOrigin(); //Actual source
+	auto source = msg->getSource(); //Declared source
 	//-----------------------------------------------------------------
 	//Update the routing information
-	msg->setDestination(origin);
-	msg->updateDestination(source);
+	msg->setDestination(origin); //Forward
+	msg->updateDestination(source); //Destination
 
 	msg->putSource(getUid());
 
@@ -1585,7 +1584,7 @@ bool OverlayHub::isExternalNode(unsigned long long uid) noexcept {
 
 unsigned int OverlayHub::mapKey(unsigned long long key) noexcept {
 	if (key > (MAX_ID + MAX_NODES)) {
-		//Mix a little bit to take the higher bits into account
+		//Take the higher bits into account
 		return static_cast<unsigned int>(Twiddler::mix(key) & MAX_ID);
 	} else {
 		return static_cast<unsigned int>(key & MAX_ID);

@@ -66,8 +66,10 @@ void Descriptor::setBlocking(bool block) {
 }
 
 void Descriptor::setHandle(int fd) noexcept {
-	closeHandle();
-	this->fd = fd;
+	if (fd != this->fd) {
+		closeHandle();
+		this->fd = fd;
+	}
 }
 
 int Descriptor::releaseHandle() noexcept {
@@ -77,7 +79,7 @@ int Descriptor::releaseHandle() noexcept {
 }
 
 void Descriptor::closeHandle() noexcept {
-	if (fd != -1) {
+	if (fd >= 0) {
 		::close(fd);
 	}
 	fd = -1;
