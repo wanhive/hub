@@ -12,6 +12,7 @@
 
 #include "Signal.h"
 #include "SystemException.h"
+#include "common/Exception.h"
 #include <cerrno>
 #include <cstring>
 #include <unistd.h>
@@ -132,35 +133,55 @@ void Signal::dummyHandler(int signum) noexcept {
 }
 
 void Signal::empty(sigset_t *set) {
-	if (sigemptyset(set) == -1) {
+	if (!set) {
+		throw Exception(EX_INVALIDPARAM);
+	} else if (sigemptyset(set) == -1) {
 		throw SystemException();
+	} else {
+		return;
 	}
 }
 
 void Signal::fill(sigset_t *set) {
-	if (sigfillset(set) == -1) {
+	if (!set) {
+		throw Exception(EX_INVALIDPARAM);
+	} else if (sigfillset(set) == -1) {
 		throw SystemException();
+	} else {
+		return;
 	}
 }
 
 void Signal::add(sigset_t *set, int signum) {
-	if (sigaddset(set, signum) == -1) {
+	if (!set) {
+		throw Exception(EX_INVALIDPARAM);
+	} else if (sigaddset(set, signum) == -1) {
 		throw SystemException();
+	} else {
+		return;
 	}
 }
 
 void Signal::remove(sigset_t *set, int signum) {
-	if (sigdelset(set, signum) == -1) {
+	if (!set) {
+		throw Exception(EX_INVALIDPARAM);
+	} else if (sigdelset(set, signum) == -1) {
 		throw SystemException();
+	} else {
+		return;
 	}
 }
 
 bool Signal::isMember(const sigset_t *set, int signum) {
-	auto ret = sigismember(set, signum);
-	if (ret != -1) {
-		return (bool) ret;
+	if (!set) {
+		throw Exception(EX_INVALIDPARAM);
 	} else {
-		throw SystemException();
+		auto ret = sigismember(set, signum);
+		if (ret != -1) {
+			return (bool) ret;
+		} else {
+			throw SystemException();
+		}
 	}
 }
 
