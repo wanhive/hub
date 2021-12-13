@@ -58,7 +58,7 @@ public:
 	//Recycles a Message (nullptr results in noop)
 	static void recycle(Message *p) noexcept;
 
-	//Resets the message (mark, reference-count and ttl are preserved)
+	//Resets the message (origin, mark, reference-count and ttl are preserved)
 	void clear() noexcept;
 	//Returns true if the message is internally consistent
 	bool validate() const noexcept;
