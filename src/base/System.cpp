@@ -33,7 +33,11 @@ char* System::currentWorkingDirectory(char *buffer, size_t length) {
 }
 
 const char* System::getEnvironment(const char *name) noexcept {
-	return ::getenv(name);
+	if (!name) {
+		return nullptr;
+	} else {
+		return ::getenv(name);
+	}
 }
 
 } /* namespace wanhive */

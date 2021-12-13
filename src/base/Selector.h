@@ -82,11 +82,11 @@ public:
 	bool interrupted() const noexcept;
 	//Returns true if Selector::select got timed out
 	bool timedOut() const noexcept;
-	//Returns data associated with the next ready file descriptor
+	//Returns information about the next ready file descriptor
 	SelectionEvent* next() noexcept;
 	//Returns the handle associated with a ready file descriptor
 	static void* attachment(const SelectionEvent *se) noexcept;
-	//Returns the IO events reported on the associated file descriptor
+	//Returns the IO events reported on a file descriptor
 	static uint32_t events(const SelectionEvent *se) noexcept;
 private:
 	void create();

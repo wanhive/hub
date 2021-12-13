@@ -175,6 +175,10 @@ void Storage::fill(int fd, size_t size, unsigned char c) {
 }
 
 ssize_t Storage::readLink(const char *pathname, char *buf, size_t len) {
+	if (!pathname || !buf) {
+		throw Exception(EX_INVALIDPARAM);
+	}
+
 	//Read at-most len-1 bytes (readlink doesn't append nul terminator)
 	auto ret = readlink(pathname, buf, len - 1);
 	if (ret != -1) {

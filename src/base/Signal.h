@@ -30,12 +30,12 @@ public:
 	static void blockAll();
 	//Unblock all signals, will be delivered when unblocked
 	static void unblockAll();
-	//Specified signal should be ignored (will never be delivered)
+	//Specified signal should be ignored (handler set to SIG_IGN)
 	static void ignore(int signum);
 	/*
-	 * Set a handler for signal signum, if handler not specified then a dummy
-	 * handler is installed. For default behavior pass on SIG_DFL as the handler.
-	 * If <restart> is true then SA_RESTART flag is set.
+	 * Set a handler for the signal <signum>, if <handler> not specified then
+	 * a dummy handler is installed. If <restart> is true then the SA_RESTART
+	 * flag is set.
 	 */
 	static void handle(int signum, void (*handler)(int)=nullptr, bool restart =
 			true);
@@ -64,14 +64,21 @@ public:
 	//Dummy signal handler which does nothing
 	static void dummyHandler(int signum) noexcept;
 
+	//Empties the set
 	static void empty(sigset_t *set);
+	//Fills up the set
 	static void fill(sigset_t *set);
+	//Adds a signal to the set
 	static void add(sigset_t *set, int signum);
+	//Removes a signal from the set
 	static void remove(sigset_t *set, int signum);
+	//Tests membership of a signal in the set
 	static bool isMember(const sigset_t *set, int signum);
+	//Sets calling thread's signal mask
 	static void setMask(sigset_t *set);
-	//All child threads inherit the mask (how =
+	//Wrapper for pthread_sigmask(3)
 	static void threadMask(int how, const sigset_t *set, sigset_t *oldset);
+	//Wrapper for sigaction(2)
 	static void setAction(int signum, const struct sigaction *act,
 			struct sigaction *oldact);
 };
