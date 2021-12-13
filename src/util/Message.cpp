@@ -71,9 +71,6 @@ void Message::recycle(Message *p) noexcept {
 }
 
 void Message::clear() noexcept {
-	referenceCount = 0;
-	ttl = 0;
-
 	State::clear();
 	_header.clear();
 	_buffer.clear();
