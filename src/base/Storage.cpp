@@ -283,20 +283,6 @@ char* Storage::baseName(char *path) noexcept {
 	return basename(path);
 }
 
-void Storage::canonicalize(char *name) noexcept {
-	auto idx = name;
-	while (*idx) {
-		auto c = *idx;
-
-		if (c == '/' || c == '\\' || c == ':' || c == '*' || c == '?'
-				|| c == '"' || c == '<' || c == '>' || c == '|') {
-			*idx = '_';
-		}
-
-		++idx;
-	}
-}
-
 bool Storage::createDirectoryForFile(const char *pathname) noexcept {
 	if (pathname && pathname[0]) {
 		auto tmp = WH_strdup(pathname);

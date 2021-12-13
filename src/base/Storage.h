@@ -99,8 +99,6 @@ public:
 	 * Do not free the returned pointer.
 	 */
 	static char* baseName(char *path) noexcept;
-	//Replaces special characters in the filename with '_'
-	static void canonicalize(char *name) noexcept;
 private:
 	/*
 	 * Creates the complete directory structure for storing a file
