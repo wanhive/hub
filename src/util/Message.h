@@ -75,15 +75,6 @@ public:
 	 * Application developers should not bother about these methods.
 	 */
 	//Returns reference to the routing header
-	[[deprecated("Use Message::header().")]] MessageHeader& getHeader() noexcept;
-	//Returns const reference to the routing header
-	[[deprecated("Use Message::header().")]] const MessageHeader& getHeader() const noexcept;
-	//Returns the message buffer offset correctly for data processing
-	[[deprecated("Use Message::buffer().")]] unsigned char* getStorage() noexcept;
-	//Returns the message buffer offset correctly for data analysis
-	[[deprecated("Use Message::buffer().")]] const unsigned char* getStorage() const noexcept;
-
-	//Returns reference to the routing header
 	MessageHeader& header() noexcept;
 	//Returns const reference to the routing header
 	const MessageHeader& header() const noexcept;

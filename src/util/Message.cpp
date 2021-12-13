@@ -93,22 +93,6 @@ uint64_t Message::getOrigin() const noexcept {
 	return origin;
 }
 
-MessageHeader& Message::getHeader() noexcept {
-	return this->_header;
-}
-
-const MessageHeader& Message::getHeader() const noexcept {
-	return this->_header;
-}
-
-unsigned char* Message::getStorage() noexcept {
-	return _buffer.offset();
-}
-
-const unsigned char* Message::getStorage() const noexcept {
-	return _buffer.offset();
-}
-
 MessageHeader& Message::header() noexcept {
 	return this->_header;
 }
