@@ -53,7 +53,7 @@ AC_CHECK_FUNCS([clock_gettime getcwd localtime_r memmove memset mkdir select soc
 
 # Conditionally build the additional packages
 AC_ARG_WITH([executables],
-	[AS_HELP_STRING([--without-executables], [Disable building of executable programs.])])
+	[AS_HELP_STRING([--without-executables], [Do not build executable programs.])])
 AS_IF([test "x$with_executables" != "xno"],
 	[AC_CHECK_LIB([pq], [PQfinish],,[AC_MSG_ERROR([libpq required for postgresql database not found.])])])
 AS_IF([test "x$with_executables" != "xno"],
