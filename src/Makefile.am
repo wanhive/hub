@@ -1,13 +1,13 @@
 # --- SOURCE FILES DECLARATIONS START ---
 
-# src/base/common
+## src/base/common
 WH_BASE_COMMONHEADERS = base/common/Atomic.h base/common/BaseException.h \
 	base/common/CommandLine.h base/common/Exception.h base/common/Memory.h \
 	base/common/audit.h base/common/defines.h base/common/pod.h
 WH_BASE_COMMONSOURCES = base/common/CommandLine.cpp base/common/Exception.cpp \
 	base/common/Memory.cpp
 
-# src/base/ds
+## src/base/ds
 WH_BASE_DSHEADERS = base/ds/Array.h base/ds/BinaryHeap.h base/ds/Buffer.h \
 	base/ds/CircularBuffer.h base/ds/CircularBufferVector.h base/ds/Encoding.h \
 	base/ds/Khash.h base/ds/List.h base/ds/ListNode.h base/ds/MemoryPool.h \
@@ -18,7 +18,7 @@ WH_BASE_DSSOURCES = base/ds/Encoding.cpp base/ds/List.cpp base/ds/ListNode.cpp \
 	base/ds/MemoryPool.cpp base/ds/MersenneTwister.cpp base/ds/Serializer.cpp \
 	base/ds/State.cpp base/ds/Twiddler.cpp
 
-# src/base
+## src/base
 WH_BASE_TOPHEADERS = base/Condition.h base/Configuration.h base/Logger.h \
 	base/Network.h base/NetworkAddressException.h base/Selector.h base/Signal.h \
 	base/Storage.h base/System.h base/Task.h base/Thread.h base/Timer.h
@@ -27,7 +27,7 @@ WH_BASE_TOPSOURCES = base/Condition.cpp base/Configuration.cpp base/Logger.cpp \
 	base/Signal.cpp base/Storage.cpp base/System.cpp base/Thread.cpp \
 	base/Timer.cpp
 
-# src/base/security
+## src/base/security
 WH_BASE_SECURITYHEADERS = base/security/CryptoUtils.h base/security/CSPRNG.h \
 	base/security/Rsa.h base/security/SecurityException.h base/security/Sha.h \
 	base/security/Srp.h base/security/SSLContext.h
@@ -35,24 +35,37 @@ WH_BASE_SECURITYSOURCES = base/security/CryptoUtils.cpp base/security/CSPRNG.cpp
 	base/security/Rsa.cpp base/security/SecurityException.cpp base/security/Sha.cpp \
 	base/security/Srp.cpp base/security/SSLContext.cpp
 
-# src/base/unix
-WH_BASEUNIXHEADERS = base/unix/SystemException.h
-WH_BASEUNIXSOURCES = base/unix/SystemException.cpp
+## src/base/unix
+WH_BASEUNIXHEADERS = base/unix/Config.h base/unix/Directory.h base/unix/Environment.h \
+	base/unix/Fcntl.h base/unix/File.h base/unix/FileStream.h base/unix/FileSystem.h \
+	base/unix/FStat.h base/unix/Group.h base/unix/OS.h base/unix/PGroup.h \
+	base/unix/Process.h base/unix/PSession.h base/unix/PSignal.h base/unix/PThread.h \
+	base/unix/SignalAction.h base/unix/SignalSet.h base/unix/SystemException.h \
+	base/unix/Time.h base/unix/TSignal.h base/unix/User.h \
+	base/unix/WorkingDirectory.h
+WH_BASEUNIXSOURCES = base/unix/Config.cpp base/unix/Directory.cpp \
+	base/unix/Environment.cpp base/unix/Fcntl.cpp base/unix/File.cpp \
+	base/unix/FileStream.cpp base/unix/FileSystem.cpp base/unix/FStat.cpp \
+	base/unix/Group.cpp base/unix/OS.cpp base/unix/PGroup.cpp base/unix/Process.cpp \
+	base/unix/PSession.cpp base/unix/PSignal.cpp base/unix/PThread.cpp \
+	base/unix/SignalAction.cpp base/unix/SignalSet.cpp base/unix/SystemException.cpp \
+	base/unix/Time.cpp base/unix/TSignal.cpp base/unix/User.cpp \
+	base/unix/WorkingDirectory.cpp
 
-# src/base collection
+## src/base collection
 WH_BASEHEADERS = $(WH_BASE_COMMONHEADERS) $(WH_BASE_DSHEADERS) $(WH_BASE_TOPHEADERS) \
 	$(WH_BASE_SECURITYHEADERS) $(WH_BASEUNIXHEADERS)
 
 WH_BASESOURCES =  $(WH_BASE_COMMONSOURCES) $(WH_BASE_DSSOURCES) $(WH_BASE_TOPSOURCES) \
 	$(WH_BASE_SECURITYSOURCES) $(WH_BASEUNIXSOURCES)
 
-# src/reactor collection
+## src/reactor collection
 WH_REACTORHEADERS = reactor/Descriptor.h reactor/Handler.h reactor/Reactor.h \
 	reactor/Watcher.h reactor/Watchers.h
 WH_REACTORSOURCES = reactor/Descriptor.cpp reactor/Reactor.cpp reactor/Watcher.cpp \
 	reactor/Watchers.cpp
 
-# src/util collection
+## src/util collection
 WH_UTILHEADERS = util/Authenticator.h util/commands.h util/Endpoint.h util/Hash.h \
 	util/Hosts.h util/Identity.h util/InstanceID.h util/Message.h util/MessageHeader.h \
 	util/PKI.h util/Random.h util/TransactionKey.h
@@ -60,14 +73,14 @@ WH_UTILSOURCES = util/Authenticator.cpp util/Endpoint.cpp util/Hash.cpp util/Hos
 	util/Identity.cpp util/InstanceID.cpp util/Message.cpp util/MessageHeader.cpp \
 	util/PKI.cpp util/Random.cpp
 
-# src/hub collection
+## src/hub collection
 WH_HUBHEADERS = hub/ClientHub.h hub/Clock.h hub/EventNotifier.h hub/Hub.h \
 	hub/Inotifier.h hub/Protocol.h hub/SignalWatcher.h hub/Socket.h hub/Topic.h
 WH_HUBSOURCES = hub/ClientHub.cpp hub/Clock.cpp hub/EventNotifier.cpp \
 	hub/Hub.cpp hub/Inotifier.cpp hub/Protocol.cpp hub/SignalWatcher.cpp \
 	hub/Socket.cpp hub/Topic.cpp
 
-# src/server collection
+## src/server collection
 WH_SERVERHEADERS = server/auth/AuthenticationHub.h server/overlay/commands.h \
 	server/overlay/DHT.h server/overlay/Finger.h server/overlay/Node.h \
 	server/overlay/OverlayHub.h server/overlay/OverlayHubInfo.h \
@@ -78,17 +91,17 @@ WH_SERVERSOURCES = server/auth/AuthenticationHub.cpp server/overlay/DHT.cpp \
 	server/overlay/OverlayProtocol.cpp server/overlay/OverlayService.cpp \
 	server/overlay/OverlayTool.cpp server/overlay/Topics.cpp
 
-# src/test collection
+## src/test collection
 WH_TESTHEADERS = test/ds/BufferTest.h test/ds/HashTableTest.h test/flood/Agent.h \
 	test/flood/NetworkTest.h test/multicast/MulticastConsumer.h
 WH_TESTSOURCES = test/ds/BufferTest.cpp test/ds/HashTableTest.cpp test/flood/Agent.cpp \
 	test/flood/NetworkTest.cpp test/multicast/MulticastConsumer.cpp
 
-# src/app collection
+## src/app collection
 WH_APPHEADERS = app/AppManager.h app/ConfigTool.h app/version.h
 WH_APPSOURCES = app/AppManager.cpp app/ConfigTool.cpp wanhive.cpp
 
-# src/ collection
+## src/ collection
 WH_TOPHEADERS = wanhive-base.h wanhive-reactor.h wanhive-util.h wanhive-hub.h wanhive.h
 
 # --- SOURCE FILES DECLARATIONS END ---

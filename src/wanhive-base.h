@@ -64,6 +64,26 @@
 /*
  * System library
  */
+#include "base/unix/Config.h"
+#include "base/unix/Directory.h"
+#include "base/unix/Environment.h"
+#include "base/unix/Fcntl.h"
+#include "base/unix/File.h"
+#include "base/unix/FileStream.h"
+#include "base/unix/FileSystem.h"
+#include "base/unix/FStat.h"
+#include "base/unix/Group.h"
+#include "base/unix/OS.h"
+#include "base/unix/PGroup.h"
+#include "base/unix/Process.h"
+#include "base/unix/PSession.h"
+#include "base/unix/PSignal.h"
+#include "base/unix/PThread.h"
+#include "base/unix/SignalAction.h"
 #include "base/unix/SystemException.h"
+#include "base/unix/Time.h"
+#include "base/unix/TSignal.h"
+#include "base/unix/User.h"
+#include "base/unix/WorkingDirectory.h"
 
 #endif /* WANHIVE_BASE_H_ */

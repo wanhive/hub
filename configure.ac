@@ -29,12 +29,14 @@ AC_CHECK_HEADERS([arpa/inet.h fcntl.h netdb.h sys/file.h sys/time.h syslog.h uni
 
 # Checks for typedefs, structures, and compiler characteristics.
 AC_CHECK_HEADER_STDBOOL
+AC_TYPE_UID_T
 AC_TYPE_INT16_T
 AC_TYPE_INT32_T
 AC_TYPE_INT64_T
 AC_TYPE_INT8_T
 AC_TYPE_MODE_T
 AC_TYPE_OFF_T
+AC_TYPE_PID_T
 AC_C_RESTRICT
 AC_TYPE_SIZE_T
 AC_TYPE_SSIZE_T
@@ -44,12 +46,14 @@ AC_TYPE_UINT64_T
 AC_TYPE_UINT8_T
 
 # Checks for library functions.
+AC_FUNC_CHOWN
 AC_FUNC_ERROR_AT_LINE
+AC_FUNC_FORK
 AC_FUNC_LSTAT_FOLLOWS_SLASHED_SYMLINK
 AC_FUNC_MALLOC
 AC_FUNC_REALLOC
 AC_FUNC_STRERROR_R
-AC_CHECK_FUNCS([clock_gettime getcwd localtime_r memmove memset mkdir select socket strcasecmp strchr strdup strrchr])
+AC_CHECK_FUNCS([alarm atexit clock_gettime dup2 fchdir ftruncate getcwd gethostname lchown localtime_r memmove memset mkdir pathconf putenv rmdir select setenv socket strcasecmp strchr strdup strrchr uname])
 
 # Conditionally build the additional packages
 AC_ARG_WITH([executables],
