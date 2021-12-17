@@ -12,7 +12,7 @@
 
 #include "EventNotifier.h"
 #include "Hub.h"
-#include "../base/SystemException.h"
+#include "../base/unix/SystemException.h"
 #include <sys/eventfd.h>
 
 namespace wanhive {

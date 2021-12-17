@@ -11,9 +11,9 @@
  */
 
 #include "Thread.h"
-#include "SystemException.h"
 #include "common/Exception.h"
 #include "common/defines.h"
+#include "unix/SystemException.h"
 #include <cstdio>
 #include <unistd.h>
 

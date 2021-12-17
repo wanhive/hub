@@ -12,8 +12,8 @@
 
 #include "Clock.h"
 #include "Hub.h"
-#include "../base/SystemException.h"
 #include "../base/Timer.h"
+#include "../base/unix/SystemException.h"
 #include <sys/timerfd.h>
 
 namespace {

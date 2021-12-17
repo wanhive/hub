@@ -36,17 +36,6 @@
 #include "base/ds/StaticCircularBuffer.h"
 
 /*
- * Cryptography
- */
-#include "base/security/CryptoUtils.h"
-#include "base/security/CSPRNG.h"
-#include "base/security/Rsa.h"
-#include "base/security/SecurityException.h"
-#include "base/security/Sha.h"
-#include "base/security/Srp.h"
-#include "base/security/SSLContext.h"
-
-/*
  * System utilities
  */
 #include "base/Condition.h"
@@ -58,8 +47,23 @@
 #include "base/Signal.h"
 #include "base/Storage.h"
 #include "base/System.h"
-#include "base/SystemException.h"
 #include "base/Thread.h"
 #include "base/Timer.h"
+
+/*
+ * Cryptography
+ */
+#include "base/security/CryptoUtils.h"
+#include "base/security/CSPRNG.h"
+#include "base/security/Rsa.h"
+#include "base/security/SecurityException.h"
+#include "base/security/Sha.h"
+#include "base/security/Srp.h"
+#include "base/security/SSLContext.h"
+
+/*
+ * System library
+ */
+#include "base/unix/SystemException.h"
 
 #endif /* WANHIVE_BASE_H_ */

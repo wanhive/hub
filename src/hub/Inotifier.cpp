@@ -12,7 +12,7 @@
 
 #include "Inotifier.h"
 #include "Hub.h"
-#include "../base/SystemException.h"
+#include "../base/unix/SystemException.h"
 #include "../reactor/Reactor.h"
 
 namespace wanhive {

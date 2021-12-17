@@ -12,7 +12,7 @@
 
 #include "SignalWatcher.h"
 #include "Hub.h"
-#include "../base/SystemException.h"
+#include "../base/unix/SystemException.h"
 
 namespace wanhive {
 

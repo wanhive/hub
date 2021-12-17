@@ -10,9 +10,9 @@
  *
  */
 
-#ifndef WH_BASE_SYSTEMEXCEPTION_H_
-#define WH_BASE_SYSTEMEXCEPTION_H_
-#include "common/BaseException.h"
+#ifndef WH_BASE_UNIX_SYSTEMEXCEPTION_H_
+#define WH_BASE_UNIX_SYSTEMEXCEPTION_H_
+#include "../common/BaseException.h"
 
 namespace wanhive {
 /**
@@ -35,4 +35,4 @@ private:
 
 } /* namespace wanhive */
 
-#endif /* WH_BASE_SYSTEMEXCEPTION_H_ */
+#endif /* WH_BASE_UNIX_SYSTEMEXCEPTION_H_ */

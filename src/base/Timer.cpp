@@ -11,7 +11,6 @@
  */
 
 #include "Timer.h"
-#include "SystemException.h"
 #include "ds/Twiddler.h"
 #include <cerrno>
 #include <climits>

@@ -11,8 +11,8 @@
  */
 
 #include "Signal.h"
-#include "SystemException.h"
 #include "common/Exception.h"
+#include "unix/SystemException.h"
 #include <cerrno>
 #include <cstring>
 #include <unistd.h>

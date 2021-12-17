@@ -13,9 +13,9 @@
 #include "Socket.h"
 #include "Hub.h"
 #include "../base/Selector.h"
-#include "../base/SystemException.h"
 #include "../base/ds/Twiddler.h"
 #include "../base/security/CryptoUtils.h"
+#include "../base/unix/SystemException.h"
 
 namespace wanhive {
 

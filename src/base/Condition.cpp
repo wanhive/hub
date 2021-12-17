@@ -11,7 +11,7 @@
  */
 
 #include "Condition.h"
-#include "SystemException.h"
+#include "unix/SystemException.h"
 #include <cerrno>
 #include <cstdlib>
 

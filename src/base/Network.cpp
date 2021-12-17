@@ -12,8 +12,8 @@
 
 #include "Network.h"
 #include "NetworkAddressException.h"
-#include "SystemException.h"
 #include "common/Exception.h"
+#include "unix/SystemException.h"
 #include <cerrno>
 #include <fcntl.h>
 #include <unistd.h>
