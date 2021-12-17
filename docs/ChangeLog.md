@@ -18,6 +18,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Message::clear** method preserves reference-count and ttl.
 - Rename **Message::getHeader** method to **Message::header**.
 - Rename **Message::getStorage** method to **Message::buffer**.
+- Rename the **Host** class to **Hosts**.
 
 ### Removed
 

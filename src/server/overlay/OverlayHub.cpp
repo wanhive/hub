@@ -50,7 +50,7 @@ void OverlayHub::configure(void *arg) {
 		if (!Identity::getIdentifiers("BOOTSTRAP", "nodes", ctx.bootstrapNodes,
 				WH_ARRAYLEN(ctx.bootstrapNodes))) {
 			auto n = Identity::getIdentifiers(ctx.bootstrapNodes,
-			WH_ARRAYLEN(ctx.bootstrapNodes) - 1, Host::BOOTSTRAP);
+			WH_ARRAYLEN(ctx.bootstrapNodes) - 1, Hosts::BOOTSTRAP);
 			ctx.bootstrapNodes[n] = 0;
 		}
 

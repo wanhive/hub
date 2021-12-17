@@ -35,9 +35,9 @@ WH_REACTORSOURCES = reactor/Descriptor.cpp reactor/Reactor.cpp reactor/Watcher.c
 	reactor/Watchers.cpp
 
 WH_UTILHEADERS = util/Authenticator.h util/commands.h util/Endpoint.h util/Hash.h \
-	util/Host.h util/Identity.h util/InstanceID.h util/Message.h util/MessageHeader.h \
+	util/Hosts.h util/Identity.h util/InstanceID.h util/Message.h util/MessageHeader.h \
 	util/PKI.h util/Random.h util/TransactionKey.h
-WH_UTILSOURCES = util/Authenticator.cpp util/Endpoint.cpp util/Hash.cpp util/Host.cpp \
+WH_UTILSOURCES = util/Authenticator.cpp util/Endpoint.cpp util/Hash.cpp util/Hosts.cpp \
 	util/Identity.cpp util/InstanceID.cpp util/Message.cpp util/MessageHeader.cpp \
 	util/PKI.cpp util/Random.cpp
 

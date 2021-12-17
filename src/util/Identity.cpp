@@ -121,7 +121,7 @@ bool Identity::verifyNonce(Hash &hash, uint64_t salt, uint64_t id,
 }
 
 void Identity::getAddress(uint64_t uid, NameInfo &ni) {
-	if (host.get(uid, ni) == 0) {
+	if (hosts.get(uid, ni) == 0) {
 		return;
 	} else {
 		throw Exception(EX_INVALIDOPERATION);
@@ -131,7 +131,7 @@ void Identity::getAddress(uint64_t uid, NameInfo &ni) {
 unsigned int Identity::getIdentifiers(unsigned long long nodes[],
 		unsigned int count, int type) {
 	auto n = count;
-	if (host.list(nodes, n, type) == 0) {
+	if (hosts.list(nodes, n, type) == 0) {
 		return n;
 	} else {
 		throw Exception(EX_INVALIDOPERATION);
@@ -363,7 +363,7 @@ void Identity::loadHostsDatabase() {
 			WH_LOG_WARNING("No hosts database");
 		} else {
 			//Load the database file from the disk in read-only mode
-			host.open(paths.hostsDatabaseName, true);
+			hosts.open(paths.hostsDatabaseName, true);
 			WH_LOG_DEBUG("Hosts loaded from %s", paths.hostsDatabaseName);
 		}
 	} catch (const BaseException &e) {
@@ -378,8 +378,8 @@ void Identity::loadHostsFile() {
 			WH_LOG_WARNING("No hosts file");
 		} else {
 			//Load the hosts into in-memory database
-			host.open(":memory:");
-			host.batchUpdate(paths.hostsFileName);
+			hosts.open(":memory:");
+			hosts.batchUpdate(paths.hostsFileName);
 			WH_LOG_DEBUG("Hosts loaded from %s", paths.hostsFileName);
 		}
 	} catch (const BaseException &e) {

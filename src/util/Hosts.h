@@ -1,5 +1,5 @@
 /*
- * Host.h
+ * Hosts.h
  *
  * Database of Wanhive hosts
  *
@@ -10,8 +10,8 @@
  *
  */
 
-#ifndef WH_UTIL_HOST_H_
-#define WH_UTIL_HOST_H_
+#ifndef WH_UTIL_HOSTS_H_
+#define WH_UTIL_HOSTS_H_
 #include "../base/Network.h"
 #include "../base/Storage.h"
 #include <sqlite3.h>
@@ -21,12 +21,12 @@ namespace wanhive {
  * Database of Wanhive hosts (uses SQLite 3)
  * Thread safe at class level
  */
-class Host {
+class Hosts {
 public:
-	Host() noexcept;
+	Hosts() noexcept;
 	//Opens the hosts database at <path>
-	Host(const char *path, bool readOnly = false);
-	~Host();
+	Hosts(const char *path, bool readOnly = false);
+	~Hosts();
 
 	//Opens the hosts database at <path>
 	void open(const char *path, bool readOnly = false);
@@ -89,4 +89,4 @@ private:
 
 } /* namespace wanhive */
 
-#endif /* WH_UTIL_HOST_H_ */
+#endif /* WH_UTIL_HOSTS_H_ */

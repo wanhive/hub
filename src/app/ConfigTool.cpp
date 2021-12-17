@@ -16,7 +16,7 @@
 #include "../base/common/Exception.h"
 #include "../base/ds/Encoding.h"
 #include "../util/Authenticator.h"
-#include "../util/Host.h"
+#include "../util/Hosts.h"
 #include "../util/PKI.h"
 #include <cinttypes>
 #include <cstring>
@@ -120,11 +120,11 @@ void ConfigTool::manageHosts() {
 	}
 	try {
 		if (mode == 1) {
-			Host h(sf);
-			h.batchUpdate(hf);
+			Hosts hosts(sf);
+			hosts.batchUpdate(hf);
 		} else if (mode == 2) {
-			Host h(sf, true);
-			h.batchDump(hf);
+			Hosts hosts(sf, true);
+			hosts.batchDump(hf);
 		} else if (mode == 3) {
 			createDummyHostsFile(hf);
 		} else {
@@ -194,7 +194,7 @@ void ConfigTool::generateVerifier() {
 
 void ConfigTool::createDummyHostsFile(const char *path) {
 	std::cout << "Generating a sample \"hosts\" file..." << std::endl;
-	Host::createDummy(path);
+	Hosts::createDummy(path);
 }
 
 } /* namespace wanhive */

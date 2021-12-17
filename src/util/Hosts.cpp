@@ -1,5 +1,5 @@
 /*
- * Host.cpp
+ * Hosts.cpp
  *
  * Database of Wanhive hosts
  *
@@ -10,7 +10,7 @@
  *
  */
 
-#include "Host.h"
+#include "Hosts.h"
 #include "../base/Logger.h"
 #include "../base/common/Exception.h"
 #include <cstring>
@@ -42,20 +42,20 @@ static void writeHeading(FILE *f, int version) noexcept {
 
 namespace wanhive {
 
-Host::Host() noexcept {
+Hosts::Hosts() noexcept {
 	memset(&db, 0, sizeof(db));
 }
 
-Host::Host(const char *path, bool readOnly) {
+Hosts::Hosts(const char *path, bool readOnly) {
 	memset(&db, 0, sizeof(db));
 	open(path, readOnly);
 }
 
-Host::~Host() {
+Hosts::~Hosts() {
 	clear();
 }
 
-void Host::open(const char *path, bool readOnly) {
+void Hosts::open(const char *path, bool readOnly) {
 	try {
 		clear();
 		openConnection(path, readOnly);
@@ -70,7 +70,7 @@ void Host::open(const char *path, bool readOnly) {
 	}
 }
 
-void Host::batchUpdate(const char *path) {
+void Hosts::batchUpdate(const char *path) {
 	if (!db.conn || Storage::testFile(path) != 1) {
 		throw Exception(EX_RESOURCE);
 	}
@@ -108,7 +108,7 @@ void Host::batchUpdate(const char *path) {
 	}
 }
 
-void Host::batchDump(const char *path, int version) {
+void Hosts::batchDump(const char *path, int version) {
 	if (db.conn) {
 		//-----------------------------------------------------------------
 		auto query =
@@ -145,7 +145,7 @@ void Host::batchDump(const char *path, int version) {
 	}
 }
 
-int Host::get(unsigned long long uid, NameInfo &ni) noexcept {
+int Hosts::get(unsigned long long uid, NameInfo &ni) noexcept {
 	if (db.conn && db.qStmt) {
 		int ret = 0;
 		int z;
@@ -170,7 +170,7 @@ int Host::get(unsigned long long uid, NameInfo &ni) noexcept {
 	}
 }
 
-int Host::put(unsigned long long uid, const NameInfo &ni) noexcept {
+int Hosts::put(unsigned long long uid, const NameInfo &ni) noexcept {
 	if (db.conn && db.iStmt) {
 		int ret = 0;
 		sqlite3_bind_int64(db.iStmt, 1, uid);
@@ -188,7 +188,7 @@ int Host::put(unsigned long long uid, const NameInfo &ni) noexcept {
 	}
 }
 
-int Host::remove(unsigned long long uid) noexcept {
+int Hosts::remove(unsigned long long uid) noexcept {
 	if (db.conn && db.dStmt) {
 		int ret = 0;
 		sqlite3_bind_int64(db.dStmt, 1, uid);
@@ -202,7 +202,7 @@ int Host::remove(unsigned long long uid) noexcept {
 	}
 }
 
-int Host::list(unsigned long long uids[], unsigned int &count,
+int Hosts::list(unsigned long long uids[], unsigned int &count,
 		int type) noexcept {
 	if (count == 0) {
 		return 0;
@@ -227,7 +227,7 @@ int Host::list(unsigned long long uids[], unsigned int &count,
 	}
 }
 
-void Host::createDummy(const char *path, int version) {
+void Hosts::createDummy(const char *path, int version) {
 	auto f = Storage::openStream(path, "w", true);
 	if (f) {
 		auto host = "127.0.0.1";
@@ -248,12 +248,12 @@ void Host::createDummy(const char *path, int version) {
 	}
 }
 
-void Host::clear() noexcept {
+void Hosts::clear() noexcept {
 	closeStatements();
 	closeConnection();
 }
 
-void Host::openConnection(const char *path, bool readOnly) {
+void Hosts::openConnection(const char *path, bool readOnly) {
 	closeConnection();
 	int flags = readOnly ?
 	SQLITE_OPEN_READONLY :
@@ -269,12 +269,12 @@ void Host::openConnection(const char *path, bool readOnly) {
 	}
 }
 
-void Host::closeConnection() noexcept {
+void Hosts::closeConnection() noexcept {
 	sqlite3_close_v2(db.conn);
 	db.conn = nullptr;
 }
 
-void Host::createTable() {
+void Hosts::createTable() {
 	auto tq = "CREATE TABLE IF NOT EXISTS hosts ("
 			"uid INTEGER NOT NULL UNIQUE ON CONFLICT REPLACE,"
 			"name TEXT NOT NULL DEFAULT '127.0.0.1',"
@@ -289,7 +289,7 @@ void Host::createTable() {
 	}
 }
 
-void Host::prepareStatements() {
+void Hosts::prepareStatements() {
 	auto iq = "INSERT INTO hosts (uid, name, service, type) VALUES (?,?,?,?)";
 	auto sq = "SELECT name, service, type FROM hosts WHERE uid=?";
 	auto dq = "DELETE FROM hosts WHERE uid=?";
@@ -313,14 +313,14 @@ void Host::prepareStatements() {
 	}
 }
 
-void Host::resetStatements() noexcept {
+void Hosts::resetStatements() noexcept {
 	reset(db.iStmt);
 	reset(db.qStmt);
 	reset(db.dStmt);
 	reset(db.lStmt);
 }
 
-void Host::closeStatements() noexcept {
+void Hosts::closeStatements() noexcept {
 	finalize(db.iStmt);
 	finalize(db.qStmt);
 	finalize(db.dStmt);
@@ -332,19 +332,19 @@ void Host::closeStatements() noexcept {
 	db.lStmt = nullptr;
 }
 
-void Host::reset(sqlite3_stmt *stmt) noexcept {
+void Hosts::reset(sqlite3_stmt *stmt) noexcept {
 	if (stmt) {
 		sqlite3_clear_bindings(stmt);
 		sqlite3_reset(stmt);
 	}
 }
 
-void Host::finalize(sqlite3_stmt *stmt) noexcept {
+void Hosts::finalize(sqlite3_stmt *stmt) noexcept {
 	reset(stmt);
 	sqlite3_finalize(stmt); //Harmless no-op on nullptr
 }
 
-void Host::beginTransaction() {
+void Hosts::beginTransaction() {
 	if (!db.conn
 			|| sqlite3_exec(db.conn, "BEGIN", nullptr, nullptr, nullptr)
 					!= SQLITE_OK) {
@@ -352,7 +352,7 @@ void Host::beginTransaction() {
 	}
 }
 
-void Host::endTransaction() {
+void Hosts::endTransaction() {
 	if (!db.conn
 			|| sqlite3_exec(db.conn, "COMMIT", nullptr, nullptr, nullptr)
 					!= SQLITE_OK) {
@@ -360,7 +360,7 @@ void Host::endTransaction() {
 	}
 }
 
-void Host::cancelTransaction() {
+void Hosts::cancelTransaction() {
 	if (!db.conn
 			|| sqlite3_exec(db.conn, "ROLLBACK", nullptr, nullptr, nullptr)
 					!= SQLITE_OK) {

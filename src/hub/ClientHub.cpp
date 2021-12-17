@@ -583,7 +583,7 @@ void ClientHub::loadIdentifiers(bool auth) {
 				(auth ? "auths" : "nodes"), buffer, WH_ARRAYLEN(buffer));
 		if (!n) {
 			n = Identity::getIdentifiers(buffer, WH_ARRAYLEN(buffer),
-					(auth ? Host::AUTHENTICATOR : Host::BOOTSTRAP));
+					(auth ? Hosts::AUTHENTICATOR : Hosts::BOOTSTRAP));
 		}
 		//-----------------------------------------------------------------
 		if (n && (n = bs.identifiers.put(buffer, n))) {

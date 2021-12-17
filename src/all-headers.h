@@ -76,7 +76,7 @@
 #include "util/commands.h"
 #include "util/Endpoint.h"
 #include "util/Hash.h"
-#include "util/Host.h"
+#include "util/Hosts.h"
 #include "util/Identity.h"
 #include "util/InstanceID.h"
 #include "util/Message.h"

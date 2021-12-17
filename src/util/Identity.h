@@ -12,7 +12,7 @@
 
 #ifndef WH_UTIL_IDENTITY_H_
 #define WH_UTIL_IDENTITY_H_
-#include "Host.h"
+#include "Hosts.h"
 #include "InstanceID.h"
 #include "PKI.h"
 #include "../base/Configuration.h"
@@ -109,7 +109,7 @@ private:
 	//The application configuration
 	Configuration cfg;
 	//The hosts database
-	Host host;
+	Hosts hosts;
 
 	//For authentication
 	struct {
