@@ -31,7 +31,7 @@ public:
 	FStat(const char *path, bool symLink = false);
 	//Creates information about a file
 	FStat(int dirfd, const char *path, int flags);
-	virtual ~FStat();
+	~FStat();
 
 	//File type is a regular file
 	bool isRegularFile() const noexcept;

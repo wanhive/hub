@@ -72,8 +72,13 @@
 /*
  * For debug messages
  */
+#if WH_DEBUG
 #define WH_FILE __FILE__
 #define WH_LINE __LINE__
+#else
+#define WH_FILE ""
+#define WH_LINE 0
+#endif
 #ifdef WH_GCC
 #define WH_FUNCTION __PRETTY_FUNCTION__
 #else

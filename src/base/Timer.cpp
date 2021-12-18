@@ -1,7 +1,7 @@
 /*
  * Timer.cpp
  *
- * Milliseconds precision stopwatch
+ * Milliseconds precision timer
  *
  *
  * Copyright (C) 2018 Amit Kumar (amitkriit@gmail.com)
@@ -12,10 +12,8 @@
 
 #include "Timer.h"
 #include "ds/Twiddler.h"
+#include "unix/Time.h"
 #include <cerrno>
-#include <climits>
-#include <time.h>
-#include <unistd.h>
 
 namespace wanhive {
 
@@ -62,24 +60,21 @@ void Timer::sleep(unsigned int milliseconds, unsigned int nanoseconds) noexcept 
 	}
 }
 
-size_t Timer::refractorTime(char *buffer, size_t size,
-		const char *format) noexcept {
-	format = format ? format : "%Y-%m-%d %H:%M:%S";
-	auto timep = time(nullptr);
-	struct tm t;
-	return strftime(buffer, size, format, localtime_r(&timep, &t));
+size_t Timer::print(char *buffer, size_t size) noexcept {
+	//Cannot fail
+	Time t(CLOCK_REALTIME);
+	return t.convert(buffer, size);
 }
 
 unsigned long long Timer::timeSeed() noexcept {
-	timespec ts;
-	clock_gettime(CLOCK_MONOTONIC, &ts);
+	Time t(CLOCK_MONOTONIC); //Cannot fail
+	decltype(auto) ts = t.get();
 	return Twiddler::FVN1aHash(&ts, sizeof(ts));
 }
 
 unsigned long long Timer::currentTime() noexcept {
-	timespec ts;
-	//Cannot fail, returned value ignored
-	clock_gettime(CLOCK_MONOTONIC, &ts);
+	Time t(CLOCK_MONOTONIC); //Cannot fail
+	decltype(auto) ts = t.get();
 	return (((unsigned long long) ts.tv_sec * MS_IN_SEC)
 			+ (ts.tv_nsec / NS_IN_MS));
 }

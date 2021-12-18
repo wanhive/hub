@@ -29,9 +29,9 @@ public:
 	const timespec& now(clockid_t id);
 	//Wrapper for strftime(3): formats the most recently refreshed time-stamp
 	size_t convert(char *s, size_t size, const char *format = nullptr,
-			bool utc = false) const;
+			bool utc = true) const;
 	//Wrapper for localtime_r(3) and gmtime_r(3): returns the broken down time
-	void convert(tm &calendar, bool utc = false) const;
+	void convert(tm &calendar, bool utc = true) const;
 	//Returns the most recently refreshed time-stamp
 	const timespec& get() const noexcept;
 	//Sets the time-stamp to the given value

@@ -28,14 +28,18 @@ class Hash {
 public:
 	Hash() noexcept;
 	~Hash();
-public:
-	/*
-	 * Hash/verify block of given size using SHA2-512.
+	//-----------------------------------------------------------------
+	/**
+	 * Hash/verify a block of given size using SHA2-512.
 	 * None of the two functions must throw exception
 	 */
+	//Generate message <digest> for a <block> of the given <size>
 	void create(const void *block, unsigned int size, Digest *digest) noexcept;
+	//Verify message <digest> of a <block> of the given <size>
 	bool verify(const Digest *digest, const void *block,
 			unsigned int size) noexcept;
+	//-----------------------------------------------------------------
+	//Base-64 encode the message digest
 	static unsigned int encode(const Digest *digest,
 			EncodedDigest *enc) noexcept;
 public:

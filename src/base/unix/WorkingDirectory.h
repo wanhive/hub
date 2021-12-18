@@ -25,7 +25,7 @@ public:
 	//Wrapper for fchdir(2): changes working directory
 	static void set(int fd);
 	//Wrapper for getcwd(3): returns the current working directory
-	static void get(char *buf, size_t size);
+	static char* get(char *buf, size_t size);
 };
 
 } /* namespace wanhive */

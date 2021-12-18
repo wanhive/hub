@@ -1,7 +1,7 @@
 /*
  * Storage.cpp
  *
- * File and directory management on Linux
+ * Common file/directory handling routines
  *
  *
  * Copyright (C) 2018 Amit Kumar (amitkriit@gmail.com)
@@ -18,10 +18,8 @@
 #include <cerrno>
 #include <cstring>
 #include <ftw.h>
-#include <libgen.h>
 #include <unistd.h>
 #include <wordexp.h>
-#include <sys/file.h>
 
 namespace {
 //Helper function for removeDirectory
@@ -174,41 +172,6 @@ void Storage::fill(int fd, size_t size, unsigned char c) {
 	}
 }
 
-ssize_t Storage::readLink(const char *pathname, char *buf, size_t len) {
-	if (!pathname || !buf) {
-		throw Exception(EX_INVALIDPARAM);
-	}
-
-	//Read at-most len-1 bytes (readlink doesn't append nul terminator)
-	auto ret = readlink(pathname, buf, len - 1);
-	if (ret != -1) {
-		buf[ret] = '\0';
-		return ret;
-	} else {
-		throw SystemException();
-	}
-}
-
-bool Storage::lock(int fd, bool shared, bool block) {
-	auto flag = block ? 0 : LOCK_NB;
-	flag |= shared ? LOCK_SH : LOCK_EX;
-	if (flock(fd, flag) == 0) {
-		return true;
-	} else if (errno == EWOULDBLOCK) {
-		return false;
-	} else {
-		throw SystemException();
-	}
-}
-
-bool Storage::unlock(int fd) {
-	if (flock(fd, LOCK_UN) == 0) {
-		return true;
-	} else {
-		throw SystemException();
-	}
-}
-
 void Storage::createDirectory(const char *pathname) {
 	if (pathname && pathname[0]) {
 		auto tmp = WH_strdup(pathname);
@@ -231,7 +194,9 @@ void Storage::removeDirectory(const char *pathname) {
 
 int Storage::testDirectory(const char *pathname) noexcept {
 	struct stat data;
-	if (stat(pathname, &data) == 0) {
+	if (!pathname) {
+		return -1;
+	} else if (stat(pathname, &data) == 0) {
 		return S_ISDIR(data.st_mode) ? 1 : 0;
 	} else {
 		return -1;
@@ -240,7 +205,9 @@ int Storage::testDirectory(const char *pathname) noexcept {
 
 int Storage::testFile(const char *pathname) noexcept {
 	struct stat data;
-	if (stat(pathname, &data) == 0) {
+	if (!pathname) {
+		return -1;
+	} else if (stat(pathname, &data) == 0) {
 		return S_ISREG(data.st_mode) ? 1 : 0;
 	} else {
 		return -1;
@@ -249,7 +216,9 @@ int Storage::testFile(const char *pathname) noexcept {
 
 int Storage::testLink(const char *pathname) noexcept {
 	struct stat linkstat;
-	if (lstat(pathname, &linkstat) == 0) {
+	if (!pathname) {
+		return -1;
+	} else if (lstat(pathname, &linkstat) == 0) {
 		return S_ISLNK(linkstat.st_mode) ? 1 : 0;
 	} else {
 		return -1;
@@ -273,14 +242,6 @@ char* Storage::expandPathName(const char *pathname) noexcept {
 	} else {
 		return nullptr;
 	}
-}
-
-char* Storage::directoryName(char *path) noexcept {
-	return dirname(path);
-}
-
-char* Storage::baseName(char *path) noexcept {
-	return basename(path);
 }
 
 bool Storage::createDirectoryForFile(const char *pathname) noexcept {

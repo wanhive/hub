@@ -35,7 +35,7 @@ public:
 	//Opens or creates a file
 	File(int dirfd, const char *path, int flags, mode_t mode);
 	//Automatically closes the associated file descriptor
-	virtual ~File();
+	~File();
 
 	//Returns the file descriptor associated with this object
 	int get() const noexcept;

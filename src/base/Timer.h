@@ -1,7 +1,7 @@
 /*
  * Timer.h
  *
- * Milliseconds precision stop-watch
+ * Milliseconds precision timer
  *
  *
  * Copyright (C) 2018 Amit Kumar (amitkriit@gmail.com)
@@ -33,12 +33,11 @@ public:
 	static void sleep(unsigned int milliseconds,
 			unsigned int nanoseconds = 0) noexcept;
 	/*
-	 * Wrapper for strftime (man strftime)
+	 * Converts the current wall-clock time to human readable text.
 	 * Returns the number of bytes (excl. null terminator) placed in <buffer>
-	 * BUFFER: <size> = 20 sufficient for YYYY-MM-DD HH:MM:SS and terminator
+	 * BUFFER: <size> = 32 sufficient for YYYY-MM-DD HH:MM:SS Z and terminator
 	 */
-	static size_t refractorTime(char *buffer, size_t size, const char *format =
-			nullptr) noexcept;
+	static size_t print(char *buffer, size_t size) noexcept;
 	//Generate a 64-bit seed from current time for seeding the RNGs
 	static unsigned long long timeSeed() noexcept;
 private:

@@ -147,19 +147,6 @@ public:
 	bool executeRequest(bool sign = false, bool verify = false);
 	//Waits for receipt of a ping and responds with a pong (for testing)
 	void sendPong();
-protected:
-	/**
-	 * For efficient implementation of additional protocols in the subclasses.
-	 * These methods violate encapsulation and must be used with great care
-	 * because incorrect usage can introduce hard to debug issues.
-	 */
-	//Deserialized message header
-	MessageHeader& header() noexcept;
-	//Pointer to <offset> within the IO buffer (nullptr on overflow)
-	unsigned char* buffer(unsigned int offset = 0) noexcept;
-	//Pointer to payload's <offset> within the IO buffer (nullptr on overflow)
-	unsigned char* payload(unsigned int offset = 0) noexcept;
-public:
 	/*
 	 * Establish a blocking TCP socket connection with the host <ni> and return
 	 * the socket file descriptor. <timeoutMils> specifies the IO timeout value
@@ -238,6 +225,18 @@ public:
 	static bool executeRequest(SSL *ssl, MessageHeader &header,
 			unsigned char *buf, const PKI *signer = nullptr,
 			const PKI *verifier = nullptr);
+protected:
+	/**
+	 * For efficient implementation of additional protocols in the subclasses.
+	 * These methods violate encapsulation and must be used with great care
+	 * because incorrect usage can introduce hard to debug issues.
+	 */
+	//Deserialized message header
+	MessageHeader& header() noexcept;
+	//Pointer to <offset> within the IO buffer (nullptr on overflow)
+	unsigned char* buffer(unsigned int offset = 0) noexcept;
+	//Pointer to payload's <offset> within the IO buffer (nullptr on overflow)
+	unsigned char* payload(unsigned int offset = 0) noexcept;
 private:
 	int sockfd; //The underlying socket
 	SSL *ssl;  //The underlying SSL/TLS connection

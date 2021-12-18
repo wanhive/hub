@@ -1,7 +1,7 @@
 /*
  * System.h
  *
- * System and execution environment information
+ * Basic system information
  *
  *
  * Copyright (C) 2018 Amit Kumar (amitkriit@gmail.com)
@@ -25,7 +25,7 @@ public:
 	 * process. The function modifies the memory pointed to by <buffer>.
 	 * Do not call free on the returned pointer.
 	 */
-	static char* executableDirectory(char *buffer, size_t length);
+	static const char* executableDirectory(char *buffer, size_t length);
 	/*
 	 * Returns NUL-terminated absolute pathname that is the current working
 	 * directory of the application. The function modifies the <buffer>.

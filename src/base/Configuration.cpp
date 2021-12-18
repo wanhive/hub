@@ -141,7 +141,7 @@ bool Configuration::print(FILE *stream, const char *name) noexcept {
 	if (name) {
 		char tf[64];
 		memset(tf, 0, sizeof(tf));
-		Timer::refractorTime(tf, sizeof(tf));
+		Timer::print(tf, sizeof(tf));
 		//Print the header
 		fprintf(stream, "#Configuration %s auto-generated on %s\n", name, tf);
 	}

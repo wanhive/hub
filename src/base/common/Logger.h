@@ -51,7 +51,7 @@ public:
 	//Returns the current target filter
 	LogTarget getTarget() const noexcept;
 	//Write a log message to the stderr
-	void log(LogLevel level, const char *fmt, ...) const noexcept;
+	void log(LogLevel level, const char *format, ...) const noexcept;
 	//-----------------------------------------------------------------
 	//Returns the default logger (writes to stderr), thread safe
 	static Logger& getDefault() noexcept;

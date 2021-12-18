@@ -99,17 +99,17 @@ LogTarget Logger::getTarget() const noexcept {
 	return target;
 }
 
-void Logger::log(LogLevel level, const char *fmt, ...) const noexcept {
+void Logger::log(LogLevel level, const char *format, ...) const noexcept {
 	if (level <= Logger::level) {
 		va_list ap;
-		va_start(ap, fmt);
+		va_start(ap, format);
 		switch (Logger::target) {
 		case WH_LOG_STDERR:
 			//POSIX-compliant vfprintf is thread safe
-			vfprintf(stderr, fmt, ap);
+			vfprintf(stderr, format, ap);
 			break;
 		case WH_LOG_SYS:
-			vsyslog(priorities[level], fmt, ap);
+			vsyslog(priorities[level], format, ap);
 			break;
 		default:
 			break;

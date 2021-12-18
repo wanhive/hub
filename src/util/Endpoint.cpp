@@ -358,26 +358,6 @@ void Endpoint::sendPong() {
 	send();
 }
 
-MessageHeader& Endpoint::header() noexcept {
-	return _header;
-}
-
-unsigned char* Endpoint::buffer(unsigned int offset) noexcept {
-	if (offset < Message::MTU) {
-		return (_buffer + offset);
-	} else {
-		return nullptr;
-	}
-}
-
-unsigned char* Endpoint::payload(unsigned int offset) noexcept {
-	if (offset < Message::PAYLOAD_SIZE) {
-		return (_buffer + Message::HEADER_SIZE + offset);
-	} else {
-		return nullptr;
-	}
-}
-
 int Endpoint::connect(const NameInfo &ni, SocketAddress &sa, int timeoutMils) {
 	auto sfd = -1;
 	try {
@@ -591,6 +571,26 @@ bool Endpoint::executeRequest(SSL *ssl, MessageHeader &header,
 	send(ssl, buf, header.getLength(), signer);
 	receive(ssl, buf, header, header.getSequenceNumber(), verifier);
 	return (header.getStatus() == WH_AQLF_ACCEPTED);
+}
+
+MessageHeader& Endpoint::header() noexcept {
+	return _header;
+}
+
+unsigned char* Endpoint::buffer(unsigned int offset) noexcept {
+	if (offset < Message::MTU) {
+		return (_buffer + offset);
+	} else {
+		return nullptr;
+	}
+}
+
+unsigned char* Endpoint::payload(unsigned int offset) noexcept {
+	if (offset < Message::PAYLOAD_SIZE) {
+		return (_buffer + Message::HEADER_SIZE + offset);
+	} else {
+		return nullptr;
+	}
 }
 
 } /* namespace wanhive */

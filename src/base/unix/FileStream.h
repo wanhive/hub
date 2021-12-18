@@ -24,7 +24,7 @@ public:
 	FileStream(FILE *fp) noexcept;
 	FileStream(const char *path, const char *mode);
 	FileStream(int fd, const char *mode);
-	virtual ~FileStream();
+	~FileStream();
 
 	//Returns the stream associated with this object
 	FILE* get() const noexcept;

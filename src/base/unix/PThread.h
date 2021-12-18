@@ -24,7 +24,7 @@ class PThread {
 public:
 	//Creates a new thread
 	PThread(Task &task, void *arg, bool detached = false);
-	virtual ~PThread();
+	~PThread();
 
 	//Wrapper for pthread_join(3): waits for the thread to terminate
 	void* join();

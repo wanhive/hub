@@ -1,7 +1,7 @@
 /*
  * System.cpp
  *
- * System and execution environment information
+ * Basic system information
  *
  *
  * Copyright (C) 2018 Amit Kumar (amitkriit@gmail.com)
@@ -11,33 +11,23 @@
  */
 
 #include "System.h"
-#include "Storage.h"
-#include "unix/SystemException.h"
-#include <cstdlib>
-#include <unistd.h>
+#include "unix/Environment.h"
+#include "unix/FileSystem.h"
+#include "unix/WorkingDirectory.h"
 
 namespace wanhive {
 
-char* System::executableDirectory(char *buffer, size_t length) {
-	Storage::readLink("/proc/self/exe", buffer, length);
-	return Storage::directoryName(buffer);
+const char* System::executableDirectory(char *buffer, size_t length) {
+	FileSystem::readLink("/proc/self/exe", buffer, length);
+	return FileSystem::directoryName(buffer);
 }
 
 char* System::currentWorkingDirectory(char *buffer, size_t length) {
-	auto cwd = getcwd(buffer, length);
-	if (cwd) {
-		return cwd;
-	} else {
-		throw SystemException();
-	}
+	return WorkingDirectory::get(buffer, length);
 }
 
 const char* System::getEnvironment(const char *name) noexcept {
-	if (!name) {
-		return nullptr;
-	} else {
-		return ::getenv(name);
-	}
+	return Environment::get(name);
 }
 
 } /* namespace wanhive */

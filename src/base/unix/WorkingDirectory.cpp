@@ -35,11 +35,12 @@ void WorkingDirectory::set(int fd) {
 	}
 }
 
-void WorkingDirectory::get(char *buf, size_t size) {
-	if (::getcwd(buf, size) == nullptr) {
-		throw SystemException();
+char* WorkingDirectory::get(char *buf, size_t size) {
+	auto cwd = ::getcwd(buf, size);
+	if (cwd) {
+		return cwd;
 	} else {
-		return;
+		throw SystemException();
 	}
 }
 

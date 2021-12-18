@@ -30,7 +30,7 @@ public:
 	Directory(const char *name);
 	//Opens the directory associated with the file descriptor <fd>
 	Directory(int fd);
-	virtual ~Directory();
+	~Directory();
 
 	//Wrapper for readdir(3): reads a directory entry at current position
 	dirent* read();

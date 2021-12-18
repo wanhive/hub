@@ -1,7 +1,7 @@
 /*
  * Storage.h
  *
- * File and directory management on Linux
+ * Common file/directory handling routines
  *
  *
  * Copyright (C) 2018 Amit Kumar (amitkriit@gmail.com)
@@ -18,7 +18,7 @@
 
 namespace wanhive {
 /**
- * Basic routines for file/directory handling
+ * Common file/directory handling routines
  */
 class Storage {
 public:
@@ -46,36 +46,15 @@ public:
 	static off_t seek(int fd, off_t offset, int whence);
 	//Fills the file <fd> with the character <c>
 	static void fill(int fd, size_t size, unsigned char c);
-	/*
-	 * Returns the resolved symbolic link
-	 * Wrapper for readlink(2), places nul-terminated linked path in <buf>.
-	 * Returns the number of bytes copied, and if it equals the <len>
-	 * then we cannot tell whether the full name was copied or not.
-	 */
-	static ssize_t readLink(const char *pathname, char *buf, size_t len);
-	//=================================================================
-	/**
-	 * Wrappers for the flock(2) system call.
-	 */
-
-	/*
-	 * Places an advisory lock on the specified file, if <shared> is false then
-	 * an exclusive lock is placed. If <block> is true then the method call
-	 * blocks in case of contention/conflict. Returns true on success, false
-	 * if the call would block and nonblocking operation was selected.
-	 */
-	static bool lock(int fd, bool shared, bool block = true);
-	//Removes an existing lock held by the process, returns true on success
-	static bool unlock(int fd);
 	//=================================================================
 	//Implementation of "mkdir -p"
 	static void createDirectory(const char *pathname);
 	//Recursively remove all entries in a directory (rm -rf)
 	static void removeDirectory(const char *pathname);
 	//=================================================================
-	//Returns 1 if directory, 0 otherwise, -1 on error
+	//Returns 1 if a directory, 0 otherwise, -1 on error
 	static int testDirectory(const char *pathname) noexcept;
-	// Returns 1 if file, 0 otherwise, -1 on error
+	// Returns 1 if a regular file, 0 otherwise, -1 on error
 	static int testFile(const char *pathname) noexcept;
 	//Returns 1 if a symbolic link, 0 otherwise, -1 on error
 	static int testLink(const char *pathname) noexcept;
@@ -85,20 +64,6 @@ public:
 	 * Returned buffer should be freed using WH_free
 	 */
 	static char* expandPathName(const char *pathname) noexcept;
-	/*
-	 * Wrapper for dirname(3)
-	 * Breaks the path into directory name component.
-	 * The function modifies the <path> argument.
-	 * Do not free the returned pointer.
-	 */
-	static char* directoryName(char *path) noexcept;
-	/*
-	 * Wrapper for basename(3)
-	 * Breaks the path into filename component.
-	 * The function modifies the <path> argument.
-	 * Do not free the returned pointer.
-	 */
-	static char* baseName(char *path) noexcept;
 private:
 	/*
 	 * Creates the complete directory structure for storing a file
