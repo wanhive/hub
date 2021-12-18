@@ -11,11 +11,11 @@
  */
 
 #include "NetworkTest.h"
+#include "../../base/common/BaseException.h"
 #include "../../base/common/CommandLine.h"
-#include "../../base/Logger.h"
+#include "../../base/common/Logger.h"
 #include "../../base/Thread.h"
 #include "../../base/Timer.h"
-#include "../../base/common/BaseException.h"
 #include <cstring>
 #include <iostream>
 #include <limits>

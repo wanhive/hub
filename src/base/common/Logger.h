@@ -10,9 +10,9 @@
  *
  */
 
-#ifndef WH_BASE_LOGGER_H_
-#define WH_BASE_LOGGER_H_
-#include "common/defines.h"
+#ifndef WH_BASE_COMMON_LOGGER_H_
+#define WH_BASE_COMMON_LOGGER_H_
+#include "defines.h"
 
 namespace wanhive {
 /**
@@ -94,4 +94,4 @@ private:
 
 } /* namespace wanhive */
 
-#endif /* WH_BASE_LOGGER_H_ */
+#endif /* WH_BASE_COMMON_LOGGER_H_ */

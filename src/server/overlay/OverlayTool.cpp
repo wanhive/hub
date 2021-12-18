@@ -12,9 +12,9 @@
 
 #include "OverlayTool.h"
 #include "commands.h"
-#include "../../base/Logger.h"
 #include "../../base/common/CommandLine.h"
 #include "../../base/common/Exception.h"
+#include "../../base/common/Logger.h"
 #include "../../base/ds/Serializer.h"
 #include "../../hub/Topic.h"
 #include "../../util/Random.h"

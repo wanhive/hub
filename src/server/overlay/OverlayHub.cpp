@@ -12,7 +12,7 @@
 
 #include "OverlayHub.h"
 #include "commands.h"
-#include "../../base/Logger.h"
+#include "../../base/common/Logger.h"
 #include <cinttypes>
 
 namespace wanhive {

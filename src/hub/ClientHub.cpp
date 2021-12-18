@@ -12,7 +12,7 @@
 
 #include "ClientHub.h"
 #include "Protocol.h"
-#include "../base/Logger.h"
+#include "../base/common/Logger.h"
 #include "../util/commands.h"
 #include "../util/Random.h"
 

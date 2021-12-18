@@ -10,8 +10,8 @@
  *
  */
 
-#ifndef WH_BASE_TASK_H_
-#define WH_BASE_TASK_H_
+#ifndef WH_BASE_COMMON_TASK_H_
+#define WH_BASE_COMMON_TASK_H_
 
 namespace wanhive {
 /**
@@ -27,4 +27,4 @@ public:
 
 } /* namespace wanhive */
 
-#endif /* WH_BASE_TASK_H_ */
+#endif /* WH_BASE_COMMON_TASK_H_ */

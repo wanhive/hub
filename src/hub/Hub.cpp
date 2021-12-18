@@ -11,7 +11,7 @@
  */
 
 #include "Hub.h"
-#include "../base/Logger.h"
+#include "../base/common/Logger.h"
 #include "../base/Signal.h"
 #include <unistd.h>
 

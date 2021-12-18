@@ -12,7 +12,7 @@
 
 #ifndef WH_BASE_UNIX_PTHREAD_H_
 #define WH_BASE_UNIX_PTHREAD_H_
-#include "../Task.h"
+#include "../common/Task.h"
 #include <pthread.h>
 
 namespace wanhive {

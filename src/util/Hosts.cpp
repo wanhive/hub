@@ -11,8 +11,8 @@
  */
 
 #include "Hosts.h"
-#include "../base/Logger.h"
 #include "../base/common/Exception.h"
+#include "../base/common/Logger.h"
 #include <cstring>
 
 namespace {

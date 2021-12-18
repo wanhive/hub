@@ -13,7 +13,7 @@
 #ifndef WH_TEST_FLOOD_NETWORKTEST_H_
 #define WH_TEST_FLOOD_NETWORKTEST_H_
 #include "Agent.h"
-#include "../../base/Task.h"
+#include "../../base/common/Task.h"
 
 namespace wanhive {
 /**

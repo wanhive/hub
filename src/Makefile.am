@@ -2,10 +2,11 @@
 
 ## src/base/common
 WH_BASE_COMMONHEADERS = base/common/Atomic.h base/common/BaseException.h \
-	base/common/CommandLine.h base/common/Exception.h base/common/Memory.h \
-	base/common/audit.h base/common/defines.h base/common/pod.h
+	base/common/CommandLine.h base/common/Exception.h base/common/Logger.h \
+	base/common/Memory.h base/common/audit.h base/common/defines.h \
+	base/common/pod.h base/common/Task.h
 WH_BASE_COMMONSOURCES = base/common/CommandLine.cpp base/common/Exception.cpp \
-	base/common/Memory.cpp
+	 base/common/Logger.cpp base/common/Memory.cpp
 
 ## src/base/ds
 WH_BASE_DSHEADERS = base/ds/Array.h base/ds/BinaryHeap.h base/ds/Buffer.h \
@@ -19,10 +20,10 @@ WH_BASE_DSSOURCES = base/ds/Encoding.cpp base/ds/List.cpp base/ds/ListNode.cpp \
 	base/ds/State.cpp base/ds/Twiddler.cpp
 
 ## src/base
-WH_BASE_TOPHEADERS = base/Condition.h base/Configuration.h base/Logger.h \
+WH_BASE_TOPHEADERS = base/Condition.h base/Configuration.h \
 	base/Network.h base/NetworkAddressException.h base/Selector.h base/Signal.h \
-	base/Storage.h base/System.h base/Task.h base/Thread.h base/Timer.h
-WH_BASE_TOPSOURCES = base/Condition.cpp base/Configuration.cpp base/Logger.cpp \
+	base/Storage.h base/System.h base/Thread.h base/Timer.h
+WH_BASE_TOPSOURCES = base/Condition.cpp base/Configuration.cpp \
 	base/Network.cpp base/NetworkAddressException.cpp base/Selector.cpp \
 	base/Signal.cpp base/Storage.cpp base/System.cpp base/Thread.cpp \
 	base/Timer.cpp

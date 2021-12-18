@@ -11,7 +11,7 @@
  */
 
 #include "AuthenticationHub.h"
-#include "../../base/Logger.h"
+#include "../../base/common/Logger.h"
 #include "../../util/commands.h"
 #include "../../util/Endpoint.h"
 #include <new>

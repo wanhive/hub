@@ -11,10 +11,10 @@
  */
 
 #include "Identity.h"
-#include "../base/Logger.h"
 #include "../base/System.h"
 #include "../base/Timer.h"
 #include "../base/common/Exception.h"
+#include "../base/common/Logger.h"
 #include "../base/common/Memory.h"
 #include "../base/ds/MersenneTwister.h"
 #include <cstring>

@@ -17,6 +17,7 @@
  * Common
  */
 #include "base/common/CommandLine.h"
+#include "base/common/Logger.h"
 
 /*
  * Data structures
@@ -40,7 +41,6 @@
  */
 #include "base/Condition.h"
 #include "base/Configuration.h"
-#include "base/Logger.h"
 #include "base/Network.h"
 #include "base/NetworkAddressException.h"
 #include "base/Selector.h"

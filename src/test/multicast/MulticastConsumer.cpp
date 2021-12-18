@@ -11,7 +11,7 @@
  */
 
 #include "MulticastConsumer.h"
-#include "../../base/Logger.h"
+#include "../../base/common/Logger.h"
 #include "../../base/ds/Twiddler.h"
 #include "../../util/commands.h"
 
