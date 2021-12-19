@@ -1,7 +1,7 @@
 /*
  * Network.cpp
  *
- * Linux network programming routines
+ * Basic network programming routines
  *
  *
  * Copyright (C) 2018 Amit Kumar (amitkriit@gmail.com)
@@ -11,13 +11,12 @@
  */
 
 #include "Network.h"
-#include "NetworkAddressException.h"
 #include "common/Exception.h"
+#include "ipc/NetworkAddressException.h"
 #include "unix/SystemException.h"
 #include <cerrno>
 #include <fcntl.h>
 #include <unistd.h>
-#include <arpa/inet.h>
 #include <sys/un.h>
 #include <sys/stat.h>
 

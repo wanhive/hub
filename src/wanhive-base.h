@@ -37,12 +37,17 @@
 #include "base/ds/StaticCircularBuffer.h"
 
 /*
+ * IPC library
+ */
+#include "base/ipc/DNS.h"
+#include "base/ipc/NetworkAddressException.h"
+
+/*
  * System utilities
  */
 #include "base/Condition.h"
 #include "base/Configuration.h"
 #include "base/Network.h"
-#include "base/NetworkAddressException.h"
 #include "base/Selector.h"
 #include "base/Signal.h"
 #include "base/Storage.h"

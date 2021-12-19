@@ -19,14 +19,10 @@ WH_BASE_DSSOURCES = base/ds/Encoding.cpp base/ds/List.cpp base/ds/ListNode.cpp \
 	base/ds/MemoryPool.cpp base/ds/MersenneTwister.cpp base/ds/Serializer.cpp \
 	base/ds/State.cpp base/ds/Twiddler.cpp
 
-## src/base
-WH_BASE_TOPHEADERS = base/Condition.h base/Configuration.h \
-	base/Network.h base/NetworkAddressException.h base/Selector.h base/Signal.h \
-	base/Storage.h base/System.h base/Thread.h base/Timer.h
-WH_BASE_TOPSOURCES = base/Condition.cpp base/Configuration.cpp \
-	base/Network.cpp base/NetworkAddressException.cpp base/Selector.cpp \
-	base/Signal.cpp base/Storage.cpp base/System.cpp base/Thread.cpp \
-	base/Timer.cpp
+## src/base/ipc
+WH_BASE_IPCHEADERS = base/ipc/DNS.h base/ipc/inet.h \
+	base/ipc/NetworkAddressException.h
+WH_BASE_IPCSOURCES = base/ipc/DNS.cpp base/ipc/NetworkAddressException.cpp
 
 ## src/base/security
 WH_BASE_SECURITYHEADERS = base/security/CryptoUtils.h base/security/CSPRNG.h \
@@ -53,12 +49,20 @@ WH_BASEUNIXSOURCES = base/unix/Config.cpp base/unix/Directory.cpp \
 	base/unix/Time.cpp base/unix/TSignal.cpp base/unix/User.cpp \
 	base/unix/WorkingDirectory.cpp
 
-## src/base collection
-WH_BASEHEADERS = $(WH_BASE_COMMONHEADERS) $(WH_BASE_DSHEADERS) $(WH_BASE_TOPHEADERS) \
-	$(WH_BASE_SECURITYHEADERS) $(WH_BASEUNIXHEADERS)
+## src/base
+WH_BASE_TOPHEADERS = base/Condition.h base/Configuration.h base/Network.h \
+	base/Selector.h base/Signal.h base/Storage.h base/System.h base/Thread.h \
+	base/Timer.h
+WH_BASE_TOPSOURCES = base/Condition.cpp base/Configuration.cpp base/Network.cpp \
+	base/Selector.cpp base/Signal.cpp base/Storage.cpp base/System.cpp \
+	base/Thread.cpp base/Timer.cpp
 
-WH_BASESOURCES =  $(WH_BASE_COMMONSOURCES) $(WH_BASE_DSSOURCES) $(WH_BASE_TOPSOURCES) \
-	$(WH_BASE_SECURITYSOURCES) $(WH_BASEUNIXSOURCES)
+## src/base collection
+WH_BASEHEADERS = $(WH_BASE_COMMONHEADERS) $(WH_BASE_DSHEADERS) $(WH_BASE_IPCHEADERS) \
+	$(WH_BASE_SECURITYHEADERS) $(WH_BASEUNIXHEADERS) $(WH_BASE_TOPHEADERS)
+
+WH_BASESOURCES =  $(WH_BASE_COMMONSOURCES) $(WH_BASE_DSSOURCES) $(WH_BASE_IPCSOURCES) \
+	$(WH_BASE_SECURITYSOURCES) $(WH_BASEUNIXSOURCES) $(WH_BASE_TOPSOURCES)
 
 ## src/reactor collection
 WH_REACTORHEADERS = reactor/Descriptor.h reactor/Handler.h reactor/Reactor.h \
@@ -139,6 +143,9 @@ basecommoninclude_HEADERS = $(WH_BASE_COMMONHEADERS)
 
 basedsincludedir = $(pkgincludedir)/base/ds
 basedsinclude_HEADERS = $(WH_BASE_DSHEADERS)
+
+baseipcincludedir = $(pkgincludedir)/base/ipc
+baseipcinclude_HEADERS = $(WH_BASE_IPCHEADERS)
 
 basesecurityincludedir = $(pkgincludedir)/base/security
 basesecurityinclude_HEADERS = $(WH_BASE_SECURITYHEADERS)

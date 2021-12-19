@@ -10,9 +10,9 @@
  *
  */
 
-#ifndef WH_BASE_NETWORKADDRESSEXCEPTION_H_
-#define WH_BASE_NETWORKADDRESSEXCEPTION_H_
-#include "common/BaseException.h"
+#ifndef WH_BASE_IPC_NETWORKADDRESSEXCEPTION_H_
+#define WH_BASE_IPC_NETWORKADDRESSEXCEPTION_H_
+#include "../common/BaseException.h"
 
 namespace wanhive {
 /**
@@ -30,4 +30,4 @@ private:
 
 } /* namespace wanhive */
 
-#endif /* WH_BASE_NETWORKADDRESSEXCEPTION_H_ */
+#endif /* WH_BASE_IPC_NETWORKADDRESSEXCEPTION_H_ */

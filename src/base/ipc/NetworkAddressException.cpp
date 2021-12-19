@@ -24,7 +24,7 @@ NetworkAddressException::~NetworkAddressException() {
 }
 
 const char* NetworkAddressException::what() const noexcept {
-	return gai_strerror(error);
+	return ::gai_strerror(error);
 }
 
 int NetworkAddressException::errorCode() const noexcept {

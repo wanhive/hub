@@ -1,7 +1,7 @@
 /*
  * Network.h
  *
- * Linux network programming routines
+ * Basic network programming routines
  *
  *
  * Copyright (C) 2018 Amit Kumar (amitkriit@gmail.com)
@@ -12,21 +12,9 @@
 
 #ifndef WH_BASE_NETWORK_H_
 #define WH_BASE_NETWORK_H_
-#include<netdb.h>
+#include "ipc/inet.h"
 
 namespace wanhive {
-//-----------------------------------------------------------------
-struct NameInfo {
-	char host[NI_MAXHOST];
-	char service[NI_MAXSERV];
-	int type;
-};
-
-struct SocketAddress {
-	sockaddr_storage address;
-	socklen_t length;
-};
-//-----------------------------------------------------------------
 /**
  * Basic network programming routines
  * Adapted from Beej's Guide to Network Programming
