@@ -13,10 +13,9 @@
 #include "Descriptor.h"
 #include "../base/Selector.h"
 #include "../base/common/Atomic.h"
+#include "../base/unix/Fcntl.h"
 #include "../base/unix/SystemException.h"
 #include <cerrno>
-#include <fcntl.h>
-#include <unistd.h>
 
 namespace wanhive {
 
@@ -49,20 +48,14 @@ int Descriptor::getHandle() const noexcept {
 }
 
 void Descriptor::setBlocking(bool block) {
-	auto flags = fcntl(fd, F_GETFL);
-	if (flags != -1) {
-		if (block) {
-			flags &= ~O_NONBLOCK;
-		} else {
-			flags |= O_NONBLOCK;
-		}
-
-		if (fcntl(fd, F_SETFL, flags) == 0) {
-			return;
-		}
+	auto flags = Fcntl::getStatusFlag(fd);
+	if (block) {
+		flags &= ~O_NONBLOCK;
+	} else {
+		flags |= O_NONBLOCK;
 	}
-	//If we have reached here, then there must have been an error
-	throw SystemException();
+
+	Fcntl::setStatusFlag(fd, flags);
 }
 
 void Descriptor::setHandle(int fd) noexcept {
