@@ -26,9 +26,8 @@ BufferTest::~BufferTest() {
 void BufferTest::test() noexcept {
 	try {
 		buf.initialize(65536);
+		Thread t(*this);
 		Timer timer;
-		Thread t(this);
-		t.start();
 		unsigned long i = 0;
 		while (i <= LOOPS) {
 			if (buf.put(i)) {

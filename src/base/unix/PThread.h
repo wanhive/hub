@@ -23,7 +23,7 @@ namespace wanhive {
 class PThread {
 public:
 	//Creates a new thread
-	PThread(Task &task, void *arg, bool detached = false);
+	PThread(Task &task, void *arg, bool detached);
 	~PThread();
 
 	//Wrapper for pthread_join(3): waits for the thread to terminate

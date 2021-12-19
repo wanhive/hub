@@ -101,10 +101,6 @@ void Hub::removeFromInotifier(int identifier) noexcept {
 	}
 }
 
-void Hub::interrupt(int signum) noexcept {
-	Thread::interrupt(signum);
-}
-
 double Hub::getUptime() const noexcept {
 	return uptime.elapsed();
 }
@@ -733,8 +729,7 @@ void Hub::initSignalWatcher() {
 void Hub::startWorker(void *arg) {
 	try {
 		if (enableWorker() && !workerThread) {
-			workerThread = new Thread(&worker);
-			workerThread->start(arg);
+			workerThread = new Thread(worker, arg);
 			WH_LOG_INFO("Worker thread started");
 		} else {
 			WH_LOG_DEBUG("No worker thread");

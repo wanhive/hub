@@ -39,7 +39,7 @@ class Hub: public Handler<Clock>,
 		public Handler<Socket>,
 		protected Identity,
 		protected Reactor,
-		private Thread {
+		private Task {
 public:
 	Hub(unsigned long long uid, const char *path = nullptr) noexcept;
 	virtual ~Hub();
@@ -73,8 +73,6 @@ protected:
 	int addToInotifier(const char *path, uint32_t mask);
 	//Stop monitoring a file/directory associated with <identifier>
 	void removeFromInotifier(int identifier) noexcept;
-	//Deliver a signal to this hub
-	void interrupt(int signum = SIGUSR1) noexcept;
 	//=================================================================
 	/**
 	 * Hub statistics
@@ -216,7 +214,7 @@ private:
 	bool handle(Socket *connection) noexcept override final;
 	//=================================================================
 	/**
-	 * Override the Thread class
+	 * Implement the Task interface
 	 */
 	void run(void *arg) noexcept override final;
 	int getStatus() const noexcept override final;

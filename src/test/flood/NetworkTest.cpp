@@ -99,15 +99,13 @@ void NetworkTest::test(const char *path) noexcept {
 
 void NetworkTest::flood(uint64_t destination, unsigned int iterations) {
 	try {
-		Timer t;
-		Thread th(this);
 		bootstrap(serverId, 5000);
 		useKeyPair(NULL);
 		this->iterations = iterations;
 		this->destinationId = destination;
 		std::cerr << "\n============START==============\n";
-		th.start();
-		t.now();
+		Thread th(*this);
+		Timer t;
 		produce();
 		th.join();
 		std::cerr << "Elapsed time: " << t.elapsed() << " seconds" << std::endl;

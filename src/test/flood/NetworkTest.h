@@ -34,11 +34,11 @@ private:
 	void consume() noexcept;
 	void pong();
 	//-----------------------------------------------------------------
-	void run(void *arg) noexcept override;
-	void setStatus(int status) noexcept override {
+	void run(void *arg) noexcept override final;
+	void setStatus(int status) noexcept override final {
 
 	}
-	int getStatus() const noexcept override {
+	int getStatus() const noexcept override final {
 		return 0;
 	}
 private:
