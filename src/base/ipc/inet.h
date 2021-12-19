@@ -1,8 +1,13 @@
 /*
  * inet.h
  *
- *  Created on: 19-Dec-2021
- *      Author: amit
+ * Useful structures for the network-based IPC
+ *
+ *
+ * Copyright (C) 2018 Amit Kumar (amitkriit@gmail.com)
+ * This program is part of the Wanhive IoT Platform.
+ * Check the COPYING file for the license.
+ *
  */
 
 #ifndef WH_BASE_IPC_INET_H_
