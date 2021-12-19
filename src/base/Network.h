@@ -16,32 +16,19 @@
 
 namespace wanhive {
 /**
- * Basic network programming routines
- * Adapted from Beej's Guide to Network Programming
- * REF: https://beej.us/guide/bgnet/html/
+ * Basic network routines
  */
 class Network {
 public:
 	//Returns a bound socket
 	static int serverSocket(const char *service, SocketAddress &sa,
-			bool blocking, int type = SOCK_STREAM, int family = AF_UNSPEC,
-			int protocol = 0);
-	//Set AI_NUMERICHOST in <flags> to stop DNS resolution
+			bool blocking);
+	//Returns a connected socket
 	static int connectedSocket(const char *name, const char *service,
-			SocketAddress &sa, bool blocking, int type = SOCK_STREAM,
-			int family = AF_UNSPEC, int flags = 0, int protocol = 0);
+			SocketAddress &sa, bool blocking);
 	//Same as above, but uses nameInfo
 	static int connectedSocket(const NameInfo &ni, SocketAddress &sa,
-			bool blocking, int type = SOCK_STREAM, int family = AF_UNSPEC,
-			int flags = 0, int protocol = 0);
-	//The basic socket, not connected
-	static int socket(const char *name, const char *service, SocketAddress &sa,
-			int type, int family, int flags, int protocol = 0);
-	//Same as above, but uses nameinfo
-	static int socket(const NameInfo &ni, SocketAddress &sa, int type,
-			int family, int flags, int protocol = 0);
-	//Assign the address to the socket
-	static void bind(int sfd, SocketAddress &sa);
+			bool blocking);
 	//Listen for incoming connections
 	static void listen(int sfd, int backlog);
 	/*
@@ -49,13 +36,6 @@ public:
 	 * connection is configured for blocking IO.
 	 */
 	static int accept(int listenfd, SocketAddress &sa, bool blocking);
-	/*
-	 * Wrapper for the system call connect(2).
-	 * Connects to a server, if the call fails then retry with a new socket.
-	 * Returns 0 on success, -1 if socket is nonblocking and the connection
-	 * cannot be completed immediately.
-	 */
-	static int connect(int sfd, SocketAddress &sa);
 	//Wrapper for the shutdown(2) system call
 	static int shutdown(int sfd, int how = SHUT_RDWR) noexcept;
 	//closes an open socket, best effort
@@ -72,13 +52,6 @@ public:
 			bool blocking, int type = SOCK_STREAM, int protocol = 0);
 	//Creates unnamed pair of connected sockets (unix domain)
 	static void socketPair(int sv[2], bool blocking, int type = SOCK_STREAM);
-	//No costly DNS resolution by default
-	static void getNameInfo(const SocketAddress &sa, NameInfo &ni,
-			int flags = (NI_NUMERICHOST | NI_NUMERICSERV));
-	//Returns the current address to which the socket sfd is bound
-	static void getSockName(int sfd, SocketAddress &sa);
-	//Returns the address of the peer connected to the socket sfd
-	static void getPeerName(int sfd, SocketAddress &sa);
 	//=================================================================
 	/**
 	 * Blocking IO utilities
@@ -108,10 +81,6 @@ public:
 	 * in milliseconds. Negative timeout value is ignored.
 	 */
 	static void setSocketTimeout(int sfd, int recvTimeout, int sendTimeout);
-private:
-	static addrinfo* getAddrInfo(const char *name, const char *service,
-			int family, int type, int flags, int protocol);
-	static void freeAddrInfo(addrinfo *res) noexcept;
 };
 
 } /* namespace wanhive */

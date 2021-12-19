@@ -21,7 +21,7 @@ namespace wanhive {
 class DNS {
 public:
 	DNS() noexcept;
-	DNS(const char *node, const char *service, const SocketTraits *hints);
+	DNS(const char *node, const char *service, const SocketTraits *traits);
 	~DNS();
 
 	//Wrapper for getaddrinfo(3): performs network address translation

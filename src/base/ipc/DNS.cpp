@@ -21,9 +21,9 @@ DNS::DNS() noexcept :
 
 }
 
-DNS::DNS(const char *node, const char *service, const SocketTraits *hints) :
+DNS::DNS(const char *node, const char *service, const SocketTraits *traits) :
 		result(nullptr), index(nullptr) {
-	lookup(node, service, hints);
+	lookup(node, service, traits);
 }
 
 DNS::~DNS() {
