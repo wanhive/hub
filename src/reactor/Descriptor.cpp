@@ -22,12 +22,12 @@ namespace wanhive {
 unsigned long long Descriptor::_nextUid = MIN_TMP_ID;
 
 Descriptor::Descriptor() noexcept :
-		uid(nextUid()), fd(-1) {
+		uid(nextUid()) {
 
 }
 
 Descriptor::Descriptor(int fd) noexcept :
-		uid(nextUid()), fd(fd) {
+		File(fd), uid(nextUid()) {
 
 }
 
@@ -43,39 +43,36 @@ unsigned long long Descriptor::getUid() const noexcept {
 	return uid;
 }
 
-int Descriptor::getHandle() const noexcept {
-	return fd;
-}
-
 void Descriptor::setBlocking(bool block) {
-	auto flags = Fcntl::getStatusFlag(fd);
+	auto flags = Fcntl::getStatusFlag(getHandle());
 	if (block) {
 		flags &= ~O_NONBLOCK;
 	} else {
 		flags |= O_NONBLOCK;
 	}
 
-	Fcntl::setStatusFlag(fd, flags);
+	Fcntl::setStatusFlag(getHandle(), flags);
+}
+
+bool Descriptor::isBlocking() {
+	auto ret = Fcntl::getStatusFlag(getHandle());
+	return !(ret & O_NONBLOCK);
+}
+
+int Descriptor::getHandle() const noexcept {
+	return File::get();
 }
 
 void Descriptor::setHandle(int fd) noexcept {
-	if (fd != this->fd) {
-		closeHandle();
-		this->fd = fd;
-	}
+	File::set(fd);
 }
 
 int Descriptor::releaseHandle() noexcept {
-	auto ret = fd;
-	fd = -1;
-	return ret;
+	return File::release();
 }
 
-void Descriptor::closeHandle() noexcept {
-	if (fd >= 0) {
-		::close(fd);
-	}
-	fd = -1;
+bool Descriptor::closeHandle() noexcept {
+	return File::close();
 }
 
 bool Descriptor::isReady(bool outgoing) const noexcept {
@@ -83,7 +80,7 @@ bool Descriptor::isReady(bool outgoing) const noexcept {
 }
 
 ssize_t Descriptor::readv(const iovec *vectors, unsigned int count) {
-	auto nRead = ::readv(fd, vectors, count);
+	auto nRead = ::readv(getHandle(), vectors, count);
 	if (nRead > 0) {
 		return nRead;
 	} else if (nRead == 0) {
@@ -99,7 +96,7 @@ ssize_t Descriptor::readv(const iovec *vectors, unsigned int count) {
 }
 
 ssize_t Descriptor::read(void *buf, size_t count) {
-	auto nRead = ::read(fd, buf, count);
+	auto nRead = ::read(getHandle(), buf, count);
 	if (nRead > 0) {
 		return nRead;
 	} else if (nRead == 0) {
@@ -115,7 +112,7 @@ ssize_t Descriptor::read(void *buf, size_t count) {
 }
 
 ssize_t Descriptor::writev(const iovec *vectors, unsigned int count) {
-	auto nWrite = ::writev(fd, vectors, count);
+	auto nWrite = ::writev(getHandle(), vectors, count);
 	if (nWrite != -1) {
 		return nWrite;
 	} else if (errno == EAGAIN || errno == EWOULDBLOCK) {
@@ -128,7 +125,7 @@ ssize_t Descriptor::writev(const iovec *vectors, unsigned int count) {
 }
 
 ssize_t Descriptor::write(const void *buf, size_t count) {
-	auto nWrite = ::write(fd, buf, count);
+	auto nWrite = ::write(getHandle(), buf, count);
 	if (nWrite != -1) {
 		return nWrite;
 	} else if (errno == EAGAIN || errno == EWOULDBLOCK) {

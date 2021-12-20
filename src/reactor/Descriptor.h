@@ -13,6 +13,7 @@
 #ifndef WH_REACTOR_DESCRIPTOR_H_
 #define WH_REACTOR_DESCRIPTOR_H_
 #include "../base/ds/State.h"
+#include "../base/unix/File.h"
 #include <sys/uio.h>
 
 namespace wanhive {
@@ -20,7 +21,7 @@ namespace wanhive {
  * Abstraction of file descriptors
  * Thread safe at class level
  */
-class Descriptor: public State {
+class Descriptor: public State, private File {
 public:
 	Descriptor() noexcept;
 	Descriptor(int fd) noexcept;
@@ -31,17 +32,19 @@ public:
 	//Return the unique identifier
 	unsigned long long getUid() const noexcept;
 	//-----------------------------------------------------------------
-	//Return the associated file descriptor
-	int getHandle() const noexcept;
 	//Set blocking IO state of the file descriptor
 	void setBlocking(bool block);
+	//Check blocking IO state of the file descriptor
+	bool isBlocking();
+	//Return the associated file descriptor
+	int getHandle() const noexcept;
 protected:
 	//Set the file descriptor (existing file descriptor is closed)
 	void setHandle(int fd) noexcept;
 	//Release and return the file descriptor
 	int releaseHandle() noexcept;
 	//Close and invalidate the file descriptor
-	void closeHandle() noexcept;
+	bool closeHandle() noexcept;
 	/*
 	 * Return true if (false otherwise):
 	 * 1. IO error or peer shutdown reported
@@ -75,8 +78,6 @@ private:
 	static unsigned long long _nextUid;
 	//The unique identifier (UID) of this object
 	unsigned long long uid;
-	//The file descriptor associated with this object
-	int fd;
 };
 
 } /* namespace wanhive */
