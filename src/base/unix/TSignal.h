@@ -36,9 +36,9 @@ public:
 	static void raise(pthread_t threadId, int signum);
 
 	//Waits for a signal
-	static int wait(const SignalSet &ss);
+	static int suspend(const SignalSet &ss);
 	//Wrapper for sigwait(3): waits for a signal
-	static int wait(const sigset_t *set);
+	static int suspend(const sigset_t *set);
 
 	//Wrapper for pthread_sigqueue(3): queues up a signal to a thread
 	static void queue(pthread_t threadId, int signum, const sigval value);

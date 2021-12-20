@@ -50,11 +50,11 @@ void TSignal::raise(pthread_t threadId, int signum) {
 	}
 }
 
-int TSignal::wait(const SignalSet &ss) {
-	return wait(ss.mask());
+int TSignal::suspend(const SignalSet &ss) {
+	return suspend(ss.mask());
 }
 
-int TSignal::wait(const sigset_t *set) {
+int TSignal::suspend(const sigset_t *set) {
 	if (!set) {
 		throw Exception(EX_INVALIDPARAM);
 	} else {

@@ -70,11 +70,11 @@ void PSignal::pending(sigset_t *set) {
 	}
 }
 
-void PSignal::wait(const SignalSet &ss) {
-	wait(ss.mask());
+void PSignal::suspend(const SignalSet &ss) {
+	suspend(ss.mask());
 }
 
-void PSignal::wait(const sigset_t *set) {
+void PSignal::suspend(const sigset_t *set) {
 	if (!set) {
 		throw Exception(EX_INVALIDPARAM);
 	} else if (::sigsuspend(set) == -1 && errno != EINTR) {

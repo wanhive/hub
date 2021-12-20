@@ -45,9 +45,9 @@ public:
 	static void pending(sigset_t *set);
 
 	//Wrapper for sigsuspend(2): waits for a signal
-	static void wait(const SignalSet &ss);
+	static void suspend(const SignalSet &ss);
 	//Wrapper for sigsuspend(2): waits for a signal
-	static void wait(const sigset_t *set);
+	static void suspend(const sigset_t *set);
 
 	//Wrapper for sigqueue(2): queues up a signal to a process
 	static void queue(pid_t pid, int signum, const sigval value);
