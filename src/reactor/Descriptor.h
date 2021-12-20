@@ -13,6 +13,7 @@
 #ifndef WH_REACTOR_DESCRIPTOR_H_
 #define WH_REACTOR_DESCRIPTOR_H_
 #include "../base/ds/State.h"
+#include "../base/ds/UID.h"
 #include "../base/unix/File.h"
 #include <sys/uio.h>
 
@@ -66,18 +67,7 @@ protected:
 	ssize_t writev(const iovec *iov, unsigned int count);
 	ssize_t write(const void *buf, size_t count);
 private:
-	//UID generator (thread safe)
-	static unsigned long long nextUid() noexcept;
-public:
-	//[9223372036854775808, 18446744073709551615] are used as automatic identifiers
-	static constexpr unsigned long long MIN_TMP_ID =
-			((unsigned long long) INT64_MAX) + 1;
-	static constexpr unsigned long long MAX_TMP_ID = UINT64_MAX;
-private:
-	//Counter for the UID generator
-	static unsigned long long _nextUid;
-	//The unique identifier (UID) of this object
-	unsigned long long uid;
+	UID uid;
 };
 
 } /* namespace wanhive */

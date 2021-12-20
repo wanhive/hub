@@ -19,15 +19,12 @@
 
 namespace wanhive {
 
-unsigned long long Descriptor::_nextUid = MIN_TMP_ID;
-
-Descriptor::Descriptor() noexcept :
-		uid(nextUid()) {
+Descriptor::Descriptor() noexcept {
 
 }
 
 Descriptor::Descriptor(int fd) noexcept :
-		File(fd), uid(nextUid()) {
+		File(fd) {
 
 }
 
@@ -36,11 +33,11 @@ Descriptor::~Descriptor() {
 }
 
 void Descriptor::setUid(unsigned long long uid) noexcept {
-	this->uid = uid;
+	this->uid.set(uid);
 }
 
 unsigned long long Descriptor::getUid() const noexcept {
-	return uid;
+	return uid.get();
 }
 
 void Descriptor::setBlocking(bool block) {
@@ -135,11 +132,6 @@ ssize_t Descriptor::write(const void *buf, size_t count) {
 	} else {
 		throw SystemException();
 	}
-}
-
-unsigned long long Descriptor::nextUid() noexcept {
-	//For all practical purposes this is sufficient
-	return Atomic<unsigned long long>::fetchAndAdd(&_nextUid, 1);
 }
 
 } /* namespace wanhive */
