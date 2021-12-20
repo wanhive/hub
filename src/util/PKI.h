@@ -19,7 +19,7 @@ namespace wanhive {
 //Length of RSA key in bits
 #undef WH_PKI_KEY_LENGTH
 #define WH_PKI_KEY_LENGTH 2048
-//Length of RSA encrypted data in bytes (256 bytes)
+//Length of RSA encrypted data in bytes
 #undef WH_PKI_ENCODING_LEN
 #define WH_PKI_ENCODING_LEN ((WH_PKI_KEY_LENGTH) / 8)
 //RSA signature
@@ -73,15 +73,16 @@ public:
 			const Signature *sig) const noexcept;
 	//=================================================================
 	/*
-	 * Generate a pair of 2048 bit RSA keys and store them into
-	 * <hostKey> and <publicKey> files.
+	 * Generate RSA key-pair in PEM format and store them in files.
+	 * <hostKey>: pathname of the private key file
+	 * <publicKey>: pathname of the public key file
 	 */
 	static void generateKeyPair(const char *hostKey, const char *publicKey);
 public:
-	static constexpr unsigned int KEY_LENGTH = WH_PKI_KEY_LENGTH; //2048 bits
-	static constexpr unsigned int ENCODING_LENGTH = WH_PKI_ENCODING_LEN; //256 bytes
-	static constexpr unsigned int SIGNATURE_LENGTH = WH_PKI_ENCODING_LEN; //256 bytes
-	static constexpr unsigned int ENCRYPTED_LENGTH = WH_PKI_ENCODING_LEN; //256 bytes
+	static constexpr unsigned int KEY_LENGTH = WH_PKI_KEY_LENGTH;
+	static constexpr unsigned int ENCODING_LENGTH = WH_PKI_ENCODING_LEN;
+	static constexpr unsigned int SIGNATURE_LENGTH = WH_PKI_ENCODING_LEN;
+	static constexpr unsigned int ENCRYPTED_LENGTH = WH_PKI_ENCODING_LEN;
 	//Maximum size in bytes of the plain text block which can be encrypted
 	static constexpr unsigned int MAX_PT_LEN = (ENCODING_LENGTH)
 			- ((2 * 160 / 8) + 2);
