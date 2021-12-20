@@ -10,14 +10,14 @@ WH_BASE_COMMONSOURCES = base/common/CommandLine.cpp base/common/Exception.cpp \
 
 ## src/base/ds
 WH_BASE_DSHEADERS = base/ds/Array.h base/ds/BinaryHeap.h base/ds/Buffer.h \
-	base/ds/CircularBuffer.h base/ds/CircularBufferVector.h base/ds/Encoding.h \
-	base/ds/Khash.h base/ds/List.h base/ds/ListNode.h base/ds/MemoryPool.h \
-	base/ds/MersenneTwister.h base/ds/Serializer.h base/ds/State.h \
-	base/ds/StaticBuffer.h base/ds/StaticCircularBuffer.h base/ds/Twiddler.h \
-	base/ds/functors.h
-WH_BASE_DSSOURCES = base/ds/Encoding.cpp base/ds/List.cpp base/ds/ListNode.cpp \
-	base/ds/MemoryPool.cpp base/ds/MersenneTwister.cpp base/ds/Serializer.cpp \
-	base/ds/State.cpp base/ds/Twiddler.cpp
+	base/ds/CircularBuffer.h base/ds/CircularBufferVector.h base/ds/Counter.h \
+	base/ds/Encoding.h base/ds/Khash.h base/ds/List.h base/ds/ListNode.h \
+	base/ds/MemoryPool.h base/ds/MersenneTwister.h base/ds/Serializer.h \
+	base/ds/State.h base/ds/StaticBuffer.h base/ds/StaticCircularBuffer.h \
+	base/ds/Twiddler.h base/ds/functors.h
+WH_BASE_DSSOURCES = base/ds/Counter.cpp base/ds/Encoding.cpp base/ds/List.cpp \
+	base/ds/ListNode.cpp base/ds/MemoryPool.cpp base/ds/MersenneTwister.cpp \
+	base/ds/Serializer.cpp base/ds/State.cpp base/ds/Twiddler.cpp
 
 ## src/base/ipc
 WH_BASE_IPCHEADERS = base/ipc/DNS.h base/ipc/inet.h \

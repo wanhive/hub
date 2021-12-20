@@ -28,6 +28,7 @@
 #include "base/ds/Buffer.h"
 #include "base/ds/CircularBuffer.h"
 #include "base/ds/CircularBufferVector.h"
+#include "base/ds/Counter.h"
 #include "base/ds/Encoding.h"
 #include "base/ds/Khash.h"
 #include "base/ds/List.h"
