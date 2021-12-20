@@ -52,10 +52,20 @@ public:
 	bool hasPublicKey() const noexcept;
 	bool hasHostKey() const noexcept;
 	//=================================================================
-	//Cannot encrypt blocks bigger than MAX_PT_LEN
+	/*
+	 * Cannot encrypt blocks bigger than MAX_PT_LEN.
+	 * Returns true on success, false otherwise.
+	 */
 	bool encrypt(const void *block, unsigned int size,
 			PKIEncryptedData *target) const noexcept;
-	bool decrypt(const PKIEncryptedData *block, void *result) const noexcept;
+	/*
+	 * <result>'s capacity should be at least MAX_PT_LEN bytes.
+	 * If <size> is not nullptr and decryption is successful then
+	 * the output length is returned in <size>. Returns true on
+	 * success, false on failure.
+	 */
+	bool decrypt(const PKIEncryptedData *block, void *result,
+			unsigned int *size = nullptr) const noexcept;
 
 	bool sign(const void *block, unsigned int size,
 			Signature *sig) const noexcept;

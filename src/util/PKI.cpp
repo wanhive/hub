@@ -56,20 +56,25 @@ bool PKI::encrypt(const void *block, unsigned int size,
 	}
 }
 
-bool PKI::decrypt(const PKIEncryptedData *block, void *result) const noexcept {
-	if (rsa.decrypt((const unsigned char*) block, ENCRYPTED_LENGTH,
-			(unsigned char*) result) != -1) {
+bool PKI::decrypt(const PKIEncryptedData *block, void *result,
+		unsigned int *size) const noexcept {
+	auto ret = rsa.decrypt((const unsigned char*) block, ENCRYPTED_LENGTH,
+			(unsigned char*) result);
+	if (ret == -1) {
+		return false;
+	} else if (size) {
+		*size = ret;
 		return true;
 	} else {
-		return false;
+		return true;
 	}
 }
 
 bool PKI::sign(const void *block, unsigned int size,
 		Signature *sig) const noexcept {
-	unsigned int sigLen;
+	unsigned int sigLen = 0;
 	return rsa.sign((const unsigned char*) block, size, (unsigned char*) sig,
-			&sigLen);
+			&sigLen) && (sigLen == SIGNATURE_LENGTH);
 }
 
 bool PKI::verify(const void *block, unsigned int len,

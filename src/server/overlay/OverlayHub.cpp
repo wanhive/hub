@@ -947,10 +947,15 @@ int OverlayHub::handleGetKeyRequest(Message *msg) noexcept {
 	} else if (Socket::isEphemeralId(origin)
 			&& msg->getPayloadLength() == PKI::ENCRYPTED_LENGTH && verifyHost()
 			&& getPKI()) {
-		Digest hc;	//Challenge Key
+		//Extract the challenge key
+		unsigned char challenge[PKI::MAX_PT_LEN]; //Challenge
+		memset(&challenge, 0, sizeof(challenge));
+		getPKI()->decrypt((const PKIEncryptedData*) msg->getBytes(0),
+				&challenge);
+		msg->setBytes(0, (const unsigned char*) &challenge, Hash::SIZE);
+		//Build and return the session key
+		Digest hc; //Response
 		memset(&hc, 0, sizeof(hc));
-		getPKI()->decrypt((const PKIEncryptedData*) msg->getBytes(0), &hc);
-		msg->setBytes(0, (const unsigned char*) &hc, Hash::SIZE);
 		generateNonce(hashFn, origin, getUid(), &hc);
 		msg->setBytes(Hash::SIZE, (const unsigned char*) &hc, Hash::SIZE);
 		msg->updateSource(0);

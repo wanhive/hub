@@ -223,8 +223,6 @@ private:
 		bool enableRegistration;
 		//Authenticate every Client Registration Request
 		bool authenticateClient;
-		//Sign the getKey response
-		bool mutualAuthentication;
 		//If true, server will try to connect to the overlay network
 		bool connectToOverlay;
 		//Frequency of Routing Table Update
