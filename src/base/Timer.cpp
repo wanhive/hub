@@ -63,7 +63,7 @@ void Timer::sleep(unsigned int milliseconds, unsigned int nanoseconds) noexcept 
 size_t Timer::print(char *buffer, size_t size) noexcept {
 	//Cannot fail
 	Time t(CLOCK_REALTIME);
-	return t.convert(buffer, size);
+	return t.convert(buffer, size, "%Y_%m_%d-%H_%M_%S-%Z");
 }
 
 unsigned long long Timer::timeSeed() noexcept {
