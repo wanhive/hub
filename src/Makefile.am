@@ -3,8 +3,8 @@
 ## src/base/common
 WH_BASE_COMMONHEADERS = base/common/Atomic.h base/common/BaseException.h \
 	base/common/CommandLine.h base/common/Exception.h base/common/Logger.h \
-	base/common/Memory.h base/common/audit.h base/common/defines.h \
-	base/common/pod.h base/common/Task.h
+	base/common/Memory.h base/common/Task.h base/common/audit.h \
+	base/common/defines.h base/common/pod.h
 WH_BASE_COMMONSOURCES = base/common/CommandLine.cpp base/common/Exception.cpp \
 	 base/common/Logger.cpp base/common/Memory.cpp
 
@@ -14,14 +14,14 @@ WH_BASE_DSHEADERS = base/ds/Array.h base/ds/BinaryHeap.h base/ds/Buffer.h \
 	base/ds/Encoding.h base/ds/Khash.h base/ds/List.h base/ds/ListNode.h \
 	base/ds/MemoryPool.h base/ds/MersenneTwister.h base/ds/Serializer.h \
 	base/ds/State.h base/ds/StaticBuffer.h base/ds/StaticCircularBuffer.h \
-	base/ds/Twiddler.h base/ds/functors.h
+	base/ds/Twiddler.h base/ds/UID.h base/ds/functors.h
 WH_BASE_DSSOURCES = base/ds/Counter.cpp base/ds/Encoding.cpp base/ds/List.cpp \
 	base/ds/ListNode.cpp base/ds/MemoryPool.cpp base/ds/MersenneTwister.cpp \
-	base/ds/Serializer.cpp base/ds/State.cpp base/ds/Twiddler.cpp
+	base/ds/Serializer.cpp base/ds/State.cpp base/ds/Twiddler.cpp base/ds/UID.cpp
 
 ## src/base/ipc
-WH_BASE_IPCHEADERS = base/ipc/DNS.h base/ipc/inet.h \
-	base/ipc/NetworkAddressException.h
+WH_BASE_IPCHEADERS = base/ipc/DNS.h base/ipc/NetworkAddressException.h \
+	base/ipc/inet.h
 WH_BASE_IPCSOURCES = base/ipc/DNS.cpp base/ipc/NetworkAddressException.cpp
 
 ## src/base/security

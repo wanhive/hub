@@ -40,6 +40,7 @@
 #include "base/ds/StaticBuffer.h"
 #include "base/ds/StaticCircularBuffer.h"
 #include "base/ds/Twiddler.h"
+#include "base/ds/UID.h"
 #include "base/ds/functors.h"
 #include "base/ipc/DNS.h"
 #include "base/ipc/NetworkAddressException.h"
