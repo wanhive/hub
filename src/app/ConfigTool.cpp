@@ -173,18 +173,17 @@ void ConfigTool::generateVerifier() {
 		char buffer[4096];
 		const unsigned char *binary;
 		unsigned int bytes;
-		auto offset = snprintf(buffer, sizeof(buffer),
-				"{\n   \"id\": \"%s\",\n   \"salt\": \"", name);
+		std::cerr << "{\n";
+		std::cerr << " \"id\": \"" << name << "\",\n";
 		authenticator->getSalt(binary, bytes);
-		offset += Encoding::base16Encode(buffer + offset, binary, bytes,
-				sizeof(buffer) - offset);
-		offset += snprintf(buffer + offset, sizeof(buffer),
-				"\",\n   \"verifier\": \"");
+		buffer[0] = '\0';
+		Encoding::base16Encode(buffer, binary, bytes, sizeof(buffer));
+		std::cerr << " \"salt\": \"" << buffer << "\",\n";
 		authenticator->getPasswordVerifier(binary, bytes);
-		offset += Encoding::base16Encode(buffer + offset, binary, bytes,
-				sizeof(buffer) - offset);
-		offset += snprintf(buffer + offset, sizeof(buffer), "\"\n}");
-		std::cerr << buffer << std::endl;
+		buffer[0] = '\0';
+		Encoding::base16Encode(buffer, binary, bytes, sizeof(buffer));
+		std::cerr << " \"verifier\": \"" << buffer << "\"\n";
+		std::cerr << "}" << std::endl;
 		delete authenticator;
 	} catch (const BaseException &e) {
 		delete authenticator;
