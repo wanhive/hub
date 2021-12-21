@@ -86,7 +86,7 @@ void DNS::getTraits(const addrinfo *info, SocketTraits &traits) noexcept {
 
 void DNS::getAddress(const addrinfo *info, SocketAddress &sa) noexcept {
 	if (info) {
-		memcpy(&sa.address, info->ai_addr, info->ai_addrlen);
+		::memcpy(&sa.address, info->ai_addr, info->ai_addrlen);
 		sa.length = info->ai_addrlen;
 	} else {
 		::memset(&sa, 0, sizeof(sa));
