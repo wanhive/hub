@@ -16,6 +16,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Major code-base upgrade to improve the overall quality and readability.
 
+### Fixed
+
+- Potential stack overflow during session key negotiation in **OverlayHub::handleGetKeyRequest** method.
+
 ## [5.0.0] - 2021-11-18
 
 ### Added
