@@ -10,8 +10,8 @@
  *
  */
 
-#ifndef SRC_UTIL_PACKET_H_
-#define SRC_UTIL_PACKET_H_
+#ifndef WH_UTIL_PACKET_H_
+#define WH_UTIL_PACKET_H_
 #include "Message.h"
 #include "PKI.h"
 
@@ -43,4 +43,4 @@ private:
 
 } /* namespace wanhive */
 
-#endif /* SRC_UTIL_PACKET_H_ */
+#endif /* WH_UTIL_PACKET_H_ */
