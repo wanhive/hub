@@ -24,9 +24,7 @@
 #include "../test/multicast/MulticastConsumer.h"
 
 #include <iostream>
-#include <limits>
 #include <getopt.h>
-#include <unistd.h>
 
 namespace wanhive {
 
