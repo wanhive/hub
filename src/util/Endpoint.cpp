@@ -19,8 +19,7 @@
 namespace wanhive {
 
 Endpoint::Endpoint() noexcept :
-		sockfd(-1), ssl(nullptr), sslContext(nullptr), pki(nullptr), sourceId(
-				0), sequenceNumber(0), session(0) {
+		sockfd(-1), ssl(nullptr), sslContext(nullptr) {
 
 }
 
@@ -37,11 +36,11 @@ SSLContext* Endpoint::getSSLContext() const noexcept {
 }
 
 void Endpoint::useKeyPair(const PKI *pki) noexcept {
-	this->pki = pki;
+	trust.set(pki);
 }
 
 const PKI* Endpoint::getKeyPair() const noexcept {
-	return pki;
+	return trust.get();
 }
 
 void Endpoint::connect(const NameInfo &ni, int timeoutMils) {
@@ -154,207 +153,49 @@ void Endpoint::setSocketTimeout(int recvTimeout, int sendTimeout) const {
 	Network::setSocketTimeout(sockfd, recvTimeout, sendTimeout);
 }
 
-void Endpoint::setSource(uint64_t source) noexcept {
-	this->sourceId = source;
+bool Endpoint::checkContext(uint8_t command, uint8_t qualifier) const noexcept {
+	return header().getCommand() == command
+			&& header().getQualifier() == qualifier;
 }
 
-uint64_t Endpoint::getSource() const noexcept {
-	return sourceId;
-}
-
-void Endpoint::setSequenceNumber(uint16_t sequenceNumber) noexcept {
-	this->sequenceNumber = sequenceNumber;
-}
-
-uint16_t Endpoint::getSequenceNumber() const noexcept {
-	return sequenceNumber;
-}
-
-uint16_t Endpoint::nextSequenceNumber() noexcept {
-	if (!sequenceNumber) {
-		sequenceNumber = 1;
-	}
-	return sequenceNumber++;
-}
-
-void Endpoint::setSession(uint8_t session) noexcept {
-	this->session = session;
-}
-
-uint8_t Endpoint::getSession() const noexcept {
-	return session;
-}
-
-const MessageHeader& Endpoint::getHeader() const noexcept {
-	return _header;
-}
-
-const unsigned char* Endpoint::getBuffer(unsigned int offset) const noexcept {
-	if (offset < Message::MTU) {
-		return (_buffer + offset);
-	} else {
-		return nullptr;
-	}
-}
-
-const unsigned char* Endpoint::getPayload(unsigned int offset) const noexcept {
-	if (offset < Message::PAYLOAD_SIZE) {
-		return (_buffer + Message::HEADER_SIZE + offset);
-	} else {
-		return nullptr;
-	}
-}
-
-bool Endpoint::pack(const MessageHeader &header,
-		const unsigned char *payload) noexcept {
-	if (!Message::testLength(header.getLength())) {
-		return false;
-	} else if (header.getLength() > Message::HEADER_SIZE && !payload) {
-		return false;
-	} else {
-		_header = header;
-		_header.serialize(_buffer);
-		if (payload) {
-			memcpy(_buffer + Message::HEADER_SIZE, payload,
-					_header.getLength() - Message::HEADER_SIZE);
-		}
-		return true;
-	}
-}
-
-bool Endpoint::pack(const unsigned char *message) noexcept {
-	if (message) {
-		_header.deserialize(message);
-		if (Message::testLength(_header.getLength())) {
-			memcpy(_buffer, message, _header.getLength());
-			return true;
-		} else {
-			return false;
-		}
-	} else {
-		return false;
-	}
-}
-
-bool Endpoint::pack(const MessageHeader &header, const char *format,
-		...) noexcept {
-	va_list ap;
-	va_start(ap, format);
-	auto ret = pack(header, format, ap);
-	va_end(ap);
-	return ret;
-}
-
-bool Endpoint::pack(const MessageHeader &header, const char *format,
-		va_list ap) noexcept {
-	_header = header;
-	_header.setLength(0); //Ignore the length
-
-	auto size = _header.serialize(_buffer);
-	size += Serializer::vpack(_buffer + Message::HEADER_SIZE,
-			Message::PAYLOAD_SIZE, format, ap);
-
-	if (format && format[0] && size == Message::HEADER_SIZE) {
-		//Payload formatting error
-		return false;
-	} else {
-		_header.setLength(size);
-		MessageHeader::setLength(_buffer, _header.getLength());
-		return true;
-	}
-}
-
-bool Endpoint::append(const char *format, ...) noexcept {
-	va_list ap;
-	va_start(ap, format);
-	auto ret = append(format, ap);
-	va_end(ap);
-	return ret;
-}
-
-bool Endpoint::append(const char *format, va_list ap) noexcept {
-	if (!Message::testLength(_header.getLength())
-			|| MessageHeader::getLength(_buffer) != _header.getLength()) {
-		//Incorrect message length
-		return false;
-	}
-
-	auto size = Serializer::vpack(_buffer + _header.getLength(),
-			Message::MTU - _header.getLength(), format, ap);
-	if (size) {
-		_header.setLength(_header.getLength() + size);
-		MessageHeader::setLength(_buffer, _header.getLength());
-		return true;
-	} else {
-		return false;
-	}
-}
-
-void Endpoint::unpackHeader(MessageHeader &header) const noexcept {
-	header.deserialize(_buffer);
-}
-
-bool Endpoint::unpack(const char *format, ...) const noexcept {
-	va_list ap;
-	va_start(ap, format);
-	auto ret = unpack(format, ap);
-	va_end(ap);
-	return ret;
-}
-
-bool Endpoint::unpack(const char *format, va_list ap) const noexcept {
-	auto msgLength = _header.getLength();
-	if (format && Message::testLength(msgLength)
-			&& MessageHeader::getLength(_buffer) == msgLength) {
-		return Serializer::vunpack(_buffer + Message::HEADER_SIZE,
-				(msgLength - Message::HEADER_SIZE), format, ap);
-	} else {
-		return false;
-	}
-}
-
-bool Endpoint::checkCommand(uint8_t command, uint8_t qualifier) const noexcept {
-	return _header.getCommand() == command
-			&& _header.getQualifier() == qualifier;
-}
-
-bool Endpoint::checkCommand(uint8_t command, uint8_t qualifier,
+bool Endpoint::checkContext(uint8_t command, uint8_t qualifier,
 		uint8_t status) const noexcept {
-	return checkCommand(command, qualifier) && _header.getStatus() == status;
+	return checkContext(command, qualifier) && header().getStatus() == status;
 }
 
 void Endpoint::send(bool sign) {
 	if (!ssl) {
-		Endpoint::send(sockfd, _buffer, _header.getLength(),
-				sign ? pki : nullptr);
+		Endpoint::send(sockfd, buffer(), header().getLength(),
+				sign ? getKeyPair() : nullptr);
 	} else {
-		Endpoint::send(ssl, _buffer, _header.getLength(), sign ? pki : nullptr);
+		Endpoint::send(ssl, buffer(), header().getLength(),
+				sign ? getKeyPair() : nullptr);
 	}
 }
 
 void Endpoint::receive(unsigned int sequenceNumber, bool verify) {
 	if (!ssl) {
-		Endpoint::receive(sockfd, _buffer, _header, sequenceNumber,
-				verify ? pki : nullptr);
+		Endpoint::receive(sockfd, buffer(), header(), sequenceNumber,
+				verify ? getKeyPair() : nullptr);
 	} else {
-		Endpoint::receive(ssl, _buffer, _header, sequenceNumber,
-				verify ? pki : nullptr);
+		Endpoint::receive(ssl, buffer(), header(), sequenceNumber,
+				verify ? getKeyPair() : nullptr);
 	}
 }
 
 bool Endpoint::executeRequest(bool sign, bool verify) {
 	send(sign);
-	receive(_header.getSequenceNumber(), verify);
-	return (_header.getStatus() == WH_AQLF_ACCEPTED);
+	receive(header().getSequenceNumber(), verify);
+	return (header().getStatus() == WH_AQLF_ACCEPTED);
 }
 
 void Endpoint::sendPong() {
 	receive();
-	auto s = _header.getSource();
-	auto d = _header.getDestination();
-	MessageHeader::setSource(_buffer, d);
-	MessageHeader::setDestination(_buffer, s);
-	MessageHeader::setStatus(_buffer, WH_AQLF_ACCEPTED);
+	auto s = header().getSource();
+	auto d = header().getDestination();
+	MessageHeader::setSource(buffer(), d);
+	MessageHeader::setDestination(buffer(), s);
+	MessageHeader::setStatus(buffer(), WH_AQLF_ACCEPTED);
 	send();
 }
 
@@ -380,7 +221,7 @@ void Endpoint::send(int sfd, unsigned char *buf, unsigned int length,
 		const PKI *pki) {
 	if (!buf || !Message::testLength(length)) {
 		throw Exception(EX_INVALIDPARAM);
-	} else if (!sign(buf, length, pki)) {
+	} else if (!Trust(pki).sign(buf, length)) {
 		throw Exception(EX_SECURITY);
 	} else {
 		Network::sendStream(sfd, buf, length);
@@ -391,7 +232,7 @@ void Endpoint::send(SSL *ssl, unsigned char *buf, unsigned int length,
 		const PKI *pki) {
 	if (!buf || !Message::testLength(length)) {
 		throw Exception(EX_INVALIDPARAM);
-	} else if (!sign(buf, length, pki)) {
+	} else if (!Trust(pki).sign(buf, length)) {
 		throw Exception(EX_SECURITY);
 	} else {
 		SSLContext::sendStream(ssl, buf, length);
@@ -419,7 +260,7 @@ void Endpoint::receive(int sfd, unsigned char *buf, MessageHeader &header,
 		}
 	}
 
-	if (!verify(buf, header.getLength(), pki)) {
+	if (!Trust(pki).verify(buf, header.getLength())) {
 		throw Exception(EX_SECURITY);
 	}
 }
@@ -445,151 +286,8 @@ void Endpoint::receive(SSL *ssl, unsigned char *buf, MessageHeader &header,
 		}
 	}
 
-	if (!verify(buf, header.getLength(), pki)) {
+	if (!Trust(pki).verify(buf, header.getLength())) {
 		throw Exception(EX_SECURITY);
-	}
-}
-
-unsigned int Endpoint::pack(const MessageHeader &header, unsigned char *buffer,
-		const char *format, ...) noexcept {
-	va_list ap;
-	va_start(ap, format);
-	auto size = pack(header, buffer, format, ap);
-	va_end(ap);
-	return size;
-}
-
-unsigned int Endpoint::pack(const MessageHeader &header, unsigned char *buffer,
-		const char *format, va_list ap) noexcept {
-	if (buffer) {
-		auto size = header.serialize(buffer);
-		size += Serializer::vpack(buffer + Message::HEADER_SIZE,
-				Message::PAYLOAD_SIZE, format, ap);
-		MessageHeader::setLength(buffer, size);
-		return size;
-	} else {
-		return 0;
-	}
-}
-
-unsigned int Endpoint::unpack(MessageHeader &header,
-		const unsigned char *buffer, const char *format, ...) noexcept {
-	va_list ap;
-	va_start(ap, format);
-	auto size = unpack(header, buffer, format, ap);
-	va_end(ap);
-	return size;
-}
-
-unsigned int Endpoint::unpack(MessageHeader &header,
-		const unsigned char *buffer, const char *format, va_list ap) noexcept {
-	if (buffer) {
-		auto size = header.deserialize(buffer);
-		auto msgLength = header.getLength();
-		if (Message::testLength(msgLength)) {
-			size += Serializer::vunpack(buffer + Message::HEADER_SIZE,
-					(msgLength - Message::HEADER_SIZE), format, ap);
-			return size;
-		} else {
-			return 0;
-		}
-	} else {
-		return 0;
-	}
-}
-
-bool Endpoint::sign(unsigned char *out, unsigned int &length,
-		const PKI *pki) noexcept {
-	if (pki == nullptr) {
-		return true;
-	}
-	//Make sure that we have got enough space for appending the signature
-	if (!out || length < Message::HEADER_SIZE
-			|| (length + PKI::SIGNATURE_LENGTH) > Message::MTU) {
-		return false;
-	}
-	//--------------------------------------------------------------------------
-	Signature signature;
-	//Finalize the buffer, otherwise verification will fail
-	MessageHeader::setLength(out, length + PKI::SIGNATURE_LENGTH);
-	if (pki->sign(out, length, &signature)) {
-		Serializer::packib((out + length), (unsigned char*) &signature,
-				PKI::SIGNATURE_LENGTH);
-		length += PKI::SIGNATURE_LENGTH;
-		return true;
-	} else {
-		//Roll Back
-		MessageHeader::setLength(out, length);
-		return false;
-	}
-}
-
-bool Endpoint::sign(Message *msg, const PKI *pki) noexcept {
-	if (msg && msg->validate()) {
-		unsigned int length = msg->getLength();
-		auto ret = sign(msg->buffer(), length, pki);
-		//Update the message length
-		msg->putLength(length);
-		return ret;
-	} else {
-		return false;
-	}
-}
-
-bool Endpoint::verify(const unsigned char *in, unsigned int length,
-		const PKI *pki) noexcept {
-	if (pki == nullptr) {
-		return true;
-	}
-
-	//Make sure that the message is long enough to carry a signature
-	if (in && length <= Message::MTU
-			&& length >= (PKI::SIGNATURE_LENGTH + Message::HEADER_SIZE)) {
-		auto bufLength = length - PKI::SIGNATURE_LENGTH;
-		auto block = in;
-		auto sign = (const Signature*) (block + bufLength);
-		return pki->verify(block, bufLength, sign);
-	} else {
-		return false;
-	}
-}
-
-bool Endpoint::verify(const Message *msg, const PKI *pki) noexcept {
-	return msg && msg->validate()
-			&& verify(msg->buffer(), msg->getLength(), pki);
-}
-
-bool Endpoint::executeRequest(int sfd, MessageHeader &header,
-		unsigned char *buf, const PKI *signer, const PKI *verifier) {
-	send(sfd, buf, header.getLength(), signer);
-	receive(sfd, buf, header, header.getSequenceNumber(), verifier);
-	return (header.getStatus() == WH_AQLF_ACCEPTED);
-}
-
-bool Endpoint::executeRequest(SSL *ssl, MessageHeader &header,
-		unsigned char *buf, const PKI *signer, const PKI *verifier) {
-	send(ssl, buf, header.getLength(), signer);
-	receive(ssl, buf, header, header.getSequenceNumber(), verifier);
-	return (header.getStatus() == WH_AQLF_ACCEPTED);
-}
-
-MessageHeader& Endpoint::header() noexcept {
-	return _header;
-}
-
-unsigned char* Endpoint::buffer(unsigned int offset) noexcept {
-	if (offset < Message::MTU) {
-		return (_buffer + offset);
-	} else {
-		return nullptr;
-	}
-}
-
-unsigned char* Endpoint::payload(unsigned int offset) noexcept {
-	if (offset < Message::PAYLOAD_SIZE) {
-		return (_buffer + Message::HEADER_SIZE + offset);
-	} else {
-		return nullptr;
 	}
 }
 

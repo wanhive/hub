@@ -33,8 +33,8 @@ unsigned int Protocol::createIdentificationRequest(uint64_t id, uint64_t uid,
 unsigned int Protocol::processIdentificationResponse(unsigned int &saltLength,
 		const unsigned char *&salt, unsigned int &nonceLength,
 		const unsigned char *&nonce) const noexcept {
-	return processIdentificationResponse(getHeader(), getBuffer(), saltLength,
-			salt, nonceLength, nonce);
+	return processIdentificationResponse(header(), buffer(), saltLength, salt,
+			nonceLength, nonce);
 }
 
 bool Protocol::identificationRequest(uint64_t id, uint64_t uid,
@@ -56,8 +56,7 @@ unsigned int Protocol::createAuthenticationRequest(uint64_t id,
 
 unsigned int Protocol::processAuthenticationResponse(unsigned int &length,
 		const unsigned char *&proof) const noexcept {
-	return processAuthenticationResponse(getHeader(), getBuffer(), length,
-			proof);
+	return processAuthenticationResponse(header(), buffer(), length, proof);
 }
 
 bool Protocol::authenticationRequest(uint64_t id, const unsigned char *proof,
@@ -77,12 +76,12 @@ unsigned int Protocol::createRegisterRequest(uint64_t id, uint64_t uid,
 }
 
 unsigned int Protocol::processRegisterResponse() const noexcept {
-	if (!checkCommand(WH_CMD_BASIC, WH_QLF_REGISTER)) {
+	if (!checkContext(WH_CMD_BASIC, WH_QLF_REGISTER)) {
 		return 0;
-	} else if (getHeader().getLength() != Message::HEADER_SIZE) {
+	} else if (header().getLength() != Message::HEADER_SIZE) {
 		return 0;
 	} else {
-		return getHeader().getLength();
+		return header().getLength();
 	}
 }
 
@@ -103,7 +102,7 @@ unsigned int Protocol::createGetKeyRequest(uint64_t id, Digest *hc,
 }
 
 unsigned int Protocol::processGetKeyResponse(Digest *hc) const noexcept {
-	return processGetKeyResponse(getHeader(), getBuffer(), hc);
+	return processGetKeyResponse(header(), buffer(), hc);
 }
 
 bool Protocol::getKeyRequest(uint64_t id, Digest *hc, bool verify) {
@@ -123,7 +122,7 @@ unsigned int Protocol::createFindRootRequest(uint64_t id, uint64_t uid) noexcept
 
 unsigned int Protocol::processFindRootResponse(uint64_t uid,
 		uint64_t &root) const noexcept {
-	return processFindRootResponse(getHeader(), getBuffer(), uid, root);
+	return processFindRootResponse(header(), buffer(), uid, root);
 }
 
 bool Protocol::findRootRequest(uint64_t id, uint64_t uid, uint64_t &root) {
@@ -148,20 +147,20 @@ unsigned int Protocol::processBootstrapResponse(uint64_t keys[],
 		uint32_t &limit) const noexcept {
 	if (!keys || !limit) {
 		return 0;
-	} else if (!checkCommand(WH_CMD_BASIC, WH_QLF_BOOTSTRAP)) {
+	} else if (!checkContext(WH_CMD_BASIC, WH_QLF_BOOTSTRAP)) {
 		return 0;
-	} else if (getHeader().getLength()
+	} else if (header().getLength()
 			<= Message::HEADER_SIZE + sizeof(uint32_t)) {
 		return 0;
 	} else {
-		auto n = Serializer::unpacku32(getPayload());
+		auto n = Serializer::unpacku32(payload());
 		limit = Twiddler::min(n, limit);
 		auto offset = sizeof(uint32_t);
 		for (unsigned int i = 0; i < limit; i++) {
-			keys[i] = Serializer::unpacku64(getPayload(offset));
+			keys[i] = Serializer::unpacku64(payload(offset));
 			offset += sizeof(uint64_t);
 		}
-		return getHeader().getLength();
+		return header().getLength();
 	}
 }
 
@@ -212,11 +211,11 @@ unsigned int Protocol::createSubscribeRequest(uint64_t id,
 }
 
 unsigned int Protocol::processSubscribeResponse(uint8_t topic) const noexcept {
-	if (!checkCommand(WH_CMD_MULTICAST, WH_QLF_SUBSCRIBE)) {
+	if (!checkContext(WH_CMD_MULTICAST, WH_QLF_SUBSCRIBE)) {
 		return 0;
-	} else if (getHeader().getLength() == Message::HEADER_SIZE
-			&& getHeader().getSession() == topic) {
-		return getHeader().getLength();
+	} else if (header().getLength() == Message::HEADER_SIZE
+			&& header().getSession() == topic) {
+		return header().getLength();
 	} else {
 		return 0;
 	}
@@ -241,11 +240,11 @@ unsigned int Protocol::createUnsubscribeRequest(uint64_t id,
 }
 
 unsigned int Protocol::processUnsubscribeResponse(uint8_t topic) const noexcept {
-	if (!checkCommand(WH_CMD_MULTICAST, WH_QLF_UNSUBSCRIBE)) {
+	if (!checkContext(WH_CMD_MULTICAST, WH_QLF_UNSUBSCRIBE)) {
 		return 0;
-	} else if (getHeader().getLength() == Message::HEADER_SIZE
-			&& getHeader().getSession() == topic) {
-		return getHeader().getLength();
+	} else if (header().getLength() == Message::HEADER_SIZE
+			&& header().getSession() == topic) {
+		return header().getLength();
 	} else {
 		return 0;
 	}

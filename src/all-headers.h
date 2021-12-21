@@ -98,8 +98,8 @@
 #include "reactor/Watcher.h"
 #include "reactor/Watchers.h"
 #include "util/Authenticator.h"
-#include "util/commands.h"
 #include "util/Endpoint.h"
+#include "util/FlowControl.h"
 #include "util/Hash.h"
 #include "util/Hosts.h"
 #include "util/Identity.h"
@@ -107,7 +107,11 @@
 #include "util/Message.h"
 #include "util/MessageHeader.h"
 #include "util/PKI.h"
+#include "util/Packet.h"
 #include "util/Random.h"
 #include "util/TransactionKey.h"
+#include "util/Trust.h"
+#include "util/commands.h"
+
 
 #endif /* WH_ALL_HEADERS_H_ */

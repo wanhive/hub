@@ -14,6 +14,7 @@
 #include "../../base/common/Logger.h"
 #include "../../util/commands.h"
 #include "../../util/Endpoint.h"
+#include "../../util/Trust.h"
 #include <new>
 #include <postgresql/libpq-fe.h>
 
@@ -194,7 +195,7 @@ int AuthenticationHub::handleAuthorizationRequest(Message *message) noexcept {
 	//Message is signed on behalf of the authenticated client
 	message->updateSource(authenticator->getIdentity());
 	message->updateSession(authenticator->getGroup());
-	if (Endpoint::sign(message, getPKI())) {
+	if (Trust(getPKI()).sign(message)) {
 		message->setDestination(message->getOrigin());
 		return 0;
 	} else {

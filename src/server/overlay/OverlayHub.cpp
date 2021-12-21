@@ -13,6 +13,7 @@
 #include "OverlayHub.h"
 #include "commands.h"
 #include "../../base/common/Logger.h"
+#include "../../util/Trust.h"
 #include <cinttypes>
 
 namespace wanhive {
@@ -913,8 +914,7 @@ int OverlayHub::handleGetKeyRequest(Message *msg) noexcept {
 				|| (msg->getPayloadLength()
 						== 2 * Hash::SIZE + PKI::SIGNATURE_LENGTH))) {
 			return handleInvalidRequest(msg);
-		} else if (!Protocol::verify(msg,
-				(verifyHost() ? getPKI() : nullptr))) {
+		} else if (!Trust(verifyHost() ? getPKI() : nullptr).verify(msg)) {
 			return handleInvalidRequest(msg);
 		} else if (nonceToId((Digest*) msg->getBytes(0)) != origin) {
 			return handleInvalidRequest(msg);
@@ -923,7 +923,7 @@ int OverlayHub::handleGetKeyRequest(Message *msg) noexcept {
 			Digest hc;
 			memcpy(&hc, msg->getBytes(Hash::SIZE), Hash::SIZE);
 			Protocol::createRegisterRequest(origin, getUid(), &hc, msg);
-			Protocol::sign(msg, getPKI());
+			Trust(getPKI()).sign(msg);
 			//We are sending a registration request to the remote Node.
 			msg->setDestination(origin);
 			return 0;
@@ -963,7 +963,7 @@ int OverlayHub::handleGetKeyRequest(Message *msg) noexcept {
 		msg->setDestination(origin);
 		msg->putLength(Message::HEADER_SIZE + 2 * Hash::SIZE);
 		msg->putStatus(WH_DHT_AQLF_ACCEPTED);
-		Protocol::sign(msg, getPKI());
+		Trust(getPKI()).sign(msg);
 	} else {
 		msg->updateSource(0);
 		msg->updateDestination(0);
@@ -1474,7 +1474,7 @@ bool OverlayHub::isValidRegistrationRequest(const Message *msg) noexcept {
 	} else if (msg->getPayloadLength() == Hash::SIZE + PKI::SIGNATURE_LENGTH) {
 		//CASE 2
 		return verifyNonce(hashFn, origin, getUid(), (Digest*) msg->getBytes(0))
-				&& Protocol::verify(msg, getPKI());
+				&& Trust(getPKI()).verify(msg);
 	} else {
 		return false;
 	}

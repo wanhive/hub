@@ -267,8 +267,8 @@ void OverlayTool::authenticateCmd() {
 		unsigned int length;
 		bool success = auth.generateUserProof(proof, length)
 				&& authenticationRequest(id, proof, length)
-				&& auth.authenticateHost(getPayload(),
-						getHeader().getLength() - Message::HEADER_SIZE);
+				&& auth.authenticateHost(payload(),
+						header().getLength() - Message::HEADER_SIZE);
 		if (success) {
 			std::cout << "AUTHENTICATE SUCCEEDED" << std::endl;
 		} else {
@@ -282,16 +282,14 @@ void OverlayTool::authenticateCmd() {
 
 void OverlayTool::authorizeCmd() {
 	std::cout << "CMD: [AUTHORIZE]" << std::endl;
-
-	MessageHeader header;
-	header.load(0, 0, Message::HEADER_SIZE, 0, 0, WH_DHT_CMD_BASIC,
+	header().load(0, 0, Message::HEADER_SIZE, 0, 0, WH_DHT_CMD_BASIC,
 			WH_DHT_QLF_REGISTER, WH_DHT_AQLF_REQUEST);
-	pack(header, (const char*) nullptr);
+	header().serialize(buffer());
 	try {
 		executeRequest(false, true);
-		if (getHeader().getStatus() != WH_AQLF_REJECTED) {
+		if (header().getStatus() != WH_AQLF_REJECTED) {
 			std::cout << "AUTHORIZE SUCCEEDED WITH GROUP ID "
-					<< (int) getHeader().getSession() << std::endl;
+					<< (int) header().getSession() << std::endl;
 		} else {
 			std::cout << "AUTHORIZE FAILED" << std::endl;
 		}

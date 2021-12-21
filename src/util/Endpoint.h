@@ -12,8 +12,11 @@
 
 #ifndef WH_UTIL_ENDPOINT_H_
 #define WH_UTIL_ENDPOINT_H_
+#include "FlowControl.h"
 #include "Message.h"
+#include "Packet.h"
 #include "TransactionKey.h"
+#include "Trust.h"
 #include "../base/Network.h"
 #include "../base/security/SSLContext.h"
 
@@ -23,7 +26,7 @@ namespace wanhive {
  * Expects blocking socket connection
  * Thread safe at class level
  */
-class Endpoint {
+class Endpoint: protected FlowControl, protected Packet {
 public:
 	Endpoint() noexcept;
 	~Endpoint();
@@ -85,54 +88,10 @@ public:
 	//Set receive and send timeout (milliseconds)
 	void setSocketTimeout(int recvTimeout, int sendTimeout) const;
 	//-----------------------------------------------------------------
-	/**
-	 * Header and IO buffer management
-	 * NOTE: The format string follows the Serializer class.
-	 */
-	//Source identifier of all the requests will be set to <source>
-	void setSource(uint64_t source) noexcept;
-	//Current source identifier for all the requests
-	uint64_t getSource() const noexcept;
-	//Set the sequence number counter to the given value
-	void setSequenceNumber(uint16_t sequenceNumber = 0) noexcept;
-	//Current value of the sequence number counter
-	uint16_t getSequenceNumber() const noexcept;
-	//Return and increment the sequence number
-	uint16_t nextSequenceNumber() noexcept;
-	//Set the active session identifier
-	void setSession(uint8_t session = 0) noexcept;
-	//Currently active session identifier
-	uint8_t getSession() const noexcept;
-
-	//The message header
-	const MessageHeader& getHeader() const noexcept;
-	//Pointer to the offset within the IO buffer (nullptr on overflow)
-	const unsigned char* getBuffer(unsigned int offset = 0) const noexcept;
-	//Pointer to payload's offset within the IO buffer (nullptr on overflow)
-	const unsigned char* getPayload(unsigned int offset = 0) const noexcept;
-
-	//Copy and serialize the <header> and the <payload> (can be nullptr)
-	bool pack(const MessageHeader &header,
-			const unsigned char *payload) noexcept;
-	//Copy the full message consisting of serialized header and payload
-	bool pack(const unsigned char *message) noexcept;
-	//Message length is automatically calculated, <format> can be nullptr
-	bool pack(const MessageHeader &header, const char *format, ...) noexcept;
-	bool pack(const MessageHeader &header, const char *format,
-			va_list ap) noexcept;
-	//Append the data at the end of the message and update message's length
-	bool append(const char *format, ...) noexcept;
-	bool append(const char *format, va_list ap) noexcept;
-	//Deserialize the message header from the IO buffer
-	void unpackHeader(MessageHeader &header) const noexcept;
-	//Deserialize the payload data
-	bool unpack(const char *format, ...) const noexcept;
-	bool unpack(const char *format, va_list ap) const noexcept;
-
 	//Verify that message's context are correctly set in the header
-	bool checkCommand(uint8_t command, uint8_t qualifier) const noexcept;
+	bool checkContext(uint8_t command, uint8_t qualifier) const noexcept;
 	//Verify that message's context are correctly set in the header
-	bool checkCommand(uint8_t command, uint8_t qualifier,
+	bool checkContext(uint8_t command, uint8_t qualifier,
 			uint8_t status) const noexcept;
 	//-----------------------------------------------------------------
 	/**
@@ -173,82 +132,11 @@ public:
 	//Same as above but uses a secure SSL/TLS connection
 	static void receive(SSL *ssl, unsigned char *buf, MessageHeader &header,
 			unsigned int sequenceNumber = 0, const PKI *pki = nullptr);
-	//-----------------------------------------------------------------
-	/**
-	 * Following functions pack and unpack a message (header and payload) to and
-	 * from the <buffer>. <format> specifies the message payload format. If the
-	 * payload is empty then the format must be nullptr. All the functions return
-	 * the number of bytes transferred to/from the <buffer>, 0 on error.
-	 * NOTE 1: <buffer> should point to valid memory of sufficient size.
-	 * NOTE 2: The format string follows the Serializer class.
-	 */
-	//Message length is always automatically calculated
-	static unsigned int pack(const MessageHeader &header, unsigned char *buffer,
-			const char *format, ...) noexcept;
-	static unsigned int pack(const MessageHeader &header, unsigned char *buffer,
-			const char *format, va_list list) noexcept;
-
-	//<header> is populated from the serialized header data in the <buffer>
-	static unsigned int unpack(MessageHeader &header,
-			const unsigned char *buffer, const char *format, ...) noexcept;
-	static unsigned int unpack(MessageHeader &header,
-			const unsigned char *buffer, const char *format,
-			va_list list) noexcept;
-	//-----------------------------------------------------------------
-	/**
-	 * Message authentication functions which return true on success and false
-	 * on error. <pki> can be nullptr in which case the functions are no-op and
-	 * always return true.
-	 */
-	//<length> is a value-result argument, always returns true if <pki> is nullptr
-	static bool sign(unsigned char *out, unsigned int &length,
-			const PKI *pki) noexcept;
-	//Signs the Message <msg>, always returns true if <pki> is nullptr
-	static bool sign(Message *msg, const PKI *pki) noexcept;
-
-	//Verifies a signed message, always returns true if <pki> is nullptr
-	static bool verify(const unsigned char *in, unsigned int length,
-			const PKI *pki) noexcept;
-	//Verifies the Message <msg>, always returns true if <pki> is nullptr
-	static bool verify(const Message *msg, const PKI *pki) noexcept;
-	//-----------------------------------------------------------------
-	/*
-	 * Execute a request-response sequence over a blocking socket connection.
-	 * If <signer> is provided then it's private key will be used for signing
-	 * the message. If <verifier> is provided then it's public key will be used
-	 * for message verification. Returns true on success.
-	 */
-	static bool executeRequest(int sfd, MessageHeader &header,
-			unsigned char *buf, const PKI *signer = nullptr,
-			const PKI *verifier = nullptr);
-	//Same as the above but uses a secure SSL/TLS connection
-	static bool executeRequest(SSL *ssl, MessageHeader &header,
-			unsigned char *buf, const PKI *signer = nullptr,
-			const PKI *verifier = nullptr);
-protected:
-	/**
-	 * For efficient implementation of additional protocols in the subclasses.
-	 * These methods violate encapsulation and must be used with great care
-	 * because incorrect usage can introduce hard to debug issues.
-	 */
-	//Deserialized message header
-	MessageHeader& header() noexcept;
-	//Pointer to <offset> within the IO buffer (nullptr on overflow)
-	unsigned char* buffer(unsigned int offset = 0) noexcept;
-	//Pointer to payload's <offset> within the IO buffer (nullptr on overflow)
-	unsigned char* payload(unsigned int offset = 0) noexcept;
 private:
 	int sockfd; //The underlying socket
 	SSL *ssl;  //The underlying SSL/TLS connection
 	SSLContext *sslContext;
-
-	const PKI *pki; //PKI for message signing and verification
-	uint64_t sourceId; //Default source identifier
-	uint16_t sequenceNumber;
-	uint8_t session;
-
-	MessageHeader _header; //The deserialized message header
-	unsigned char _buffer[Message::MTU]; //The IO buffer
+	Trust trust; //PKI for message signing and verification
 };
 
 } /* namespace wanhive */

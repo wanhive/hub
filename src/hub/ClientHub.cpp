@@ -15,6 +15,7 @@
 #include "../base/common/Logger.h"
 #include "../util/commands.h"
 #include "../util/Random.h"
+#include "../util/Trust.h"
 
 namespace {
 
@@ -490,7 +491,7 @@ void ClientHub::processGetKeyResponse(Message *msg) noexcept {
 		setStage(WHC_ERROR);
 	} else if (!bs.node || msg->getOrigin() != bs.node->getUid()) {
 		setStage(WHC_ERROR);
-	} else if (!Protocol::verify(msg, (verifyHost() ? getPKI() : nullptr))) {
+	} else if (!Trust((verifyHost() ? getPKI() : nullptr)).verify(msg)) {
 		setStage(WHC_ERROR);
 	} else if (!Protocol::processGetKeyResponse(msg, &bs.nonce)) {
 		setStage(WHC_ERROR);
@@ -507,7 +508,7 @@ Message* ClientHub::createRegistrationMessage(bool sign) {
 				nullptr);
 		if (msg) {
 			if (sign) {
-				Protocol::sign(msg, getPKI());
+				Trust(getPKI()).sign(msg);
 			}
 			return msg;
 		} else {

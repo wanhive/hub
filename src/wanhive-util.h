@@ -14,9 +14,9 @@
 #define WH_WANHIVE_UTIL_H_
 
 #include "util/Authenticator.h"
-#include "util/commands.h"
 #include "util/Endpoint.h"
 #include "util/Identity.h"
 #include "util/Random.h"
+#include "util/commands.h"
 
 #endif /* WH_WANHIVE_UTIL_H_ */

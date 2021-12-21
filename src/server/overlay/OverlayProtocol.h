@@ -21,7 +21,7 @@ namespace wanhive {
  * Only blocking IO supported.
  * Thread safe at class level
  */
-class OverlayProtocol: public Protocol {
+class OverlayProtocol: protected Protocol {
 public:
 	OverlayProtocol() noexcept;
 	~OverlayProtocol();

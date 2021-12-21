@@ -35,67 +35,67 @@ unsigned int OverlayProtocol::createDescribeRequest(uint64_t id) noexcept {
 
 unsigned int OverlayProtocol::processDescribeResponse(
 		OverlayHubInfo &info) const noexcept {
-	if (!checkCommand(WH_DHT_CMD_NULL, WH_DHT_QLF_DESCRIBE)) {
+	if (!checkContext(WH_DHT_CMD_NULL, WH_DHT_QLF_DESCRIBE)) {
 		return 0;
-	} else if (getHeader().getLength() < Message::HEADER_SIZE + 84) {
+	} else if (header().getLength() < Message::HEADER_SIZE + 84) {
 		return 0;
 	}
 	//-----------------------------------------------------------------
 	//ID(8)->MTU(2)->MAX_CONN(4)->CONN(4)->MAX_MSGS(4)->MSGS(4)->UPTIME(8)
 	unsigned int index = 0;
-	info.uid = Serializer::unpacku64(getPayload(index)); //KEY
+	info.uid = Serializer::unpacku64(payload(index)); //KEY
 	index += sizeof(uint64_t);
-	info.mtu = Serializer::unpacku16(getPayload(index));
+	info.mtu = Serializer::unpacku16(payload(index));
 	index += sizeof(uint16_t);
-	info.resource.maxConnections = Serializer::unpacku32(getPayload(index));
+	info.resource.maxConnections = Serializer::unpacku32(payload(index));
 	index += sizeof(uint32_t);
-	info.resource.connections = Serializer::unpacku32(getPayload(index));
+	info.resource.connections = Serializer::unpacku32(payload(index));
 	index += sizeof(uint32_t);
-	info.resource.maxMessages = Serializer::unpacku32(getPayload(index));
+	info.resource.maxMessages = Serializer::unpacku32(payload(index));
 	index += sizeof(uint32_t);
-	info.resource.messages = Serializer::unpacku32(getPayload(index));
+	info.resource.messages = Serializer::unpacku32(payload(index));
 	index += sizeof(uint32_t);
-	info.stat.uptime = Serializer::unpackf64(getPayload(index));
+	info.stat.uptime = Serializer::unpackf64(payload(index));
 	index += sizeof(uint64_t);
 	//-----------------------------------------------------------------
 	//IN_PACKETS(8)->IN_BYTES(8)->DROPPED_PACKETS(8)->DROPPED_BYTES(8)
-	info.stat.receivedPackets = Serializer::unpacku64(getPayload(index));
+	info.stat.receivedPackets = Serializer::unpacku64(payload(index));
 	index += sizeof(uint64_t);
-	info.stat.receivedBytes = Serializer::unpacku64(getPayload(index));
+	info.stat.receivedBytes = Serializer::unpacku64(payload(index));
 	index += sizeof(uint64_t);
-	info.stat.droppedPackets = Serializer::unpacku64(getPayload(index));
+	info.stat.droppedPackets = Serializer::unpacku64(payload(index));
 	index += sizeof(uint64_t);
-	info.stat.droppedBytes = Serializer::unpacku64(getPayload(index));
+	info.stat.droppedBytes = Serializer::unpacku64(payload(index));
 	index += sizeof(uint64_t);
 	//-----------------------------------------------------------------
 	//Predecessor(8)->Successor(8)->STABLE_FLAG(1)->TABLE_SIZE(1)
-	info.predecessor = Serializer::unpacku64(getPayload(index)); //Predecessor
+	info.predecessor = Serializer::unpacku64(payload(index)); //Predecessor
 	index += sizeof(uint64_t);
-	info.successor = Serializer::unpacku64(getPayload(index)); //Successor
+	info.successor = Serializer::unpacku64(payload(index)); //Successor
 	index += sizeof(uint64_t);
-	info.stable = Serializer::unpacku8(getPayload(index)); //Routing table status
+	info.stable = Serializer::unpacku8(payload(index)); //Routing table status
 	index += sizeof(uint8_t);
-	info.routes = Serializer::unpacku8(getPayload(index)); //Routing table size
+	info.routes = Serializer::unpacku8(payload(index)); //Routing table size
 	index += sizeof(uint8_t);
 	//-----------------------------------------------------------------
 	if (info.routes > DHT::IDENTIFIER_LENGTH
-			|| getHeader().getLength()
+			|| header().getLength()
 					!= (Message::HEADER_SIZE + 84 + (info.routes * 25))) {
 		return 0;
 	}
 	for (unsigned int i = 0; i < info.routes; i++) {
 		//START(8)->ID(8)->OLD_ID(8)->CONNECTED(1)
-		info.route[i].start = Serializer::unpacku64(getPayload(index));
+		info.route[i].start = Serializer::unpacku64(payload(index));
 		index += sizeof(uint64_t);
-		info.route[i].current = Serializer::unpacku64(getPayload(index));
+		info.route[i].current = Serializer::unpacku64(payload(index));
 		index += sizeof(uint64_t);
-		info.route[i].old = Serializer::unpacku64(getPayload(index));
+		info.route[i].old = Serializer::unpacku64(payload(index));
 		index += sizeof(uint64_t);
-		info.route[i].connected = Serializer::unpacku8(getPayload(index));
+		info.route[i].connected = Serializer::unpacku8(payload(index));
 		index += sizeof(uint8_t);
 	}
 	//-----------------------------------------------------------------
-	return getHeader().getLength();
+	return header().getLength();
 }
 
 bool OverlayProtocol::describeRequest(uint64_t id, OverlayHubInfo &info) {
@@ -118,16 +118,16 @@ unsigned int OverlayProtocol::createGetPredecessorRequest(uint64_t id) noexcept 
 
 unsigned int OverlayProtocol::processGetPredecessorResponse(
 		uint64_t &key) const noexcept {
-	if (!checkCommand(WH_DHT_CMD_NODE, WH_DHT_QLF_GETPREDECESSOR)) {
+	if (!checkContext(WH_DHT_CMD_NODE, WH_DHT_QLF_GETPREDECESSOR)) {
 		return 0;
-	} else if (getHeader().getLength()
+	} else if (header().getLength()
 			!= Message::HEADER_SIZE + sizeof(uint64_t)) {
 		return 0;
 	} else {
 		uint64_t v;
-		Serializer::unpack(getPayload(), (char*) "Q", &v);
+		Serializer::unpack(payload(), (char*) "Q", &v);
 		key = v;
-		return getHeader().getLength();
+		return header().getLength();
 	}
 }
 
@@ -153,16 +153,16 @@ unsigned int OverlayProtocol::createSetPredecessorRequest(uint64_t id,
 
 unsigned int OverlayProtocol::processSetPredecessorResponse(
 		uint64_t key) const noexcept {
-	if (!checkCommand(WH_DHT_CMD_NODE, WH_DHT_QLF_SETPREDECESSOR)) {
+	if (!checkContext(WH_DHT_CMD_NODE, WH_DHT_QLF_SETPREDECESSOR)) {
 		return 0;
-	} else if (getHeader().getLength()
+	} else if (header().getLength()
 			!= Message::HEADER_SIZE + sizeof(uint64_t)) {
 		return 0;
 	} else {
 		uint64_t v;
-		Serializer::unpack(getPayload(), (char*) "Q", &v);
+		Serializer::unpack(payload(), (char*) "Q", &v);
 		if (v == key) {
-			return getHeader().getLength();
+			return header().getLength();
 		} else {
 			return 0;
 		}
@@ -189,16 +189,16 @@ unsigned int OverlayProtocol::createGetSuccessorRequest(uint64_t id) noexcept {
 
 unsigned int OverlayProtocol::processGetSuccessorResponse(
 		uint64_t &key) const noexcept {
-	if (!checkCommand(WH_DHT_CMD_NODE, WH_DHT_QLF_GETSUCCESSOR)) {
+	if (!checkContext(WH_DHT_CMD_NODE, WH_DHT_QLF_GETSUCCESSOR)) {
 		return 0;
-	} else if (getHeader().getLength()
+	} else if (header().getLength()
 			!= Message::HEADER_SIZE + sizeof(uint64_t)) {
 		return 0;
 	} else {
 		uint64_t v;
-		Serializer::unpack(getPayload(), (char*) "Q", &v);
+		Serializer::unpack(payload(), (char*) "Q", &v);
 		key = v;
-		return getHeader().getLength();
+		return header().getLength();
 	}
 }
 
@@ -224,16 +224,16 @@ unsigned int OverlayProtocol::createSetSuccessorRequest(uint64_t id,
 
 unsigned int OverlayProtocol::processSetSuccessorResponse(
 		uint64_t key) const noexcept {
-	if (!checkCommand(WH_DHT_CMD_NODE, WH_DHT_QLF_SETSUCCESSOR)) {
+	if (!checkContext(WH_DHT_CMD_NODE, WH_DHT_QLF_SETSUCCESSOR)) {
 		return 0;
-	} else if (getHeader().getLength()
+	} else if (header().getLength()
 			!= Message::HEADER_SIZE + sizeof(uint64_t)) {
 		return 0;
 	} else {
 		uint64_t v = key;
-		Serializer::unpack(getPayload(), (char*) "Q", &v);
+		Serializer::unpack(payload(), (char*) "Q", &v);
 		if (v == key) {
-			return getHeader().getLength();
+			return header().getLength();
 		} else {
 			return 0;
 		}
@@ -262,18 +262,18 @@ unsigned int OverlayProtocol::createGetFingerRequest(uint64_t id,
 
 unsigned int OverlayProtocol::processGetFingerResponse(uint32_t index,
 		uint64_t &key) const noexcept {
-	if (!checkCommand(WH_DHT_CMD_NODE, WH_DHT_QLF_GETFINGER)) {
+	if (!checkContext(WH_DHT_CMD_NODE, WH_DHT_QLF_GETFINGER)) {
 		return 0;
-	} else if (getHeader().getLength()
+	} else if (header().getLength()
 			!= Message::HEADER_SIZE + sizeof(uint32_t) + sizeof(uint64_t)) {
 		return 0;
 	} else {
 		uint32_t v0 = index;
 		uint64_t v1 = 0;
-		Serializer::unpack(getPayload(), (char*) "LQ", &v0, &v1);
+		Serializer::unpack(payload(), (char*) "LQ", &v0, &v1);
 		if (v0 == index) {
 			key = v1;
-			return getHeader().getLength();
+			return header().getLength();
 		} else {
 			key = 0;
 			return 0;
@@ -306,17 +306,17 @@ unsigned int OverlayProtocol::createSetFingerRequest(uint64_t id,
 
 unsigned int OverlayProtocol::processSetFingerResponse(uint32_t index,
 		uint64_t key) const noexcept {
-	if (!checkCommand(WH_DHT_CMD_NODE, WH_DHT_QLF_SETFINGER)) {
+	if (!checkContext(WH_DHT_CMD_NODE, WH_DHT_QLF_SETFINGER)) {
 		return 0;
-	} else if (getHeader().getLength()
+	} else if (header().getLength()
 			!= Message::HEADER_SIZE + sizeof(uint32_t) + sizeof(uint64_t)) {
 		return 0;
 	} else {
 		uint32_t v0 = index;
 		uint64_t v1 = key;
-		Serializer::unpack(getPayload(), (char*) "LQ", &v0, &v1);
+		Serializer::unpack(payload(), (char*) "LQ", &v0, &v1);
 		if (v0 == index && v1 == key) {
-			return getHeader().getLength();
+			return header().getLength();
 		} else {
 			return 0;
 		}
@@ -344,17 +344,17 @@ unsigned int OverlayProtocol::createGetNeighboursRequest(uint64_t id) noexcept {
 
 unsigned int OverlayProtocol::processGetNeighboursResponse(
 		uint64_t &predecessor, uint64_t &successor) const noexcept {
-	if (!checkCommand(WH_DHT_CMD_NODE, WH_DHT_QLF_GETNEIGHBOURS)) {
+	if (!checkContext(WH_DHT_CMD_NODE, WH_DHT_QLF_GETNEIGHBOURS)) {
 		return 0;
-	} else if (getHeader().getLength()
+	} else if (header().getLength()
 			!= Message::HEADER_SIZE + 2 * sizeof(uint64_t)) {
 		return 0;
 	} else {
 		uint64_t v[2];
-		Serializer::unpack(getPayload(), (char*) "QQ", &v[0], &v[1]);
+		Serializer::unpack(payload(), (char*) "QQ", &v[0], &v[1]);
 		predecessor = v[0];
 		successor = v[1];
-		return getHeader().getLength();
+		return header().getLength();
 	}
 }
 
@@ -381,12 +381,12 @@ unsigned int OverlayProtocol::createNotifyRequest(uint64_t id,
 }
 
 unsigned int OverlayProtocol::processNotifyResponse() const noexcept {
-	if (!checkCommand(WH_DHT_CMD_NODE, WH_DHT_QLF_NOTIFY)) {
+	if (!checkContext(WH_DHT_CMD_NODE, WH_DHT_QLF_NOTIFY)) {
 		return 0;
-	} else if (getHeader().getLength() != Message::HEADER_SIZE) {
+	} else if (header().getLength() != Message::HEADER_SIZE) {
 		return 0;
 	} else {
-		return getHeader().getLength();
+		return header().getLength();
 	}
 }
 
@@ -412,17 +412,17 @@ unsigned int OverlayProtocol::createFindSuccessorRequest(uint64_t id,
 
 unsigned int OverlayProtocol::processFindSuccessorResponse(uint64_t uid,
 		uint64_t &key) const noexcept {
-	if (!checkCommand(WH_DHT_CMD_OVERLAY, WH_DHT_QLF_FINDSUCCESSOR)) {
+	if (!checkContext(WH_DHT_CMD_OVERLAY, WH_DHT_QLF_FINDSUCCESSOR)) {
 		return 0;
-	} else if (getHeader().getLength()
+	} else if (header().getLength()
 			!= Message::HEADER_SIZE + 2 * sizeof(uint64_t)) {
 		return 0;
 	} else {
 		uint64_t v[2] = { uid, 0 };
-		Serializer::unpack(getPayload(), (char*) "QQ", &v[0], &v[1]);
+		Serializer::unpack(payload(), (char*) "QQ", &v[0], &v[1]);
 		if (v[0] == uid) {
 			key = v[1];
-			return getHeader().getLength();
+			return header().getLength();
 		} else {
 			key = 0;
 			return 0;
@@ -451,10 +451,10 @@ unsigned int OverlayProtocol::createPingRequest(uint64_t id) noexcept {
 }
 
 unsigned int OverlayProtocol::processPingRequest() const noexcept {
-	if (!checkCommand(WH_DHT_CMD_OVERLAY, WH_DHT_QLF_PING)) {
+	if (!checkContext(WH_DHT_CMD_OVERLAY, WH_DHT_QLF_PING)) {
 		return 0;
 	} else {
-		return getHeader().getLength();
+		return header().getLength();
 	}
 }
 
@@ -476,10 +476,10 @@ unsigned int OverlayProtocol::createMapRequest(uint64_t id) noexcept {
 }
 
 unsigned int OverlayProtocol::processMapRequest() const noexcept {
-	if (!checkCommand(WH_DHT_CMD_OVERLAY, WH_DHT_QLF_MAP)) {
+	if (!checkContext(WH_DHT_CMD_OVERLAY, WH_DHT_QLF_MAP)) {
 		return 0;
 	} else {
-		return getHeader().getLength();
+		return header().getLength();
 	}
 }
 
