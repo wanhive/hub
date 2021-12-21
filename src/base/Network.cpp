@@ -1,7 +1,7 @@
 /*
  * Network.cpp
  *
- * Basic network routines
+ * Stream socket routines
  *
  *
  * Copyright (C) 2018 Amit Kumar (amitkriit@gmail.com)
@@ -131,13 +131,13 @@ bool Network::isBlocking(int sfd) {
 }
 
 int Network::unixServerSocket(const char *path, SocketAddress &sa,
-		bool blocking, int type, int protocol) {
+		bool blocking) {
 	if (!path) {
 		throw Exception(EX_NULL);
 	}
 
-	auto sockType = blocking ? type : type | SOCK_NONBLOCK;
-	auto sfd = ::socket(AF_UNIX, sockType, protocol);
+	auto type = blocking ? SOCK_STREAM : (SOCK_STREAM | SOCK_NONBLOCK);
+	auto sfd = ::socket(AF_UNIX, type, 0);
 	if (sfd == -1) {
 		throw SystemException();
 	}
@@ -164,12 +164,12 @@ int Network::unixServerSocket(const char *path, SocketAddress &sa,
 }
 
 int Network::unixConnectedSocket(const char *path, SocketAddress &sa,
-		bool blocking, int type, int protocol) {
+		bool blocking) {
 	if (!path) {
 		throw Exception(EX_NULL);
 	}
-	auto sockType = blocking ? type : type | SOCK_NONBLOCK;
-	auto sfd = ::socket(AF_UNIX, sockType, protocol);
+	auto type = blocking ? SOCK_STREAM : (SOCK_STREAM | SOCK_NONBLOCK);
+	auto sfd = ::socket(AF_UNIX, type, 0);
 	if (sfd == -1) {
 		throw SystemException();
 	}
@@ -190,8 +190,8 @@ int Network::unixConnectedSocket(const char *path, SocketAddress &sa,
 	}
 }
 
-void Network::socketPair(int sv[2], bool blocking, int type) {
-	type = blocking ? type : (type | SOCK_NONBLOCK);
+void Network::socketPair(int sv[2], bool blocking) {
+	auto type = blocking ? SOCK_STREAM : (SOCK_STREAM | SOCK_NONBLOCK);
 	if (::socketpair(AF_UNIX, type, 0, sv) == -1) {
 		throw SystemException();
 	}

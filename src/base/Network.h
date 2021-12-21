@@ -1,7 +1,7 @@
 /*
  * Network.h
  *
- * Basic network programming routines
+ * Stream socket routines
  *
  *
  * Copyright (C) 2018 Amit Kumar (amitkriit@gmail.com)
@@ -16,7 +16,7 @@
 
 namespace wanhive {
 /**
- * Basic network routines
+ * Stream socket routines
  */
 class Network {
 public:
@@ -38,7 +38,7 @@ public:
 	static int accept(int listenfd, SocketAddress &sa, bool blocking);
 	//Wrapper for the shutdown(2) system call
 	static int shutdown(int sfd, int how = SHUT_RDWR) noexcept;
-	//closes an open socket, best effort
+	//Wrapper for the close(2) system call
 	static int close(int sfd) noexcept;
 	//set a socket's blocking/non-blocking IO state
 	static void setBlocking(int sfd, bool block);
@@ -46,12 +46,12 @@ public:
 	static bool isBlocking(int sfd);
 	//Creates a unix domain socket and binds it to the given address
 	static int unixServerSocket(const char *path, SocketAddress &sa,
-			bool blocking, int type = SOCK_STREAM, int protocol = 0);
+			bool blocking);
 	//Connects to a Unix domain socket (connection may be in progress)
 	static int unixConnectedSocket(const char *path, SocketAddress &sa,
-			bool blocking, int type = SOCK_STREAM, int protocol = 0);
+			bool blocking);
 	//Creates unnamed pair of connected sockets (unix domain)
-	static void socketPair(int sv[2], bool blocking, int type = SOCK_STREAM);
+	static void socketPair(int sv[2], bool blocking);
 	//=================================================================
 	/**
 	 * Blocking IO utilities

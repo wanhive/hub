@@ -86,11 +86,6 @@ public:
 	 */
 	Socket* accept(bool blocking = false);
 	/*
-	 * Shuts down reception and/or transmission.
-	 * Wrapper for Network::shutdown.
-	 */
-	int shutdown(int how = SHUT_RDWR) noexcept;
-	/*
 	 * Returns the number of bytes read, possibly zero (buffer full or would
 	 * block), or -1 if the connection has been closed cleanly. Clears out the
 	 * read IO event from this connection if the call would block.

@@ -100,7 +100,7 @@ void Socket::start() {
 }
 
 void Socket::stop() noexcept {
-	shutdown();
+	Network::shutdown(this->getHandle());
 }
 
 bool Socket::callback(void *arg) noexcept {
@@ -159,10 +159,6 @@ Socket* Socket::accept(bool blocking) {
 		Network::close(sfd);
 		throw;
 	}
-}
-
-int Socket::shutdown(int how) noexcept {
-	return Network::shutdown(this->getHandle(), how);
 }
 
 ssize_t Socket::read() {
