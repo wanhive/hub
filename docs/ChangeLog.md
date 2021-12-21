@@ -14,15 +14,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
-- Improve sanity checks in the **Message** class.
-- **Message::clear** method preserves reference-count and ttl.
-- Rename **Message::getHeader** method to **Message::header**.
-- Rename **Message::getStorage** method to **Message::buffer**.
-- Rename the **Host** class to **Hosts**.
-
-### Removed
-
-- **Storage::canonicalize** method.
+- Major code-base upgrade to improve the overall quality and readability.
 
 ## [5.0.0] - 2021-11-18
 
