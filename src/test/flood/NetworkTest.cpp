@@ -18,7 +18,6 @@
 #include "../../base/Timer.h"
 #include <cstring>
 #include <iostream>
-#include <limits>
 
 #define WH_64_BYTE_MSG   "LZXCVBNMQWERTYUIOP##@@@@@@@@@@"
 #define WH_128_BYTE_MSG  "LZXCVBNMQWERTYUIOP##ASDFGHJKLZXCVBNMQWERTYUIOP##ASDFGHJKLZXCVBNMQWERTYUIOP##@@@@@@@@@@@@@@@@@@"
@@ -35,12 +34,11 @@ NetworkTest::NetworkTest(uint64_t clientId, uint64_t serverId,
 		Agent(clientId, path) {
 	this->serverId = serverId;
 	destinationId = clientId;
-	defaultMsg = (const char*) WH_1024_BYTE_MSG;
 	iterations = 0;
 	nSent = 0;
 	nReceived = 0;
-	msgLen = Message::HEADER_SIZE + 2 + strlen(defaultMsg);
-	WH_LOG_ALERT("Message length: %u", msgLen);
+	msgLen = Message::MTU;
+	WH_LOG_ALERT("Message length (bytes): %u", msgLen);
 }
 
 NetworkTest::~NetworkTest() {
@@ -134,11 +132,10 @@ void NetworkTest::echo(unsigned int iterations) {
 
 void NetworkTest::produce() noexcept {
 	auto outbuf = iobuf;
+	memset(outbuf, 0, Message::MTU); //Zero-out the payload
+	MessageHeader h(getSource(), destinationId, msgLen, 0, 0, 0, 0, 0);
+	h.serialize(outbuf);
 	unsigned int i = 0;
-
-	MessageHeader h;
-	h.load(getSource(), destinationId, msgLen, 0, 0, 0, 0, 0);
-	pack(h, outbuf, "s", defaultMsg);
 	try {
 		auto ssl = getSecureSocket();
 		if (ssl) {

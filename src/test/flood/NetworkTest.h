@@ -19,7 +19,7 @@ namespace wanhive {
 /**
  * Stress test of the overlay network
  */
-class NetworkTest: public Agent, private Task {
+class NetworkTest: private Agent, private Task {
 public:
 	NetworkTest(uint64_t clientId, uint64_t serverId, const char *path) noexcept;
 	virtual ~NetworkTest();
@@ -44,7 +44,6 @@ private:
 private:
 	uint64_t serverId;
 	uint64_t destinationId;
-	const char *defaultMsg;
 	unsigned int iterations;
 	unsigned int nSent;
 	unsigned int nReceived;
