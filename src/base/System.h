@@ -29,13 +29,11 @@ public:
 	/*
 	 * Returns NUL-terminated absolute pathname that is the current working
 	 * directory of the application. The function modifies the <buffer>.
-	 * Do not call free on the returned pointer.
 	 */
 	static char* currentWorkingDirectory(char *buffer, size_t length);
 	/*
 	 * Finds an environment variable <name> and returns a pointer to the
 	 * corresponding "value" string (possibly nullptr).
-	 * Wrapper for getenv (man getenv(3))
 	 * Caller must not modify/free the returned value
 	 */
 	static const char* getEnvironment(const char *name) noexcept;

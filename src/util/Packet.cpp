@@ -1,7 +1,7 @@
 /*
  * Packet.cpp
  *
- * Data packet utilities for blocking IO
+ * Message formatter for blocking IO
  *
  *
  * Copyright (C) 2021 Amit Kumar (amitkriit@gmail.com)

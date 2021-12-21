@@ -1,7 +1,7 @@
 /*
  * Packet.h
  *
- * Data packet utilities for blocking IO
+ * Message formatter for blocking IO
  *
  *
  * Copyright (C) 2021 Amit Kumar (amitkriit@gmail.com)
@@ -17,7 +17,7 @@
 
 namespace wanhive {
 /**
- * Data packet utilities for blocking IO
+ * Message formatter for blocking IO
  */
 class Packet {
 public:

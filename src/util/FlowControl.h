@@ -1,7 +1,7 @@
 /*
  * FlowControl.h
  *
- * Data packet flow control
+ * Message stream flow control
  *
  *
  * Copyright (C) 2021 Amit Kumar (amitkriit@gmail.com)
@@ -16,7 +16,7 @@
 
 namespace wanhive {
 /**
- * Data packet flow control
+ * Message stream flow control
  */
 class FlowControl {
 public:

@@ -1,7 +1,7 @@
 /*
  * FlowControl.cpp
  *
- * Data packet flow control
+ * Message stream flow control
  *
  *
  * Copyright (C) 2021 Amit Kumar (amitkriit@gmail.com)

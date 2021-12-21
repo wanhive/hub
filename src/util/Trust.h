@@ -25,8 +25,8 @@ public:
 	Trust(const PKI *pki) noexcept;
 	~Trust();
 
-	void set(const PKI *pki) noexcept;
 	const PKI* get() const noexcept;
+	void set(const PKI *pki) noexcept;
 	//-----------------------------------------------------------------
 	/**
 	 * Message signing and authentication functions which return true on
