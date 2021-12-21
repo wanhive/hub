@@ -23,7 +23,7 @@ public:
 	FlowControl() noexcept;
 	~FlowControl();
 
-	//REturns the current sequence number
+	//Returns the current sequence number
 	uint16_t getSequenceNumber() const noexcept;
 	//Generates and returns the next sequence number
 	uint16_t nextSequenceNumber() noexcept;
