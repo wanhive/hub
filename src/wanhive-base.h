@@ -85,7 +85,6 @@
 #include "base/unix/Process.h"
 #include "base/unix/PSession.h"
 #include "base/unix/PSignal.h"
-#include "base/unix/PThread.h"
 #include "base/unix/SignalAction.h"
 #include "base/unix/SystemException.h"
 #include "base/unix/Time.h"
