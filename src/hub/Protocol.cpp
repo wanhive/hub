@@ -138,7 +138,7 @@ bool Protocol::findRootRequest(uint64_t id, uint64_t uid, uint64_t &root) {
 
 unsigned int Protocol::createBootstrapRequest(uint64_t id) noexcept {
 	header().load(getSource(), id, Message::HEADER_SIZE, nextSequenceNumber(),
-			getSession(), WH_CMD_BASIC, WH_QLF_BOOTSTRAP, WH_AQLF_REQUEST);
+			0, WH_CMD_BASIC, WH_QLF_BOOTSTRAP, WH_AQLF_REQUEST);
 	header().serialize(buffer());
 	return header().getLength();
 }
