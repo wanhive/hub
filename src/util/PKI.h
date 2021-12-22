@@ -1,7 +1,7 @@
 /*
  * PKI.h
  *
- * RSA-2048 based asymmetric cryptography for Wanhive
+ * RSA based asymmetric cryptography
  *
  *
  * Copyright (C) 2018 Amit Kumar (amitkriit@gmail.com)

@@ -16,7 +16,7 @@
 
 namespace wanhive {
 /**
- * Unique identifier
+ * Unique identifier (thread-safe)
  *
  * The 64-bit counter used for generating the next identifier will eventually
  * roll over. However, such an event will take several decades or centuries to

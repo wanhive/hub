@@ -1,7 +1,7 @@
 /*
  * commands.h
  *
- * Bare minimum commands for Wanhive protocol
+ * Enumeration of bare-minimum commands
  *
  *
  * Copyright (C) 2018 Amit Kumar (amitkriit@gmail.com)
@@ -15,8 +15,9 @@
 
 namespace wanhive {
 /**
- * Bare minimum enumerations of command, qualifier and status flags
+ * Enumerations of command, qualifier and status flags
  */
+
 enum WhpCommand {
 	WH_CMD_NULL = 0, WH_CMD_BASIC = 1, WH_CMD_MULTICAST = 2
 };

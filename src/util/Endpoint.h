@@ -1,7 +1,7 @@
 /*
  * Endpoint.h
  *
- * Basic routines for Wanhive protocol implementation
+ * Basic routines for protocol implementation
  *
  *
  * Copyright (C) 2018 Amit Kumar (amitkriit@gmail.com)
@@ -22,7 +22,7 @@
 
 namespace wanhive {
 /**
- * Utility class for Wanhive protocol implementation
+ * Utility class for the protocol implementation
  * Expects blocking socket connection
  * Thread safe at class level
  */

@@ -1,7 +1,7 @@
 /*
  * Endpoint.cpp
  *
- * Basic routines for Wanhive protocol implementation
+ * Basic routines for protocol implementation
  *
  *
  * Copyright (C) 2018 Amit Kumar (amitkriit@gmail.com)

@@ -1,7 +1,7 @@
 /*
  * Condition.cpp
  *
- * Synchronous signaling between threads
+ * Thread signaling
  *
  *
  * Copyright (C) 2019 Amit Kumar (amitkriit@gmail.com)

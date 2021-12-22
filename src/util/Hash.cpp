@@ -1,7 +1,7 @@
 /*
  * Hash.cpp
  *
- * SHA-512 secure hash abstraction
+ * SHA512 based message digest
  *
  *
  * Copyright (C) 2018 Amit Kumar (amitkriit@gmail.com)

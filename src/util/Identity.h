@@ -1,7 +1,7 @@
 /*
  * Identity.h
  *
- * Identity management of the Wanhive hubs
+ * Identity and configuration manager
  *
  *
  * Copyright (C) 2018 Amit Kumar (amitkriit@gmail.com)

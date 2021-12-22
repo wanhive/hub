@@ -1,7 +1,7 @@
 /*
  * Random.h
  *
- * Cryptographically secure pseudo random number generator for Wanhive
+ * Cryptographically secure pseudo random number generator
  *
  *
  * Copyright (C) 2018 Amit Kumar (amitkriit@gmail.com)

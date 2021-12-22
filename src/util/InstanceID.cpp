@@ -1,7 +1,7 @@
 /*
  * InstanceID.cpp
  *
- * Cryptographically secure secret which can used for handshaking
+ * Cryptographically secure secret for handshaking
  *
  *
  * Copyright (C) 2018 Amit Kumar (amitkriit@gmail.com)

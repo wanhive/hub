@@ -1,7 +1,7 @@
 /*
  * Selector.cpp
  *
- * Linux's epoll based IO multiplexer
+ * IO multiplexer
  *
  *
  * Copyright (C) 2018 Amit Kumar (amitkriit@gmail.com)

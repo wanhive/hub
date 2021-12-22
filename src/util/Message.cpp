@@ -1,7 +1,7 @@
 /*
  * Message.cpp
  *
- * Wanhive packet structure implementation
+ * Message implementation
  *
  *
  * Copyright (C) 2018 Amit Kumar (amitkriit@gmail.com)

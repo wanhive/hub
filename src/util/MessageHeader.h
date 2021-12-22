@@ -1,7 +1,7 @@
 /*
  * MessageHeader.h
  *
- * Wanhive's fixed size message header implementation
+ * Message header implementation
  *
  *
  * Copyright (C) 2018 Amit Kumar (amitkriit@gmail.com)
@@ -42,7 +42,7 @@ struct MessageContext {
 };
 //-----------------------------------------------------------------
 /**
- * Wanhive's fixed length message header
+ * Fixed length message header
  * Message structure: [{FIXED LENGTH HEADER}{VARIABLE LENGTH PAYLOAD}]
  */
 class MessageHeader {

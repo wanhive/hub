@@ -1,7 +1,7 @@
 /*
  * MessageHeader.cpp
  *
- * Wanhive's fixed size message header implementation
+ * Message header implementation
  *
  *
  * Copyright (C) 2018 Amit Kumar (amitkriit@gmail.com)

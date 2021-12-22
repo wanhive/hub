@@ -1,7 +1,7 @@
 /*
  * Condition.h
  *
- * Synchronous signaling between threads
+ * Thread signaling
  *
  *
  * Copyright (C) 2019 Amit Kumar (amitkriit@gmail.com)
@@ -16,8 +16,8 @@
 
 namespace wanhive {
 /**
- * Synchronous signaling between threads without using the actual signals
- * Uses condition variable, mutex and a boolean variable.
+ * Signaling between threads without using the POSIX signals.
+ * Uses a condition variable, a mutex, and a boolean field.
  */
 class Condition {
 public:
