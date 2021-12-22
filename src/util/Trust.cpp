@@ -38,32 +38,32 @@ void Trust::set(const PKI *pki) noexcept {
 }
 
 bool Trust::sign(unsigned char *msg, unsigned int &length) noexcept {
-	if (get() == nullptr) {
+	if (!get()) {
 		return true;
-	}
-	//Make sure that we have got enough space for appending the signature
-	if (!msg || length < Message::HEADER_SIZE
-			|| (length + PKI::SIGNATURE_LENGTH) > Message::MTU) {
-		return false;
-	}
-	//--------------------------------------------------------------------------
-	Signature signature;
-	//Finalize the buffer, otherwise verification will fail
-	MessageHeader::setLength(msg, length + PKI::SIGNATURE_LENGTH);
-	if (get()->sign(msg, length, &signature)) {
-		Serializer::packib((msg + length), (unsigned char*) &signature,
-				PKI::SIGNATURE_LENGTH);
-		length += PKI::SIGNATURE_LENGTH;
-		return true;
+	} else if (msg && (length >= Message::HEADER_SIZE)
+			&& (length <= (Message::MTU - PKI::SIGNATURE_LENGTH))) {
+		//Finalize the buffer, otherwise verification will fail
+		MessageHeader::setLength(msg, length + PKI::SIGNATURE_LENGTH);
+		Signature signature;
+		if (get()->sign(msg, length, &signature)) {
+			Serializer::packib((msg + length), (unsigned char*) &signature,
+					PKI::SIGNATURE_LENGTH);
+			length += PKI::SIGNATURE_LENGTH;
+			return true;
+		} else {
+			//Roll Back
+			MessageHeader::setLength(msg, length);
+			return false;
+		}
 	} else {
-		//Roll Back
-		MessageHeader::setLength(msg, length);
 		return false;
 	}
 }
 
 bool Trust::sign(Message *msg) noexcept {
-	if (msg && msg->validate()) {
+	if (!get()) {
+		return true;
+	} else if (msg && msg->validate()) {
 		unsigned int length = msg->getLength();
 		auto ret = sign(msg->buffer(), length);
 		//Update the message length
@@ -75,13 +75,11 @@ bool Trust::sign(Message *msg) noexcept {
 }
 
 bool Trust::verify(const unsigned char *msg, unsigned int length) noexcept {
-	if (get() == nullptr) {
+	if (!get()) {
 		return true;
-	}
-
-	//Make sure that the message is long enough to carry a signature
-	if (msg && length <= Message::MTU
+	} else if (msg && length <= Message::MTU
 			&& length >= (PKI::SIGNATURE_LENGTH + Message::HEADER_SIZE)) {
+		//The message is long enough to carry a signature
 		auto bufLength = length - PKI::SIGNATURE_LENGTH;
 		auto block = msg;
 		auto sign = (const Signature*) (block + bufLength);
@@ -92,7 +90,13 @@ bool Trust::verify(const unsigned char *msg, unsigned int length) noexcept {
 }
 
 bool Trust::verify(const Message *msg) noexcept {
-	return msg && msg->validate() && verify(msg->buffer(), msg->getLength());
+	if (!get()) {
+		return true;
+	} else if (msg && msg->validate()) {
+		return verify(msg->buffer(), msg->getLength());
+	} else {
+		return false;
+	}
 }
 
 } /* namespace wanhive */
