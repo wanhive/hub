@@ -4,8 +4,6 @@ With the **Wanhive Hub** build secure multimedia based Internet of Things.
 
 This package is part of the Wanhive IoT Platform.
 
-Wanhive IoT Platform comprises basic building blocks that reduce complexity, cost, and risks associated with the implementation of the Internet of Things (IoT) over IP networks.
-
 ## Features
 
 * Access control
