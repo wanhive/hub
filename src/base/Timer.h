@@ -35,7 +35,7 @@ public:
 	/*
 	 * Converts the current wall-clock time to human readable text.
 	 * Returns the number of bytes (excl. null terminator) placed in <buffer>
-	 * BUFFER: <size> = 32 sufficient for YYYY-MM-DD HH:MM:SS Z and terminator
+	 * BUFFER: <size> = 32 sufficient for YYYY_MM_DD-HH_MM_SS-TZ and terminator
 	 */
 	static size_t print(char *buffer, size_t size) noexcept;
 	//Generate a 64-bit seed from current time for seeding the RNGs
