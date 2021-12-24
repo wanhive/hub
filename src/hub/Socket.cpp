@@ -467,28 +467,26 @@ ssize_t Socket::sslWrite(const void *buf, size_t count) {
 unsigned int Socket::fillOutgoingQueue() noexcept {
 	if (!outgoingMessages.hasSpace()) {
 		CircularBufferVector<Message*> vector;
-		//Number of outgoing messages queued up, vector has two parts
 		auto space = out.getReadable(vector);
 		if (space) {
-			//Reset for next write cycle
-			outgoingMessages.clear();
-			//How many outgoing messages can be queued up
-			space = Twiddler::min(space, outgoingMessages.capacity());
-			//vec points to the storage of the IOVEC buffer
-			auto vec = outgoingMessages.offset();
-			unsigned int iovCount = 0;
-			for (unsigned int i = 0; i < 2; ++i) {
-				for (unsigned int j = 0;
-						((j < vector.part[i].length) && (iovCount < space));
+			outgoingMessages.clear(); //Reset for writing
+			space = Twiddler::min(space, outgoingMessages.capacity()); //Adjust
+
+			auto iovecs = outgoingMessages.offset();
+			unsigned int count = 0;
+			for (unsigned int i = 0; i < 2; ++i) { //Two parts
+				BufferVector<Message*> &mvecs = vector.part[i];
+				for (size_t j = 0; ((j < mvecs.length) && (count < space));
 						++j) {
-					vec[iovCount].iov_base = vector.part[i].base[j]->buffer();
-					vec[iovCount].iov_len = vector.part[i].base[j]->remaining();
-					iovCount++;
+					Message *msg = mvecs.base[j];
+					iovecs[count].iov_base = msg->buffer();
+					iovecs[count].iov_len = msg->remaining();
+					++count;
 				}
 			}
-			totalOutgoingMessages += iovCount;
-			outgoingMessages.setIndex(iovCount); //Move the index forward
-			outgoingMessages.rewind();			//Prepare for next read cycle
+			totalOutgoingMessages += count;
+			outgoingMessages.setIndex(count); //Update the index
+			outgoingMessages.rewind(); //Prepare for reading
 		}
 	}
 
