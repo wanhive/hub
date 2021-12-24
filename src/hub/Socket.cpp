@@ -493,31 +493,31 @@ unsigned int Socket::fillOutgoingQueue() noexcept {
 	return outgoingMessages.space();
 }
 
-void Socket::adjustOutgoingQueue(size_t count) noexcept {
-	auto vec = outgoingMessages.offset();
-	auto iovCount = outgoingMessages.space();
-	if (count) {
+void Socket::adjustOutgoingQueue(size_t bytes) noexcept {
+	if (bytes) {
 		size_t total = 0;
-		unsigned int dispatchedMessageCount = 0;
-		for (unsigned int index = 0; index < iovCount; ++index) {
-			total += vec[index].iov_len;
-			if (total > count) {
-				//This IOVEC has been consumed only partially
-				auto originalLength = vec[index].iov_len;
-				vec[index].iov_len = (total - count);
-				vec[index].iov_base = ((unsigned char*) (vec[index].iov_base))
-						+ (originalLength - (total - count));
+		unsigned int sentMessages = 0;
+		auto iovecs = outgoingMessages.offset();
+		auto count = outgoingMessages.space();
+		for (unsigned int index = 0; index < count; ++index) {
+			iovec &iov = iovecs[index];
+			total += iov.iov_len;
+			if (total > bytes) {
+				//This IOVEC has been consumed partially
+				auto originalLength = iov.iov_len;
+				iov.iov_len = (total - bytes);
+				iov.iov_base = ((unsigned char*) (iov.iov_base))
+						+ (originalLength - (total - bytes));
 				break;
 			}
 
-			//We have dispatched this message, recycle it
+			//We have sent this message, recycle it
 			Message *msg = nullptr;
 			out.get(msg);
 			Message::recycle(msg);
-			++dispatchedMessageCount;
+			++sentMessages;
 		}
-		outgoingMessages.setIndex(
-				outgoingMessages.getIndex() + dispatchedMessageCount);
+		outgoingMessages.setIndex(outgoingMessages.getIndex() + sentMessages);
 	}
 }
 

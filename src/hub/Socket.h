@@ -162,7 +162,7 @@ private:
 	//Create IOVECs from outgoing messages and return the count
 	unsigned int fillOutgoingQueue() noexcept;
 	//Adjust the IOVECs for the next write cycle
-	void adjustOutgoingQueue(size_t count) noexcept;
+	void adjustOutgoingQueue(size_t bytes) noexcept;
 
 	//Clear internal state
 	void clear() noexcept;
