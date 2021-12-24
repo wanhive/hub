@@ -18,6 +18,8 @@
  */
 #include "base/common/CommandLine.h"
 #include "base/common/Logger.h"
+#include "base/common/Sink.h"
+#include "base/common/Source.h"
 
 /*
  * Data structures
