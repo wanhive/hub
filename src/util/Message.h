@@ -48,12 +48,6 @@ private:
 	void* operator new(size_t size) noexcept;
 	void operator delete(void *p) noexcept;
 public:
-	static void initPool(unsigned int size);
-	static void destroyPool();
-	static unsigned int poolSize() noexcept;
-	static unsigned int allocated() noexcept;
-	static unsigned int unallocated() noexcept;
-
 	//Creates a new Message
 	static Message* create(uint64_t origin = 0) noexcept;
 	//Recycles a Message (nullptr results in noop)
@@ -63,30 +57,8 @@ public:
 	void clear() noexcept;
 	//Returns true if the message is internally consistent
 	bool validate() const noexcept;
-	//Increases and returns the reference count
-	unsigned int addReferenceCount() noexcept;
-	//Increases and returns the ttl count
-	unsigned int addTTL() noexcept;
 	//Returns the local source identifier
 	uint64_t getOrigin() const noexcept;
-	//=================================================================
-	/**
-	 * For efficient IO operations:
-	 * Some of these methods may violate encapsulation.
-	 * Application developers should not bother about these methods.
-	 */
-	//Returns reference to the routing header
-	MessageHeader& header() noexcept;
-	//Returns const reference to the routing header
-	const MessageHeader& header() const noexcept;
-	//Returns a pointer to the message buffer (with correct offset)
-	unsigned char* buffer() noexcept;
-	//Returns a const pointer to the message buffer (with correct offset)
-	const unsigned char* buffer() const noexcept;
-	//Returns the number of bytes waiting for transfer to a data sink
-	unsigned int remaining() const noexcept;
-	//Incrementally builds the message from a Source, returns true when done
-	bool build(Source &in);
 	//=================================================================
 	/**
 	 * Message header handling functions
@@ -256,6 +228,43 @@ public:
 	static bool testLength(unsigned int length) noexcept;
 	//Returns the number of messages required to transmit <bytes> of data
 	static unsigned int packets(unsigned int bytes) noexcept;
+	//Returns true if <count> Messages can be allocated from the memory pool
+	static bool available(unsigned int count) noexcept;
+	//=================================================================
+	/**
+	 * For efficient IO and memory operations
+	 * WARNING: These methods violate encapsulation.
+	 * WARNING: Application developers should not use these methods.
+	 */
+
+	//Returns reference to the routing header
+	MessageHeader& header() noexcept;
+	//Returns const reference to the routing header
+	const MessageHeader& header() const noexcept;
+	//Returns a pointer to the message buffer (with correct offset)
+	unsigned char* buffer() noexcept;
+	//Returns a const pointer to the message buffer (with correct offset)
+	const unsigned char* buffer() const noexcept;
+	//Returns the number of bytes waiting for transfer to a data sink
+	unsigned int remaining() const noexcept;
+	//Incrementally builds the message from a Source, returns true when done
+	bool build(Source &in);
+
+	//Increases and returns the reference count
+	unsigned int addReferenceCount() noexcept;
+	//Increases and returns the ttl count
+	unsigned int addTTL() noexcept;
+
+	//Initializes the memory pool
+	static void initPool(unsigned int size);
+	//Destroys the memory pool
+	static void destroyPool();
+	//Returns the memory pool's capacity
+	static unsigned int poolSize() noexcept;
+	//Returns the number of allocated objects
+	static unsigned int allocated() noexcept;
+	//Returns the unallocated objects count
+	static unsigned int unallocated() noexcept;
 public:
 	//Message header size in bytes
 	static constexpr unsigned int HEADER_SIZE = MessageHeader::SIZE;

@@ -33,29 +33,6 @@ void Message::operator delete(void *p) noexcept {
 	pool.deallocate(p);
 }
 
-void Message::initPool(unsigned int size) {
-	pool.initialize(sizeof(Message), size);
-}
-
-void Message::destroyPool() {
-	if (pool.destroy()) {
-		throw Exception(EX_INVALIDSTATE);
-	}
-}
-
-unsigned int Message::poolSize() noexcept {
-	return pool.capacity();
-}
-
-unsigned int Message::allocated() noexcept {
-	return pool.allocated();
-}
-
-unsigned int Message::unallocated() noexcept {
-	//How many more messages can we create
-	return poolSize() - allocated();
-}
-
 Message* Message::create(uint64_t origin) noexcept {
 	if (allocated() != poolSize()) {
 		return new Message(origin);
@@ -81,76 +58,8 @@ bool Message::validate() const noexcept {
 			&& (getLength() >= HEADER_SIZE);
 }
 
-unsigned int Message::addReferenceCount() noexcept {
-	return ++referenceCount;
-}
-
-unsigned int Message::addTTL() noexcept {
-	return ++ttl;
-}
-
 uint64_t Message::getOrigin() const noexcept {
 	return origin;
-}
-
-MessageHeader& Message::header() noexcept {
-	return this->_header;
-}
-
-const MessageHeader& Message::header() const noexcept {
-	return this->_header;
-}
-
-unsigned char* Message::buffer() noexcept {
-	return _buffer.offset();
-}
-
-const unsigned char* Message::buffer() const noexcept {
-	return _buffer.offset();
-}
-
-unsigned int Message::remaining() const noexcept {
-	return _buffer.space();
-}
-
-bool Message::build(Source &in) {
-	switch (getFlags()) {
-	case 0:
-		/* no break */
-	case MSG_WAIT_HEADER:
-		if (in.available() >= Message::HEADER_SIZE) {
-			_buffer.clear();
-			in.take(_buffer.offset(), Message::HEADER_SIZE);
-			//Prepare the routing header
-			_header.deserialize(_buffer.array());
-			_buffer.setIndex(HEADER_SIZE);
-			putFlags(MSG_WAIT_DATA);
-		} else {
-			return false;
-		}
-		/* no break */
-	case MSG_WAIT_DATA:
-		if (testLength()) {
-			auto payLoadLength = getPayloadLength();
-			if (in.available() >= payLoadLength) {
-				in.take(_buffer.offset(), payLoadLength);
-				//Set the correct limit and index
-				_buffer.setIndex(_header.getLength());
-				_buffer.rewind();
-				putFlags(MSG_WAIT_PROCESSING);
-				return true;
-			} else {
-				return false;
-			}
-		} else {
-			throw Exception(EX_INVALIDRANGE);
-		}
-		/* no break */
-	case MSG_WAIT_PROCESSING:
-		return true;
-	default:
-		throw Exception(EX_INVALIDSTATE);
-	}
 }
 
 uint64_t Message::getLabel() const noexcept {
@@ -704,6 +613,101 @@ bool Message::testLength(unsigned int length) noexcept {
 
 unsigned int Message::packets(unsigned int bytes) noexcept {
 	return ((unsigned long long) bytes + PAYLOAD_SIZE - 1) / PAYLOAD_SIZE;
+}
+
+bool Message::available(unsigned int count) noexcept {
+	return count <= unallocated();
+}
+
+MessageHeader& Message::header() noexcept {
+	return this->_header;
+}
+
+const MessageHeader& Message::header() const noexcept {
+	return this->_header;
+}
+
+unsigned char* Message::buffer() noexcept {
+	return _buffer.offset();
+}
+
+const unsigned char* Message::buffer() const noexcept {
+	return _buffer.offset();
+}
+
+unsigned int Message::remaining() const noexcept {
+	return _buffer.space();
+}
+
+bool Message::build(Source &in) {
+	switch (getFlags()) {
+	case 0:
+		/* no break */
+	case MSG_WAIT_HEADER:
+		if (in.available() >= Message::HEADER_SIZE) {
+			_buffer.clear();
+			in.take(_buffer.offset(), Message::HEADER_SIZE);
+			//Prepare the routing header
+			_header.deserialize(_buffer.array());
+			_buffer.setIndex(HEADER_SIZE);
+			putFlags(MSG_WAIT_DATA);
+		} else {
+			return false;
+		}
+		/* no break */
+	case MSG_WAIT_DATA:
+		if (testLength()) {
+			auto payLoadLength = getPayloadLength();
+			if (in.available() >= payLoadLength) {
+				in.take(_buffer.offset(), payLoadLength);
+				//Set the correct limit and index
+				_buffer.setIndex(_header.getLength());
+				_buffer.rewind();
+				putFlags(MSG_WAIT_PROCESSING);
+				return true;
+			} else {
+				return false;
+			}
+		} else {
+			throw Exception(EX_INVALIDRANGE);
+		}
+		/* no break */
+	case MSG_WAIT_PROCESSING:
+		return true;
+	default:
+		throw Exception(EX_INVALIDSTATE);
+	}
+}
+
+unsigned int Message::addReferenceCount() noexcept {
+	return ++referenceCount;
+}
+
+unsigned int Message::addTTL() noexcept {
+	return ++ttl;
+}
+
+void Message::initPool(unsigned int size) {
+	pool.initialize(sizeof(Message), size);
+}
+
+void Message::destroyPool() {
+	if (pool.destroy()) {
+		throw Exception(EX_INVALIDSTATE);
+	}
+}
+
+unsigned int Message::poolSize() noexcept {
+	return pool.capacity();
+}
+
+unsigned int Message::allocated() noexcept {
+	return pool.allocated();
+}
+
+unsigned int Message::unallocated() noexcept {
+	//How many more messages can we create
+	return poolSize() - allocated();
 }
 
 } /* namespace wanhive */
