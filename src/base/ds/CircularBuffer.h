@@ -35,9 +35,9 @@ public:
 	//Returns max capacity of this buffer
 	unsigned int capacity() const noexcept;
 	//How much data can be read from the buffer
-	unsigned int readSpace() noexcept;
+	unsigned int readSpace() const noexcept;
 	//How much data can be written to the buffer
-	unsigned int writeSpace() noexcept;
+	unsigned int writeSpace() const noexcept;
 	/*
 	 * Reset the read and write pointers, making an empty buffer.
 	 * Not thread safe
@@ -46,11 +46,11 @@ public:
 	/*
 	 * Returns true if the buffer is full
 	 */
-	bool isFull() noexcept;
+	bool isFull() const noexcept;
 	/*
 	 * Returns true if the buffer is empty
 	 */
-	bool isEmpty() noexcept;
+	bool isEmpty() const noexcept;
 	/*
 	 * Read one element from the buffer, fails if the buffer is empty
 	 */
@@ -98,7 +98,7 @@ public:
 	/**
 	 * Used to maintain status of the buffer
 	 */
-	int getStatus() noexcept {
+	int getStatus() const noexcept {
 		if (ATOMIC) {
 			return Atomic<int>::load(&status);
 		} else {
@@ -107,7 +107,7 @@ public:
 	}
 	void setStatus(int status) noexcept {
 		if (ATOMIC) {
-			Atomic<int>::store(&(this->status), status);
+			Atomic<int>::store(this->*status, status);
 		} else {
 			this->status = status;
 		}
@@ -122,7 +122,8 @@ private:
 	unsigned int isEmptyInternal(unsigned int r, unsigned int w) const noexcept;
 	void getSegmentsInternal(unsigned int index, unsigned int length,
 			CircularBufferVector<X> &vector) noexcept;
-	unsigned int loadReadIndex() noexcept {
+
+	unsigned int loadReadIndex() const noexcept {
 		if (ATOMIC) {
 			return Atomic<>::load(&readIndex);
 		} else {
@@ -138,7 +139,7 @@ private:
 		}
 	}
 
-	unsigned int loadWriteIndex() noexcept {
+	unsigned int loadWriteIndex() const noexcept {
 		if (ATOMIC) {
 			return Atomic<>::load(&writeIndex);
 		} else {
@@ -159,7 +160,7 @@ private:
 	 * with any read or write operation that follows it. All memory operations
 	 * below this barrier remain below it.
 	 */
-	void acquireBarrier() noexcept {
+	void acquireBarrier() const noexcept {
 		if (ATOMIC) {
 			Atomic<>::threadFence(MO_ACQUIRE);
 		}
@@ -170,7 +171,7 @@ private:
 	 * with any read or write operation that precedes it. All memory operations
 	 * above this barrier remain above it.
 	 */
-	void releaseBarrier() noexcept {
+	void releaseBarrier() const noexcept {
 		if (ATOMIC) {
 			Atomic<>::threadFence(MO_RELEASE);
 		}
@@ -229,11 +230,11 @@ template<typename X, bool ATOMIC> unsigned int wanhive::CircularBuffer<X, ATOMIC
 	return _capacity;
 }
 
-template<typename X, bool ATOMIC> unsigned int wanhive::CircularBuffer<X, ATOMIC>::readSpace() noexcept {
+template<typename X, bool ATOMIC> unsigned int wanhive::CircularBuffer<X, ATOMIC>::readSpace() const noexcept {
 	return readSpaceInternal(loadReadIndex(), loadWriteIndex());
 }
 
-template<typename X, bool ATOMIC> unsigned int wanhive::CircularBuffer<X, ATOMIC>::writeSpace() noexcept {
+template<typename X, bool ATOMIC> unsigned int wanhive::CircularBuffer<X, ATOMIC>::writeSpace() const noexcept {
 	return writeSpaceInternal(loadReadIndex(), loadWriteIndex());
 }
 
@@ -242,11 +243,11 @@ template<typename X, bool ATOMIC> void wanhive::CircularBuffer<X, ATOMIC>::clear
 	storeWriteIndex(0);
 }
 
-template<typename X, bool ATOMIC> bool wanhive::CircularBuffer<X, ATOMIC>::isFull() noexcept {
+template<typename X, bool ATOMIC> bool wanhive::CircularBuffer<X, ATOMIC>::isFull() const noexcept {
 	return isFullInternal(loadReadIndex(), loadWriteIndex());
 }
 
-template<typename X, bool ATOMIC> bool wanhive::CircularBuffer<X, ATOMIC>::isEmpty() noexcept {
+template<typename X, bool ATOMIC> bool wanhive::CircularBuffer<X, ATOMIC>::isEmpty() const noexcept {
 	return isEmptyInternal(loadReadIndex(), loadWriteIndex());
 }
 

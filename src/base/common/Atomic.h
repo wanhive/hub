@@ -42,7 +42,7 @@ public:
 	 * Atomic load operation, returns the contents of *P.
 	 * Valid memory orders: MM_RELAXED, MM_SEQ_CST, MM_ACQUIRE, and MM_CONSUME
 	 */
-	static X load(X *P, MemoryOrder m = MO_RELAXED) noexcept {
+	static X load(const X *P, MemoryOrder m = MO_RELAXED) noexcept {
 		return __atomic_load_n(P, m);
 	}
 
@@ -183,7 +183,7 @@ public:
 	 * A value of 0 indicates typical alignment should be used. The compiler may also
 	 * ignore this parameter.
 	 */
-	static constexpr bool isAlwaysLockFree(X *P = 0) noexcept {
+	static constexpr bool isAlwaysLockFree(const X *P = 0) noexcept {
 		//Size parameter must resolve to compile time constant
 		return __atomic_always_lock_free(sizeof(X), P);
 	}
@@ -196,7 +196,7 @@ public:
 	 * A value of 0 indicates typical alignment should be used. The compiler may also
 	 * ignore this parameter.
 	 */
-	static bool isLockFree(X *P = 0) noexcept {
+	static bool isLockFree(const X *P = 0) noexcept {
 		return __atomic_is_lock_free(sizeof(X), P);
 	}
 private:
