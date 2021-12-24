@@ -14,11 +14,12 @@
 #define WH_HUB_SOCKET_H_
 #include "Topic.h"
 #include "../base/Network.h"
-#include "../base/security/SSLContext.h"
 #include "../base/Timer.h"
+#include "../base/common/Source.h"
 #include "../base/ds/MemoryPool.h"
 #include "../base/ds/StaticBuffer.h"
 #include "../base/ds/StaticCircularBuffer.h"
+#include "../base/security/SSLContext.h"
 #include "../reactor/Watcher.h"
 #include "../util/Message.h"
 
@@ -43,7 +44,7 @@ enum SocketType {
  * pipe, stdin/stdout etc as long as the the data stream is compliant with the
  * Wanhive protocol.
  */
-class Socket: public Watcher {
+class Socket: public Source, public Watcher {
 public:
 	Socket(int fd) noexcept;
 	Socket(int fd, const SocketAddress &sa) noexcept;
@@ -67,7 +68,13 @@ public:
 	void operator delete(void *p) noexcept;
 	//=================================================================
 	/**
-	 * Watcher implementation
+	 * Source interface implementation
+	 */
+	size_t take(void *buffer, size_t count) override final;
+	size_t available() const noexcept override final;
+	//=================================================================
+	/**
+	 * Watcher interface implementation
 	 */
 	//Does nothing
 	void start() override final;

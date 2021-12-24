@@ -113,16 +113,44 @@ unsigned int Message::remaining() const noexcept {
 	return _buffer.space();
 }
 
-void Message::prepareHeader() noexcept {
-	//Prepare the routing header
-	_header.deserialize(_buffer.array());
-	_buffer.setIndex(HEADER_SIZE);
-}
-
-void Message::prepareData() noexcept {
-	//Set the correct limit and index
-	_buffer.setIndex(_header.getLength());
-	_buffer.rewind();
+bool Message::build(Source &in) {
+	switch (getFlags()) {
+	case 0:
+		/* no break */
+	case MSG_WAIT_HEADER:
+		if (in.available() >= Message::HEADER_SIZE) {
+			_buffer.clear();
+			in.take(_buffer.offset(), Message::HEADER_SIZE);
+			//Prepare the routing header
+			_header.deserialize(_buffer.array());
+			_buffer.setIndex(HEADER_SIZE);
+			putFlags(MSG_WAIT_DATA);
+		} else {
+			return false;
+		}
+		/* no break */
+	case MSG_WAIT_DATA:
+		if (testLength()) {
+			auto payLoadLength = getPayloadLength();
+			if (in.available() >= payLoadLength) {
+				in.take(_buffer.offset(), payLoadLength);
+				//Set the correct limit and index
+				_buffer.setIndex(_header.getLength());
+				_buffer.rewind();
+				putFlags(MSG_WAIT_PROCESSING);
+				return true;
+			} else {
+				return false;
+			}
+		} else {
+			throw Exception(EX_INVALIDRANGE);
+		}
+		/* no break */
+	case MSG_WAIT_PROCESSING:
+		return true;
+	default:
+		throw Exception(EX_INVALIDSTATE);
+	}
 }
 
 uint64_t Message::getLabel() const noexcept {

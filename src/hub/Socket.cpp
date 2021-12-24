@@ -95,6 +95,14 @@ void Socket::operator delete(void *p) noexcept {
 	pool.deallocate(p);
 }
 
+size_t Socket::take(void *buffer, size_t count) {
+	return in.read((unsigned char*) buffer, count);
+}
+
+size_t Socket::available() const noexcept {
+	return in.readSpace();
+}
+
 void Socket::start() {
 
 }
@@ -179,7 +187,7 @@ ssize_t Socket::write() {
 
 Message* Socket::getMessage() {
 	if (incomingMessage == nullptr) {
-		if (in.isEmpty()) {
+		if (in.isEmpty()) { //:-)
 			return nullptr;
 		}
 		incomingMessage = Message::create(getUid());
@@ -187,47 +195,24 @@ Message* Socket::getMessage() {
 			return nullptr;
 		}
 		incomingMessage->setType(getType());
-		incomingMessage->putFlags(MSG_WAIT_HEADER);
 		incomingMessage->setGroup(getGroup());
 		incomingMessage->setMarked();
 	}
 
-	Message *msg = nullptr;
-	switch (incomingMessage->getFlags()) {
-	case MSG_WAIT_HEADER:
-		if (in.readSpace() >= Message::HEADER_SIZE) {
-			in.read(incomingMessage->buffer(), Message::HEADER_SIZE);
-			incomingMessage->prepareHeader();
-			incomingMessage->putFlags(MSG_WAIT_DATA);
+	try {
+		if (incomingMessage->build(*this)) {
+			totalIncomingMessages += 1;
+			auto msg = incomingMessage;
+			incomingMessage = nullptr;
+			return msg;
 		} else {
 			return nullptr;
 		}
-		/* no break */
-	case MSG_WAIT_DATA:
-		if (incomingMessage->testLength()) {
-			if (in.readSpace() < incomingMessage->getPayloadLength()) {
-				return nullptr;
-			} else {
-				in.read(incomingMessage->buffer(),
-						incomingMessage->getPayloadLength());
-				incomingMessage->prepareData();
-				incomingMessage->putFlags(MSG_WAIT_PROCESSING);
-			}
-		} else {
-			Message::recycle(incomingMessage);
-			incomingMessage = nullptr;
-			throw Exception(EX_INVALIDRANGE);
-		}
-		/* no break */
-	case MSG_WAIT_PROCESSING:
-		totalIncomingMessages += 1;
-		msg = incomingMessage;
+	} catch (BaseException &e) {
+		Message::recycle(incomingMessage);
 		incomingMessage = nullptr;
-		return msg;
-	default:
-		return nullptr;
+		throw;
 	}
-	return nullptr;
 }
 
 SocketAddress const& Socket::getAddress() const noexcept {

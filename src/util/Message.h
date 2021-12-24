@@ -13,6 +13,7 @@
 #ifndef WH_UTIL_MESSAGE_H_
 #define WH_UTIL_MESSAGE_H_
 #include "MessageHeader.h"
+#include "../base/common/Source.h"
 #include "../base/ds/MemoryPool.h"
 #include "../base/ds/State.h"
 #include "../base/ds/StaticBuffer.h"
@@ -84,10 +85,8 @@ public:
 	const unsigned char* buffer() const noexcept;
 	//Returns the number of bytes waiting for transfer to a data sink
 	unsigned int remaining() const noexcept;
-	//Builds the routing header and readies the object for payload transfer
-	void prepareHeader() noexcept;
-	//Finalizes the object after the completion of payload transfer
-	void prepareData() noexcept;
+	//Incrementally builds the message from a Source, returns true when done
+	bool build(Source &in);
 	//=================================================================
 	/**
 	 * Message header handling functions
