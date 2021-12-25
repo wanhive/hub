@@ -19,7 +19,7 @@
 namespace wanhive {
 
 OverlayHub::OverlayHub(unsigned long long uid, const char *path) :
-		Node(uid), Hub(uid, path), stabilizer(uid) {
+		Hub(uid, path), Node(uid), stabilizer(uid) {
 	clear();
 }
 

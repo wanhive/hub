@@ -21,7 +21,7 @@ namespace wanhive {
  * Wanhive's overlay hub implementation
  * An overlay network of hubs can be scaled out
  */
-class OverlayHub: public Node, public Hub {
+class OverlayHub: public Hub, private Node {
 public:
 	OverlayHub(unsigned long long uid, const char *path = nullptr);
 	virtual ~OverlayHub();
