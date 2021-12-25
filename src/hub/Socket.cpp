@@ -291,8 +291,8 @@ ssize_t Socket::socketRead() {
 	CircularBufferVector<unsigned char> vector;
 	//Receive data into the read buffer
 	if (in.getWritable(vector)) {
-		auto nVectors = (vector.part[1].length) ? 2 : 1;
-		if ((nRecv = Descriptor::readv((const iovec*) &vector, nVectors)) > 0) {
+		auto count = (vector.part[1].length) ? 2 : 1;
+		if ((nRecv = Descriptor::readv((const iovec*) &vector, count)) > 0) {
 			in.skipWrite(nRecv);
 		}
 	}
@@ -326,13 +326,13 @@ ssize_t Socket::secureRead() {
 	if (in.getWritable(vector)) {
 		CryptoUtils::clearErrors();
 		for (unsigned int i = 0; i < 2; i++) {
-			auto count = vector.part[i].length;
 			auto data = vector.part[i].base;
+			auto length = vector.part[i].length;
 			ssize_t received = 0;
-			if (count && (received = sslRead(data, count)) > 0) {
+			if (length && (received = sslRead(data, length)) > 0) {
 				in.skipWrite(received);
 				nRecv += received;
-				if ((size_t) received < count) { //Partial read
+				if ((size_t) received < length) { //Partial read
 					break;
 				}
 			} else {
@@ -350,16 +350,18 @@ ssize_t Socket::secureWrite() {
 		return secureRead();
 	}
 
-	auto iovCount = fillOutgoingQueue();
-	if (iovCount) {
-		auto vec = outgoingMessages.offset();
-		ssize_t nSent = 0;
+	auto count = fillOutgoingQueue();
+	if (count) {
 		CryptoUtils::clearErrors();
-		for (unsigned int i = 0; i < iovCount; i++) {
-			auto sent = sslWrite(vec[i].iov_base, vec[i].iov_len);
+		ssize_t nSent = 0;
+		auto iovecs = outgoingMessages.offset();
+		for (unsigned int i = 0; i < count; i++) {
+			auto data = iovecs[i].iov_base;
+			auto length = iovecs[i].iov_len;
+			auto sent = sslWrite(data, length);
 			if (sent == 0) {
 				break;
-			} else if ((size_t) sent == vec[i].iov_len) {
+			} else if ((size_t) sent == length) {
 				nSent += sent;
 				continue;
 			} else { //Partial write
