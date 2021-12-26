@@ -21,7 +21,7 @@ namespace wanhive {
 template<typename X> class Sink {
 public:
 	virtual ~Sink() = default;
-	virtual size_t put(const X *buffer, size_t count) = 0;
+	virtual size_t put(X *buffer, size_t count) = 0;
 	virtual size_t space() const noexcept = 0;
 };
 
