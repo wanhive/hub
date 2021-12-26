@@ -27,12 +27,6 @@ Socket::Socket(int fd) noexcept :
 	clear();
 }
 
-Socket::Socket(int fd, const SocketAddress &sa) noexcept :
-		Watcher(fd) {
-	clear();
-	address = sa;
-}
-
 Socket::Socket(SSL *ssl) {
 	clear();
 	if (ssl && sslCtx && sslCtx->inContext(ssl)) {
@@ -46,11 +40,12 @@ Socket::Socket(SSL *ssl) {
 Socket::Socket(const NameInfo &ni, bool blocking, int timeoutMils) {
 	try {
 		clear();
+		SocketAddress sa;
 		if (!strcasecmp(ni.service, "unix")) {
-			setHandle(Network::unixConnectedSocket(ni.host, address, blocking));
+			setHandle(Network::unixConnectedSocket(ni.host, sa, blocking));
 			setFlags(SOCKET_LOCAL);
 		} else {
-			setHandle(Network::connectedSocket(ni, address, blocking));
+			setHandle(Network::connectedSocket(ni, sa, blocking));
 		}
 		if (blocking) {
 			Network::setSocketTimeout(getHandle(), timeoutMils, timeoutMils);
@@ -65,10 +60,11 @@ Socket::Socket(const NameInfo &ni, bool blocking, int timeoutMils) {
 Socket::Socket(const char *service, int backlog, bool isUnix, bool blocking) {
 	try {
 		clear();
+		SocketAddress sa;
 		if (!isUnix) {
-			setHandle(Network::serverSocket(service, address, blocking));
+			setHandle(Network::serverSocket(service, sa, blocking));
 		} else {
-			setHandle(Network::unixServerSocket(service, address, blocking));
+			setHandle(Network::unixServerSocket(service, sa, blocking));
 			setFlags(SOCKET_LOCAL);
 		}
 		Network::listen(getHandle(), backlog);
@@ -158,7 +154,7 @@ Socket* Socket::accept(bool blocking) {
 			clearEvents(IO_READ); //Would block
 			return nullptr;
 		}
-		auto s = new Socket(sfd, sa);
+		auto s = new Socket(sfd);
 		if (testFlags(SOCKET_LOCAL)) {
 			s->setFlags(SOCKET_LOCAL);
 		}
@@ -213,10 +209,6 @@ Message* Socket::getMessage() {
 		incomingMessage = nullptr;
 		throw;
 	}
-}
-
-SocketAddress const& Socket::getAddress() const noexcept {
-	return address;
 }
 
 bool Socket::hasTimedOut(unsigned int timeOut) const noexcept {
@@ -524,7 +516,6 @@ void Socket::adjustOutgoingQueue(size_t bytes) noexcept {
 }
 
 void Socket::clear() noexcept {
-	memset(&address, 0, sizeof(address));
 	memset(&secure, 0, sizeof(secure));
 	incomingMessage = nullptr;
 	totalIncomingMessages = 0;

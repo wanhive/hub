@@ -38,16 +38,12 @@ enum SocketType {
 };
 //-----------------------------------------------------------------
 /**
- * TCP/IP stream watcher
+ * Socket stream watcher
  * Not thread safe
- * NOTE: Can watch any non blocking IO stream compatible with epoll including
- * pipe, stdin/stdout etc as long as the the data stream is compliant with the
- * Wanhive protocol.
  */
 class Socket: public Source<unsigned char>, public Watcher {
 public:
 	Socket(int fd) noexcept;
-	Socket(int fd, const SocketAddress &sa) noexcept;
 	Socket(SSL *ssl);
 	/*
 	 * Creates a connected Socket of type SOCKET_PROXY. If ni.service is "unix"
@@ -108,7 +104,6 @@ public:
 	 * is configured correctly for reading from or writing to it's IO buffer.
 	 */
 	Message* getMessage();
-	SocketAddress const& getAddress() const noexcept;
 	//Whether the connection has outlived the specified timeOut (in miliseconds)
 	bool hasTimedOut(unsigned int timeOut) const noexcept;
 	/*
@@ -128,13 +123,18 @@ public:
 	 * Socket is set to SOCKET_PROXY.
 	 */
 	static Socket* createSocketPair(int &sfd, bool blocking = false);
-	//Set the context for SSL connections
+	//Sets the context for SSL connections
 	static void setSSLContext(SSLContext *ctx) noexcept;
 	//=================================================================
+	//Initializes the memory pool
 	static void initPool(unsigned int size);
+	//Destroys the memory pool
 	static void destroyPool();
+	//Returns the memory pool size
 	static unsigned int poolSize() noexcept;
+	//Returns the allocated objects count
 	static unsigned int allocated() noexcept;
+	//Returns the unallocated objects count
 	static unsigned int unallocated() noexcept;
 private:
 	//Read from a raw socket connection
@@ -180,8 +180,6 @@ private:
 	//-----------------------------------------------------------------
 	//When was this connection created
 	Timer timer;
-	//Current socket connection's address
-	SocketAddress address;
 	//Subscriptions
 	Topic subscriptions;
 	//-----------------------------------------------------------------
