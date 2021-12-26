@@ -38,13 +38,13 @@ enum SocketType {
 };
 //-----------------------------------------------------------------
 /**
- * Data stream watcher
+ * TCP/IP stream watcher
  * Not thread safe
  * NOTE: Can watch any non blocking IO stream compatible with epoll including
  * pipe, stdin/stdout etc as long as the the data stream is compliant with the
  * Wanhive protocol.
  */
-class Socket: public Source, public Watcher {
+class Socket: public Source<unsigned char>, public Watcher {
 public:
 	Socket(int fd) noexcept;
 	Socket(int fd, const SocketAddress &sa) noexcept;
@@ -70,7 +70,7 @@ public:
 	/**
 	 * Source interface implementation
 	 */
-	size_t take(void *buffer, size_t count) override final;
+	size_t take(unsigned char *buffer, size_t count) override final;
 	size_t available() const noexcept override final;
 	//=================================================================
 	/**

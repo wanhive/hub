@@ -18,10 +18,10 @@ namespace wanhive {
 /**
  * The source interface
  */
-class Source {
+template<typename X> class Source {
 public:
 	virtual ~Source() = default;
-	virtual size_t take(void *buffer, size_t count) = 0;
+	virtual size_t take(X *buffer, size_t count) = 0;
 	virtual size_t available() const noexcept = 0;
 };
 

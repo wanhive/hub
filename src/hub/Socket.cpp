@@ -95,8 +95,8 @@ void Socket::operator delete(void *p) noexcept {
 	pool.deallocate(p);
 }
 
-size_t Socket::take(void *buffer, size_t count) {
-	return in.read((unsigned char*) buffer, count);
+size_t Socket::take(unsigned char *buffer, size_t count) {
+	return in.read(buffer, count);
 }
 
 size_t Socket::available() const noexcept {

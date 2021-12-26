@@ -248,7 +248,7 @@ public:
 	//Returns the number of bytes waiting for transfer to a data sink
 	unsigned int remaining() const noexcept;
 	//Incrementally builds the message from a Source, returns true when done
-	bool build(Source &in);
+	bool build(Source<unsigned char> &in);
 
 	//Increases and returns the reference count
 	unsigned int addReferenceCount() noexcept;

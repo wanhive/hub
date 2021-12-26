@@ -639,7 +639,7 @@ unsigned int Message::remaining() const noexcept {
 	return _buffer.space();
 }
 
-bool Message::build(Source &in) {
+bool Message::build(Source<unsigned char> &in) {
 	switch (getFlags()) {
 	case 0:
 		/* no break */
