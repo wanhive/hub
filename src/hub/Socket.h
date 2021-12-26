@@ -34,7 +34,7 @@ enum SocketFlag : uint32_t {
 
 enum SocketType {
 	SOCKET_LISTENER = 1, //A listening socket
-	SOCKET_PROXY = 3	//An outgoing connection socket
+	SOCKET_PROXY = 2	//An outgoing connection socket
 };
 //-----------------------------------------------------------------
 /**
