@@ -233,8 +233,8 @@ public:
 	//=================================================================
 	/**
 	 * For efficient IO and memory operations
-	 * WARNING: These methods violate encapsulation.
-	 * WARNING: Application developers should not use these methods.
+	 * WARNING: Following methods violate encapsulation and do not perform any
+	 * error/sanity check. Application developers should not use these methods.
 	 */
 
 	//Returns a reference to the routing header
