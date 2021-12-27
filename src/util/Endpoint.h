@@ -22,7 +22,7 @@
 
 namespace wanhive {
 /**
- * Utility class for the protocol implementation
+ * Utility class for protocol implementation
  * Expects blocking socket connection
  * Thread safe at class level
  */
@@ -88,15 +88,15 @@ public:
 	//Set receive and send timeout (milliseconds)
 	void setSocketTimeout(int recvTimeout, int sendTimeout) const;
 	//-----------------------------------------------------------------
-	//Verify that message's context are correctly set in the header
+	//Verify that message's context is correctly set in the header
 	bool checkContext(uint8_t command, uint8_t qualifier) const noexcept;
-	//Verify that message's context are correctly set in the header
+	//Verify that message's context is correctly set in the header
 	bool checkContext(uint8_t command, uint8_t qualifier,
 			uint8_t status) const noexcept;
 	//-----------------------------------------------------------------
 	/**
-	 * Blocking message IO
-	 * NOTE: Assign a PKI object for signing and verification.
+	 * Messaging over blocking socket connection
+	 * NOTE: Assign a PKI key-pair for signing and verification.
 	 */
 	//Send out a message, message length is taken from the deserialized header
 	void send(bool sign = false);
@@ -119,7 +119,7 @@ public:
 	 */
 	static void send(int sfd, unsigned char *buf, unsigned int length,
 			const PKI *pki = nullptr);
-	//Same as above however uses SSL/TLS connection
+	//Same as the above but uses SSL/TLS connection
 	static void send(SSL *ssl, unsigned char *buf, unsigned int length,
 			const PKI *pki = nullptr);
 	/*
@@ -129,7 +129,7 @@ public:
 	 */
 	static void receive(int sfd, unsigned char *buf, MessageHeader &header,
 			unsigned int sequenceNumber = 0, const PKI *pki = nullptr);
-	//Same as above but uses a secure SSL/TLS connection
+	//Same as the above but uses a secure SSL/TLS connection
 	static void receive(SSL *ssl, unsigned char *buf, MessageHeader &header,
 			unsigned int sequenceNumber = 0, const PKI *pki = nullptr);
 private:
