@@ -13,7 +13,6 @@
 #ifndef WH_UTIL_PACKET_H_
 #define WH_UTIL_PACKET_H_
 #include "Message.h"
-#include "PKI.h"
 
 namespace wanhive {
 /**
