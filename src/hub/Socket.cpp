@@ -474,7 +474,7 @@ unsigned int Socket::fillOutgoingQueue() noexcept {
 						++j) {
 					Message *msg = mvecs.base[j];
 					iovecs[count].iov_base = msg->buffer();
-					iovecs[count].iov_len = msg->remaining();
+					iovecs[count].iov_len = msg->getLength();
 					++count;
 				}
 			}

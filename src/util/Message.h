@@ -37,7 +37,7 @@ enum MessageFlag {
 //-----------------------------------------------------------------
 /**
  * Wanhive packet structure implementation
- * Packet structure: [{FIXED HEADER}{VARIABLE LENGTH PAYLOAD}]
+ * Message structure: [{FIXED HEADER}{VARIABLE LENGTH PAYLOAD}]
  * Not thread safe
  */
 class Message: public State {
@@ -237,16 +237,14 @@ public:
 	 * WARNING: Application developers should not use these methods.
 	 */
 
-	//Returns reference to the routing header
+	//Returns a reference to the routing header
 	MessageHeader& header() noexcept;
-	//Returns const reference to the routing header
+	//Returns a const reference to the routing header
 	const MessageHeader& header() const noexcept;
-	//Returns a pointer to the message buffer (with correct offset)
+	//Returns a pointer to the IO buffer (serialized data)
 	unsigned char* buffer() noexcept;
-	//Returns a const pointer to the message buffer (with correct offset)
+	//Returns a const pointer to the IO buffer (serialized data)
 	const unsigned char* buffer() const noexcept;
-	//Returns the number of bytes waiting for transfer to a data sink
-	unsigned int remaining() const noexcept;
 	//Incrementally builds the message from a Source, returns true when done
 	bool build(Source<unsigned char> &in);
 

@@ -628,15 +628,11 @@ const MessageHeader& Message::header() const noexcept {
 }
 
 unsigned char* Message::buffer() noexcept {
-	return _buffer.offset();
+	return _buffer.array();
 }
 
 const unsigned char* Message::buffer() const noexcept {
-	return _buffer.offset();
-}
-
-unsigned int Message::remaining() const noexcept {
-	return _buffer.space();
+	return _buffer.array();
 }
 
 bool Message::build(Source<unsigned char> &in) {
