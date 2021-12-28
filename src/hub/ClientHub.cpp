@@ -182,13 +182,6 @@ void ClientHub::setPassword(const unsigned char *password, unsigned int length,
 	ctx.passwordHashRounds = rounds;
 }
 
-unsigned short ClientHub::nextSequenceNumber() noexcept {
-	if (!bs.sn) {
-		bs.sn = 1;
-	}
-	return bs.sn++;
-}
-
 void ClientHub::connectToAuthenticator() noexcept {
 	Socket *s = nullptr;
 	try {
@@ -617,7 +610,6 @@ void ClientHub::clear() noexcept {
 	bs.node = nullptr;
 	memset(&bs.nonce, 0, sizeof(bs.nonce));
 	bs.stage = WHC_IDENTIFY;
-	bs.sn = 1;
 }
 
 } /* namespace wanhive */

@@ -38,8 +38,6 @@ protected:
 	//Allow derived classes to override the values loaded during configuration
 	void setPassword(const unsigned char *password, unsigned int length,
 			unsigned int rounds) noexcept;
-	//Sequence number generator for messages
-	unsigned short nextSequenceNumber() noexcept;
 private:
 	//Connect to the authentication node
 	void connectToAuthenticator() noexcept;
@@ -109,7 +107,6 @@ private:
 
 		Timer timer;
 		int stage;
-		unsigned short sn;
 	} bs;
 };
 
