@@ -14,11 +14,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
-- Major code-base upgrade to improve the overall quality and readability.
+- Source-code updates and package restructuring to improve maintainability.
 
 ### Fixed
 
-- Potential stack overflow during session key negotiation in **OverlayHub::handleGetKeyRequest** method.
+- Potential stack overflow during session key negotiation in **OverlayHub**.
 
 ### Security
 
