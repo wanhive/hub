@@ -20,6 +20,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Potential stack overflow during session key negotiation in **OverlayHub::handleGetKeyRequest** method.
 
+### Security
+
+- Upgrade to 3072-bit SRP-6a group for better password security.
+- Upgrade to 3072-bit RSA to offer greater security during distributed authentication.
+
 ## [5.0.0] - 2021-11-18
 
 ### Added
