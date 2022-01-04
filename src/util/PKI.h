@@ -18,7 +18,7 @@ namespace wanhive {
 //-----------------------------------------------------------------
 //Length of RSA key in bits
 #undef WH_PKI_KEY_LENGTH
-#define WH_PKI_KEY_LENGTH 2048
+#define WH_PKI_KEY_LENGTH 3072
 //Length of RSA encrypted data in bytes
 #undef WH_PKI_ENCODING_LEN
 #define WH_PKI_ENCODING_LEN ((WH_PKI_KEY_LENGTH) / 8)
