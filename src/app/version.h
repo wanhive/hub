@@ -21,7 +21,7 @@
 
 #define WH_PRODUCT_NAME "Wanhive Hub"
 #define WH_RELEASE_NAME ""
-#define WH_RELEASE_YEAR "2021"
+#define WH_RELEASE_YEAR "2022"
 #define WH_RELEASE_AUTHOR "Wanhive Systems Private Limited"
 #define WH_LICENSE_TEXT "Apache-2.0 http://www.apache.org/licenses/LICENSE-2.0"
 
