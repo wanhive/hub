@@ -41,23 +41,23 @@ public:
 	 * is updated on success and the final message length is returned via
 	 * <length> which is a value-result argument.
 	 */
-	bool sign(unsigned char *msg, unsigned int &length) noexcept;
+	bool sign(unsigned char *msg, unsigned int &length) const noexcept;
 	/*
 	 * Validates and then signs the message <msg>. Message's length is updated
 	 * on success.
 	 */
-	bool sign(Message *msg) noexcept;
+	bool sign(Message *msg) const noexcept;
 
 	/*
 	 * Verifies a signed message of <length> bytes contained in <msg>.
 	 * Returns true on successful verification, false otherwise.
 	 */
-	bool verify(const unsigned char *msg, unsigned int length) noexcept;
+	bool verify(const unsigned char *msg, unsigned int length) const noexcept;
 	/*
 	 * Verifies the message consistency and then the signature. Returns true on
 	 * success (signature verified), false otherwise.
 	 */
-	bool verify(const Message *msg) noexcept;
+	bool verify(const Message *msg) const noexcept;
 private:
 	const PKI *pki;
 };

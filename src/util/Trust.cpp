@@ -37,7 +37,7 @@ void Trust::set(const PKI *pki) noexcept {
 	this->pki = pki;
 }
 
-bool Trust::sign(unsigned char *msg, unsigned int &length) noexcept {
+bool Trust::sign(unsigned char *msg, unsigned int &length) const noexcept {
 	if (!get()) {
 		return true;
 	} else if (msg && (length >= Message::HEADER_SIZE)
@@ -60,7 +60,7 @@ bool Trust::sign(unsigned char *msg, unsigned int &length) noexcept {
 	}
 }
 
-bool Trust::sign(Message *msg) noexcept {
+bool Trust::sign(Message *msg) const noexcept {
 	if (!get()) {
 		return true;
 	} else if (msg && msg->validate()) {
@@ -74,7 +74,7 @@ bool Trust::sign(Message *msg) noexcept {
 	}
 }
 
-bool Trust::verify(const unsigned char *msg, unsigned int length) noexcept {
+bool Trust::verify(const unsigned char *msg, unsigned int length) const noexcept {
 	if (!get()) {
 		return true;
 	} else if (msg && length <= Message::MTU
@@ -89,7 +89,7 @@ bool Trust::verify(const unsigned char *msg, unsigned int length) noexcept {
 	}
 }
 
-bool Trust::verify(const Message *msg) noexcept {
+bool Trust::verify(const Message *msg) const noexcept {
 	if (!get()) {
 		return true;
 	} else if (msg && msg->validate()) {
