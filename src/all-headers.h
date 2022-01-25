@@ -102,6 +102,7 @@
 #include "util/Authenticator.h"
 #include "util/Endpoint.h"
 #include "util/FlowControl.h"
+#include "util/Frame.h"
 #include "util/Hash.h"
 #include "util/Hosts.h"
 #include "util/Identity.h"

@@ -12,32 +12,20 @@
 
 #ifndef WH_UTIL_PACKET_H_
 #define WH_UTIL_PACKET_H_
-#include "Message.h"
+#include "Frame.h"
 
 namespace wanhive {
 /**
  * Message buffer for blocking IO
  */
-class Packet {
+class Packet: private Frame {
 public:
 	Packet() noexcept;
 	~Packet();
 
-	//Reference to the routing header
-	MessageHeader& header() noexcept;
-	//Constant reference to the routing header
-	const MessageHeader& header() const noexcept;
-	//Pointer to <offset> in the IO buffer (null on error)
-	unsigned char* buffer(unsigned int offset = 0) noexcept;
-	//Constant pointer to <offset> in the IO buffer (null on error)
-	const unsigned char* buffer(unsigned int offset = 0) const noexcept;
-	//Pointer to payload's <offset> in the IO buffer (null on error)
-	unsigned char* payload(unsigned int offset = 0) noexcept;
-	//Constant pointer to payload's <offset> in the IO buffer (null on error)
-	const unsigned char* payload(unsigned int offset = 0) const noexcept;
-private:
-	MessageHeader _header; //Routing header
-	unsigned char _buffer[Message::MTU]; //IO buffer
+	using Frame::header;
+	using Frame::buffer;
+	using Frame::payload;
 };
 
 } /* namespace wanhive */

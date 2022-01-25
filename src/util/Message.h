@@ -12,11 +12,10 @@
 
 #ifndef WH_UTIL_MESSAGE_H_
 #define WH_UTIL_MESSAGE_H_
-#include "MessageHeader.h"
+#include "Frame.h"
 #include "../base/common/Source.h"
 #include "../base/ds/MemoryPool.h"
 #include "../base/ds/State.h"
-#include "../base/ds/StaticBuffer.h"
 #include <cstdarg>
 
 namespace wanhive {
@@ -40,7 +39,7 @@ enum MessageFlag {
  * Message structure: [{FIXED HEADER}{VARIABLE LENGTH PAYLOAD}]
  * Not thread safe
  */
-class Message: public State {
+class Message: public State, public Frame {
 private:
 	Message(uint64_t origin) noexcept;
 	~Message();
@@ -55,10 +54,6 @@ public:
 
 	//Resets the message (origin, mark, reference-count and ttl are preserved)
 	void clear() noexcept;
-	//Returns true if the message is internally consistent
-	bool validate() const noexcept;
-	//Returns the local source identifier
-	uint64_t getOrigin() const noexcept;
 	//=================================================================
 	/**
 	 * Message header handling functions
@@ -224,10 +219,7 @@ public:
 	 */
 	void printHeader(bool deep = false) const noexcept;
 	//=================================================================
-	//Returns true if <length> is a valid message length
-	static bool testLength(unsigned int length) noexcept;
-	//Returns the number of messages required to transmit <bytes> of data
-	static unsigned int packets(unsigned int bytes) noexcept;
+	using Frame::testLength;
 	//Returns true if <count> Messages can be allocated from the memory pool
 	static bool available(unsigned int count) noexcept;
 	//=================================================================
@@ -236,21 +228,12 @@ public:
 	 * WARNING: Following methods violate encapsulation and do not perform any
 	 * error/sanity check. Application developers should not use these methods.
 	 */
-
-	//Returns a reference to the routing header
-	MessageHeader& header() noexcept;
-	//Returns a const reference to the routing header
-	const MessageHeader& header() const noexcept;
-	//Returns a pointer to the IO buffer (serialized data)
-	unsigned char* buffer() noexcept;
-	//Returns a const pointer to the IO buffer (serialized data)
-	const unsigned char* buffer() const noexcept;
 	//Incrementally builds the message from a Source, returns true when done
 	bool build(Source<unsigned char> &in);
 
 	//Increases and returns the reference count
 	unsigned int addReferenceCount() noexcept;
-	//Increases and returns the ttl count
+	//Increases and returns the hop count
 	unsigned int addTTL() noexcept;
 
 	//Initializes the memory pool
@@ -263,21 +246,7 @@ public:
 	static unsigned int allocated() noexcept;
 	//Returns the unallocated objects count
 	static unsigned int unallocated() noexcept;
-public:
-	//Message header size in bytes
-	static constexpr unsigned int HEADER_SIZE = MessageHeader::SIZE;
-	//The maximum message size in bytes
-	static constexpr unsigned int MTU = 1024;
-	//The maximum payload size in bytes
-	static constexpr unsigned int PAYLOAD_SIZE = (MTU - HEADER_SIZE);
 private:
-	unsigned int referenceCount; //Reference count
-	unsigned int ttl; //TTL up-counter
-
-	const uint64_t origin; //The local source
-	MessageHeader _header; //The routing header
-	StaticBuffer<unsigned char, MTU> _buffer; //The raw bytes
-
 	static MemoryPool pool;
 };
 
