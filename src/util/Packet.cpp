@@ -23,25 +23,6 @@ Packet::~Packet() {
 
 }
 
-bool Packet::bind() noexcept {
-	auto length = header().getLength();
-	if (testLength(length) && (frame().getIndex() == 0)
-			&& frame().setLimit(length)) {
-		MessageHeader::setLength(frame().array(), length);
-		return true;
-	} else {
-		return false;
-	}
-}
-
-bool Packet::unpackHeader(MessageHeader &header) const noexcept {
-	return header.deserialize(frame().array());
-}
-
-bool Packet::unpackHeader() noexcept {
-	return unpackHeader(header());
-}
-
 bool Packet::packHeader(const MessageHeader &header) noexcept {
 	auto length = header.getLength();
 	if (testLength(length) && (frame().getIndex() == 0)
@@ -56,18 +37,37 @@ bool Packet::packHeader() noexcept {
 	return packHeader(header());
 }
 
+bool Packet::unpackHeader(MessageHeader &header) const noexcept {
+	return header.deserialize(frame().array());
+}
+
+bool Packet::unpackHeader() noexcept {
+	return unpackHeader(header());
+}
+
+bool Packet::bind() noexcept {
+	auto length = header().getLength();
+	if (testLength(length) && (frame().getIndex() == 0)
+			&& frame().setLimit(length)) {
+		MessageHeader::setLength(frame().array(), length);
+		return true;
+	} else {
+		return false;
+	}
+}
+
 bool Packet::validate() const noexcept {
 	return (frame().getIndex() == 0)
 			&& (frame().getLimit() == header().getLength())
 			&& (header().getLength() >= HEADER_SIZE);
 }
 
-bool Packet::testLength(unsigned int length) noexcept {
-	return (length >= HEADER_SIZE && length <= MTU);
-}
-
 bool Packet::testLength() const noexcept {
 	return testLength(header().getLength());
+}
+
+bool Packet::testLength(unsigned int length) noexcept {
+	return (length >= HEADER_SIZE && length <= MTU);
 }
 
 unsigned int Packet::packets(unsigned int bytes) noexcept {
