@@ -320,14 +320,10 @@ ssize_t Socket::secureRead() {
 		for (unsigned int i = 0; i < 2; i++) {
 			auto data = vector.part[i].base;
 			auto length = vector.part[i].length;
-			ssize_t received = 0;
-			if (length && (received = sslRead(data, length)) > 0) {
-				in.skipWrite(received);
-				nRecv += received;
-				if ((size_t) received < length) { //Partial read
-					break;
-				}
-			} else {
+			auto received = length ? sslRead(data, length) : 0;
+			nRecv += received;
+			in.skipWrite(received);
+			if ((size_t) received != length) { //Partial read
 				break;
 			}
 		}
@@ -350,14 +346,11 @@ ssize_t Socket::secureWrite() {
 		for (unsigned int i = 0; i < count; i++) {
 			auto data = iovecs[i].iov_base;
 			auto length = iovecs[i].iov_len;
-			auto sent = sslWrite(data, length);
-			if (sent == 0) {
-				break;
-			} else if ((size_t) sent == length) {
-				nSent += sent;
+			auto sent = length ? sslWrite(data, length) : 0;
+			nSent += sent;
+			if ((size_t) sent == length) {
 				continue;
 			} else { //Partial write
-				nSent += sent;
 				break;
 			}
 		}
