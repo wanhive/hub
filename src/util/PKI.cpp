@@ -47,13 +47,9 @@ bool PKI::hasHostKey() const noexcept {
 
 bool PKI::encrypt(const void *block, unsigned int size,
 		PKIEncryptedData *target) const noexcept {
-	if (size <= MAX_PT_LEN
+	return (size <= MAX_PT_LEN)
 			&& (rsa.encrypt((const unsigned char*) block, (int) size,
-					(unsigned char*) target) != -1)) {
-		return true;
-	} else {
-		return false;
-	}
+					(unsigned char*) target) != -1);
 }
 
 bool PKI::decrypt(const PKIEncryptedData *block, void *result,
