@@ -481,31 +481,29 @@ unsigned int Socket::fillOutgoingQueue() noexcept {
 }
 
 void Socket::adjustOutgoingQueue(size_t bytes) noexcept {
-	if (bytes) {
-		size_t total = 0;
-		unsigned int sentMessages = 0;
-		auto iovecs = outgoingMessages.offset();
-		auto count = outgoingMessages.space();
-		for (unsigned int index = 0; index < count; ++index) {
-			iovec &iov = iovecs[index];
-			total += iov.iov_len;
-			if (total > bytes) {
-				//This IOVEC has been consumed partially
-				auto originalLength = iov.iov_len;
-				iov.iov_len = (total - bytes);
-				iov.iov_base = ((unsigned char*) (iov.iov_base))
-						+ (originalLength - (total - bytes));
-				break;
-			}
-
-			//We have sent this message, recycle it
-			Message *msg = nullptr;
-			out.get(msg);
-			Message::recycle(msg);
-			++sentMessages;
+	size_t total = 0;
+	unsigned int sentMessages = 0;
+	auto iovecs = outgoingMessages.offset();
+	auto count = outgoingMessages.space();
+	for (unsigned int index = 0; index < count; ++index) {
+		iovec &iov = iovecs[index];
+		total += iov.iov_len;
+		if (total > bytes) {
+			//This IOVEC has been consumed partially
+			auto originalLength = iov.iov_len;
+			iov.iov_len = (total - bytes);
+			iov.iov_base = ((unsigned char*) (iov.iov_base))
+					+ (originalLength - (total - bytes));
+			break;
 		}
-		outgoingMessages.setIndex(outgoingMessages.getIndex() + sentMessages);
+
+		//We have sent this message, recycle it
+		Message *msg = nullptr;
+		out.get(msg);
+		Message::recycle(msg);
+		++sentMessages;
 	}
+	outgoingMessages.setIndex(outgoingMessages.getIndex() + sentMessages);
 }
 
 void Socket::clear() noexcept {
