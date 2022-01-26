@@ -120,6 +120,7 @@ bool Rsa::verify(const unsigned char *data, unsigned int dataLength,
 		unsigned char *signature, unsigned int signatureLength) const noexcept {
 	if (_public) {
 		unsigned char md[SHA_DIGEST_LENGTH];
+		memset(&md, 0, sizeof(md));
 		return SHA1(data, dataLength, (unsigned char*) md)
 				&& verifyDigest(_public, md, SHA_DIGEST_LENGTH, signature,
 						signatureLength, NID_sha1);
