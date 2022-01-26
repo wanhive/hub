@@ -14,7 +14,6 @@
 #define WH_UTIL_ENDPOINT_H_
 #include "FlowControl.h"
 #include "Message.h"
-#include "Packet.h"
 #include "TransactionKey.h"
 #include "Trust.h"
 #include "../base/Network.h"

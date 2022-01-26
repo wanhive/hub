@@ -71,31 +71,6 @@ void Frame::clear() noexcept {
 	_frame.clear();
 }
 
-bool Frame::bind() noexcept {
-	auto length = _header.getLength();
-	if (testLength(length) && (_frame.getIndex() == 0)
-			&& _frame.setLimit(length)) {
-		MessageHeader::setLength(_frame.array(), length);
-		return true;
-	} else {
-		return false;
-	}
-}
-
-bool Frame::validate() const noexcept {
-	return (_frame.getIndex() == 0)
-			&& (_frame.getLimit() == _header.getLength())
-			&& (_header.getLength() >= HEADER_SIZE);
-}
-
-bool Frame::testLength(unsigned int length) noexcept {
-	return (length >= HEADER_SIZE && length <= MTU);
-}
-
-unsigned int Frame::packets(unsigned int bytes) noexcept {
-	return ((unsigned long long) bytes + PAYLOAD_SIZE - 1) / PAYLOAD_SIZE;
-}
-
 unsigned int Frame::getHopCount() const noexcept {
 	return hopCount;
 }

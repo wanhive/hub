@@ -12,7 +12,7 @@
 
 #ifndef WH_UTIL_MESSAGE_H_
 #define WH_UTIL_MESSAGE_H_
-#include "Frame.h"
+#include "Packet.h"
 #include "../base/common/Source.h"
 #include "../base/ds/MemoryPool.h"
 #include "../base/ds/State.h"
@@ -35,11 +35,10 @@ enum MessageFlag {
 };
 //-----------------------------------------------------------------
 /**
- * Wanhive packet structure implementation
- * Message structure: [{FIXED HEADER}{VARIABLE LENGTH PAYLOAD}]
+ * Wanhive message implementation
  * Not thread safe
  */
-class Message: public State, public Frame {
+class Message: public State, public Packet {
 private:
 	Message(uint64_t origin) noexcept;
 	~Message();
@@ -52,7 +51,7 @@ public:
 	//Recycles a Message (nullptr results in noop)
 	static void recycle(Message *p) noexcept;
 
-	//Resets the message (origin, mark, reference-count and ttl are preserved)
+	//Resets the message (origin, mark, and reference/hop counts are preserved)
 	void clear() noexcept;
 	//=================================================================
 	/**
@@ -82,7 +81,6 @@ public:
 	void putDestination(uint64_t destination) noexcept;
 
 	uint16_t getLength() const noexcept;
-	bool testLength() const noexcept;
 	bool setLength(uint16_t length) noexcept;
 	bool updateLength(uint16_t length) noexcept;
 	bool putLength(uint16_t length) noexcept;
@@ -125,11 +123,8 @@ public:
 			uint16_t sequenceNumber, uint8_t session, uint8_t command,
 			uint8_t qualifier, uint8_t status, uint64_t label = 0) noexcept;
 	bool putHeader(const MessageHeader &header) noexcept;
-	//-----------------------------------------------------------------
 	//Returns the payload size in bytes, 0 if the message length is invalid
 	uint16_t getPayloadLength() const noexcept;
-	//Unpacks the header data from the IO buffer into the <header>
-	void unpackHeader(MessageHeader &header) const noexcept;
 	//=================================================================
 	/**
 	 * Payload data handlers
@@ -212,14 +207,6 @@ public:
 	bool unpack(const char *format, ...) const noexcept;
 	bool unpack(const char *format, va_list ap) const noexcept;
 	//=================================================================
-	/*
-	 * For debugging purposes, header is printed to stderr.
-	 * If <deep> is true then the serialized header from IO buffer is
-	 * extracted and printed otherwise the routing header is printed.
-	 */
-	void printHeader(bool deep = false) const noexcept;
-	//=================================================================
-	using Frame::testLength;
 	//Returns true if <count> Messages can be allocated from the memory pool
 	static bool available(unsigned int count) noexcept;
 	//=================================================================

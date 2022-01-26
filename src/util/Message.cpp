@@ -17,7 +17,7 @@
 namespace wanhive {
 MemoryPool Message::pool;
 Message::Message(uint64_t origin) noexcept :
-		Frame { origin } {
+		Packet { origin } {
 
 }
 
@@ -98,10 +98,6 @@ void Message::putDestination(uint64_t destination) noexcept {
 
 uint16_t Message::getLength() const noexcept {
 	return header().getLength();
-}
-
-bool Message::testLength() const noexcept {
-	return testLength(header().getLength());
 }
 
 bool Message::setLength(uint16_t length) noexcept {
@@ -274,10 +270,6 @@ uint16_t Message::getPayloadLength() const noexcept {
 	} else {
 		return 0;
 	}
-}
-
-void Message::unpackHeader(MessageHeader &header) const noexcept {
-	header.deserialize(frame().array());
 }
 
 uint64_t Message::getData64(unsigned int index) const noexcept {
@@ -586,16 +578,6 @@ bool Message::unpack(const char *format, va_list ap) const noexcept {
 				getPayloadLength(), format, ap);
 	} else {
 		return false;
-	}
-}
-
-void Message::printHeader(bool deep) const noexcept {
-	if (deep) {
-		MessageHeader header;
-		header.deserialize(frame().array());
-		header.print();
-	} else {
-		this->header().print();
 	}
 }
 

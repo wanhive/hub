@@ -22,7 +22,7 @@ namespace wanhive {
  */
 class Frame {
 public:
-	Frame(uint64_t origin) noexcept;
+	Frame(uint64_t origin = 0) noexcept;
 	~Frame();
 
 	//Returns the origin identifier
@@ -39,18 +39,8 @@ public:
 	unsigned char* payload(unsigned int offset = 0) noexcept;
 	//Constant pointer to payload's <offset> in the IO buffer (null on error)
 	const unsigned char* payload(unsigned int offset = 0) const noexcept;
-
 	//Clears out the routing header and the frame buffer
 	void clear() noexcept;
-	//Binds the frame buffer (makes it internally consistent)
-	bool bind() noexcept;
-	//Returns true if the frame buffer is internally consistent
-	bool validate() const noexcept;
-
-	//Returns true if the given frame <length> is valid
-	static bool testLength(unsigned int length) noexcept;
-	//Returns the number of frames required to transmit <bytes> of data
-	static unsigned int packets(unsigned int bytes) noexcept;
 protected:
 	//Returns the hop count
 	unsigned int getHopCount() const noexcept;
