@@ -348,9 +348,7 @@ ssize_t Socket::secureWrite() {
 			auto length = iovecs[i].iov_len;
 			auto sent = length ? sslWrite(data, length) : 0;
 			nSent += sent;
-			if ((size_t) sent == length) {
-				continue;
-			} else { //Partial write
+			if ((size_t) sent != length) { //Partial write
 				break;
 			}
 		}
