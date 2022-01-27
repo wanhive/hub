@@ -62,6 +62,14 @@ bool Packet::validate() const noexcept {
 			&& (header().getLength() >= HEADER_SIZE);
 }
 
+uint16_t Packet::getPayloadLength() const noexcept {
+	if (testLength()) {
+		return header().getLength() - HEADER_SIZE;
+	} else {
+		return 0;
+	}
+}
+
 bool Packet::testLength() const noexcept {
 	return testLength(header().getLength());
 }
@@ -74,24 +82,24 @@ unsigned int Packet::packets(unsigned int bytes) noexcept {
 	return ((unsigned long long) bytes + PAYLOAD_SIZE - 1) / PAYLOAD_SIZE;
 }
 
-bool Packet::checkContext(uint8_t command, uint8_t qualifier) const noexcept {
-	return checkContext(header(), command, qualifier);
-}
-
-bool Packet::checkContext(uint8_t command, uint8_t qualifier,
-		uint8_t status) const noexcept {
-	return checkContext(header(), command, qualifier, status);
-}
-
 bool Packet::checkContext(const MessageHeader &header, uint8_t command,
 		uint8_t qualifier) noexcept {
 	return header.getCommand() == command && header.getQualifier() == qualifier;
+}
+
+bool Packet::checkContext(uint8_t command, uint8_t qualifier) const noexcept {
+	return checkContext(header(), command, qualifier);
 }
 
 bool Packet::checkContext(const MessageHeader &header, uint8_t command,
 		uint8_t qualifier, uint8_t status) noexcept {
 	return checkContext(header, command, qualifier)
 			&& header.getStatus() == status;
+}
+
+bool Packet::checkContext(uint8_t command, uint8_t qualifier,
+		uint8_t status) const noexcept {
+	return checkContext(header(), command, qualifier, status);
 }
 
 void Packet::printHeader(bool deep) const noexcept {

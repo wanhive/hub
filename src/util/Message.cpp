@@ -264,14 +264,6 @@ bool Message::putHeader(const MessageHeader &header) noexcept {
 	}
 }
 
-uint16_t Message::getPayloadLength() const noexcept {
-	if (testLength()) {
-		return header().getLength() - HEADER_SIZE;
-	} else {
-		return 0;
-	}
-}
-
 uint64_t Message::getData64(unsigned int index) const noexcept {
 	uint64_t data = 0;
 	getData64(index, data);

@@ -123,8 +123,6 @@ public:
 			uint16_t sequenceNumber, uint8_t session, uint8_t command,
 			uint8_t qualifier, uint8_t status, uint64_t label = 0) noexcept;
 	bool putHeader(const MessageHeader &header) noexcept;
-	//Returns the payload size in bytes, 0 if the message length is invalid
-	uint16_t getPayloadLength() const noexcept;
 	//=================================================================
 	/**
 	 * Payload data handlers

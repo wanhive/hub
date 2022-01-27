@@ -38,6 +38,8 @@ public:
 	//Returns true if the packet is internally consistent
 	bool validate() const noexcept;
 	//-----------------------------------------------------------------
+	//Returns the payload size in bytes, 0 if the message length is invalid
+	uint16_t getPayloadLength() const noexcept;
 	//Returns true if the routing header's length field is valid
 	bool testLength() const noexcept;
 	//Returns true if the given packet <length> is valid
@@ -46,15 +48,17 @@ public:
 	static unsigned int packets(unsigned int bytes) noexcept;
 	//-----------------------------------------------------------------
 	/**
-	 * Verify routing header's context
+	 * Verify message header's context
 	 */
-	bool checkContext(uint8_t command, uint8_t qualifier) const noexcept;
-	bool checkContext(uint8_t command, uint8_t qualifier,
-			uint8_t status) const noexcept;
 	static bool checkContext(const MessageHeader &header, uint8_t command,
 			uint8_t qualifier) noexcept;
+	//Same as the above, but uses this packet's routing header
+	bool checkContext(uint8_t command, uint8_t qualifier) const noexcept;
 	static bool checkContext(const MessageHeader &header, uint8_t command,
 			uint8_t qualifier, uint8_t status) noexcept;
+	//Same as the above, but uses this packet's routing header
+	bool checkContext(uint8_t command, uint8_t qualifier,
+			uint8_t status) const noexcept;
 	//-----------------------------------------------------------------
 	/*
 	 * For debugging purposes, header data is printed to the stderr.
