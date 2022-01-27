@@ -153,16 +153,6 @@ void Endpoint::setSocketTimeout(int recvTimeout, int sendTimeout) const {
 	Network::setSocketTimeout(sockfd, recvTimeout, sendTimeout);
 }
 
-bool Endpoint::checkContext(uint8_t command, uint8_t qualifier) const noexcept {
-	return header().getCommand() == command
-			&& header().getQualifier() == qualifier;
-}
-
-bool Endpoint::checkContext(uint8_t command, uint8_t qualifier,
-		uint8_t status) const noexcept {
-	return checkContext(command, qualifier) && header().getStatus() == status;
-}
-
 void Endpoint::send(bool sign) {
 	if (!ssl) {
 		Endpoint::send(sockfd, buffer(), header().getLength(),

@@ -45,6 +45,17 @@ public:
 	//Returns the number of packets required to transmit <bytes> of data
 	static unsigned int packets(unsigned int bytes) noexcept;
 	//-----------------------------------------------------------------
+	/**
+	 * Verify routing header's context
+	 */
+	bool checkContext(uint8_t command, uint8_t qualifier) const noexcept;
+	bool checkContext(uint8_t command, uint8_t qualifier,
+			uint8_t status) const noexcept;
+	static bool checkContext(const MessageHeader &header, uint8_t command,
+			uint8_t qualifier) noexcept;
+	static bool checkContext(const MessageHeader &header, uint8_t command,
+			uint8_t qualifier, uint8_t status) noexcept;
+	//-----------------------------------------------------------------
 	/*
 	 * For debugging purposes, header data is printed to the stderr.
 	 * If <deep> is true then the serialized header from IO buffer is

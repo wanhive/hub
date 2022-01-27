@@ -87,12 +87,6 @@ public:
 	//Set receive and send timeout (milliseconds)
 	void setSocketTimeout(int recvTimeout, int sendTimeout) const;
 	//-----------------------------------------------------------------
-	//Verify that message's context is correctly set in the header
-	bool checkContext(uint8_t command, uint8_t qualifier) const noexcept;
-	//Verify that message's context is correctly set in the header
-	bool checkContext(uint8_t command, uint8_t qualifier,
-			uint8_t status) const noexcept;
-	//-----------------------------------------------------------------
 	/**
 	 * Messaging over blocking socket connection
 	 * NOTE: Assign a PKI key-pair for signing and verification.

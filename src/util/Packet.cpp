@@ -74,6 +74,26 @@ unsigned int Packet::packets(unsigned int bytes) noexcept {
 	return ((unsigned long long) bytes + PAYLOAD_SIZE - 1) / PAYLOAD_SIZE;
 }
 
+bool Packet::checkContext(uint8_t command, uint8_t qualifier) const noexcept {
+	return checkContext(header(), command, qualifier);
+}
+
+bool Packet::checkContext(uint8_t command, uint8_t qualifier,
+		uint8_t status) const noexcept {
+	return checkContext(header(), command, qualifier, status);
+}
+
+bool Packet::checkContext(const MessageHeader &header, uint8_t command,
+		uint8_t qualifier) noexcept {
+	return header.getCommand() == command && header.getQualifier() == qualifier;
+}
+
+bool Packet::checkContext(const MessageHeader &header, uint8_t command,
+		uint8_t qualifier, uint8_t status) noexcept {
+	return checkContext(header, command, qualifier)
+			&& header.getStatus() == status;
+}
+
 void Packet::printHeader(bool deep) const noexcept {
 	if (deep) {
 		MessageHeader header;
