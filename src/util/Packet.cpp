@@ -62,7 +62,7 @@ bool Packet::validate() const noexcept {
 			&& (header().getLength() >= HEADER_SIZE);
 }
 
-uint16_t Packet::getPayloadLength() const noexcept {
+unsigned int Packet::getPayloadLength() const noexcept {
 	if (testLength()) {
 		return header().getLength() - HEADER_SIZE;
 	} else {

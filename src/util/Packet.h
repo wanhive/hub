@@ -39,7 +39,7 @@ public:
 	bool validate() const noexcept;
 	//-----------------------------------------------------------------
 	//Returns the payload size in bytes, 0 if the message length is invalid
-	uint16_t getPayloadLength() const noexcept;
+	unsigned int getPayloadLength() const noexcept;
 	//Returns true if the routing header's length field is valid
 	bool testLength() const noexcept;
 	//Returns true if the given packet <length> is valid
