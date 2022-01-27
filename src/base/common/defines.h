@@ -79,6 +79,7 @@
 #define WH_FILE ""
 #define WH_LINE 0
 #endif
+
 #ifdef WH_GCC
 #define WH_FUNCTION __PRETTY_FUNCTION__
 #else
@@ -101,5 +102,21 @@
  * For evaluation of an array's length
  */
 #define WH_ARRAYLEN(x) (sizeof(x) / sizeof(x[0]))
+//=================================================================
+/**
+ * For secure logging
+ */
+#ifndef WH_LOG_SAFE
+#define WH_LOG_SAFE 0
+#endif
+
+#if WH_LOG_SAFE
+#define WH_SEC_VAL(x) ((decltype(x))(0))
+#define WH_SEC_STR(x) "***"
+#else
+#define WH_SEC_VAL(x) (x)
+#define WH_SEC_STR(x) (x)
+#endif
+//=================================================================
 
 #endif /* WH_BASE_COMMON_DEFINES_H_ */
