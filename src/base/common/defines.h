@@ -113,9 +113,13 @@
 #if WH_LOG_SAFE
 #define WH_SEC_VAL(x) ((decltype(x))(0))
 #define WH_SEC_STR(x) "***"
+#define WH_MASK_VAL(p, x) ((p) ? WH_SEC_VAL(x) : (x))
+#define WH_MASK_STR(p, x) ((p) ? WH_SEC_STR(x) : (x))
 #else
 #define WH_SEC_VAL(x) (x)
 #define WH_SEC_STR(x) (x)
+#define WH_MASK_VAL(p, x) (x)
+#define WH_MASK_STR(p, x) (x)
 #endif
 //=================================================================
 
