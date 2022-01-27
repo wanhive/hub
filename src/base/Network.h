@@ -65,7 +65,7 @@ public:
 			size_t length);
 	/*
 	 * Reads at most <length> bytes from the socket <sockfd> into the buffer <buf>.
-	 * If <strict> is truew then throws exception on connection close or timeout.
+	 * If <strict> is true then throws exception on connection close or timeout.
 	 * Returns the actual number of bytes transferred.
 	 */
 	static size_t receiveStream(int sockfd, unsigned char *buf, size_t length,

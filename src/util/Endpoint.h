@@ -33,7 +33,7 @@ public:
 	/**
 	 * SSL and public key management
 	 */
-	//Set context for SSL connections
+	//Set the context for SSL connections
 	void setSSLContext(SSLContext *ctx) noexcept;
 	//Get the current SSL context associated with this object
 	SSLContext* getSSLContext() const noexcept;
