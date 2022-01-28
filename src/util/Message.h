@@ -53,6 +53,8 @@ public:
 
 	//Resets the message (origin, mark, and reference/hop counts are preserved)
 	void clear() noexcept;
+	//Incrementally builds the message, returns true when done
+	bool build(Source<unsigned char> &in);
 	//=================================================================
 	/**
 	 * Message header handling functions
@@ -204,9 +206,6 @@ public:
 	 * WARNING: Following methods violate encapsulation and do not perform any
 	 * error/sanity check. Application developers should not use these methods.
 	 */
-	//Incrementally builds the message from a Source, returns true when done
-	bool build(Source<unsigned char> &in);
-
 	//Increases and returns the reference count
 	unsigned int addReferenceCount() noexcept;
 	//Increases and returns the hop count

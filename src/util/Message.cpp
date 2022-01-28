@@ -54,6 +54,46 @@ void Message::clear() noexcept {
 	Frame::clear();
 }
 
+bool Message::build(Source<unsigned char> &in) {
+	switch (getFlags()) {
+	case 0:
+		/* no break */
+	case MSG_WAIT_HEADER:
+		if (in.available() >= Message::HEADER_SIZE) {
+			frame().clear();
+			in.take(frame().offset(), Message::HEADER_SIZE);
+			//Prepare the routing header
+			header().deserialize(frame().array());
+			frame().setIndex(HEADER_SIZE);
+			putFlags(MSG_WAIT_DATA);
+		} else {
+			return false;
+		}
+		/* no break */
+	case MSG_WAIT_DATA:
+		if (testLength()) {
+			auto payLoadLength = header().getLength() - HEADER_SIZE;
+			if (in.available() >= payLoadLength) {
+				in.take(frame().offset(), payLoadLength);
+				//Set the correct limit and index
+				frame().setIndex(header().getLength());
+				frame().rewind();
+				putFlags(MSG_WAIT_PROCESSING);
+				return true;
+			} else {
+				return false;
+			}
+		} else {
+			throw Exception(EX_INVALIDRANGE);
+		}
+		/* no break */
+	case MSG_WAIT_PROCESSING:
+		return true;
+	default:
+		throw Exception(EX_INVALIDSTATE);
+	}
+}
+
 uint64_t Message::getLabel() const noexcept {
 	return header().getLabel();
 }
@@ -525,46 +565,6 @@ bool Message::unpack(const char *format, va_list ap) const noexcept {
 
 bool Message::available(unsigned int count) noexcept {
 	return count <= unallocated();
-}
-
-bool Message::build(Source<unsigned char> &in) {
-	switch (getFlags()) {
-	case 0:
-		/* no break */
-	case MSG_WAIT_HEADER:
-		if (in.available() >= Message::HEADER_SIZE) {
-			frame().clear();
-			in.take(frame().offset(), Message::HEADER_SIZE);
-			//Prepare the routing header
-			header().deserialize(frame().array());
-			frame().setIndex(HEADER_SIZE);
-			putFlags(MSG_WAIT_DATA);
-		} else {
-			return false;
-		}
-		/* no break */
-	case MSG_WAIT_DATA:
-		if (testLength()) {
-			auto payLoadLength = header().getLength() - HEADER_SIZE;
-			if (in.available() >= payLoadLength) {
-				in.take(frame().offset(), payLoadLength);
-				//Set the correct limit and index
-				frame().setIndex(header().getLength());
-				frame().rewind();
-				putFlags(MSG_WAIT_PROCESSING);
-				return true;
-			} else {
-				return false;
-			}
-		} else {
-			throw Exception(EX_INVALIDRANGE);
-		}
-		/* no break */
-	case MSG_WAIT_PROCESSING:
-		return true;
-	default:
-		throw Exception(EX_INVALIDSTATE);
-	}
 }
 
 unsigned int Message::addReferenceCount() noexcept {
