@@ -24,21 +24,21 @@ public:
 	~Packet();
 
 	//-----------------------------------------------------------------
-	//Packs the <header> into the frame buffer (fails on invalid length)
+	//Packs the <header> data into the frame buffer (fails on invalid length)
 	bool packHeader(const MessageHeader &header) noexcept;
 	//Same as the above but uses the routing header
 	bool packHeader() noexcept;
-	//Unpacks the header data from the frame buffer into the <header>
+	//Unpacks values from the frame buffer into the <header> (always succeeds)
 	bool unpackHeader(MessageHeader &header) const noexcept;
 	//Same as the above but uses the routing header
 	bool unpackHeader() noexcept;
 	//-----------------------------------------------------------------
-	//Finalizes the packet length (makes it internally consistent)
+	//Makes the packet internally consistent
 	bool bind() noexcept;
-	//Returns true if the packet is internally consistent
+	//Returns true if the packet is valid (internally consistent)
 	bool validate() const noexcept;
 	//-----------------------------------------------------------------
-	//Returns the payload size in bytes, 0 if the message length is invalid
+	//Returns the payload length in bytes
 	unsigned int getPayloadLength() const noexcept;
 	//Returns true if the routing header's length field is valid
 	bool testLength() const noexcept;
