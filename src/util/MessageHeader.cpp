@@ -21,6 +21,12 @@ MessageHeader::MessageHeader() noexcept {
 	clear();
 }
 
+MessageHeader::MessageHeader(const MessageAddress &address,
+		const MessageControl &ctrl, const MessageContext &ctx,
+		uint64_t label) noexcept {
+	load(address, ctrl, ctx, label);
+}
+
 MessageHeader::MessageHeader(uint64_t source, uint64_t destination,
 		uint16_t length, uint16_t sequenceNumber, uint8_t session,
 		uint8_t command, uint8_t qualifier, uint8_t status,
@@ -99,6 +105,39 @@ uint8_t MessageHeader::getStatus() const noexcept {
 }
 void MessageHeader::setStatus(uint8_t status) noexcept {
 	header.ctx.status = status;
+}
+
+void MessageHeader::getAddress(MessageAddress &address) const noexcept {
+	address = header.addr;
+}
+
+void MessageHeader::setAddress(const MessageAddress &address) noexcept {
+	header.addr = address;
+}
+
+void MessageHeader::getControl(MessageControl &ctrl) const noexcept {
+	ctrl = header.ctrl;
+}
+
+void MessageHeader::setControl(const MessageControl &ctrl) noexcept {
+	header.ctrl = ctrl;
+}
+
+void MessageHeader::getContext(MessageContext &ctx) const noexcept {
+	ctx = header.ctx;
+}
+
+void MessageHeader::setContext(const MessageContext ctx) noexcept {
+	header.ctx = ctx;
+}
+
+void MessageHeader::load(const MessageAddress &address,
+		const MessageControl &ctrl, const MessageContext &ctx,
+		uint64_t label) noexcept {
+	setLabel(label);
+	setAddress(address);
+	setControl(ctrl);
+	setContext(ctx);
 }
 
 void MessageHeader::load(uint64_t source, uint64_t destination, uint16_t length,
@@ -225,6 +264,53 @@ uint8_t MessageHeader::getStatus(const unsigned char *buffer) noexcept {
 }
 void MessageHeader::setStatus(unsigned char *buffer, uint8_t status) noexcept {
 	Serializer::packi8(buffer + 31, status);
+}
+
+void MessageHeader::getAddress(const unsigned char *buffer,
+		MessageAddress &address) noexcept {
+	address.source = getSource(buffer);
+	address.destination = getDestination(buffer);
+}
+void MessageHeader::setAddress(unsigned char *buffer,
+		const MessageAddress &address) noexcept {
+	setSource(buffer, address.source);
+	setDestination(buffer, address.destination);
+}
+
+void MessageHeader::getControl(const unsigned char *buffer,
+		MessageControl &ctrl) noexcept {
+	ctrl.length = getLength(buffer);
+	ctrl.sequenceNumber = getSequenceNumber(buffer);
+	ctrl.session = getSession(buffer);
+}
+
+void MessageHeader::setControl(unsigned char *buffer,
+		const MessageControl &ctrl) noexcept {
+	setLength(buffer, ctrl.length);
+	setSequenceNumber(buffer, ctrl.sequenceNumber);
+	setSession(buffer, ctrl.session);
+}
+
+void MessageHeader::getContext(const unsigned char *buffer,
+		MessageContext &ctx) noexcept {
+	ctx.command = getCommand(buffer);
+	ctx.qualifier = getQualifier(buffer);
+	ctx.status = getStatus(buffer);
+}
+
+void MessageHeader::setContext(unsigned char *buffer,
+		const MessageContext ctx) noexcept {
+	setCommand(buffer, ctx.command);
+	setQualifier(buffer, ctx.qualifier);
+	setStatus(buffer, ctx.status);
+}
+
+unsigned int MessageHeader::serialize(unsigned char *buffer,
+		const MessageAddress &address, const MessageControl &ctrl,
+		const MessageContext &ctx, uint64_t label) noexcept {
+	return serialize(buffer, address.source, address.destination, ctrl.length,
+			ctrl.sequenceNumber, ctrl.session, ctx.command, ctx.qualifier,
+			ctx.status, label);
 }
 
 unsigned int MessageHeader::serialize(unsigned char *buffer, uint64_t source,
