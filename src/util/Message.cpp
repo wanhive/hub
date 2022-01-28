@@ -225,43 +225,6 @@ bool Message::putHeader(const MessageHeader &header) noexcept {
 	}
 }
 
-bool Message::setHeader(uint64_t source, uint64_t destination, uint16_t length,
-		uint16_t sequenceNumber, uint8_t session, uint8_t command,
-		uint8_t qualifier, uint8_t status, uint64_t label) noexcept {
-	if (testLength(length)) {
-		header().load(source, destination, length, sequenceNumber, session,
-				command, qualifier, status, label);
-		return true;
-	} else {
-		return false;
-	}
-}
-bool Message::updateHeader(uint64_t source, uint64_t destination,
-		uint16_t length, uint16_t sequenceNumber, uint8_t session,
-		uint8_t command, uint8_t qualifier, uint8_t status,
-		uint64_t label) noexcept {
-	if (testLength(length) && (frame().getIndex() == 0)
-			&& frame().setLimit(length)) {
-		MessageHeader::serialize(frame().array(), source, destination, length,
-				sequenceNumber, session, command, qualifier, status, label);
-		return true;
-	} else {
-		return false;
-	}
-}
-bool Message::putHeader(uint64_t source, uint64_t destination, uint16_t length,
-		uint16_t sequenceNumber, uint8_t session, uint8_t command,
-		uint8_t qualifier, uint8_t status, uint64_t label) noexcept {
-	if (updateHeader(source, destination, length, sequenceNumber, session,
-			command, qualifier, status, label)) {
-		header().load(source, destination, length, sequenceNumber, session,
-				command, qualifier, status, label);
-		return true;
-	} else {
-		return false;
-	}
-}
-
 uint64_t Message::getData64(unsigned int index) const noexcept {
 	uint64_t data = 0;
 	getData64(index, data);

@@ -114,16 +114,6 @@ public:
 	bool setHeader(const MessageHeader &header) noexcept;
 	bool updateHeader(const MessageHeader &header) noexcept;
 	bool putHeader(const MessageHeader &header) noexcept;
-
-	bool setHeader(uint64_t source, uint64_t destination, uint16_t length,
-			uint16_t sequenceNumber, uint8_t session, uint8_t command,
-			uint8_t qualifier, uint8_t status, uint64_t label = 0) noexcept;
-	bool updateHeader(uint64_t source, uint64_t destination, uint16_t length,
-			uint16_t sequenceNumber, uint8_t session, uint8_t command,
-			uint8_t qualifier, uint8_t status, uint64_t label = 0) noexcept;
-	bool putHeader(uint64_t source, uint64_t destination, uint16_t length,
-			uint16_t sequenceNumber, uint8_t session, uint8_t command,
-			uint8_t qualifier, uint8_t status, uint64_t label = 0) noexcept;
 	//=================================================================
 	/**
 	 * Payload data handlers
