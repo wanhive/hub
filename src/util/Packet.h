@@ -33,7 +33,9 @@ public:
 	//Same as the above but uses the routing header
 	bool unpackHeader() noexcept;
 	//-----------------------------------------------------------------
-	//Makes the frame buffer internally consistent
+	//Sets frame buffer's <length> and makes it internally consistent
+	bool bind(unsigned int length) noexcept;
+	//Same as the above, but uses the length field of the routing header
 	bool bind() noexcept;
 	//Returns true if the frame buffer is valid (internally consistent)
 	bool validate() const noexcept;

@@ -45,8 +45,7 @@ bool Packet::unpackHeader() noexcept {
 	return unpackHeader(header());
 }
 
-bool Packet::bind() noexcept {
-	auto length = header().getLength();
+bool Packet::bind(unsigned int length) noexcept {
 	if (testLength(length) && (frame().getIndex() == 0)
 			&& frame().setLimit(length)) {
 		MessageHeader::setLength(frame().array(), length);
@@ -54,6 +53,10 @@ bool Packet::bind() noexcept {
 	} else {
 		return false;
 	}
+}
+
+bool Packet::bind() noexcept {
+	return bind(header().getLength());
 }
 
 bool Packet::validate() const noexcept {
