@@ -200,20 +200,40 @@ void Message::putStatus(uint8_t status) noexcept {
 void Message::getHeader(MessageHeader &header) const noexcept {
 	header = this->header();
 }
+bool Message::setHeader(const MessageHeader &header) noexcept {
+	if (testLength(header.getLength())) {
+		this->header() = header;
+		return true;
+	} else {
+		return false;
+	}
+}
+bool Message::updateHeader(const MessageHeader &header) noexcept {
+	if (testLength(header.getLength())
+			&& frame().setLimit(header.getLength())) {
+		header.serialize(frame().array());
+		return true;
+	} else {
+		return false;
+	}
+}
+bool Message::putHeader(const MessageHeader &header) noexcept {
+	if (testLength(header.getLength())
+			&& frame().setLimit(header.getLength())) {
+		this->header() = header;
+		header.serialize(frame().array());
+		return true;
+	} else {
+		return false;
+	}
+}
+
 bool Message::setHeader(uint64_t source, uint64_t destination, uint16_t length,
 		uint16_t sequenceNumber, uint8_t session, uint8_t command,
 		uint8_t qualifier, uint8_t status, uint64_t label) noexcept {
 	if (testLength(length)) {
 		header().load(source, destination, length, sequenceNumber, session,
 				command, qualifier, status, label);
-		return true;
-	} else {
-		return false;
-	}
-}
-bool Message::setHeader(const MessageHeader &header) noexcept {
-	if (testLength(header.getLength())) {
-		this->header() = header;
 		return true;
 	} else {
 		return false;
@@ -231,15 +251,6 @@ bool Message::updateHeader(uint64_t source, uint64_t destination,
 		return false;
 	}
 }
-bool Message::updateHeader(const MessageHeader &header) noexcept {
-	if (testLength(header.getLength())
-			&& frame().setLimit(header.getLength())) {
-		header.serialize(frame().array());
-		return true;
-	} else {
-		return false;
-	}
-}
 bool Message::putHeader(uint64_t source, uint64_t destination, uint16_t length,
 		uint16_t sequenceNumber, uint8_t session, uint8_t command,
 		uint8_t qualifier, uint8_t status, uint64_t label) noexcept {
@@ -248,16 +259,6 @@ bool Message::putHeader(uint64_t source, uint64_t destination, uint16_t length,
 				command, qualifier, status, label);
 		MessageHeader::serialize(frame().array(), source, destination, length,
 				sequenceNumber, session, command, qualifier, status, label);
-		return true;
-	} else {
-		return false;
-	}
-}
-bool Message::putHeader(const MessageHeader &header) noexcept {
-	if (testLength(header.getLength())
-			&& frame().setLimit(header.getLength())) {
-		this->header() = header;
-		header.serialize(frame().array());
 		return true;
 	} else {
 		return false;
