@@ -110,13 +110,7 @@ bool Message::setLength(uint16_t length) noexcept {
 
 }
 bool Message::updateLength(uint16_t length) noexcept {
-	if (testLength(length) && (frame().getIndex() == 0)
-			&& frame().setLimit(length)) {
-		MessageHeader::setLength(frame().array(), length);
-		return true;
-	} else {
-		return false;
-	}
+	return bind(length);
 }
 bool Message::putLength(uint16_t length) noexcept {
 	if (updateLength(length)) {
@@ -209,12 +203,7 @@ bool Message::setHeader(const MessageHeader &header) noexcept {
 	}
 }
 bool Message::updateHeader(const MessageHeader &header) noexcept {
-	if (testLength(header.getLength()) && (frame().getIndex() == 0)
-			&& frame().setLimit(header.getLength())) {
-		return header.serialize(frame().array());
-	} else {
-		return false;
-	}
+	return packHeader(header);
 }
 bool Message::putHeader(const MessageHeader &header) noexcept {
 	if (updateHeader(header)) {
