@@ -460,10 +460,10 @@ unsigned int Socket::fillOutgoingQueue() noexcept {
 			auto iovecs = outgoingMessages.offset();
 			unsigned int count = 0;
 			for (unsigned int i = 0; i < 2; ++i) { //Two parts
-				BufferVector<Message*> &mvecs = vector.part[i];
+				auto &mvecs = vector.part[i];
 				for (size_t j = 0; ((j < mvecs.length) && (count < space));
 						++j) {
-					Message *msg = mvecs.base[j];
+					auto msg = mvecs.base[j];
 					iovecs[count].iov_base = msg->buffer();
 					iovecs[count].iov_len =
 							msg->validate() ? msg->getLength() : 0;
