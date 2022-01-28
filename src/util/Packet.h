@@ -33,9 +33,9 @@ public:
 	//Same as the above but uses the routing header
 	bool unpackHeader() noexcept;
 	//-----------------------------------------------------------------
-	//Makes the packet internally consistent
+	//Makes the frame buffer internally consistent
 	bool bind() noexcept;
-	//Returns true if the packet is valid (internally consistent)
+	//Returns true if the frame buffer is valid (internally consistent)
 	bool validate() const noexcept;
 	//-----------------------------------------------------------------
 	//Returns the payload length in bytes
