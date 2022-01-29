@@ -31,7 +31,7 @@ public:
 	bool packHeader() noexcept;
 	//Unpacks values from the frame buffer into the <header> (always succeeds)
 	bool unpackHeader(MessageHeader &header) const noexcept;
-	//Same as the above but uses the routing header
+	//Same as the above but uses the routing header and fails on invalid length
 	bool unpackHeader() noexcept;
 	//-----------------------------------------------------------------
 	//Sets frame buffer's <length> and makes it internally consistent

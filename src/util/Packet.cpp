@@ -43,7 +43,9 @@ bool Packet::unpackHeader(MessageHeader &header) const noexcept {
 }
 
 bool Packet::unpackHeader() noexcept {
-	return unpackHeader(header());
+	auto length = MessageHeader::getLength(frame().array());
+	return testLength(length) && (frame().getIndex() == 0)
+			&& frame().setLimit(length) && unpackHeader(header());
 }
 
 bool Packet::bind(unsigned int length) noexcept {

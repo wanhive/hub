@@ -234,9 +234,8 @@ void Endpoint::receive(int sfd, Packet &packet, unsigned int sequenceNumber,
 		//Receive the header
 		Network::receiveStream(sfd, packet.buffer(), HEADER_SIZE);
 
-		//Prepare the header and frame buffer
-		packet.unpackHeader();
-		if (!packet.bind()) {
+		//Prepare the header and the frame buffer
+		if (!packet.unpackHeader()) {
 			throw Exception(EX_INVALIDRANGE);
 		}
 
@@ -258,9 +257,8 @@ void Endpoint::receive(SSL *ssl, Packet &packet, unsigned int sequenceNumber,
 		//Receive the header
 		SSLContext::receiveStream(ssl, packet.buffer(), HEADER_SIZE);
 
-		//Prepare the header and frame buffer
-		packet.unpackHeader();
-		if (!packet.bind()) {
+		//Prepare the header and the frame buffer
+		if (!packet.unpackHeader()) {
 			throw Exception(EX_INVALIDRANGE);
 		}
 
