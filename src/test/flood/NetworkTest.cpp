@@ -161,7 +161,6 @@ void NetworkTest::consume() noexcept {
 	Packet in;
 	unsigned int i = 0;
 	try {
-		MessageHeader h;
 		auto ssl = getSecureSocket();
 		if (ssl) {
 			while (!iterations || i < iterations) {
