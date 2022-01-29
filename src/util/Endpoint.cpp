@@ -206,28 +206,6 @@ int Endpoint::connect(const NameInfo &ni, SocketAddress &sa, int timeoutMils) {
 	return sfd;
 }
 
-void Endpoint::send(int sfd, unsigned char *buf, unsigned int length,
-		const PKI *pki) {
-	if (!buf || !testLength(length)) {
-		throw Exception(EX_INVALIDPARAM);
-	} else if (!Trust(pki).sign(buf, length)) {
-		throw Exception(EX_SECURITY);
-	} else {
-		Network::sendStream(sfd, buf, length);
-	}
-}
-
-void Endpoint::send(SSL *ssl, unsigned char *buf, unsigned int length,
-		const PKI *pki) {
-	if (!buf || !testLength(length)) {
-		throw Exception(EX_INVALIDPARAM);
-	} else if (!Trust(pki).sign(buf, length)) {
-		throw Exception(EX_SECURITY);
-	} else {
-		SSLContext::sendStream(ssl, buf, length);
-	}
-}
-
 void Endpoint::send(int sfd, Packet &packet, const PKI *pki) {
 	if (!packet.validate()) {
 		throw Exception(EX_INVALIDRANGE);
@@ -246,58 +224,6 @@ void Endpoint::send(SSL *ssl, Packet &packet, const PKI *pki) {
 	} else {
 		SSLContext::sendStream(ssl, packet.buffer(),
 				packet.header().getLength());
-	}
-}
-
-void Endpoint::receive(int sfd, unsigned char *buf, MessageHeader &header,
-		unsigned int sequenceNumber, const PKI *pki) {
-	if (!buf) { //take the exceptional case out of the way
-		throw Exception(EX_NULL);
-	}
-
-	while (true) {
-		Network::receiveStream(sfd, buf, HEADER_SIZE);
-		header.deserialize(buf);
-		if (!testLength(header.getLength())) {
-			throw Exception(EX_INVALIDRANGE);
-		}
-
-		Network::receiveStream(sfd, (buf + HEADER_SIZE),
-				(header.getLength() - HEADER_SIZE));
-
-		if (!sequenceNumber || (header.getSequenceNumber() == sequenceNumber)) {
-			break;
-		}
-	}
-
-	if (!Trust(pki).verify(buf, header.getLength())) {
-		throw Exception(EX_SECURITY);
-	}
-}
-
-void Endpoint::receive(SSL *ssl, unsigned char *buf, MessageHeader &header,
-		unsigned int sequenceNumber, const PKI *pki) {
-	if (!buf) { //take the exceptional case out of the way
-		throw Exception(EX_NULL);
-	}
-
-	while (true) {
-		SSLContext::receiveStream(ssl, buf, HEADER_SIZE);
-		header.deserialize(buf);
-		if (!testLength(header.getLength())) {
-			throw Exception(EX_INVALIDRANGE);
-		}
-
-		SSLContext::receiveStream(ssl, (buf + HEADER_SIZE),
-				(header.getLength() - HEADER_SIZE));
-
-		if (!sequenceNumber || (header.getSequenceNumber() == sequenceNumber)) {
-			break;
-		}
-	}
-
-	if (!Trust(pki).verify(buf, header.getLength())) {
-		throw Exception(EX_SECURITY);
 	}
 }
 

@@ -97,8 +97,9 @@ public:
 	void receive(unsigned int sequenceNumber = 0, bool verify = false);
 	//Execute a request and receive the response, returns true on success
 	bool executeRequest(bool sign = false, bool verify = false);
-	//Waits for receipt of a ping and responds with a pong (for testing)
+	//Wait for receipt of a ping and respond with a pong (for testing)
 	void sendPong();
+	//-----------------------------------------------------------------
 	/*
 	 * Establish a blocking TCP socket connection with the host <ni> and return
 	 * the socket file descriptor. <timeoutMils> specifies the IO timeout value
@@ -107,28 +108,21 @@ public:
 	static int connect(const NameInfo &ni, SocketAddress &sa, int timeoutMils =
 			-1);
 	/*
-	 * If <pki> is provided then the message will be signed with its
-	 * private key. <sfd> should be configured for blocking IO.
+	 * If <pki> is provided then the packet will be signed with <pki>'s
+	 * private key. Socket descriptor <sfd> should be in blocking IO mode.
 	 */
-	static void send(int sfd, unsigned char *buf, unsigned int length,
-			const PKI *pki = nullptr);
-	//Same as the above but uses SSL/TLS connection
-	static void send(SSL *ssl, unsigned char *buf, unsigned int length,
-			const PKI *pki = nullptr);
 	static void send(int sfd, Packet &packet, const PKI *pki = nullptr);
+	//Same as the above but uses SSL/TLS connection
 	static void send(SSL *ssl, Packet &packet, const PKI *pki = nullptr);
 	/*
-	 * If <pki> is provided then the message will be verified using it's public
-	 * key. If <sequenceNumber> is 0 then received message's sequence number is
-	 * not verified. <sfd> should be configured for blocking IO.
+	 * If <pki> is provided then the packet will be verified using <pki>'s
+	 * public key. If <sequenceNumber> is 0 then received packet's sequence
+	 * number will not be verified. Socket descriptor <sfd> should be in
+	 * blocking IO mode.
 	 */
-	static void receive(int sfd, unsigned char *buf, MessageHeader &header,
-			unsigned int sequenceNumber = 0, const PKI *pki = nullptr);
-	//Same as the above but uses a secure SSL/TLS connection
-	static void receive(SSL *ssl, unsigned char *buf, MessageHeader &header,
-			unsigned int sequenceNumber = 0, const PKI *pki = nullptr);
 	static void receive(int sfd, Packet &packet,
 			unsigned int sequenceNumber = 0, const PKI *pki = nullptr);
+	//Same as the above but uses a secure SSL/TLS connection
 	static void receive(SSL *ssl, Packet &packet, unsigned int sequenceNumber =
 			0, const PKI *pki = nullptr);
 private:
