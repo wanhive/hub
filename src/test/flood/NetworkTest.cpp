@@ -131,22 +131,22 @@ void NetworkTest::echo(unsigned int iterations) {
 }
 
 void NetworkTest::produce() noexcept {
-	auto outbuf = iobuf;
-	memset(outbuf, 0, Message::MTU); //Zero-out the payload
-	MessageHeader h(getSource(), destinationId, msgLen, 0, 0, 0, 0, 0);
-	h.serialize(outbuf);
+	Packet out;
+	memset(out.buffer(), 0, MTU);
+	out.header().load(getSource(), destinationId, msgLen, 0, 0, 0, 0, 0);
+	out.packHeader();
 	unsigned int i = 0;
 	try {
 		auto ssl = getSecureSocket();
 		if (ssl) {
 			while (!iterations || i < iterations) {
-				send(ssl, outbuf, msgLen);
+				send(ssl, out);
 				++i;
 			}
 		} else {
 			auto sfd = getSocket();
 			while (!iterations || i < iterations) {
-				send(sfd, outbuf, msgLen);
+				send(sfd, out);
 				++i;
 			}
 		}
@@ -158,21 +158,20 @@ void NetworkTest::produce() noexcept {
 }
 
 void NetworkTest::consume() noexcept {
-	auto inbuf = iobuf + Message::MTU;
+	Packet in;
 	unsigned int i = 0;
-
 	try {
 		MessageHeader h;
 		auto ssl = getSecureSocket();
 		if (ssl) {
 			while (!iterations || i < iterations) {
-				receive(ssl, inbuf, h);
+				receive(ssl, in);
 				i++;
 			}
 		} else {
 			auto sfd = getSocket();
 			while (!iterations || i < iterations) {
-				receive(sfd, inbuf, h);
+				receive(sfd, in);
 				i++;
 			}
 		}
