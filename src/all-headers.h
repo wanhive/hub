@@ -28,6 +28,7 @@
 #include "base/ds/Array.h"
 #include "base/ds/BinaryHeap.h"
 #include "base/ds/Buffer.h"
+#include "base/ds/BufferVector.h"
 #include "base/ds/CircularBuffer.h"
 #include "base/ds/CircularBufferVector.h"
 #include "base/ds/Counter.h"
@@ -115,6 +116,5 @@
 #include "util/TransactionKey.h"
 #include "util/Trust.h"
 #include "util/commands.h"
-
 
 #endif /* WH_ALL_HEADERS_H_ */
