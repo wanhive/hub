@@ -13,6 +13,7 @@
 #ifndef WH_UTIL_PACKET_H_
 #define WH_UTIL_PACKET_H_
 #include "Frame.h"
+#include "PKI.h"
 
 namespace wanhive {
 /**
@@ -61,6 +62,12 @@ public:
 	//Same as the above, but uses this packet's routing header
 	bool checkContext(uint8_t command, uint8_t qualifier,
 			uint8_t status) const noexcept;
+	//-----------------------------------------------------------------
+	/**
+	 * Packet security: signing and verification
+	 */
+	bool sign(const PKI *pki) noexcept;
+	bool verify(const PKI *pki) const noexcept;
 	//-----------------------------------------------------------------
 	/*
 	 * For debugging purposes, header data is printed to the stderr.

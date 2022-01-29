@@ -195,7 +195,7 @@ int AuthenticationHub::handleAuthorizationRequest(Message *message) noexcept {
 	//Message is signed on behalf of the authenticated client
 	message->updateSource(authenticator->getIdentity());
 	message->updateSession(authenticator->getGroup());
-	if (Trust(getPKI()).sign(message)) {
+	if (message->sign(getPKI())) {
 		message->setDestination(message->getOrigin());
 		return 0;
 	} else {

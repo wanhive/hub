@@ -484,7 +484,7 @@ void ClientHub::processGetKeyResponse(Message *msg) noexcept {
 		setStage(WHC_ERROR);
 	} else if (!bs.node || msg->getOrigin() != bs.node->getUid()) {
 		setStage(WHC_ERROR);
-	} else if (!Trust((verifyHost() ? getPKI() : nullptr)).verify(msg)) {
+	} else if (!msg->verify((verifyHost() ? getPKI() : nullptr))) {
 		setStage(WHC_ERROR);
 	} else if (!Protocol::processGetKeyResponse(msg, &bs.nonce)) {
 		setStage(WHC_ERROR);
@@ -501,7 +501,7 @@ Message* ClientHub::createRegistrationMessage(bool sign) {
 				nullptr);
 		if (msg) {
 			if (sign) {
-				Trust(getPKI()).sign(msg);
+				msg->sign(getPKI());
 			}
 			return msg;
 		} else {

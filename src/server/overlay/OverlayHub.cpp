@@ -914,7 +914,7 @@ int OverlayHub::handleGetKeyRequest(Message *msg) noexcept {
 				|| (msg->getPayloadLength()
 						== 2 * Hash::SIZE + PKI::SIGNATURE_LENGTH))) {
 			return handleInvalidRequest(msg);
-		} else if (!Trust(verifyHost() ? getPKI() : nullptr).verify(msg)) {
+		} else if (!msg->verify(verifyHost() ? getPKI() : nullptr)) {
 			return handleInvalidRequest(msg);
 		} else if (nonceToId((Digest*) msg->getBytes(0)) != origin) {
 			return handleInvalidRequest(msg);
@@ -923,7 +923,7 @@ int OverlayHub::handleGetKeyRequest(Message *msg) noexcept {
 			Digest hc;
 			memcpy(&hc, msg->getBytes(Hash::SIZE), Hash::SIZE);
 			Protocol::createRegisterRequest(origin, getUid(), &hc, msg);
-			Trust(getPKI()).sign(msg);
+			msg->sign(getPKI());
 			//We are sending a registration request to the remote Node.
 			msg->setDestination(origin);
 			return 0;
@@ -963,7 +963,7 @@ int OverlayHub::handleGetKeyRequest(Message *msg) noexcept {
 		msg->setDestination(origin);
 		msg->putLength(Message::HEADER_SIZE + 2 * Hash::SIZE);
 		msg->putStatus(WH_DHT_AQLF_ACCEPTED);
-		Trust(getPKI()).sign(msg);
+		msg->sign(getPKI());
 	} else {
 		msg->updateSource(0);
 		msg->updateDestination(0);
@@ -1474,7 +1474,7 @@ bool OverlayHub::isValidRegistrationRequest(const Message *msg) noexcept {
 	} else if (msg->getPayloadLength() == Hash::SIZE + PKI::SIGNATURE_LENGTH) {
 		//CASE 2
 		return verifyNonce(hashFn, origin, getUid(), (Digest*) msg->getBytes(0))
-				&& Trust(getPKI()).verify(msg);
+				&& msg->verify(getPKI());
 	} else {
 		return false;
 	}

@@ -11,6 +11,7 @@
  */
 
 #include "Packet.h"
+#include "../base/ds/Serializer.h"
 
 namespace wanhive {
 
@@ -103,6 +104,37 @@ bool Packet::checkContext(const MessageHeader &header, uint8_t command,
 bool Packet::checkContext(uint8_t command, uint8_t qualifier,
 		uint8_t status) const noexcept {
 	return checkContext(header(), command, qualifier, status);
+}
+
+bool Packet::sign(const PKI *pki) noexcept {
+	if (pki && validate()
+			&& header().getLength() <= (MTU - PKI::SIGNATURE_LENGTH)) {
+		const auto length = header().getLength(); //To roll back
+
+		//Finalize the frame, otherwise verification will fail
+		header().setLength(length + PKI::SIGNATURE_LENGTH);
+		bind();
+
+		if (pki->sign(buffer(), length, (Signature*) buffer(length))) {
+			return true;
+		} else {
+			//Roll back
+			header().setLength(length);
+			bind();
+			return false;
+		}
+	} else {
+		return !pki;
+	}
+}
+
+bool Packet::verify(const PKI *pki) const noexcept {
+	if (pki && validate() && getPayloadLength() >= PKI::SIGNATURE_LENGTH) {
+		auto length = header().getLength() - PKI::SIGNATURE_LENGTH;
+		return pki->verify(buffer(), length, (const Signature*) buffer(length));
+	} else {
+		return !pki;
+	}
 }
 
 void Packet::printHeader(bool deep) const noexcept {
