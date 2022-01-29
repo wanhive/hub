@@ -65,6 +65,7 @@ public:
 	//-----------------------------------------------------------------
 	/**
 	 * Packet security: signing and verification
+	 * NOTE: the following two methods return true if <pki> is nullptr
 	 */
 	bool sign(const PKI *pki) noexcept;
 	bool verify(const PKI *pki) const noexcept;
