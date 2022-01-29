@@ -115,6 +115,8 @@ public:
 	//Same as the above but uses SSL/TLS connection
 	static void send(SSL *ssl, unsigned char *buf, unsigned int length,
 			const PKI *pki = nullptr);
+	static void send(int sfd, Packet &packet, const PKI *pki = nullptr);
+	static void send(SSL *ssl, Packet &packet, const PKI *pki = nullptr);
 	/*
 	 * If <pki> is provided then the message will be verified using it's public
 	 * key. If <sequenceNumber> is 0 then received message's sequence number is
@@ -125,6 +127,10 @@ public:
 	//Same as the above but uses a secure SSL/TLS connection
 	static void receive(SSL *ssl, unsigned char *buf, MessageHeader &header,
 			unsigned int sequenceNumber = 0, const PKI *pki = nullptr);
+	static void receive(int sfd, Packet &packet,
+			unsigned int sequenceNumber = 0, const PKI *pki = nullptr);
+	static void receive(SSL *ssl, Packet &packet, unsigned int sequenceNumber =
+			0, const PKI *pki = nullptr);
 private:
 	int sockfd; //The underlying socket
 	SSL *ssl;  //The underlying SSL/TLS connection

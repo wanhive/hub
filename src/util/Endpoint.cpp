@@ -154,22 +154,21 @@ void Endpoint::setSocketTimeout(int recvTimeout, int sendTimeout) const {
 }
 
 void Endpoint::send(bool sign) {
+	this->bind(); //TODO: remove
+	auto pki = sign ? getKeyPair() : nullptr;
 	if (!ssl) {
-		Endpoint::send(sockfd, buffer(), header().getLength(),
-				sign ? getKeyPair() : nullptr);
+		send(sockfd, *this, pki);
 	} else {
-		Endpoint::send(ssl, buffer(), header().getLength(),
-				sign ? getKeyPair() : nullptr);
+		send(ssl, *this, pki);
 	}
 }
 
 void Endpoint::receive(unsigned int sequenceNumber, bool verify) {
+	auto pki = verify ? getKeyPair() : nullptr;
 	if (!ssl) {
-		Endpoint::receive(sockfd, buffer(), header(), sequenceNumber,
-				verify ? getKeyPair() : nullptr);
+		receive(sockfd, *this, sequenceNumber, pki);
 	} else {
-		Endpoint::receive(ssl, buffer(), header(), sequenceNumber,
-				verify ? getKeyPair() : nullptr);
+		receive(ssl, *this, sequenceNumber, pki);
 	}
 }
 
@@ -229,6 +228,27 @@ void Endpoint::send(SSL *ssl, unsigned char *buf, unsigned int length,
 	}
 }
 
+void Endpoint::send(int sfd, Packet &packet, const PKI *pki) {
+	if (!packet.validate()) {
+		throw Exception(EX_INVALIDRANGE);
+	} else if (!packet.sign(pki)) {
+		throw Exception(EX_SECURITY);
+	} else {
+		Network::sendStream(sfd, packet.buffer(), packet.header().getLength());
+	}
+}
+
+void Endpoint::send(SSL *ssl, Packet &packet, const PKI *pki) {
+	if (!packet.validate()) {
+		throw Exception(EX_INVALIDRANGE);
+	} else if (!packet.sign(pki)) {
+		throw Exception(EX_SECURITY);
+	} else {
+		SSLContext::sendStream(ssl, packet.buffer(),
+				packet.header().getLength());
+	}
+}
+
 void Endpoint::receive(int sfd, unsigned char *buf, MessageHeader &header,
 		unsigned int sequenceNumber, const PKI *pki) {
 	if (!buf) { //take the exceptional case out of the way
@@ -277,6 +297,54 @@ void Endpoint::receive(SSL *ssl, unsigned char *buf, MessageHeader &header,
 	}
 
 	if (!Trust(pki).verify(buf, header.getLength())) {
+		throw Exception(EX_SECURITY);
+	}
+}
+
+void Endpoint::receive(int sfd, Packet &packet, unsigned int sequenceNumber,
+		const PKI *pki) {
+	packet.clear();
+	do {
+		//Receive the header
+		Network::receiveStream(sfd, packet.buffer(), HEADER_SIZE);
+
+		//Prepare the header and frame buffer
+		packet.unpackHeader();
+		if (!packet.bind()) {
+			throw Exception(EX_INVALIDRANGE);
+		}
+
+		//Receive the payload
+		Network::receiveStream(sfd, packet.payload(),
+				packet.getPayloadLength());
+	} while (sequenceNumber
+			&& (packet.header().getSequenceNumber() != sequenceNumber));
+
+	if (!packet.verify(pki)) {
+		throw Exception(EX_SECURITY);
+	}
+}
+
+void Endpoint::receive(SSL *ssl, Packet &packet, unsigned int sequenceNumber,
+		const PKI *pki) {
+	packet.clear();
+	do {
+		//Receive the header
+		SSLContext::receiveStream(ssl, packet.buffer(), HEADER_SIZE);
+
+		//Prepare the header and frame buffer
+		packet.unpackHeader();
+		if (!packet.bind()) {
+			throw Exception(EX_INVALIDRANGE);
+		}
+
+		//Receive the payload
+		SSLContext::receiveStream(ssl, packet.payload(),
+				packet.getPayloadLength());
+	} while (sequenceNumber
+			&& (packet.header().getSequenceNumber() != sequenceNumber));
+
+	if (!packet.verify(pki)) {
 		throw Exception(EX_SECURITY);
 	}
 }
