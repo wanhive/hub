@@ -11,6 +11,7 @@
  */
 
 #include "Trust.h"
+#include "Message.h"
 #include "../base/ds/Serializer.h"
 
 namespace wanhive {
@@ -60,20 +61,6 @@ bool Trust::sign(unsigned char *msg, unsigned int &length) const noexcept {
 	}
 }
 
-bool Trust::sign(Message *msg) const noexcept {
-	if (!get()) {
-		return true;
-	} else if (msg && msg->validate()) {
-		unsigned int length = msg->getLength();
-		auto ret = sign(msg->buffer(), length);
-		//Update the message length
-		msg->putLength(length);
-		return ret;
-	} else {
-		return false;
-	}
-}
-
 bool Trust::verify(const unsigned char *msg, unsigned int length) const noexcept {
 	if (!get()) {
 		return true;
@@ -84,16 +71,6 @@ bool Trust::verify(const unsigned char *msg, unsigned int length) const noexcept
 		auto block = msg;
 		auto sign = (const Signature*) (block + bufLength);
 		return get()->verify(block, bufLength, sign);
-	} else {
-		return false;
-	}
-}
-
-bool Trust::verify(const Message *msg) const noexcept {
-	if (!get()) {
-		return true;
-	} else if (msg && msg->validate()) {
-		return verify(msg->buffer(), msg->getLength());
 	} else {
 		return false;
 	}
