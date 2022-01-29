@@ -61,7 +61,7 @@ public:
 	 ** getX: returns a value from the routing header
 	 ** testX: tests whether a value in the routing header is valid
 	 ** setX: modifies the routing header
-	 ** updateX: modifies the IO buffer (serialized data)
+	 ** updateX: modifies the frame buffer (serialized data for IO)
 	 ** putX: combines setX and updateX in a single call.
 	 *
 	 * NOTE: Functions returning boolean value perform sanity test
