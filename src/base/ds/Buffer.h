@@ -12,6 +12,7 @@
 
 #ifndef WH_BASE_DS_BUFFER_H_
 #define WH_BASE_DS_BUFFER_H_
+#include "BufferVector.h"
 #include "Twiddler.h"
 #include "../common/Exception.h"
 #include "../common/pod.h"
