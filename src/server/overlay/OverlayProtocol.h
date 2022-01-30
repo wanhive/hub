@@ -1,7 +1,7 @@
 /*
  * OverlayProtocol.h
  *
- * Protocol extension for the Wanhive overlay network clients
+ * Protocol extension for the overlay network clients
  *
  *
  * Copyright (C) 2019 Wanhive Systems Private Limited (info@wanhive.com)
@@ -17,11 +17,11 @@
 
 namespace wanhive {
 /**
- * Complete wanhive overlay network protocol implementation
- * Only blocking IO supported.
+ * Overlay network protocol implementation
+ * Only blocking IO supported
  * Thread safe at class level
  */
-class OverlayProtocol: protected Protocol {
+class OverlayProtocol: public Protocol {
 public:
 	OverlayProtocol() noexcept;
 	~OverlayProtocol();

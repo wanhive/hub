@@ -261,6 +261,129 @@ bool Protocol::unsubscribeRequest(uint64_t host, uint8_t topic) {
 			&& processUnsubscribeResponse(topic);
 }
 
+//-----------------------------------------------------------------
+
+Message* Protocol::createIdentificationRequest(uint64_t host, uint64_t uid,
+		uint16_t sequenceNumber, const unsigned char *nonce,
+		unsigned int nonceLength) noexcept {
+	auto msg = Message::create();
+	if (!msg) {
+		return nullptr;
+	} else if (!createIdentificationRequest(host, uid, sequenceNumber, nonce,
+			nonceLength, msg->header(), msg->buffer())) {
+		Message::recycle(msg);
+		return nullptr;
+	} else {
+		msg->updateLength(msg->header().getLength());
+		return msg;
+	}
+}
+
+unsigned int Protocol::processIdentificationResponse(const Message *msg,
+		unsigned int &saltLength, const unsigned char *&salt,
+		unsigned int &nonceLength, const unsigned char *&nonce) noexcept {
+	if (!msg || !msg->validate()) {
+		return 0;
+	} else {
+		return processIdentificationResponse(msg->header(), msg->buffer(),
+				saltLength, salt, nonceLength, nonce);
+	}
+}
+
+Message* Protocol::createAuthenticationRequest(uint64_t host,
+		uint16_t sequenceNumber, const unsigned char *proof,
+		unsigned int length) noexcept {
+	auto msg = Message::create();
+	if (!msg) {
+		return nullptr;
+	} else if (!createAuthenticationRequest(host, sequenceNumber, proof, length,
+			msg->header(), msg->buffer())) {
+		Message::recycle(msg);
+		return nullptr;
+	} else {
+		msg->updateLength(msg->header().getLength());
+		return msg;
+	}
+}
+
+unsigned int Protocol::processAuthenticationResponse(const Message *msg,
+		unsigned int &length, const unsigned char *&proof) noexcept {
+	if (!msg || !msg->validate()) {
+		return 0;
+	} else {
+		return processAuthenticationResponse(msg->header(), msg->buffer(),
+				length, proof);
+	}
+}
+
+Message* Protocol::createRegisterRequest(uint64_t host, uint64_t uid,
+		const Digest *hc, Message *msg) noexcept {
+	if (msg == nullptr) {
+		msg = Message::create();
+	} else {
+		msg->clear();
+	}
+
+	if (msg) {
+		MessageHeader &header = msg->header();
+		createRegisterRequest(host, uid, 0, hc, header, msg->buffer());
+		msg->updateLength(header.getLength());
+	}
+	return msg;
+}
+
+Message* Protocol::createGetKeyRequest(uint64_t host, const TransactionKey &tk,
+		Message *msg) noexcept {
+	if (msg == nullptr) {
+		msg = Message::create();
+	} else {
+		msg->clear();
+	}
+
+	if (msg) {
+		MessageHeader &header = msg->header();
+		createGetKeyRequest(host, 0, tk, header, msg->buffer());
+		msg->updateLength(header.getLength());
+	}
+	return msg;
+}
+
+unsigned int Protocol::processGetKeyResponse(const Message *msg,
+		Digest *hc) noexcept {
+	if (!msg || !msg->validate() || !hc) {
+		return 0;
+	} else {
+		return processGetKeyResponse(msg->header(), msg->buffer(), hc);
+	}
+}
+
+Message* Protocol::createFindRootRequest(uint64_t host, uint64_t uid,
+		uint64_t identity, uint16_t sequenceNumber) noexcept {
+	auto msg = Message::create();
+	if (!msg) {
+		return nullptr;
+	} else if (!createFindRootRequest(host, uid, identity, sequenceNumber,
+			msg->header(), msg->buffer())) {
+		Message::recycle(msg);
+		return nullptr;
+	} else {
+		msg->updateLength(msg->header().getLength());
+		return msg;
+	}
+}
+
+unsigned int Protocol::processFindRootResponse(const Message *msg,
+		uint64_t identity, uint64_t &root) noexcept {
+	if (!msg || !msg->validate()) {
+		return 0;
+	} else {
+		return processFindRootResponse(msg->header(), msg->buffer(), identity,
+				root);
+	}
+}
+
+//-----------------------------------------------------------------
+
 unsigned int Protocol::createIdentificationRequest(uint64_t host, uint64_t uid,
 		uint16_t sequenceNumber, const unsigned char *nonce,
 		unsigned int nonceLength, MessageHeader &header,
@@ -276,22 +399,6 @@ unsigned int Protocol::createIdentificationRequest(uint64_t host, uint64_t uid,
 		header.serialize(buf);
 		Serializer::packib((buf + HEADER_SIZE), nonce, nonceLength);
 		return len;
-	}
-}
-
-Message* Protocol::createIdentificationRequest(uint64_t host, uint64_t uid,
-		uint16_t sequenceNumber, const unsigned char *nonce,
-		unsigned int nonceLength) noexcept {
-	auto msg = Message::create();
-	if (!msg) {
-		return nullptr;
-	} else if (!createIdentificationRequest(host, uid, sequenceNumber, nonce,
-			nonceLength, msg->header(), msg->buffer())) {
-		Message::recycle(msg);
-		return nullptr;
-	} else {
-		msg->updateLength(msg->header().getLength());
-		return msg;
 	}
 }
 
@@ -323,17 +430,6 @@ unsigned int Protocol::processIdentificationResponse(
 	}
 }
 
-unsigned int Protocol::processIdentificationResponse(const Message *msg,
-		unsigned int &saltLength, const unsigned char *&salt,
-		unsigned int &nonceLength, const unsigned char *&nonce) noexcept {
-	if (!msg || !msg->validate()) {
-		return 0;
-	} else {
-		return processIdentificationResponse(msg->header(), msg->buffer(),
-				saltLength, salt, nonceLength, nonce);
-	}
-}
-
 unsigned int Protocol::createAuthenticationRequest(uint64_t host,
 		uint16_t sequenceNumber, const unsigned char *proof,
 		unsigned int length, MessageHeader &header, unsigned char *buf) noexcept {
@@ -351,22 +447,6 @@ unsigned int Protocol::createAuthenticationRequest(uint64_t host,
 	}
 }
 
-Message* Protocol::createAuthenticationRequest(uint64_t host,
-		uint16_t sequenceNumber, const unsigned char *proof,
-		unsigned int length) noexcept {
-	auto msg = Message::create();
-	if (!msg) {
-		return nullptr;
-	} else if (!createAuthenticationRequest(host, sequenceNumber, proof, length,
-			msg->header(), msg->buffer())) {
-		Message::recycle(msg);
-		return nullptr;
-	} else {
-		msg->updateLength(msg->header().getLength());
-		return msg;
-	}
-}
-
 unsigned int Protocol::processAuthenticationResponse(
 		const MessageHeader &header, const unsigned char *buf,
 		unsigned int &length, const unsigned char *&proof) noexcept {
@@ -380,16 +460,6 @@ unsigned int Protocol::processAuthenticationResponse(
 		length = header.getLength() - HEADER_SIZE;
 		proof = buf + HEADER_SIZE;
 		return header.getLength();
-	}
-}
-
-unsigned int Protocol::processAuthenticationResponse(const Message *msg,
-		unsigned int &length, const unsigned char *&proof) noexcept {
-	if (!msg || !msg->validate()) {
-		return 0;
-	} else {
-		return processAuthenticationResponse(msg->header(), msg->buffer(),
-				length, proof);
 	}
 }
 
@@ -410,22 +480,6 @@ unsigned int Protocol::createRegisterRequest(uint64_t host, uint64_t uid,
 			WH_QLF_REGISTER, WH_AQLF_REQUEST);
 	header.serialize(buf);
 	return length;
-}
-
-Message* Protocol::createRegisterRequest(uint64_t host, uint64_t uid,
-		const Digest *hc, Message *msg) noexcept {
-	if (msg == nullptr) {
-		msg = Message::create();
-	} else {
-		msg->clear();
-	}
-
-	if (msg) {
-		MessageHeader &header = msg->header();
-		createRegisterRequest(host, uid, 0, hc, header, msg->buffer());
-		msg->updateLength(header.getLength());
-	}
-	return msg;
 }
 
 unsigned int Protocol::createGetKeyRequest(uint64_t host,
@@ -455,22 +509,6 @@ unsigned int Protocol::createGetKeyRequest(uint64_t host,
 	return length;
 }
 
-Message* Protocol::createGetKeyRequest(uint64_t host, const TransactionKey &tk,
-		Message *msg) noexcept {
-	if (msg == nullptr) {
-		msg = Message::create();
-	} else {
-		msg->clear();
-	}
-
-	if (msg) {
-		MessageHeader &header = msg->header();
-		createGetKeyRequest(host, 0, tk, header, msg->buffer());
-		msg->updateLength(header.getLength());
-	}
-	return msg;
-}
-
 unsigned int Protocol::processGetKeyResponse(const MessageHeader &header,
 		const unsigned char *buf, Digest *hc) noexcept {
 	if (!(header.getCommand() == WH_CMD_BASIC
@@ -490,15 +528,6 @@ unsigned int Protocol::processGetKeyResponse(const MessageHeader &header,
 	}
 }
 
-unsigned int Protocol::processGetKeyResponse(const Message *msg,
-		Digest *hc) noexcept {
-	if (!msg || !msg->validate() || !hc) {
-		return 0;
-	} else {
-		return processGetKeyResponse(msg->header(), msg->buffer(), hc);
-	}
-}
-
 unsigned int Protocol::createFindRootRequest(uint64_t host, uint64_t uid,
 		uint64_t identity, uint16_t sequenceNumber, MessageHeader &header,
 		unsigned char *buf) noexcept {
@@ -511,21 +540,6 @@ unsigned int Protocol::createFindRootRequest(uint64_t host, uint64_t uid,
 		header.serialize(buf);
 		Serializer::pack(buf + HEADER_SIZE, "Q", identity);
 		return len;
-	}
-}
-
-Message* Protocol::createFindRootRequest(uint64_t host, uint64_t uid,
-		uint64_t identity, uint16_t sequenceNumber) noexcept {
-	auto msg = Message::create();
-	if (!msg) {
-		return nullptr;
-	} else if (!createFindRootRequest(host, uid, identity, sequenceNumber,
-			msg->header(), msg->buffer())) {
-		Message::recycle(msg);
-		return nullptr;
-	} else {
-		msg->updateLength(msg->header().getLength());
-		return msg;
 	}
 }
 
@@ -548,16 +562,6 @@ unsigned int Protocol::processFindRootResponse(const MessageHeader &header,
 			root = 0;
 			return 0;
 		}
-	}
-}
-
-unsigned int Protocol::processFindRootResponse(const Message *msg,
-		uint64_t identity, uint64_t &root) noexcept {
-	if (!msg || !msg->validate()) {
-		return 0;
-	} else {
-		return processFindRootResponse(msg->header(), msg->buffer(), identity,
-				root);
 	}
 }
 

@@ -122,81 +122,84 @@ public:
 	/**
 	 * STATIC METHODS
 	 * Bare minimum bootstrapping and registration protocol
-	 * <host> is the identifier of the remote host.
-	 * <uid> is the identifier of the local node.
+	 * <host> = identifier of the remote host
+	 * <uid> = the local identifier
+	 */
+	//Returns a new message on success, nullptr on failure
+	static Message* createIdentificationRequest(uint64_t host, uint64_t uid,
+			uint16_t sequenceNumber, const unsigned char *nonce,
+			unsigned int nonceLength) noexcept;
+	//Returns message length on success, 0 on failure
+	static unsigned int processIdentificationResponse(const Message *msg,
+			unsigned int &saltLength, const unsigned char *&salt,
+			unsigned int &nonceLength, const unsigned char *&nonce) noexcept;
+	//Returns a new message on success, nullptr on failure
+	static Message* createAuthenticationRequest(uint64_t host,
+			uint16_t sequenceNumber, const unsigned char *proof,
+			unsigned int length) noexcept;
+	//Returns message length on success, 0 on failure
+	static unsigned int processAuthenticationResponse(const Message *msg,
+			unsigned int &length, const unsigned char *&proof) noexcept;
+	//Returns <msg> (a new message if <msg> is nullptr) on success, nullptr otherwise
+	static Message* createRegisterRequest(uint64_t host, uint64_t uid,
+			const Digest *hc, Message *msg) noexcept;
+	//Returns <msg> (a new message if <msg> is nullptr) on success, nullptr otherwise
+	static Message* createGetKeyRequest(uint64_t host, const TransactionKey &tk,
+			Message *msg) noexcept;
+	//Returns message length on success, 0 on failure (<hc> is the value-result argument)
+	static unsigned int processGetKeyResponse(const Message *msg,
+			Digest *hc) noexcept;
+	//Returns a new message on success, nullptr on failure
+	static Message* createFindRootRequest(uint64_t host, uint64_t uid,
+			uint64_t identity, uint16_t sequenceNumber) noexcept;
+	//Returns message length on success, 0 on failure
+	static unsigned int processFindRootResponse(const Message *msg,
+			uint64_t identity, uint64_t &root) noexcept;
+private:
+	//-----------------------------------------------------------------
+	/**
+	 * Helper functions
+	 * <host> = identifier of the remote host
+	 * <uid> = the local identifier
 	 */
 	//Returns message length on success, 0 on failure
 	static unsigned int createIdentificationRequest(uint64_t host, uint64_t uid,
 			uint16_t sequenceNumber, const unsigned char *nonce,
 			unsigned int nonceLength, MessageHeader &header,
 			unsigned char *buf) noexcept;
-	//Returns a new message on success, nullptr on failure
-	static Message* createIdentificationRequest(uint64_t host, uint64_t uid,
-			uint16_t sequenceNumber, const unsigned char *nonce,
-			unsigned int nonceLength) noexcept;
 	//Returns message length on success, 0 on failure
 	static unsigned int processIdentificationResponse(
 			const MessageHeader &header, const unsigned char *buf,
 			unsigned int &saltLength, const unsigned char *&salt,
 			unsigned int &nonceLength, const unsigned char *&nonce) noexcept;
 	//Returns message length on success, 0 on failure
-	static unsigned int processIdentificationResponse(const Message *msg,
-			unsigned int &saltLength, const unsigned char *&salt,
-			unsigned int &nonceLength, const unsigned char *&nonce) noexcept;
-
-	//Returns message length on success, 0 on failure
 	static unsigned int createAuthenticationRequest(uint64_t host,
 			uint16_t sequenceNumber, const unsigned char *proof,
 			unsigned int length, MessageHeader &header,
 			unsigned char *buf) noexcept;
-	//Returns a new message on success, nullptr on failure
-	static Message* createAuthenticationRequest(uint64_t host,
-			uint16_t sequenceNumber, const unsigned char *proof,
-			unsigned int length) noexcept;
 	//Returns message length on success, 0 on failure
 	static unsigned int processAuthenticationResponse(
 			const MessageHeader &header, const unsigned char *buf,
 			unsigned int &length, const unsigned char *&proof) noexcept;
 	//Returns message length on success, 0 on failure
-	static unsigned int processAuthenticationResponse(const Message *msg,
-			unsigned int &length, const unsigned char *&proof) noexcept;
-
-	//Returns message length on success, 0 on failure
 	static unsigned int createRegisterRequest(uint64_t host, uint64_t uid,
 			uint16_t sequenceNumber, const Digest *hc, MessageHeader &header,
 			unsigned char *buf) noexcept;
-	//Returns <msg> (a new message if <msg> is nullptr) on success, nullptr otherwise
-	static Message* createRegisterRequest(uint64_t host, uint64_t uid,
-			const Digest *hc, Message *msg) noexcept;
-
 	//Returns message length on success, 0 on failure
 	static unsigned int createGetKeyRequest(uint64_t host,
 			uint16_t sequenceNumber, const TransactionKey &tk,
 			MessageHeader &header, unsigned char *buf) noexcept;
-	//Returns <msg> (a new message if <msg> is nullptr) on success, nullptr otherwise
-	static Message* createGetKeyRequest(uint64_t host, const TransactionKey &tk,
-			Message *msg) noexcept;
 	//Returns message length on success, 0 on failure (<hc> is the value-result argument)
 	static unsigned int processGetKeyResponse(const MessageHeader &header,
 			const unsigned char *buf, Digest *hc) noexcept;
-	//Returns message length on success, 0 on failure (<hc> is the value-result argument)
-	static unsigned int processGetKeyResponse(const Message *msg,
-			Digest *hc) noexcept;
-
 	//Returns message length on success, 0 on failure
 	static unsigned int createFindRootRequest(uint64_t host, uint64_t uid,
 			uint64_t identity, uint16_t sequenceNumber, MessageHeader &header,
 			unsigned char *buf) noexcept;
-	//Returns a new message on success, nullptr on failure
-	static Message* createFindRootRequest(uint64_t host, uint64_t uid,
-			uint64_t identity, uint16_t sequenceNumber) noexcept;
 	//Returns message length on success, 0 on failure
 	static unsigned int processFindRootResponse(const MessageHeader &header,
 			const unsigned char *buf, uint64_t identity,
 			uint64_t &root) noexcept;
-	//Returns message length on success, 0 on failure
-	static unsigned int processFindRootResponse(const Message *msg,
-			uint64_t identity, uint64_t &root) noexcept;
 };
 
 } /* namespace wanhive */

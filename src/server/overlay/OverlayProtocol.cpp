@@ -1,7 +1,7 @@
 /*
  * OverlayProtocol.cpp
  *
- * Protocol extension for the Wanhive overlay network clients
+ * Protocol extension for the overlay network clients
  *
  *
  * Copyright (C) 2019 Wanhive Systems Private Limited (info@wanhive.com)
