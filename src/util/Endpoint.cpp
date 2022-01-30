@@ -154,7 +154,6 @@ void Endpoint::setSocketTimeout(int recvTimeout, int sendTimeout) const {
 }
 
 void Endpoint::send(bool sign) {
-	this->bind(); //TODO: remove
 	auto pki = sign ? getKeyPair() : nullptr;
 	if (!ssl) {
 		send(sockfd, *this, pki);

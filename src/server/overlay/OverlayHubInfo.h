@@ -41,12 +41,15 @@ struct OverlayHubInfo {
 	unsigned long long successor;
 	bool stable; //Is the routing table in a stable state
 	unsigned int routes; //Number of routing table entries
-	struct {
+	struct { //Optional data
 		unsigned long long start;
 		unsigned long long current;
 		unsigned long long old;
 		bool connected;
 	} route[DHT::IDENTIFIER_LENGTH];
+
+	//Minimum size of the serialized structure in bytes
+	static constexpr unsigned int MIN_BYTES = 84;
 };
 
 }  // namespace wanhive

@@ -100,10 +100,10 @@ public:
 	 */
 	//Returns the message length on success, 0 on error
 	unsigned int createPublishRequest(uint64_t host, uint8_t topic,
-			const unsigned char *payload, unsigned int payloadLength) noexcept;
+			const unsigned char *data, unsigned int dataLength) noexcept;
 	//Always returns true
-	bool publishRequest(uint64_t host, uint8_t topic,
-			const unsigned char *payload, unsigned int payloadLength);
+	bool publishRequest(uint64_t host, uint8_t topic, const unsigned char *data,
+			unsigned int dataLength);
 
 	//Returns the message length on success, 0 on error
 	unsigned int createSubscribeRequest(uint64_t host, uint8_t topic) noexcept;
@@ -165,41 +165,34 @@ private:
 	//Returns message length on success, 0 on failure
 	static unsigned int createIdentificationRequest(uint64_t host, uint64_t uid,
 			uint16_t sequenceNumber, const unsigned char *nonce,
-			unsigned int nonceLength, MessageHeader &header,
-			unsigned char *buf) noexcept;
+			unsigned int nonceLength, Packet &packet) noexcept;
 	//Returns message length on success, 0 on failure
-	static unsigned int processIdentificationResponse(
-			const MessageHeader &header, const unsigned char *buf,
+	static unsigned int processIdentificationResponse(const Packet &packet,
 			unsigned int &saltLength, const unsigned char *&salt,
 			unsigned int &nonceLength, const unsigned char *&nonce) noexcept;
 	//Returns message length on success, 0 on failure
 	static unsigned int createAuthenticationRequest(uint64_t host,
 			uint16_t sequenceNumber, const unsigned char *proof,
-			unsigned int length, MessageHeader &header,
-			unsigned char *buf) noexcept;
+			unsigned int length, Packet &packet) noexcept;
 	//Returns message length on success, 0 on failure
-	static unsigned int processAuthenticationResponse(
-			const MessageHeader &header, const unsigned char *buf,
+	static unsigned int processAuthenticationResponse(const Packet &packet,
 			unsigned int &length, const unsigned char *&proof) noexcept;
 	//Returns message length on success, 0 on failure
 	static unsigned int createRegisterRequest(uint64_t host, uint64_t uid,
-			uint16_t sequenceNumber, const Digest *hc, MessageHeader &header,
-			unsigned char *buf) noexcept;
+			uint16_t sequenceNumber, const Digest *hc, Packet &packet) noexcept;
 	//Returns message length on success, 0 on failure
 	static unsigned int createGetKeyRequest(uint64_t host,
 			uint16_t sequenceNumber, const TransactionKey &tk,
-			MessageHeader &header, unsigned char *buf) noexcept;
+			Packet &packet) noexcept;
 	//Returns message length on success, 0 on failure (<hc> is the value-result argument)
-	static unsigned int processGetKeyResponse(const MessageHeader &header,
-			const unsigned char *buf, Digest *hc) noexcept;
+	static unsigned int processGetKeyResponse(const Packet &packet,
+			Digest *hc) noexcept;
 	//Returns message length on success, 0 on failure
 	static unsigned int createFindRootRequest(uint64_t host, uint64_t uid,
-			uint64_t identity, uint16_t sequenceNumber, MessageHeader &header,
-			unsigned char *buf) noexcept;
+			uint64_t identity, uint16_t sequenceNumber, Packet &packet) noexcept;
 	//Returns message length on success, 0 on failure
-	static unsigned int processFindRootResponse(const MessageHeader &header,
-			const unsigned char *buf, uint64_t identity,
-			uint64_t &root) noexcept;
+	static unsigned int processFindRootResponse(const Packet &packet,
+			uint64_t identity, uint64_t &root) noexcept;
 };
 
 } /* namespace wanhive */

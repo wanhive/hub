@@ -203,8 +203,8 @@ public:
 	//=================================================================
 	/**
 	 * For efficient IO and memory operations
-	 * WARNING: Following methods violate encapsulation and do not perform any
-	 * error/sanity check. Application developers should not use these methods.
+	 * WARNING: Following methods have potentially dangerous side-effects.
+	 * Application developers should not use these methods.
 	 */
 	//Increases and returns the reference count
 	unsigned int addReferenceCount() noexcept;
