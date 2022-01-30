@@ -27,93 +27,97 @@ public:
 	//-----------------------------------------------------------------
 	/**
 	 * Identification and authentication
-	 * <id> = identifier of the remote host
+	 * <host> = identifier of the remote host
+	 * <uid> = the local identifier
 	 */
 	//Returns the message length on success, 0 on error
-	unsigned int createIdentificationRequest(uint64_t id, uint64_t uid,
+	unsigned int createIdentificationRequest(uint64_t host, uint64_t uid,
 			const unsigned char *nonce, unsigned int nonceLength) noexcept;
 	//Returns the message length on success, 0 on error
 	unsigned int processIdentificationResponse(unsigned int &saltLength,
 			const unsigned char *&salt, unsigned int &nonceLength,
 			const unsigned char *&nonce) const noexcept;
 	//Call processIdentificationResponse explicitly to process the response
-	bool identificationRequest(uint64_t id, uint64_t uid,
+	bool identificationRequest(uint64_t host, uint64_t uid,
 			const unsigned char *nonce, unsigned int nonceLength);
 
 	//Returns the message length on success, 0 on error
-	unsigned int createAuthenticationRequest(uint64_t id,
+	unsigned int createAuthenticationRequest(uint64_t host,
 			const unsigned char *proof, unsigned int length) noexcept;
 	//Returns the message length on success, 0 on error
 	unsigned int processAuthenticationResponse(unsigned int &length,
 			const unsigned char *&proof) const noexcept;
 	//Call processAuthenticationResponse explicitly to process the response
-	bool authenticationRequest(uint64_t id, const unsigned char *proof,
+	bool authenticationRequest(uint64_t host, const unsigned char *proof,
 			unsigned int length);
 	//-----------------------------------------------------------------
 	/**
 	 * Registration and session creation
-	 * <id> = identifier of the remote host
+	 * <host> = identifier of the remote host
+	 * <uid> = the local identifier
 	 */
 	//Returns the message length on success, 0 on error
-	unsigned int createRegisterRequest(uint64_t id, uint64_t uid, Digest *hc =
+	unsigned int createRegisterRequest(uint64_t host, uint64_t uid, Digest *hc =
 			nullptr) noexcept;
 	//Returns the message length on success, 0 on error
 	unsigned int processRegisterResponse() const noexcept;
 	//Returns true on success, false if request denied by the host
-	bool registerRequest(uint64_t id, uint64_t uid, Digest *hc = nullptr);
+	bool registerRequest(uint64_t host, uint64_t uid, Digest *hc = nullptr);
 
 	//Set <verify> to true if host verification is desired
-	unsigned int createGetKeyRequest(uint64_t id, Digest *hc,
+	unsigned int createGetKeyRequest(uint64_t host, Digest *hc,
 			bool verify) noexcept;
 	//Returns the message length on success, 0 on error
 	unsigned int processGetKeyResponse(Digest *hc) const noexcept;
 	//Set <verify> to true if host verification is desired
-	bool getKeyRequest(uint64_t id, Digest *hc, bool verify);
+	bool getKeyRequest(uint64_t host, Digest *hc, bool verify);
 	//-----------------------------------------------------------------
 	/**
 	 * Bare minimum bootstrapping protocol
-	 * <id> = identifier of the remote host
+	 * <host> = identifier of the remote host
+	 * <uid> = the local identifier
 	 */
 	//Returns the message length on success, 0 on error
-	unsigned int createFindRootRequest(uint64_t id, uint64_t uid) noexcept;
+	unsigned int createFindRootRequest(uint64_t host, uint64_t uid) noexcept;
 	//Returns the message length on success, 0 on error
 	unsigned int processFindRootResponse(uint64_t uid,
 			uint64_t &root) const noexcept;
 	//Returns true on success, false otherwise
-	bool findRootRequest(uint64_t id, uint64_t uid, uint64_t &root);
+	bool findRootRequest(uint64_t host, uint64_t uid, uint64_t &root);
 
 	//Returns the message length on success, 0 on error
-	unsigned int createBootstrapRequest(uint64_t id) noexcept;
+	unsigned int createBootstrapRequest(uint64_t host) noexcept;
 	//Returns the message length on success, 0 on error
 	unsigned int processBootstrapResponse(uint64_t keys[],
 			uint32_t &limit) const noexcept;
 	//Returns true on success, false otherwise
-	bool bootstrapRequest(uint64_t id, uint64_t keys[], uint32_t &limit);
+	bool bootstrapRequest(uint64_t host, uint64_t keys[], uint32_t &limit);
 	//-----------------------------------------------------------------
 	/**
 	 * Bare minimum pub/sub protocol
-	 * <id> = identifier of the remote host
+	 * <host> = identifier of the remote host
+	 * <uid> = the local identifier
 	 */
 	//Returns the message length on success, 0 on error
-	unsigned int createPublishRequest(uint64_t id, uint8_t topic,
+	unsigned int createPublishRequest(uint64_t host, uint8_t topic,
 			const unsigned char *payload, unsigned int payloadLength) noexcept;
 	//Always returns true
-	bool publishRequest(uint64_t id, uint8_t topic,
+	bool publishRequest(uint64_t host, uint8_t topic,
 			const unsigned char *payload, unsigned int payloadLength);
 
 	//Returns the message length on success, 0 on error
-	unsigned int createSubscribeRequest(uint64_t id, uint8_t topic) noexcept;
+	unsigned int createSubscribeRequest(uint64_t host, uint8_t topic) noexcept;
 	//Returns the message length on success, 0 on error
 	unsigned int processSubscribeResponse(uint8_t topic) const noexcept;
 	//Returns true on success, false otherwise
-	bool subscribeRequest(uint64_t id, uint8_t topic);
+	bool subscribeRequest(uint64_t host, uint8_t topic);
 
 	//Returns the message length on success, 0 on error
-	unsigned int createUnsubscribeRequest(uint64_t id, uint8_t topic) noexcept;
+	unsigned int createUnsubscribeRequest(uint64_t host, uint8_t topic) noexcept;
 	//Returns the message length on success, 0 on error
 	unsigned int processUnsubscribeResponse(uint8_t topic) const noexcept;
 	//Returns true on success, false otherwise
-	bool unsubscribeRequest(uint64_t id, uint8_t topic);
+	bool unsubscribeRequest(uint64_t host, uint8_t topic);
 	//-----------------------------------------------------------------
 	/**
 	 * STATIC METHODS

@@ -24,9 +24,9 @@ Protocol::~Protocol() {
 
 }
 
-unsigned int Protocol::createIdentificationRequest(uint64_t id, uint64_t uid,
+unsigned int Protocol::createIdentificationRequest(uint64_t host, uint64_t uid,
 		const unsigned char *nonce, unsigned int nonceLength) noexcept {
-	return createIdentificationRequest(id, uid, nextSequenceNumber(), nonce,
+	return createIdentificationRequest(host, uid, nextSequenceNumber(), nonce,
 			nonceLength, header(), buffer());
 }
 
@@ -37,21 +37,21 @@ unsigned int Protocol::processIdentificationResponse(unsigned int &saltLength,
 			nonceLength, nonce);
 }
 
-bool Protocol::identificationRequest(uint64_t id, uint64_t uid,
+bool Protocol::identificationRequest(uint64_t host, uint64_t uid,
 		const unsigned char *nonce, unsigned int nonceLength) {
 	/*
 	 * HEADER: SRC=<identity>, DEST=X, ....CMD=0, QLF=1, AQLF=0/1/127
 	 * BODY: variable in Request and Response
 	 * TOTAL: at least 32 bytes in Request and Response
 	 */
-	return createIdentificationRequest(id, uid, nonce, nonceLength)
+	return createIdentificationRequest(host, uid, nonce, nonceLength)
 			&& executeRequest();
 }
 
-unsigned int Protocol::createAuthenticationRequest(uint64_t id,
+unsigned int Protocol::createAuthenticationRequest(uint64_t host,
 		const unsigned char *proof, unsigned int length) noexcept {
-	return createAuthenticationRequest(id, nextSequenceNumber(), proof, length,
-			header(), buffer());
+	return createAuthenticationRequest(host, nextSequenceNumber(), proof,
+			length, header(), buffer());
 }
 
 unsigned int Protocol::processAuthenticationResponse(unsigned int &length,
@@ -59,19 +59,19 @@ unsigned int Protocol::processAuthenticationResponse(unsigned int &length,
 	return processAuthenticationResponse(header(), buffer(), length, proof);
 }
 
-bool Protocol::authenticationRequest(uint64_t id, const unsigned char *proof,
+bool Protocol::authenticationRequest(uint64_t host, const unsigned char *proof,
 		unsigned int length) {
 	/*
 	 * HEADER: SRC=0, DEST=X, ....CMD=0, QLF=2, AQLF=0/1/127
 	 * BODY: variable in Request and Response
 	 * TOTAL: at least 32 bytes in Request and Response
 	 */
-	return createAuthenticationRequest(id, proof, length) && executeRequest();
+	return createAuthenticationRequest(host, proof, length) && executeRequest();
 }
 
-unsigned int Protocol::createRegisterRequest(uint64_t id, uint64_t uid,
+unsigned int Protocol::createRegisterRequest(uint64_t host, uint64_t uid,
 		Digest *hc) noexcept {
-	return createRegisterRequest(id, uid, nextSequenceNumber(), hc, header(),
+	return createRegisterRequest(host, uid, nextSequenceNumber(), hc, header(),
 			buffer());
 }
 
@@ -85,19 +85,19 @@ unsigned int Protocol::processRegisterResponse() const noexcept {
 	}
 }
 
-bool Protocol::registerRequest(uint64_t id, uint64_t uid, Digest *hc) {
+bool Protocol::registerRequest(uint64_t host, uint64_t uid, Digest *hc) {
 	/*
 	 * HEADER: SRC=<REQUESTED ID>, DEST=IGN, ....CMD=1, QLF=0, AQLF=0/1/127
 	 * BODY: 64-byte CHALLANGE CODE in Request (optional); nothing in Response
 	 * TOTAL: 32+64=96 bytes in Request; 32 bytes in Response
 	 */
-	return createRegisterRequest(id, uid, hc) && executeRequest(true, false)
+	return createRegisterRequest(host, uid, hc) && executeRequest(true, false)
 			&& processRegisterResponse();
 }
 
-unsigned int Protocol::createGetKeyRequest(uint64_t id, Digest *hc,
+unsigned int Protocol::createGetKeyRequest(uint64_t host, Digest *hc,
 		bool verify) noexcept {
-	return createGetKeyRequest(id, nextSequenceNumber(),
+	return createGetKeyRequest(host, nextSequenceNumber(),
 			{ verify ? getKeyPair() : nullptr, hc }, header(), buffer());
 }
 
@@ -105,18 +105,19 @@ unsigned int Protocol::processGetKeyResponse(Digest *hc) const noexcept {
 	return processGetKeyResponse(header(), buffer(), hc);
 }
 
-bool Protocol::getKeyRequest(uint64_t id, Digest *hc, bool verify) {
+bool Protocol::getKeyRequest(uint64_t host, Digest *hc, bool verify) {
 	/*
 	 * HEADER: SRC=0, DEST=X, ....CMD=1, QLF=1, AQLF=0/1/127
 	 * BODY: 512/8=64 Bytes in Request (optional), (512/8)*2=128 Bytes in Response
 	 * TOTAL: 32+64=96 bytes in Request; 32+128=160 bytes in Response
 	 */
-	return createGetKeyRequest(id, hc, verify) && executeRequest(false, verify)
-			&& processGetKeyResponse(hc);
+	return createGetKeyRequest(host, hc, verify)
+			&& executeRequest(false, verify) && processGetKeyResponse(hc);
 }
 
-unsigned int Protocol::createFindRootRequest(uint64_t id, uint64_t uid) noexcept {
-	return createFindRootRequest(id, getSource(), uid, nextSequenceNumber(),
+unsigned int Protocol::createFindRootRequest(uint64_t host,
+		uint64_t uid) noexcept {
+	return createFindRootRequest(host, getSource(), uid, nextSequenceNumber(),
 			header(), buffer());
 }
 
@@ -125,19 +126,19 @@ unsigned int Protocol::processFindRootResponse(uint64_t uid,
 	return processFindRootResponse(header(), buffer(), uid, root);
 }
 
-bool Protocol::findRootRequest(uint64_t id, uint64_t uid, uint64_t &root) {
+bool Protocol::findRootRequest(uint64_t host, uint64_t uid, uint64_t &root) {
 	/*
 	 * HEADER: SRC=0, DEST=X, ....CMD=1, QLF=2, AQLF=0/1/127
 	 * BODY: 8 bytes as <id> in Request; 8 bytes as <id> and 8 bytes as
 	 * <successor> in Response
 	 * TOTAL: 32+8=40 bytes in Request; 32+8+8=48 bytes in Response
 	 */
-	return createFindRootRequest(id, uid) && executeRequest()
+	return createFindRootRequest(host, uid) && executeRequest()
 			&& processFindRootResponse(uid, root);
 }
 
-unsigned int Protocol::createBootstrapRequest(uint64_t id) noexcept {
-	header().load(getSource(), id, HEADER_SIZE, nextSequenceNumber(), 0,
+unsigned int Protocol::createBootstrapRequest(uint64_t host) noexcept {
+	header().load(getSource(), host, HEADER_SIZE, nextSequenceNumber(), 0,
 			WH_CMD_BASIC, WH_QLF_BOOTSTRAP, WH_AQLF_REQUEST);
 	header().serialize(buffer());
 	return header().getLength();
@@ -163,23 +164,24 @@ unsigned int Protocol::processBootstrapResponse(uint64_t keys[],
 	}
 }
 
-bool Protocol::bootstrapRequest(uint64_t id, uint64_t keys[], uint32_t &limit) {
+bool Protocol::bootstrapRequest(uint64_t host, uint64_t keys[],
+		uint32_t &limit) {
 	/*
 	 * HEADER: SRC=0, DEST=X, ....CMD=1, QLF=3, AQLF=0/1/127
 	 * BODY: 0 in Request; 4 bytes as count + 8*NODECACHE_SIZE bytes as IDs
 	 * in Response
 	 * TOTAL: 32 bytes in Request; 32+4+8*NODECACHE_SIZE bytes in Response
 	 */
-	return createBootstrapRequest(id) && executeRequest()
+	return createBootstrapRequest(host) && executeRequest()
 			&& processBootstrapResponse(keys, limit);
 }
 
-unsigned int Protocol::createPublishRequest(uint64_t id, uint8_t topic,
+unsigned int Protocol::createPublishRequest(uint64_t host, uint8_t topic,
 		const unsigned char *payload, unsigned int payloadLength) noexcept {
 	if ((payloadLength && !payload) || payloadLength > PAYLOAD_SIZE) {
 		return 0;
 	} else {
-		header().load(getSource(), id, HEADER_SIZE + payloadLength,
+		header().load(getSource(), host, HEADER_SIZE + payloadLength,
 				nextSequenceNumber(), topic, WH_CMD_MULTICAST, WH_QLF_PUBLISH,
 				WH_AQLF_REQUEST);
 		auto len = header().serialize(buffer());
@@ -190,20 +192,20 @@ unsigned int Protocol::createPublishRequest(uint64_t id, uint8_t topic,
 	}
 }
 
-bool Protocol::publishRequest(uint64_t id, uint8_t topic,
+bool Protocol::publishRequest(uint64_t host, uint8_t topic,
 		const unsigned char *payload, unsigned int payloadLength) {
 	/*
 	 * HEADER: SRC=0, DEST=X, ....CMD=2, QLF=0, AQLF=0/1/127
 	 * BODY: variable in Request; no Response
 	 * TOTAL: at least 32 bytes in Request; no Response
 	 */
-	return createPublishRequest(id, topic, payload, payloadLength)
+	return createPublishRequest(host, topic, payload, payloadLength)
 			&& (send(), true);
 }
 
-unsigned int Protocol::createSubscribeRequest(uint64_t id,
+unsigned int Protocol::createSubscribeRequest(uint64_t host,
 		uint8_t topic) noexcept {
-	header().load(getSource(), id, HEADER_SIZE, nextSequenceNumber(), topic,
+	header().load(getSource(), host, HEADER_SIZE, nextSequenceNumber(), topic,
 			WH_CMD_MULTICAST, WH_QLF_SUBSCRIBE, WH_AQLF_REQUEST);
 	header().serialize(buffer());
 	return header().getLength();
@@ -220,19 +222,19 @@ unsigned int Protocol::processSubscribeResponse(uint8_t topic) const noexcept {
 	}
 }
 
-bool Protocol::subscribeRequest(uint64_t id, uint8_t topic) {
+bool Protocol::subscribeRequest(uint64_t host, uint8_t topic) {
 	/*
 	 * HEADER: SRC=0, DEST=X, ....CMD=2, QLF=1, AQLF=0/1/127
 	 * BODY: 0 in Request; 0 in Response
 	 * TOTAL: 32 bytes in Request; 32 bytes in Response
 	 */
-	return createSubscribeRequest(id, topic) && executeRequest()
+	return createSubscribeRequest(host, topic) && executeRequest()
 			&& processSubscribeResponse(topic);
 }
 
-unsigned int Protocol::createUnsubscribeRequest(uint64_t id,
+unsigned int Protocol::createUnsubscribeRequest(uint64_t host,
 		uint8_t topic) noexcept {
-	header().load(getSource(), id, HEADER_SIZE, nextSequenceNumber(), topic,
+	header().load(getSource(), host, HEADER_SIZE, nextSequenceNumber(), topic,
 			WH_CMD_MULTICAST, WH_QLF_UNSUBSCRIBE, WH_AQLF_REQUEST);
 	header().serialize(buffer());
 	return header().getLength();
@@ -249,13 +251,13 @@ unsigned int Protocol::processUnsubscribeResponse(uint8_t topic) const noexcept 
 	}
 }
 
-bool Protocol::unsubscribeRequest(uint64_t id, uint8_t topic) {
+bool Protocol::unsubscribeRequest(uint64_t host, uint8_t topic) {
 	/*
 	 * HEADER: SRC=0, DEST=X, ....CMD=2, QLF=2, AQLF=0/1/127
 	 * BODY: 0 in Request; 0 in Response
 	 * TOTAL: 32 bytes in Request; 32 bytes in Response
 	 */
-	return createUnsubscribeRequest(id, topic) && executeRequest()
+	return createUnsubscribeRequest(host, topic) && executeRequest()
 			&& processUnsubscribeResponse(topic);
 }
 
