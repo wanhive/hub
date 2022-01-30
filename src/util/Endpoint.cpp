@@ -19,7 +19,7 @@
 namespace wanhive {
 
 Endpoint::Endpoint() noexcept :
-		sockfd(-1), ssl(nullptr), sslContext(nullptr) {
+		sockfd(-1), ssl(nullptr), sslContext(nullptr), pki(nullptr) {
 
 }
 
@@ -36,11 +36,11 @@ SSLContext* Endpoint::getSSLContext() const noexcept {
 }
 
 void Endpoint::useKeyPair(const PKI *pki) noexcept {
-	trust.set(pki);
+	this->pki = pki;
 }
 
 const PKI* Endpoint::getKeyPair() const noexcept {
-	return trust.get();
+	return pki;
 }
 
 void Endpoint::connect(const NameInfo &ni, int timeoutMils) {

@@ -14,7 +14,6 @@
 #include "../../base/common/Logger.h"
 #include "../../util/commands.h"
 #include "../../util/Endpoint.h"
-#include "../../util/Trust.h"
 #include <new>
 #include <postgresql/libpq-fe.h>
 

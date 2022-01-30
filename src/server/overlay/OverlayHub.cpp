@@ -13,7 +13,6 @@
 #include "OverlayHub.h"
 #include "commands.h"
 #include "../../base/common/Logger.h"
-#include "../../util/Trust.h"
 #include <cinttypes>
 
 namespace wanhive {

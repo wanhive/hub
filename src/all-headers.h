@@ -114,7 +114,6 @@
 #include "util/Packet.h"
 #include "util/Random.h"
 #include "util/TransactionKey.h"
-#include "util/Trust.h"
 #include "util/commands.h"
 
 #endif /* WH_ALL_HEADERS_H_ */

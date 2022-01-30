@@ -15,7 +15,6 @@
 #include "FlowControl.h"
 #include "Message.h"
 #include "TransactionKey.h"
-#include "Trust.h"
 #include "../base/Network.h"
 #include "../base/security/SSLContext.h"
 
@@ -129,7 +128,7 @@ private:
 	int sockfd; //The underlying socket
 	SSL *ssl;  //The underlying SSL/TLS connection
 	SSLContext *sslContext;
-	Trust trust; //PKI for message signing and verification
+	const PKI *pki; //PKI for message signing and verification
 };
 
 } /* namespace wanhive */

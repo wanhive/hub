@@ -15,7 +15,6 @@
 #include "../base/common/Logger.h"
 #include "../util/commands.h"
 #include "../util/Random.h"
-#include "../util/Trust.h"
 
 namespace {
 
