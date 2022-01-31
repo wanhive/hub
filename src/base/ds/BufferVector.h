@@ -24,9 +24,6 @@ template<typename X> struct BufferVector {
 	size_t length;
 };
 
-//A chunk of immutable binary data
-using Chunk = BufferVector<const unsigned char>;
-
 }  // namespace wanhive
 
 #endif /* WH_BASE_DS_BUFFERVECTOR_H_ */
