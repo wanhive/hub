@@ -158,7 +158,7 @@ The configuration file uses a restricted version of the [INI file](https://en.wi
 
 ## Hosts
 
-Wanhive hubs use a special text file to resolve the network addresses.
+Wanhive hubs use a special text file to learn the network addresses.
 
 * A server uses this file to bind it's listening socket to the correct address.
 * A client uses this file to find and connect to a server.
@@ -189,19 +189,22 @@ For example:
 
 ```
 0	/home/user/wh0.uds	unix
-1	127.0.0.1	9001
+1	127.0.0.1	9001	1
 2	hub2.example.com	9002
 3	testmachine.local	9003
-256	localhost	5555	1
+256	localhost	5555	2
 
 ```
 
 **NOTES**:
 
 * **IDENTITY** and **TYPE** should be non-negative integers.
-* **TYPE** is optional.
+* The **TYPE** column is optional.
+* The following **TYPE** codes have special meanings ([see bootstrapping](#bootstrap)):
+    * An overlay hub (**1**)
+    * An authentication hub (**2**)
 * Server applications bind their listening TCP/IP socket to the wildcard address.
-* Specify **unix** in the **SERVICE** column to create a *Unix domain socket*.
+* Specify **unix** under the **SERVICE** column to create a *Unix domain socket*.
 
 #### Option 1: Create manually
 
@@ -231,14 +234,14 @@ wanhive -m
 1. Select *UTILITIES(2)* from the list of available options.
 2. Next, select *Manage hosts(2)* and then,
 3. Select *Generate a sample "hosts" file(3)*.
-4. Follow the instructions.
+4. Follow further instructions.
 5. Edit the file using your favorite text editor.
 
 #### Option 3: Use the default template
 
 * This package includes a sample **hosts** file for testing purposes.
 * The sample file is installed into the **datadir**.
-* Edit the file in your favorite text editor.
+* Edit the file with a text editor.
 
 ### The hosts database
 
@@ -249,7 +252,7 @@ A **hosts database** is advantageous over the **hosts file** in certain use case
 
 #### Using a hosts database
 
-Export the **hosts file** as a SQLite3 **database**:
+Convert the **hosts file** into a SQLite3 **database**:
 
 ```
 wanhive -m
@@ -270,7 +273,24 @@ hostsDb = <pathname-of-hosts-database>
 
 ## Bootstrap
 
-The **bootstrap files** provide a list of *stable* host identifiers to a *joining* Wanhive hub (either server or client).
+A Wanhive hub must go through a bootstrap process to join the network. The joining hub needs to know a list of *stable* host identifiers:
+
+1. A list of *stable overlay hub* identifiers.
+2. A list of *stable authentication hub* identifiers (optional, for authentication).
+
+A Wanhive hub obtains such a list from either
+
+1. the [hosts file](#hosts), or
+2. the **bootstrap files** (default).
+
+**NOTES**:
+
+* The [hosts file](#hosts) converts the host identifiers to network addresses.
+* Do not use the identifier **0** for bootstrapping because it is reserved for [special purpose](#clustering-optional).
+
+### Bootstrap files
+
+The **bootstrap files** store a list of *stable* host identifiers to a *joining* Wanhive hub (either server or client):
 
 1. A text file containing a whitespace-separated list of *stable overlay hub* identifiers.
      - This package includes a sample file named **nodes**.
@@ -287,12 +307,7 @@ nodes = <pathname-of-nodes-file>
 auths = <pathname-of-auths-file>
 ```
 
-**NOTES**:
-
-* The identifiers are resolved to their network addresses using the [hosts file](#hosts).
-* Do not use the identifier **0** here because it is reserved for [special purpose](#clustering-optional).
-
-### Bootstrap files example
+#### Bootstrap files example
 
 The contents of a "nodes" file may look like the following. This example lists four overlay hub identifiers (1, 2, 35 and 8).
 
@@ -310,7 +325,7 @@ The contents of an "auths" file may look like the following. This example lists 
 
 ## Network key (optional)
 
-Network keys are used for:
+Network keys are useful for:
 
 * Mutual authentication in an [overlay network](#clustering-optional).
 * Distributed [authentication](#client-authentication-optional) of the clients.
@@ -324,7 +339,7 @@ wanhive -m
 
 1. Select *UTILITIES(2)*.
 2. Next, select *Generate keys(1)*.
-3. Follow the instructions.
+3. Follow the further instructions.
 4. Configure the overlay and authentication hubs:
     1. Copy the key pair to all the host machines.
     2. Update the configuration file(s) as illustrated below.
@@ -339,7 +354,7 @@ publicKey = <pathname-of-public-key-file>
 
 ## Overlay hub (Server)
 
-Every overlay hub possesses a *unique numerical identifier*.
+Every overlay hub must have a *unique numerical identifier*.
 
 Starting an overlay hub:
 
@@ -353,7 +368,7 @@ wanhive -to -n 1
 
 ### Clustering (optional)
 
-Overlay hubs can form a p2p cluster. Publish-subscribe-based multicasting is automatically disabled on clustering.
+Overlay hubs can form a p2p cluster. A cluster doesn't support the publish-subscribe-based multicasting.
 
 1. Enable message forwarding in the configuration file(s).
 2. Set the *OVERLAY/connectToOverlay* option to *TRUE* in the configuration file(s).
@@ -458,7 +473,7 @@ A large Wanhive network can have multiple authentication hubs to provide [redund
 
 The following instructions are valid for a **Basic setup** (for testing purposes only).
 
-1. Run an overlay hub with clustering and client authentication disabled.
+1. STart an overlay hub with clustering and client authentication disabled.
     * Publish-subscribe is automatically disabled in a cluster.
 2. Update the configuration file for the client:
     * Disable *HUB/listen* (comment-out or set to FALSE).
