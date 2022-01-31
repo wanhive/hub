@@ -34,19 +34,20 @@ public:
 	//Same as the above but uses the routing header and fails on invalid length
 	bool unpackHeader() noexcept;
 	//-----------------------------------------------------------------
-	//Sets frame buffer's <length> (fails if <length> is invalid)
+	//Updates the frame buffer's <length> (fails if <length> is invalid)
 	bool bind(unsigned int length) noexcept;
 	//Same as the above, but uses the length field of the routing header
 	bool bind() noexcept;
 	/*
 	 * Returns true if the packet is valid, false otherwise.
 	 * A packet is considered valid if and only if:
-	 * [1]. The frame buffer has a valid length
-	 * [2]. Frame buffer's length equals the routing header's length field.
+	 * [1]: The frame buffer has valid length.
+	 * [2]: Frame buffer's length equals the value in the routing header's
+	 * length field.
 	 */
 	bool validate() const noexcept;
 	//-----------------------------------------------------------------
-	//Returns the payload length in bytes
+	//Returns the payload length (uses the routing header), 0 on invalid length
 	unsigned int getPayloadLength() const noexcept;
 	//Returns true if the routing header's length field is valid
 	bool testLength() const noexcept;
