@@ -23,7 +23,7 @@ namespace wanhive {
 class Authenticator: public State, private Srp {
 public:
 	Authenticator(bool isHost = false) noexcept;
-	virtual ~Authenticator();
+	~Authenticator();
 	/*
 	 * STEP 1: User -> Host:  I, A = g^a (identifies self, a = random number)
 	 * Host:  B = kv + g^b
