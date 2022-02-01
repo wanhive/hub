@@ -229,24 +229,15 @@ void OverlayTool::identifyCmd() {
 	}
 
 	try {
-		const unsigned char *binary;
-		unsigned int bytes;
-		bool success = auth.generateNonce(binary, bytes)
-				&& identificationRequest(id, identity, binary, bytes);
-
-		if (!success) {
-			std::cout << "IDENTIFY FAILED" << std::endl;
-			return;
-		}
-
-		unsigned int saltLength, nonceLength;
-		const unsigned char *salt, *nonce;
-
-		success = processIdentificationResponse(saltLength, salt, nonceLength,
-				nonce)
+		Data salt, nonce;
+		bool success = auth.generateNonce(nonce.base, nonce.length)
+				&& identificationRequest( { identity, id }, nonce)
+				&& processIdentificationResponse(salt, nonce)
 				&& auth.createIdentity(identity,
-						(const unsigned char*) password, strlen(password), salt,
-						saltLength, nonce, nonceLength, rounds);
+						(const unsigned char*) password, strlen(password),
+						salt.base, salt.length, nonce.base, nonce.length,
+						rounds);
+
 		if (success) {
 			std::cout << "IDENTIFY SUCCEEDED" << std::endl;
 		} else {
@@ -263,12 +254,11 @@ void OverlayTool::authenticateCmd() {
 	uint64_t id = destinationId;
 
 	try {
-		const unsigned char *proof;
-		unsigned int length;
-		bool success = auth.generateUserProof(proof, length)
-				&& authenticationRequest(id, proof, length)
-				&& auth.authenticateHost(payload(),
-						header().getLength() - Message::HEADER_SIZE);
+		Data proof;
+		bool success = auth.generateUserProof(proof.base, proof.length)
+				&& authenticationRequest( { 0, id }, proof)
+				&& processAuthenticationResponse(proof)
+				&& auth.authenticateHost(proof.base, proof.length);
 		if (success) {
 			std::cout << "AUTHENTICATE SUCCEEDED" << std::endl;
 		} else {
@@ -386,8 +376,8 @@ void OverlayTool::registerCmd() {
 	try {
 		Digest hc;
 		Random().bytes(&hc, Hash::SIZE);
-		if (getKeyRequest(id, &hc, verifyHost())
-				&& registerRequest(id, newId, &hc)) {
+		if (getKeyRequest( { 0, id }, &hc, verifyHost()) && registerRequest( {
+				newId, id }, &hc)) {
 			std::cout << "REGISTER SUCCEEDED FOR ID: " << newId << std::endl;
 			//Message source will be set to this
 			setSource(newId);
@@ -407,7 +397,7 @@ void OverlayTool::getKeyCmd() {
 	try {
 		Digest hc;
 		Random().bytes(&hc, Hash::SIZE);
-		if (getKeyRequest(id, &hc, verifyHost())) {
+		if (getKeyRequest( { 0, id }, &hc, verifyHost())) {
 			EncodedDigest encodedKey;
 			unsigned int encLen = Hash::encode(&hc, &encodedKey);
 			std::cout << "GETKEY RETURNED: " << "[" << encLen << "] "
@@ -424,17 +414,17 @@ void OverlayTool::getKeyCmd() {
 void OverlayTool::findRoot() {
 	std::cout << "CMD: [FINDROOT]" << std::endl;
 	uint64_t startNode = destinationId;
-	uint64_t id = 0;
+	uint64_t qid = 0;
 	std::cout << "Identity: ";
-	std::cin >> id;
+	std::cin >> qid;
 	if (CommandLine::inputError()) {
 		return;
 	}
 
 	try {
 		uint64_t successorId = 0;
-		if (findRootRequest(startNode, id, successorId)) {
-			std::cout << "FINDROOT SUCCEEDED FOR ID: " << id << " WITH VALUE: "
+		if (findRootRequest(startNode, qid, successorId)) {
+			std::cout << "FINDROOT SUCCEEDED FOR ID: " << qid << " WITH VALUE: "
 					<< successorId << std::endl;
 		} else {
 			std::cout << "FINDROOT FAILED" << std::endl;
@@ -492,7 +482,8 @@ void OverlayTool::publishCmd() {
 	}
 
 	try {
-		if (publishRequest(id, topic, (const unsigned char*) s, strlen(s))) {
+		if (publishRequest(id, topic, { (const unsigned char*) s,
+				(unsigned int) strlen(s) })) {
 			std::cout << "PUBLISH SUCCEEDED" << std::endl;
 		} else {
 			std::cout << "PUBLISH FAILED" << std::endl;

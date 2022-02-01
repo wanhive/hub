@@ -63,7 +63,7 @@ private:
 
 	void processGetKeyResponse(Message *msg) noexcept;
 
-	Message* createRegistrationMessage(bool sign);
+	Message* createRegistrationRequest(bool sign);
 	void processRegistrationResponse(Message *msg) noexcept;
 
 	void setStage(int stage) noexcept;

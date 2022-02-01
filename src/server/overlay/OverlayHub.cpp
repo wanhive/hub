@@ -337,7 +337,7 @@ Watcher* OverlayHub::createProxyConnection(unsigned long long id,
 		//-----------------------------------------------------------------
 		//A getKey request is automatically sent out
 		generateNonce(hashFn, conn->getUid(), getUid(), nonce);
-		Message *msg = Protocol::createGetKeyRequest(id,
+		auto msg = Protocol::createGetKeyRequest( { 0, id },
 				{ verifyHost() ? getPKI() : nullptr, nonce }, nullptr);
 		if (!msg) {
 			throw Exception(EX_ALLOCFAILED);
@@ -921,7 +921,7 @@ int OverlayHub::handleGetKeyRequest(Message *msg) noexcept {
 			//Convert the message into a Registration Request
 			Digest hc;
 			memcpy(&hc, msg->getBytes(Hash::SIZE), Hash::SIZE);
-			Protocol::createRegisterRequest(origin, getUid(), &hc, msg);
+			Protocol::createRegisterRequest( { getUid(), origin }, &hc, msg);
 			msg->sign(getPKI());
 			//We are sending a registration request to the remote Node.
 			msg->setDestination(origin);

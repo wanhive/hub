@@ -319,7 +319,7 @@ void ClientHub::findRoot() noexcept {
 		Random prng;
 		prng.bytes(rnd, sizeof(rnd));
 		generateNonce(bs.hashFn, rnd[0], rnd[1], &bs.nonce);
-		auto msg = Protocol::createGetKeyRequest(0,
+		auto msg = Protocol::createGetKeyRequest( { 0, 0 },
 				{ verifyHost() ? getPKI() : nullptr, &bs.nonce }, nullptr);
 		//-----------------------------------------------------------------
 		if (!msg) {
@@ -350,12 +350,12 @@ void ClientHub::initAuthorization() noexcept {
 		if (!isStage(WHC_AUTHORIZE) || !bs.node || (ctx.password && !bs.auth)) {
 			throw Exception(EX_INVALIDSTATE);
 		} else if (bs.auth) {
-			auto msg = createRegistrationMessage(false);
+			auto msg = createRegistrationRequest(false);
 			msg->setDestination(bs.auth->getUid());
 			Hub::sendMessage(msg);
 			WH_LOG_DEBUG("Initiating authorization");
 		} else {
-			auto msg = createRegistrationMessage(true);
+			auto msg = createRegistrationRequest(true);
 			msg->setDestination(bs.node->getUid());
 			Hub::sendMessage(msg);
 			WH_LOG_DEBUG("Initiating registration");
@@ -368,13 +368,12 @@ void ClientHub::initAuthorization() noexcept {
 
 Message* ClientHub::createIdentificationRequest() {
 	try {
-		const unsigned char *binary = nullptr;
-		unsigned int bytes = 0;
 		Message *msg = nullptr;
-		if (!bs.authenticator.generateNonce(binary, bytes)) {
+		Data nonce;
+		if (!bs.authenticator.generateNonce(nonce.base, nonce.length)) {
 			throw Exception(EX_SECURITY);
-		} else if (!(msg = Protocol::createIdentificationRequest(0, getUid(), 0,
-				binary, bytes))) {
+		} else if (!(msg = Protocol::createIdentificationRequest(
+				{ getUid(), 0 }, nonce, 0))) {
 			throw Exception(EX_ALLOCFAILED);
 		} else {
 			return msg;
@@ -386,21 +385,18 @@ Message* ClientHub::createIdentificationRequest() {
 }
 
 void ClientHub::processIdentificationResponse(Message *msg) noexcept {
-	unsigned int saltLength = 0;
-	unsigned int nonceLength = 0;
-	const unsigned char *salt = nullptr;
-	const unsigned char *nonce = nullptr;
+	Data salt;
+	Data nonce;
 	if (!isStage(WHC_IDENTIFY)) {
 		setStage(WHC_ERROR);
 	} else if (!bs.auth || msg->getOrigin() != bs.auth->getUid()) {
 		setStage(WHC_ERROR);
-	} else if (!Protocol::processIdentificationResponse(msg, saltLength, salt,
-			nonceLength, nonce)) {
+	} else if (!Protocol::processIdentificationResponse(msg, salt, nonce)) {
 		setStage(WHC_ERROR);
 	} else {
 		auto f = bs.authenticator.createIdentity(getUid(), ctx.password,
-				ctx.passwordLength, salt, saltLength, nonce, nonceLength,
-				ctx.passwordHashRounds);
+				ctx.passwordLength, salt.base, salt.length, nonce.base,
+				nonce.length, ctx.passwordHashRounds);
 		if (!f) {
 			setStage(WHC_ERROR);
 		} else {
@@ -413,15 +409,15 @@ void ClientHub::processIdentificationResponse(Message *msg) noexcept {
 
 Message* ClientHub::createAuthenticationRequest() {
 	try {
-		const unsigned char *binary = nullptr;
-		unsigned int bytes = 0;
 		Message *msg = nullptr;
+		Data proof;
 		if (!bs.auth) {
 			throw Exception(EX_INVALIDOPERATION);
-		} else if (!bs.authenticator.generateUserProof(binary, bytes)) {
+		} else if (!bs.authenticator.generateUserProof(proof.base,
+				proof.length)) {
 			throw Exception(EX_INVALIDSTATE);
 		} else if (!(msg = Protocol::createAuthenticationRequest(
-				bs.auth->getUid(), 0, binary, bytes))) {
+				{ 0, bs.auth->getUid() }, proof, 0))) {
 			throw Exception(EX_ALLOCFAILED);
 		} else {
 			return msg;
@@ -433,15 +429,14 @@ Message* ClientHub::createAuthenticationRequest() {
 }
 
 void ClientHub::processAuthenticationResponse(Message *msg) noexcept {
-	const unsigned char *binary = nullptr;
-	unsigned int bytes = 0;
+	Data proof;
 	if (!isStage(WHC_AUTHENTICATE)) {
 		setStage(WHC_ERROR);
 	} else if (!bs.auth || msg->getOrigin() != bs.auth->getUid()) {
 		setStage(WHC_ERROR);
-	} else if (!Protocol::processAuthenticationResponse(msg, bytes, binary)) {
+	} else if (!Protocol::processAuthenticationResponse(msg, proof)) {
 		setStage(WHC_ERROR);
-	} else if (!bs.authenticator.authenticateHost(binary, bytes)) {
+	} else if (!bs.authenticator.authenticateHost(proof.base, proof.length)) {
 		setStage(WHC_ERROR);
 	} else {
 		WH_LOG_DEBUG("Authentication succeeded");
@@ -451,7 +446,7 @@ void ClientHub::processAuthenticationResponse(Message *msg) noexcept {
 
 Message* ClientHub::createFindRootRequest() {
 	try {
-		auto msg = Protocol::createFindRootRequest(0, 0, getUid(), 0);
+		auto msg = Protocol::createFindRootRequest( { 0, 0 }, getUid(), 0);
 		if (msg) {
 			return msg;
 		} else {
@@ -494,9 +489,9 @@ void ClientHub::processGetKeyResponse(Message *msg) noexcept {
 	}
 }
 
-Message* ClientHub::createRegistrationMessage(bool sign) {
+Message* ClientHub::createRegistrationRequest(bool sign) {
 	try {
-		auto msg = Protocol::createRegisterRequest(0, getUid(), &bs.nonce,
+		auto msg = Protocol::createRegisterRequest( { getUid(), 0 }, &bs.nonce,
 				nullptr);
 		if (msg) {
 			if (sign) {

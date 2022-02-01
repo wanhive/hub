@@ -16,6 +16,13 @@
 #include "../base/ds/StaticBuffer.h"
 
 namespace wanhive {
+//-----------------------------------------------------------------
+//An immutable chunk of binary user-data
+struct Data {
+	const unsigned char *base;
+	unsigned int length;
+};
+//-----------------------------------------------------------------
 /**
  * The message frame
  * Internal structure: [{MESSAGE HEADER}{VARIABLE LENGTH PAYLOAD}]

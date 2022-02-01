@@ -27,63 +27,62 @@ public:
 	//-----------------------------------------------------------------
 	/**
 	 * Identification and authentication
-	 * <host> = identifier of the remote host
+	 * <host> = remote host's identifier
 	 * <uid> = the local identifier
 	 */
 	//Returns the message length on success, 0 on error
-	unsigned int createIdentificationRequest(uint64_t host, uint64_t uid,
-			const unsigned char *nonce, unsigned int nonceLength) noexcept;
+	unsigned int createIdentificationRequest(const MessageAddress &address,
+			const Data &nonce) noexcept;
 	//Returns the message length on success, 0 on error
-	unsigned int processIdentificationResponse(unsigned int &saltLength,
-			const unsigned char *&salt, unsigned int &nonceLength,
-			const unsigned char *&nonce) const noexcept;
+	unsigned int processIdentificationResponse(Data &salt,
+			Data &nonce) const noexcept;
 	//Call processIdentificationResponse explicitly to process the response
-	bool identificationRequest(uint64_t host, uint64_t uid,
-			const unsigned char *nonce, unsigned int nonceLength);
+	bool identificationRequest(const MessageAddress &address,
+			const Data &nonce);
 
 	//Returns the message length on success, 0 on error
-	unsigned int createAuthenticationRequest(uint64_t host,
-			const unsigned char *proof, unsigned int length) noexcept;
+	unsigned int createAuthenticationRequest(const MessageAddress &address,
+			const Data &proof) noexcept;
 	//Returns the message length on success, 0 on error
-	unsigned int processAuthenticationResponse(unsigned int &length,
-			const unsigned char *&proof) const noexcept;
+	unsigned int processAuthenticationResponse(Data &proof) const noexcept;
 	//Call processAuthenticationResponse explicitly to process the response
-	bool authenticationRequest(uint64_t host, const unsigned char *proof,
-			unsigned int length);
+	bool authenticationRequest(const MessageAddress &address,
+			const Data &proof);
 	//-----------------------------------------------------------------
 	/**
 	 * Registration and session creation
-	 * <host> = identifier of the remote host
+	 * <host> = remote host's identifier
 	 * <uid> = the local identifier
 	 */
 	//Returns the message length on success, 0 on error
-	unsigned int createRegisterRequest(uint64_t host, uint64_t uid, Digest *hc =
-			nullptr) noexcept;
+	unsigned int createRegisterRequest(const MessageAddress &address,
+			Digest *hc) noexcept;
 	//Returns the message length on success, 0 on error
 	unsigned int processRegisterResponse() const noexcept;
 	//Returns true on success, false if request denied by the host
-	bool registerRequest(uint64_t host, uint64_t uid, Digest *hc = nullptr);
+	bool registerRequest(const MessageAddress &address, Digest *hc);
 
 	//Set <verify> to true if host verification is desired
-	unsigned int createGetKeyRequest(uint64_t host, Digest *hc,
+	unsigned int createGetKeyRequest(const MessageAddress &address, Digest *hc,
 			bool verify) noexcept;
 	//Returns the message length on success, 0 on error
 	unsigned int processGetKeyResponse(Digest *hc) const noexcept;
 	//Set <verify> to true if host verification is desired
-	bool getKeyRequest(uint64_t host, Digest *hc, bool verify);
+	bool getKeyRequest(const MessageAddress &address, Digest *hc, bool verify);
 	//-----------------------------------------------------------------
 	/**
 	 * Bare minimum bootstrapping protocol
-	 * <host> = identifier of the remote host
+	 * <host> = remote host's identifier
 	 * <uid> = the local identifier
 	 */
 	//Returns the message length on success, 0 on error
-	unsigned int createFindRootRequest(uint64_t host, uint64_t uid) noexcept;
+	unsigned int createFindRootRequest(uint64_t host,
+			uint64_t identity) noexcept;
 	//Returns the message length on success, 0 on error
-	unsigned int processFindRootResponse(uint64_t uid,
+	unsigned int processFindRootResponse(uint64_t identity,
 			uint64_t &root) const noexcept;
 	//Returns true on success, false otherwise
-	bool findRootRequest(uint64_t host, uint64_t uid, uint64_t &root);
+	bool findRootRequest(uint64_t host, uint64_t identity, uint64_t &root);
 
 	//Returns the message length on success, 0 on error
 	unsigned int createBootstrapRequest(uint64_t host) noexcept;
@@ -95,15 +94,14 @@ public:
 	//-----------------------------------------------------------------
 	/**
 	 * Bare minimum pub/sub protocol
-	 * <host> = identifier of the remote host
+	 * <host> = remote host's identifier
 	 * <uid> = the local identifier
 	 */
 	//Returns the message length on success, 0 on error
 	unsigned int createPublishRequest(uint64_t host, uint8_t topic,
-			const unsigned char *data, unsigned int dataLength) noexcept;
+			const Data &data) noexcept;
 	//Always returns true
-	bool publishRequest(uint64_t host, uint8_t topic, const unsigned char *data,
-			unsigned int dataLength);
+	bool publishRequest(uint64_t host, uint8_t topic, const Data &data);
 
 	//Returns the message length on success, 0 on error
 	unsigned int createSubscribeRequest(uint64_t host, uint8_t topic) noexcept;
@@ -126,31 +124,32 @@ public:
 	 * <uid> = the local identifier
 	 */
 	//Returns a new message on success, nullptr on failure
-	static Message* createIdentificationRequest(uint64_t host, uint64_t uid,
-			uint16_t sequenceNumber, const unsigned char *nonce,
-			unsigned int nonceLength) noexcept;
+	static Message* createIdentificationRequest(const MessageAddress &address,
+			const Data &nonce, uint16_t sequenceNumber) noexcept;
 	//Returns message length on success, 0 on failure
 	static unsigned int processIdentificationResponse(const Message *msg,
-			unsigned int &saltLength, const unsigned char *&salt,
-			unsigned int &nonceLength, const unsigned char *&nonce) noexcept;
+			Data &salt, Data &nonce);
+
 	//Returns a new message on success, nullptr on failure
-	static Message* createAuthenticationRequest(uint64_t host,
-			uint16_t sequenceNumber, const unsigned char *proof,
-			unsigned int length) noexcept;
+	static Message* createAuthenticationRequest(const MessageAddress &address,
+			const Data &proof, uint16_t sequenceNumber) noexcept;
 	//Returns message length on success, 0 on failure
 	static unsigned int processAuthenticationResponse(const Message *msg,
-			unsigned int &length, const unsigned char *&proof) noexcept;
+			Data &proof) noexcept;
+
 	//Returns <msg> (a new message if <msg> is nullptr) on success, nullptr otherwise
-	static Message* createRegisterRequest(uint64_t host, uint64_t uid,
+	static Message* createRegisterRequest(const MessageAddress &address,
 			const Digest *hc, Message *msg) noexcept;
+
 	//Returns <msg> (a new message if <msg> is nullptr) on success, nullptr otherwise
-	static Message* createGetKeyRequest(uint64_t host, const TransactionKey &tk,
-			Message *msg) noexcept;
+	static Message* createGetKeyRequest(const MessageAddress &address,
+			const TransactionKey &tk, Message *msg) noexcept;
 	//Returns message length on success, 0 on failure (<hc> is the value-result argument)
 	static unsigned int processGetKeyResponse(const Message *msg,
 			Digest *hc) noexcept;
+
 	//Returns a new message on success, nullptr on failure
-	static Message* createFindRootRequest(uint64_t host, uint64_t uid,
+	static Message* createFindRootRequest(const MessageAddress &address,
 			uint64_t identity, uint16_t sequenceNumber) noexcept;
 	//Returns message length on success, 0 on failure
 	static unsigned int processFindRootResponse(const Message *msg,
@@ -163,32 +162,31 @@ private:
 	 * <uid> = the local identifier
 	 */
 	//Returns message length on success, 0 on failure
-	static unsigned int createIdentificationRequest(uint64_t host, uint64_t uid,
-			uint16_t sequenceNumber, const unsigned char *nonce,
-			unsigned int nonceLength, Packet &packet) noexcept;
+	static unsigned int createIdentificationRequest(
+			const MessageAddress &address, uint16_t sequenceNumber,
+			const Data &nonce, Packet &packet) noexcept;
 	//Returns message length on success, 0 on failure
 	static unsigned int processIdentificationResponse(const Packet &packet,
-			unsigned int &saltLength, const unsigned char *&salt,
-			unsigned int &nonceLength, const unsigned char *&nonce) noexcept;
+			Data &salt, Data &nonce) noexcept;
 	//Returns message length on success, 0 on failure
-	static unsigned int createAuthenticationRequest(uint64_t host,
-			uint16_t sequenceNumber, const unsigned char *proof,
-			unsigned int length, Packet &packet) noexcept;
+	static unsigned int createAuthenticationRequest(
+			const MessageAddress &address, uint16_t sequenceNumber,
+			const Data &proof, Packet &packet) noexcept;
 	//Returns message length on success, 0 on failure
 	static unsigned int processAuthenticationResponse(const Packet &packet,
-			unsigned int &length, const unsigned char *&proof) noexcept;
+			Data &proof) noexcept;
 	//Returns message length on success, 0 on failure
-	static unsigned int createRegisterRequest(uint64_t host, uint64_t uid,
+	static unsigned int createRegisterRequest(const MessageAddress &address,
 			uint16_t sequenceNumber, const Digest *hc, Packet &packet) noexcept;
 	//Returns message length on success, 0 on failure
-	static unsigned int createGetKeyRequest(uint64_t host,
+	static unsigned int createGetKeyRequest(const MessageAddress &address,
 			uint16_t sequenceNumber, const TransactionKey &tk,
 			Packet &packet) noexcept;
 	//Returns message length on success, 0 on failure (<hc> is the value-result argument)
 	static unsigned int processGetKeyResponse(const Packet &packet,
 			Digest *hc) noexcept;
 	//Returns message length on success, 0 on failure
-	static unsigned int createFindRootRequest(uint64_t host, uint64_t uid,
+	static unsigned int createFindRootRequest(const MessageAddress &address,
 			uint64_t identity, uint16_t sequenceNumber, Packet &packet) noexcept;
 	//Returns message length on success, 0 on failure
 	static unsigned int processFindRootResponse(const Packet &packet,

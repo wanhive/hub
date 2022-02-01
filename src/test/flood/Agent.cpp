@@ -70,8 +70,8 @@ bool Agent::authenticate() {
 	try {
 		Digest hc;
 		useKeyPair(getPKI());
-		return getKeyRequest(hostId, &hc, verifyHost())
-				&& registerRequest(hostId, getSource(), &hc);
+		return getKeyRequest( { 0, hostId }, &hc, verifyHost())
+				&& registerRequest( { getSource(), hostId }, &hc);
 	} catch (const BaseException &e) {
 		WH_LOG_EXCEPTION(e);
 		throw;
