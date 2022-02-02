@@ -1,3 +1,7 @@
+## 2022-02-02
+
+- Version 7.0.0 release.
+
 ## 2022-01-05
 
 - Version 6.0.0 release.

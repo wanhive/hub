@@ -5,15 +5,20 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased]
+## [7.0.0] - 2022-02-02
 
 ### Added
 
-- Macros to mask the sensitive data during message logging.
+- Preprocessor macros for the masking of sensitive data in message logs.
 
 ### Changed
 
 - The data packet and protocol implementation.
+- Update the installation guide.
+
+### Fixed
+
+- Do not clear out the Message flags while building a get-key or registration request.
 
 ## [6.0.0] - 2022-01-05
 
