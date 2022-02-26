@@ -63,10 +63,9 @@ public:
 	unsigned int getIdentifiers(unsigned long long nodes[], unsigned int count,
 			int type);
 	/*
-	 * Returns a 0-terminated list of identifiers read from a file defined
-	 * in the configuration. At most (<count> - 1) identifiers are read.
-	 * Returns the actual number of identifiers transferred into <nodes>
-	 * (excluding the 0-terminator).
+	 * Reads at most <count> identifiers from a file associated with the given
+	 * <section> and <option> in the configuration file. Returns the actual
+	 * number of identifiers transferred into <nodes>.
 	 */
 	unsigned int getIdentifiers(const char *section, const char *option,
 			unsigned long long nodes[], unsigned int count) noexcept;

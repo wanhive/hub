@@ -144,9 +144,6 @@ unsigned int Identity::getIdentifiers(const char *section, const char *option,
 	//Get these boundary conditions out of the way
 	if (!nodes || !count) {
 		return 0;
-	} else if (count == 1) {
-		nodes[0] = 0;
-		return 0;
 	}
 	//--------------------------------------------------------------------------
 	memset(nodes, 0, count * sizeof(unsigned long long));
@@ -163,9 +160,9 @@ unsigned int Identity::getIdentifiers(const char *section, const char *option,
 	}
 	//--------------------------------------------------------------------------
 	unsigned int i = 0;
-	while (i < (count - 1)) {
-		if (fscanf(fp, "%llu", &nodes[i]) == 1 && nodes[i]) {
-			i++;
+	while (i < count) {
+		if (fscanf(fp, "%llu", &nodes[i]) == 1) {
+			++i;
 		} else {
 			break;
 		}
@@ -174,13 +171,12 @@ unsigned int Identity::getIdentifiers(const char *section, const char *option,
 	//--------------------------------------------------------------------------
 	//Apply Fisher–Yates shuffle algorithm
 	MersenneTwister mt(Timer::timeSeed());
-	for (unsigned int x = (i - 1); i && x; --x) {
-		unsigned int j = mt.next() % (x + 1);
-		unsigned long long tmp = nodes[j];
+	for (unsigned int x = 0; x < i; ++x) {
+		auto j = mt.next() % (x + 1);
+		auto tmp = nodes[j];
 		nodes[j] = nodes[x];
 		nodes[x] = tmp;
 	}
-
 	return i;
 }
 
