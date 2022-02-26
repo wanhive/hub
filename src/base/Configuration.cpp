@@ -244,7 +244,7 @@ double Configuration::getDouble(const char *section, const char *option,
 
 bool Configuration::setBoolean(const char *section, const char *option,
 		bool value) noexcept {
-	return setString(section, option, value ? "YES" : "NO");
+	return setString(section, option, WH_BOOLF(value));
 }
 
 bool Configuration::getBoolean(const char *section, const char *option,
@@ -252,11 +252,11 @@ bool Configuration::getBoolean(const char *section, const char *option,
 	auto val = getString(section, option);
 	if (!val) {
 		return defaultValue;
-	} else if (strcasecmp(val, "TRUE") == 0) {
+	} else if (strcasecmp("TRUE", val) == 0) {
 		return true;
-	} else if (strcasecmp(val, "YES") == 0) {
+	} else if (strcasecmp("YES", val) == 0) {
 		return true;
-	} else if (strcasecmp(val, "ON") == 0) {
+	} else if (strcasecmp("ON", val) == 0) {
 		return true;
 	} else {
 		return false;
