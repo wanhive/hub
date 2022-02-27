@@ -107,7 +107,7 @@
  * For secure logging
  */
 #ifndef WH_LOG_SAFE
-#define WH_LOG_SAFE 0
+#define WH_LOG_SAFE 1
 #endif
 
 #if WH_LOG_SAFE
