@@ -5,6 +5,20 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Changed
+
+- ClientHub can connect to a host having the identifier zero(0).
+
+### Fixed
+
+- Both the **Identity::getIdentifiers** methods should have the same external behavior.
+
+### Security
+
+- Protect sensitive data from being exposed in message logs (ClientHub and AuthenticationHub).
+
 ## [7.0.0] - 2022-02-02
 
 ### Added
