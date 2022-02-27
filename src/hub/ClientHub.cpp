@@ -212,7 +212,7 @@ void ClientHub::connectToAuthenticator() noexcept {
 		//-----------------------------------------------------------------
 		//Get the next identifier to probe
 		unsigned long long id;
-		if (!bs.identifiers.get(id) || !id) {
+		if (!bs.identifiers.get(id)) {
 			setStage(WHC_ERROR);
 			throw Exception(EX_RESOURCE);
 		}
@@ -257,7 +257,7 @@ void ClientHub::connectToOverlay() noexcept {
 		//-----------------------------------------------------------------
 		//Get the next identifier to probe
 		unsigned long long id;
-		if (!bs.identifiers.get(id) || !id) {
+		if (!bs.identifiers.get(id)) {
 			setStage(WHC_ERROR);
 			throw Exception(EX_RESOURCE);
 		}
@@ -301,7 +301,7 @@ void ClientHub::findRoot() noexcept {
 	Socket *s = nullptr;
 	auto fresh = false;
 	try {
-		if (!isStage(WHC_ROOT) || !bs.root || !bs.node) {
+		if (!isStage(WHC_ROOT) || !bs.node) {
 			throw Exception(EX_INVALIDSTATE);
 		} else if (bs.root == bs.node->getUid()) {
 			fresh = false;
