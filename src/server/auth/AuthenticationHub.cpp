@@ -54,9 +54,12 @@ void AuthenticationHub::configure(void *arg) {
 			ctx.saltLength = 0;
 		}
 
+		auto mask = conf.getBoolean("OPT", "secureLog", true); //default: true
+
 		WH_LOG_DEBUG(
 				"Authentication hub settings:\nCONNINFO= \"%s\"\nQUERY= \"%s\"\nSALT= \"%s\"\n",
-				ctx.connInfo, ctx.query, ctx.salt);
+				WH_MASK_STR(mask, ctx.connInfo), WH_MASK_STR(mask, ctx.query),
+				WH_MASK_STR(mask, (const char *)ctx.salt));
 	} catch (const BaseException &e) {
 		WH_LOG_EXCEPTION(e);
 		throw;

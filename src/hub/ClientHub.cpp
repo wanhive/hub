@@ -73,9 +73,12 @@ void ClientHub::configure(void *arg) {
 		ctx.timeOut = conf.getNumber("CLIENT", "timeOut", 5000);
 		ctx.retryInterval = conf.getNumber("CLIENT", "retryInterval", 10000);
 
+		auto mask = conf.getBoolean("OPT", "secureLog", true); //default: true
+
 		WH_LOG_DEBUG(
 				"Client hub settings:\nPASSWORD=\"%s\", HASHROUNDS=%u, TIMEOUT=%ums, RETRYINTERVAL=%ums\n",
-				ctx.password, ctx.passwordHashRounds, ctx.timeOut,
+				WH_MASK_STR(mask, (const char *)ctx.password),
+				WH_MASK_VAL(mask, ctx.passwordHashRounds), ctx.timeOut,
 				ctx.retryInterval);
 	} catch (const BaseException &e) {
 		WH_LOG_EXCEPTION(e);
