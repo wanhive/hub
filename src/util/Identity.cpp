@@ -160,12 +160,8 @@ unsigned int Identity::getIdentifiers(const char *section, const char *option,
 	}
 	//--------------------------------------------------------------------------
 	unsigned int i = 0;
-	while (i < count) {
-		if (fscanf(fp, "%llu", &nodes[i]) == 1) {
-			++i;
-		} else {
-			break;
-		}
+	while (i < count && fscanf(fp, "%llu", &nodes[i]) == 1) {
+		++i;
 	}
 	Storage::closeStream(fp);
 	//--------------------------------------------------------------------------
