@@ -10,6 +10,12 @@ AC_CONFIG_HEADERS([src/config.h])
 AC_CONFIG_MACRO_DIRS([m4])
 PKG_INSTALLDIR
 
+# Library version
+# https://www.gnu.org/software/libtool/manual/html_node/Updating-version-info.html
+WH_LIB_VERSION='7:0:0'
+AC_SUBST([WH_LIB_VERSION])
+AC_DEFINE_UNQUOTED([WH_LIB_VERSION], ["${WH_LIB_VERSION}"], ["Library version"])
+
 # Checks for programs.
 AC_PROG_CXX([g++])
 AC_PROG_CC([gcc])
