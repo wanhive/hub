@@ -47,12 +47,14 @@ void OverlayHub::configure(void *arg) {
 		sscanf(netmaskStr, "%llx", &ctx.netMask);
 		ctx.groupId = conf.getNumber("OVERLAY", "groupId");
 
-		if (!Identity::getIdentifiers("BOOTSTRAP", "nodes", ctx.bootstrapNodes,
-				WH_ARRAYLEN(ctx.bootstrapNodes))) {
-			auto n = Identity::getIdentifiers(ctx.bootstrapNodes,
+		auto n = Identity::getIdentifiers("BOOTSTRAP", "nodes",
+				ctx.bootstrapNodes,
+				WH_ARRAYLEN(ctx.bootstrapNodes) - 1);
+		if (!n) {
+			n = Identity::getIdentifiers(ctx.bootstrapNodes,
 			WH_ARRAYLEN(ctx.bootstrapNodes) - 1, Hosts::BOOTSTRAP);
-			ctx.bootstrapNodes[n] = 0;
 		}
+		ctx.bootstrapNodes[n] = 0;
 
 		WH_LOG_DEBUG(
 				"Overlay hub settings: \n" "ENABLE_REGISTRATION=%s, AUTHENTICATE_CLIENTS=%s, CONNECT_TO_OVERLAY=%s,\n" "TABLE_UPDATE_CYCLE=%ums, BLOCKING_IO_TIMEOUT=%ums, RETRY_INTERVAL=%ums,\n" "NETMASK=%s, GROUP_ID=%u\n",
