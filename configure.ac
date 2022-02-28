@@ -14,7 +14,7 @@ PKG_INSTALLDIR
 # https://www.gnu.org/software/libtool/manual/html_node/Updating-version-info.html
 WH_LIB_VERSION='7:0:0'
 AC_SUBST([WH_LIB_VERSION])
-AC_DEFINE_UNQUOTED([WH_LIB_VERSION], ["${WH_LIB_VERSION}"], ["Library version"])
+AC_DEFINE_UNQUOTED([WH_LIB_VERSION], ["${WH_LIB_VERSION}"], [Version number of library])
 
 # Checks for programs.
 AC_PROG_CXX([g++])
