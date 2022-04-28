@@ -43,18 +43,20 @@ public:
 	//=================================================================
 	/**
 	 * Rsa Encryptor and Decryptor
-	 * Following two methods return the size of the output on success, -1 on error
+	 * The following two methods return true on success, false on error
 	 * Use RSA_PKCS1_OAEP_PADDING (EME-OAEP as defined in PKCS #1 v2.0)
 	 * Can be safely called without initialization
 	 */
-	int encrypt(const unsigned char *data, int dataLength,
-			unsigned char *encrypted) const noexcept;
-	int decrypt(const unsigned char *encryptedData, int dataLength,
-			unsigned char *decrypted) const noexcept;
+	bool encrypt(const unsigned char *data, unsigned int dataLength,
+			unsigned char *encrypted,
+			unsigned int *encryptedLength) const noexcept;
+	bool decrypt(const unsigned char *data, unsigned int dataLength,
+			unsigned char *decrypted,
+			unsigned int *decryptedLength) const noexcept;
 	//=================================================================
 	/**
 	 * Rsa signer and verifier
-	 * Following two methods return true on success, false on error
+	 * The following two methods return true on success, false on error
 	 * PKCS #1 v2.0 SHA-1 signer and verifier
 	 * Can be safely called without initialization
 	 */
@@ -75,47 +77,25 @@ public:
 	//=================================================================
 private:
 	//<key> is a NUL-terminated ASCII string, can be nullptr
-	static RSA* create(const char *key, bool isPublicKey,
+	static EVP_PKEY* create(const char *key, bool isPublicKey,
 			char *password) noexcept;
 	//filename can be nullptr (results in noop)
-	static RSA* createFromFile(const char *filename, bool isPublicKey,
+	static EVP_PKEY* createFromFile(const char *filename, bool isPublicKey,
 			char *password) noexcept;
-	static void destroyKey(RSA *rsa) noexcept;
-	//=================================================================
-	/**
-	 * Following four methods return the size of the output (-1 on error)
-	 */
-	static int publicEncrypt(RSA *rsa, const unsigned char *data,
-			int dataLength, unsigned char *encrypted, int padding) noexcept;
-	static int privateDecrypt(RSA *rsa, const unsigned char *encryptedData,
-			int dataLength, unsigned char *decrypted, int padding) noexcept;
-	static int privateEncrypt(RSA *rsa, const unsigned char *data,
-			int dataLength, unsigned char *encrypted, int padding) noexcept;
-	static int publicDecrypt(RSA *rsa, const unsigned char *encryptedData,
-			int dataLength, unsigned char *decrypted, int padding) noexcept;
-	//=================================================================
-	/**
-	 * Following two methods return 1 on success, 0 on failure
-	 */
-	static int signDigest(RSA *rsa, const unsigned char *digest,
-			unsigned int digestLength, unsigned char *signature,
-			unsigned int *signatureLength, int type) noexcept;
-	static int verifyDigest(RSA *rsa, const unsigned char *digest,
-			unsigned int digestLength, unsigned char *signature,
-			unsigned int signatureLength, int type) noexcept;
+	static void destroyKey(EVP_PKEY *rsa) noexcept;
 	//=================================================================
 	/**
 	 * Used for key pair generation
 	 */
-	static RSA* generateRSAKey(int bits) noexcept;
+	static EVP_PKEY* generateRSAKey(int bits) noexcept;
 	static EVP_PKEY* generatePrivateKey(RSA *rsa) noexcept;
 	//If a password is provided and cipher is nullptr then AES256-CBC is used
 	static bool generatePem(const char *filename, EVP_PKEY *pKey,
 			bool isPublicKey, char *password = nullptr,
 			const EVP_CIPHER *cipher = nullptr) noexcept;
 private:
-	RSA *_public;
-	RSA *_private;
+	EVP_PKEY *_public;
+	EVP_PKEY *_private;
 };
 
 } /* namespace wanhive */

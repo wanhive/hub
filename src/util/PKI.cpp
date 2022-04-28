@@ -47,16 +47,18 @@ bool PKI::hasHostKey() const noexcept {
 
 bool PKI::encrypt(const void *block, unsigned int size,
 		PKIEncryptedData *target) const noexcept {
+	unsigned int encLen = ENCRYPTED_LENGTH;
 	return (size <= MAX_PT_LEN)
-			&& (rsa.encrypt((const unsigned char*) block, (int) size,
-					(unsigned char*) target) != -1);
+			&& rsa.encrypt((const unsigned char*) block, size,
+					(unsigned char*) target, &encLen);
 }
 
 bool PKI::decrypt(const PKIEncryptedData *block, void *result,
 		unsigned int *size) const noexcept {
+	auto decLen = MAX_PT_LEN;
 	auto ret = rsa.decrypt((const unsigned char*) block, ENCRYPTED_LENGTH,
-			(unsigned char*) result);
-	if (ret == -1) {
+			(unsigned char*) result, &decLen);
+	if (!ret) {
 		return false;
 	} else if (size) {
 		*size = ret;
@@ -68,7 +70,7 @@ bool PKI::decrypt(const PKIEncryptedData *block, void *result,
 
 bool PKI::sign(const void *block, unsigned int size,
 		Signature *sig) const noexcept {
-	unsigned int sigLen = 0;
+	unsigned int sigLen = SIGNATURE_LENGTH;
 	return rsa.sign((const unsigned char*) block, size, (unsigned char*) sig,
 			&sigLen) && (sigLen == SIGNATURE_LENGTH);
 }

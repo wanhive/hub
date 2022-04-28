@@ -21,7 +21,7 @@
 namespace wanhive {
 
 Rsa::Rsa() noexcept :
-		_public(nullptr), _private(nullptr) {
+		_public { }, _private { } {
 
 }
 
@@ -81,22 +81,68 @@ bool Rsa::hasPublicKey() const noexcept {
 	return _public != nullptr;
 }
 
-int Rsa::encrypt(const unsigned char *data, int dataLength,
-		unsigned char *encrypted) const noexcept {
-	if (_public) {
-		return publicEncrypt(_public, data, dataLength, encrypted,
-		RSA_PKCS1_OAEP_PADDING);
+bool Rsa::encrypt(const unsigned char *data, unsigned int dataLength,
+		unsigned char *encrypted, unsigned int *encryptedLength) const noexcept {
+	if (_public && (!dataLength || data) && encryptedLength) {
+		auto ctx = EVP_PKEY_CTX_new(_public, nullptr);
+		if (!ctx) {
+			return false;
+		}
+
+		if (EVP_PKEY_encrypt_init(ctx) <= 0) {
+			EVP_PKEY_CTX_free(ctx);
+			return false;
+		}
+
+		if (EVP_PKEY_CTX_set_rsa_padding(ctx, RSA_PKCS1_OAEP_PADDING) <= 0) {
+			EVP_PKEY_CTX_free(ctx);
+			return false;
+		}
+
+		size_t len = *encryptedLength;
+		if (EVP_PKEY_encrypt(ctx, encrypted, &len, data, dataLength) <= 0) {
+			EVP_PKEY_CTX_free(ctx);
+			return false;
+		}
+
+		*encryptedLength = len;
+
+		EVP_PKEY_CTX_free(ctx);
+		return true;
 	} else {
-		return -1;
+		return false;
 	}
 
 }
 
-int Rsa::decrypt(const unsigned char *encryptedData, int dataLength,
-		unsigned char *decrypted) const noexcept {
-	if (_private) {
-		return privateDecrypt(_private, encryptedData, dataLength, decrypted,
-		RSA_PKCS1_OAEP_PADDING);
+bool Rsa::decrypt(const unsigned char *data, unsigned int dataLength,
+		unsigned char *decrypted, unsigned int *decryptedLength) const noexcept {
+	if (_private && (!dataLength || data) && decryptedLength) {
+		auto ctx = EVP_PKEY_CTX_new(_public, nullptr);
+		if (!ctx) {
+			return -1;
+		}
+
+		if (EVP_PKEY_decrypt_init(ctx) <= 0) {
+			EVP_PKEY_CTX_free(ctx);
+			return -1;
+		}
+
+		if (EVP_PKEY_CTX_set_rsa_padding(ctx, RSA_PKCS1_OAEP_PADDING) <= 0) {
+			EVP_PKEY_CTX_free(ctx);
+			return -1;
+		}
+
+		size_t len = *decryptedLength;
+		if (EVP_PKEY_decrypt(ctx, decrypted, &len, data, dataLength) <= 0) {
+			EVP_PKEY_CTX_free(ctx);
+			return -1;
+		}
+
+		*decryptedLength = len;
+
+		EVP_PKEY_CTX_free(ctx);
+		return true;
 	} else {
 		return -1;
 	}
@@ -104,26 +150,86 @@ int Rsa::decrypt(const unsigned char *encryptedData, int dataLength,
 
 bool Rsa::sign(const unsigned char *data, unsigned int dataLength,
 		unsigned char *signature, unsigned int *signatureLength) const noexcept {
-	if (_private) {
+	if (_private && (!dataLength || data) && signatureLength) {
 		unsigned char md[SHA_DIGEST_LENGTH];
-		unsigned int len;
-		return SHA1(data, dataLength, (unsigned char*) md)
-				&& signDigest(_private, md, SHA_DIGEST_LENGTH, signature,
-						signatureLength ? signatureLength : &len, NID_sha1);
+		unsigned int mdLength = 0;
+		auto type = EVP_sha1();
+
+		if (EVP_Digest(data, dataLength, md, &mdLength, type, nullptr) <= 0) {
+			return false;
+		}
+
+		auto ctx = EVP_PKEY_CTX_new(_private, nullptr);
+		if (!ctx) {
+			return false;
+		}
+
+		if (EVP_PKEY_sign_init(ctx) <= 0) {
+			EVP_PKEY_CTX_free(ctx);
+			return false;
+		}
+
+		if (EVP_PKEY_CTX_set_rsa_padding(ctx, RSA_PKCS1_PADDING) <= 0) {
+			EVP_PKEY_CTX_free(ctx);
+			return false;
+		}
+
+		if (EVP_PKEY_CTX_set_signature_md(ctx, type) <= 0) {
+			EVP_PKEY_CTX_free(ctx);
+			return false;
+		}
+
+		size_t len = *signatureLength;
+		if (EVP_PKEY_sign(ctx, signature, &len, md, mdLength) <= 0) {
+			EVP_PKEY_CTX_free(ctx);
+			return false;
+		}
+
+		*signatureLength = len;
+
+		EVP_PKEY_CTX_free(ctx);
+		return true;
 	} else {
 		return false;
 	}
-
 }
 
 bool Rsa::verify(const unsigned char *data, unsigned int dataLength,
 		unsigned char *signature, unsigned int signatureLength) const noexcept {
-	if (_public) {
+	if (_public && (!dataLength || data) && signature) {
 		unsigned char md[SHA_DIGEST_LENGTH];
-		memset(&md, 0, sizeof(md));
-		return SHA1(data, dataLength, (unsigned char*) md)
-				&& verifyDigest(_public, md, SHA_DIGEST_LENGTH, signature,
-						signatureLength, NID_sha1);
+		unsigned int mdLength = 0;
+		auto type = EVP_sha1();
+
+		if (EVP_Digest(data, dataLength, md, &mdLength, type, nullptr) <= 0) {
+			return false;
+		}
+
+		auto ctx = EVP_PKEY_CTX_new(_public, nullptr);
+		if (!ctx) {
+			return false;
+		}
+
+		if (EVP_PKEY_verify_init(ctx) <= 0) {
+			EVP_PKEY_CTX_free(ctx);
+			return false;
+		}
+
+		if (EVP_PKEY_CTX_set_rsa_padding(ctx, RSA_PKCS1_PADDING) <= 0) {
+			EVP_PKEY_CTX_free(ctx);
+			return false;
+		}
+
+		if (EVP_PKEY_CTX_set_signature_md(ctx, type) <= 0) {
+			EVP_PKEY_CTX_free(ctx);
+			return false;
+		}
+
+		auto ret = EVP_PKEY_verify(ctx, signature, signatureLength, md,
+				mdLength);
+
+		EVP_PKEY_CTX_free(ctx);
+		return (ret > 0);
 	} else {
 		return false;
 	}
@@ -135,47 +241,40 @@ bool Rsa::generateKeyPair(const char *privateKeyFile, const char *publicKeyFile,
 		return false;
 	}
 
-	auto pRSA = generateRSAKey(bits);
-	if (!pRSA) {
+	auto rsa = generateRSAKey(bits);
+	if (!rsa) {
 		return false;
 	}
 
-	auto pPrivKey = generatePrivateKey(pRSA);
-	auto status = false;
-	if (pPrivKey) {
-		status = generatePem(privateKeyFile, pPrivKey, false, password, nullptr)
-				&& generatePem(publicKeyFile, pPrivKey, true, nullptr, nullptr);
-	} else {
-		RSA_free(pRSA);
-	}
-
-	//Will clean up pRSA as well
-	EVP_PKEY_free(pPrivKey);
+	auto status = generatePem(privateKeyFile, rsa, false, password, nullptr)
+			&& generatePem(publicKeyFile, rsa, true, nullptr, nullptr);
+	EVP_PKEY_free(rsa);
 	return status;
 }
 
-RSA* Rsa::create(const char *key, bool isPublicKey, char *password) noexcept {
+EVP_PKEY* Rsa::create(const char *key, bool isPublicKey,
+		char *password) noexcept {
 	if (!key) {
 		return nullptr;
 	}
 
 	auto keybio = BIO_new_mem_buf(key, -1);
 	if (keybio == nullptr) {
-		return 0;
+		return nullptr;
 	}
 
-	RSA *rsa = nullptr;
+	EVP_PKEY *rsa = nullptr;
 	if (isPublicKey) {
-		rsa = PEM_read_bio_RSA_PUBKEY(keybio, nullptr, nullptr, nullptr);
+		rsa = PEM_read_bio_PUBKEY(keybio, nullptr, nullptr, nullptr);
 	} else {
-		rsa = PEM_read_bio_RSAPrivateKey(keybio, nullptr, 0, password);
+		rsa = PEM_read_bio_PrivateKey(keybio, nullptr, 0, password);
 	}
 
 	BIO_free_all(keybio);
 	return rsa;
 }
 
-RSA* Rsa::createFromFile(const char *filename, bool isPublicKey,
+EVP_PKEY* Rsa::createFromFile(const char *filename, bool isPublicKey,
 		char *password) noexcept {
 	if (Storage::testFile(filename) != 1) {
 		return nullptr;
@@ -187,74 +286,23 @@ RSA* Rsa::createFromFile(const char *filename, bool isPublicKey,
 		return nullptr;
 	}
 
-	RSA *rsa = nullptr;
+	EVP_PKEY *rsa = nullptr;
 	if (isPublicKey) {
-		rsa = PEM_read_RSA_PUBKEY(fp, nullptr, nullptr, nullptr);
+		rsa = PEM_read_PUBKEY(fp, nullptr, nullptr, nullptr);
 	} else {
-		rsa = PEM_read_RSAPrivateKey(fp, nullptr, 0, password);
+		rsa = PEM_read_PrivateKey(fp, nullptr, 0, password);
 	}
 
 	Storage::closeStream(fp);
 	return rsa;
 }
 
-void Rsa::destroyKey(RSA *rsa) noexcept {
-	RSA_free(rsa);
+void Rsa::destroyKey(EVP_PKEY *rsa) noexcept {
+	EVP_PKEY_free(rsa);
 }
 
-int Rsa::publicEncrypt(RSA *rsa, const unsigned char *data, int dataLength,
-		unsigned char *encrypted, int padding) noexcept {
-	return RSA_public_encrypt(dataLength, data, encrypted, rsa, padding);
-}
-
-int Rsa::privateDecrypt(RSA *rsa, const unsigned char *encryptedData,
-		int dataLength, unsigned char *decrypted, int padding) noexcept {
-	return RSA_private_decrypt(dataLength, encryptedData, decrypted, rsa,
-			padding);
-}
-
-int Rsa::privateEncrypt(RSA *rsa, const unsigned char *data, int dataLength,
-		unsigned char *encrypted, int padding) noexcept {
-	return RSA_private_encrypt(dataLength, data, encrypted, rsa, padding);
-}
-
-int Rsa::publicDecrypt(RSA *rsa, const unsigned char *encryptedData,
-		int dataLength, unsigned char *decrypted, int padding) noexcept {
-	return RSA_public_decrypt(dataLength, encryptedData, decrypted, rsa,
-			padding);
-}
-
-int Rsa::signDigest(RSA *rsa, const unsigned char *digest,
-		unsigned int digestLength, unsigned char *signature,
-		unsigned int *signatureLength, int type) noexcept {
-	return RSA_sign(type, digest, digestLength, signature, signatureLength, rsa);
-}
-
-int Rsa::verifyDigest(RSA *rsa, const unsigned char *digest,
-		unsigned int digestLength, unsigned char *signature,
-		unsigned int signatureLength, int type) noexcept {
-	return RSA_verify(type, digest, digestLength, signature, signatureLength,
-			rsa);
-}
-
-RSA* Rsa::generateRSAKey(int bits) noexcept {
-	auto bigNumber = BN_new();
-	if (!bigNumber || !BN_set_word(bigNumber, RSA_F4)) {
-		BN_clear_free(bigNumber);
-		return nullptr;
-	}
-
-	auto rsa = RSA_new();
-	if (!rsa || !RSA_generate_key_ex(rsa, bits, bigNumber, nullptr)
-			|| !RSA_check_key(rsa)) {
-		RSA_free(rsa);
-		BN_clear_free(bigNumber);
-		return nullptr;
-	}
-
-	//Clean-up and return the RSA structure
-	BN_clear_free(bigNumber);
-	return rsa;
+EVP_PKEY* Rsa::generateRSAKey(int bits) noexcept {
+	return EVP_RSA_gen(bits);
 }
 
 EVP_PKEY* Rsa::generatePrivateKey(RSA *rsa) noexcept {
