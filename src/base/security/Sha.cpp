@@ -16,72 +16,64 @@
 namespace wanhive {
 
 Sha::Sha(DigestType type) noexcept :
-		type(type), _length(length(type)) {
+		type { type }, _length { length(type) }, ctx { } {
+
 }
 
 Sha::~Sha() {
-
+	EVP_MD_CTX_free(ctx);
 }
 
 bool Sha::init() noexcept {
-	switch (type) {
-	case WH_SHA1:
-		return SHA1_Init(&ctx.sha);
-	case WH_SHA256:
-		return SHA256_Init(&ctx.sha256);
-	case WH_SHA512:
-		return SHA512_Init(&ctx.sha512);
-	default:
-		return false;
+	if (!ctx) {
+		return initContext();
+	} else {
+		return EVP_DigestInit_ex(ctx, nullptr, nullptr);
 	}
 }
 
 bool Sha::update(const void *data, size_t dataLength) noexcept {
-	switch (type) {
-	case WH_SHA1:
-		return SHA1_Update(&ctx.sha, data, dataLength);
-	case WH_SHA256:
-		return SHA256_Update(&ctx.sha256, data, dataLength);
-	case WH_SHA512:
-		return SHA512_Update(&ctx.sha512, data, dataLength);
-	default:
+	if (ctx) {
+		return EVP_DigestUpdate(ctx, data, dataLength);
+	} else {
 		return false;
 	}
 }
 
-bool Sha::final(unsigned char *messageDigest) noexcept {
-	switch (type) {
-	case WH_SHA1:
-		return SHA1_Final(messageDigest, &ctx.sha);
-	case WH_SHA256:
-		return SHA256_Final(messageDigest, &ctx.sha256);
-	case WH_SHA512:
-		return SHA512_Final(messageDigest, &ctx.sha512);
-	default:
+bool Sha::final(unsigned char *messageDigest, unsigned int *size) noexcept {
+	if (ctx) {
+		return EVP_DigestFinal_ex(ctx, messageDigest, size);
+	} else {
 		return false;
 	}
 }
 
-unsigned char* Sha::create(const unsigned char *data, size_t dataLength,
-		unsigned char *messageDigest) noexcept {
+bool Sha::create(const unsigned char *data, size_t dataLength,
+		unsigned char *messageDigest, unsigned int *size) noexcept {
+	const EVP_MD *md { };
 	switch (type) {
 	case WH_SHA1:
-		return SHA1(data, dataLength, messageDigest);
+		md = EVP_sha1();
+		break;
 	case WH_SHA256:
-		return SHA256(data, dataLength, messageDigest);
+		md = EVP_sha256();
+		break;
 	case WH_SHA512:
-		return SHA512(data, dataLength, messageDigest);
+		md = EVP_sha512();
+		break;
 	default:
-		return nullptr;
+		break;
 	}
+
+	return EVP_Digest(data, dataLength, messageDigest, size, md, nullptr);
 }
 
 bool Sha::verify(const unsigned char *data, size_t dataLength,
 		const unsigned char *messageDigest) noexcept {
 	if (data && dataLength && messageDigest) {
-		unsigned char md[SHA512_DIGEST_LENGTH];
-		create(data, dataLength, md);
-		return (memcmp(md, messageDigest, length()) == 0);
+		unsigned char md[EVP_MAX_MD_SIZE];
+		return create(data, dataLength, md)
+				&& (memcmp(md, messageDigest, length()) == 0);
 	} else {
 		return false;
 	}
@@ -89,6 +81,23 @@ bool Sha::verify(const unsigned char *data, size_t dataLength,
 
 unsigned int Sha::length() const noexcept {
 	return _length;
+}
+
+bool Sha::initContext() noexcept {
+	if (!ctx) {
+		ctx = EVP_MD_CTX_new();
+	}
+
+	switch (type) {
+	case WH_SHA1:
+		return EVP_DigestInit(ctx, EVP_sha1());
+	case WH_SHA256:
+		return EVP_DigestInit(ctx, EVP_sha256());
+	case WH_SHA512:
+		return EVP_DigestInit(ctx, EVP_sha512());
+	default:
+		return false;
+	}
 }
 
 } /* namespace wanhive */
