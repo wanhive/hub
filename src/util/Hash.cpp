@@ -22,8 +22,8 @@ Hash::Hash() noexcept :
 Hash::~Hash() {
 }
 
-void Hash::create(const void *block, unsigned int size, Digest *digest) noexcept {
-	sha.create((const unsigned char*) block, size, (unsigned char*) digest);
+bool Hash::create(const void *block, unsigned int size, Digest *digest) noexcept {
+	return sha.create((const unsigned char*) block, size, (unsigned char*) digest);
 }
 
 bool Hash::verify(const Digest *digest, const void *block,

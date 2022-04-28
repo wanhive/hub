@@ -34,7 +34,7 @@ public:
 	 * None of the two functions must throw exception
 	 */
 	//Generate message <digest> for a <block> of the given <size>
-	void create(const void *block, unsigned int size, Digest *digest) noexcept;
+	bool create(const void *block, unsigned int size, Digest *digest) noexcept;
 	//Verify message <digest> of a <block> of the given <size>
 	bool verify(const Digest *digest, const void *block,
 			unsigned int size) noexcept;
