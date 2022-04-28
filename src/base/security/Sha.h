@@ -54,11 +54,11 @@ public:
 		}
 	}
 private:
-	bool initContext() noexcept;
+	const EVP_MD* selectType() const noexcept;
 private:
+	EVP_MD_CTX *ctx;
 	const DigestType type;
 	const unsigned int _length; //Digest length in bytes
-	EVP_MD_CTX *ctx;
 };
 
 } /* namespace wanhive */
