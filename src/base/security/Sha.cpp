@@ -26,15 +26,16 @@ Sha::~Sha() {
 
 bool Sha::init() noexcept {
 	if (!ctx) {
-		return (ctx = EVP_MD_CTX_new()) && EVP_DigestInit(ctx, selectType());
+		return (ctx = EVP_MD_CTX_new())
+				&& (EVP_DigestInit(ctx, selectType()) > 0);
 	} else {
-		return EVP_DigestInit_ex(ctx, nullptr, nullptr);
+		return (EVP_DigestInit_ex(ctx, nullptr, nullptr) > 0);
 	}
 }
 
 bool Sha::update(const void *data, size_t dataLength) noexcept {
 	if (ctx && (!dataLength || data)) {
-		return EVP_DigestUpdate(ctx, data, dataLength);
+		return (EVP_DigestUpdate(ctx, data, dataLength) > 0);
 	} else {
 		return false;
 	}
@@ -42,7 +43,7 @@ bool Sha::update(const void *data, size_t dataLength) noexcept {
 
 bool Sha::final(unsigned char *messageDigest, unsigned int *size) noexcept {
 	if (ctx && messageDigest) {
-		return EVP_DigestFinal_ex(ctx, messageDigest, size);
+		return (EVP_DigestFinal_ex(ctx, messageDigest, size) > 0);
 	} else {
 		return false;
 	}
@@ -51,8 +52,8 @@ bool Sha::final(unsigned char *messageDigest, unsigned int *size) noexcept {
 bool Sha::create(const unsigned char *data, size_t dataLength,
 		unsigned char *messageDigest, unsigned int *size) noexcept {
 	if (!dataLength || (data && messageDigest)) {
-		return EVP_Digest(data, dataLength, messageDigest, size, selectType(),
-				nullptr);
+		return (EVP_Digest(data, dataLength, messageDigest, size, selectType(),
+				nullptr) > 0);
 	} else {
 		return false;
 	}
