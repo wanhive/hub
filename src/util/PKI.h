@@ -59,7 +59,7 @@ public:
 	bool encrypt(const void *block, unsigned int size,
 			PKIEncryptedData *target) const noexcept;
 	/*
-	 * <result>'s capacity should be at least MAX_PT_LEN bytes.
+	 * <result>'s capacity should be at least ENCODING_LENGTH bytes.
 	 * If <size> is not nullptr and decryption is successful then
 	 * the output length is returned in <size>. Returns true on
 	 * success, false on failure.

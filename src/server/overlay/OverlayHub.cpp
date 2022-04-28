@@ -949,7 +949,7 @@ int OverlayHub::handleGetKeyRequest(Message *msg) noexcept {
 			&& msg->getPayloadLength() == PKI::ENCRYPTED_LENGTH && verifyHost()
 			&& getPKI()) {
 		//Extract the challenge key
-		unsigned char challenge[PKI::MAX_PT_LEN]; //Challenge
+		unsigned char challenge[PKI::ENCODING_LENGTH]; //Challenge
 		memset(&challenge, 0, sizeof(challenge));
 		getPKI()->decrypt((const PKIEncryptedData*) msg->getBytes(0),
 				&challenge);

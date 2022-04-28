@@ -55,13 +55,13 @@ bool PKI::encrypt(const void *block, unsigned int size,
 
 bool PKI::decrypt(const PKIEncryptedData *block, void *result,
 		unsigned int *size) const noexcept {
-	auto decLen = MAX_PT_LEN;
+	unsigned int decLen = ENCODING_LENGTH;
 	auto ret = rsa.decrypt((const unsigned char*) block, ENCRYPTED_LENGTH,
 			(unsigned char*) result, &decLen);
 	if (!ret) {
 		return false;
 	} else if (size) {
-		*size = ret;
+		*size = decLen;
 		return true;
 	} else {
 		return true;

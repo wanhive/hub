@@ -118,25 +118,25 @@ bool Rsa::encrypt(const unsigned char *data, unsigned int dataLength,
 bool Rsa::decrypt(const unsigned char *data, unsigned int dataLength,
 		unsigned char *decrypted, unsigned int *decryptedLength) const noexcept {
 	if (_private && (!dataLength || data) && decryptedLength) {
-		auto ctx = EVP_PKEY_CTX_new(_public, nullptr);
+		auto ctx = EVP_PKEY_CTX_new(_private, nullptr);
 		if (!ctx) {
-			return -1;
+			return false;
 		}
 
 		if (EVP_PKEY_decrypt_init(ctx) <= 0) {
 			EVP_PKEY_CTX_free(ctx);
-			return -1;
+			return false;
 		}
 
 		if (EVP_PKEY_CTX_set_rsa_padding(ctx, RSA_PKCS1_OAEP_PADDING) <= 0) {
 			EVP_PKEY_CTX_free(ctx);
-			return -1;
+			return false;
 		}
 
 		size_t len = *decryptedLength;
 		if (EVP_PKEY_decrypt(ctx, decrypted, &len, data, dataLength) <= 0) {
 			EVP_PKEY_CTX_free(ctx);
-			return -1;
+			return false;
 		}
 
 		*decryptedLength = len;
@@ -144,7 +144,7 @@ bool Rsa::decrypt(const unsigned char *data, unsigned int dataLength,
 		EVP_PKEY_CTX_free(ctx);
 		return true;
 	} else {
-		return -1;
+		return false;
 	}
 }
 
