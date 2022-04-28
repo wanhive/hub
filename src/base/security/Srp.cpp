@@ -1032,7 +1032,7 @@ bool Srp::BigNumber::random(int bits, int top, int bottom) noexcept {
 bool Srp::BigNumber::pseudoRandom(const BIGNUM *range) noexcept {
 	if (!n && !(n = BN_new())) {
 		return false;
-	} else if (!BN_pseudo_rand_range(n, range)) {
+	} else if (!BN_rand_range(n, range)) {
 		clear();
 		return false;
 	} else {
