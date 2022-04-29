@@ -13,6 +13,7 @@
 #ifndef WH_BASE_SECURITY_SHA_H_
 #define WH_BASE_SECURITY_SHA_H_
 #include <openssl/evp.h>
+#include <openssl/sha.h>
 
 namespace wanhive {
 //-----------------------------------------------------------------
@@ -46,11 +47,11 @@ public:
 	static constexpr unsigned int length(DigestType type) noexcept {
 		switch (type) {
 		case WH_SHA1:
-			return 20;
+			return SHA_DIGEST_LENGTH;
 		case WH_SHA256:
-			return 32;
+			return SHA256_DIGEST_LENGTH;
 		default:
-			return 64;
+			return SHA512_DIGEST_LENGTH;
 		}
 	}
 private:
