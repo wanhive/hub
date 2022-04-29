@@ -27,7 +27,7 @@ LT_INIT
 AC_CHECK_LIB([crypto], [BN_clear_free],,[AC_MSG_ERROR([libcrypto required for cryptographic routines not found.])])
 AC_CHECK_LIB([pthread], [pthread_create],,[AC_MSG_ERROR([libpthread required for posix thread not found.])])
 AC_CHECK_LIB([sqlite3], [sqlite3_open_v2],,[AC_MSG_ERROR([libsqlite3 required for embedded database not found.])])
-AC_CHECK_LIB([ssl], [OPENSSL_init_ssl],,[AC_MSG_ERROR([libssl required for secure socket not found.])])
+AC_CHECK_LIB([ssl], [EVP_PKEY_is_a],,[AC_MSG_ERROR([libssl required for secure socket not found.])])
 
 # Checks for header files.
 AC_CHECK_HEADERS([arpa/inet.h fcntl.h netdb.h sys/file.h sys/time.h syslog.h unistd.h endian.h pthread.h openssl/ssl.h sqlite3.h sys/epoll.h],,
