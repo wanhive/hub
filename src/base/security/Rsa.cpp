@@ -270,6 +270,11 @@ EVP_PKEY* Rsa::create(const char *key, bool isPublicKey,
 		rsa = PEM_read_bio_PrivateKey(keybio, nullptr, 0, password);
 	}
 
+	if (rsa && EVP_PKEY_is_a(rsa, "RSA") != 1) {
+		EVP_PKEY_free(rsa);
+		rsa = nullptr;
+	}
+
 	BIO_free_all(keybio);
 	return rsa;
 }
@@ -291,6 +296,11 @@ EVP_PKEY* Rsa::createFromFile(const char *filename, bool isPublicKey,
 		rsa = PEM_read_PUBKEY(fp, nullptr, nullptr, nullptr);
 	} else {
 		rsa = PEM_read_PrivateKey(fp, nullptr, 0, password);
+	}
+
+	if (rsa && EVP_PKEY_is_a(rsa, "RSA") != 1) {
+		EVP_PKEY_free(rsa);
+		rsa = nullptr;
 	}
 
 	Storage::closeStream(fp);
