@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+- **CircularBuffer::setStatus** and **StaticCircularBuffer::setStatus** methods compile correctly.
+
 ### Security
 
 - Upgrade to the OpenSSL version 3.0 (the new LTS version).
