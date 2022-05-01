@@ -20,7 +20,7 @@ AC_DEFINE_UNQUOTED([WH_LIB_VERSION], ["${WH_LIB_VERSION}"], [Version number of l
 AC_PROG_CXX([g++])
 AC_PROG_CC([gcc])
 ## https://www.gnu.org/software/autoconf-archive/ax_cxx_compile_stdcxx.html
-AX_CXX_COMPILE_STDCXX(14, [noext], [mandatory])
+AX_CXX_COMPILE_STDCXX(17, [noext], [mandatory])
 
 # Checks for libraries.
 LT_INIT

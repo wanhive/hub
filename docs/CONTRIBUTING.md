@@ -19,7 +19,7 @@ You agree to license your "original work" under a compatible permissive license.
 
 # General requirements
 
-* Language standards: C++14
+* Language standards: C++17
 * Format the code in the K&R style.
 * Prioritize readability and clarity over the running time.
 * Create routines that are just sufficient.
@@ -30,7 +30,7 @@ You agree to license your "original work" under a compatible permissive license.
 * Allow only wanhive::BaseException and it's derived classes to propagate. Catch all the other exceptions on the spot.
 * Do not abuse exception handling, C-style error handling may work just fine.
 * Use sqlite3 for embedded databases.
-* Use OpenSSL for cryptographic support.
+* Use OpenSSL for cryptographic operations.
 
 # Naming convention
 

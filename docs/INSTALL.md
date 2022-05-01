@@ -1,9 +1,9 @@
 # Requirements
 
 * Supported CPU architectures: X86, X86-64, ARM (32 and 64 bit)
-* Operating systems: GNU/Linux (Linux kernel version 4.x or higher)
-* C/C++ compilers: GCC version 6.1 or higher (7.x or higher recommended)
-* Programming languages: C++ 14
+* Operating systems: GNU/Linux (Linux kernel version 5.x or higher)
+* C/C++ compilers: GCC version 8 or higher (11 or higher recommended)
+* Programming languages: C++17
 * Shared libraries
     * pthread
     * sqlite3
