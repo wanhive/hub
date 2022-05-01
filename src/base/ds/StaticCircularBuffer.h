@@ -103,7 +103,7 @@ public:
 	}
 	void setStatus(int status) noexcept {
 		if (ATOMIC) {
-			Atomic<int>::store(this->*status, status);
+			Atomic<int>::store(&this->status, status);
 		} else {
 			this->status = status;
 		}
