@@ -12,8 +12,6 @@
 
 #ifndef WH_BASE_DS_FUNCTORS_H_
 #define WH_BASE_DS_FUNCTORS_H_
-#include <climits>
-#include <cstdint>
 #include <cstring>
 
 namespace wanhive {
@@ -31,11 +29,11 @@ struct wh_hash_fn {
 	}
 
 	unsigned int operator()(unsigned long key) const noexcept {
-#if (ULONG_MAX > UINT32_MAX)
-		return operator()((unsigned long long) key);
-#else
-		return static_cast<unsigned int>(key);
-#endif
+		if constexpr (sizeof(unsigned long) > 4) {
+			return static_cast<unsigned int>((key) >> 33 ^ (key) ^ (key) << 11);
+		} else {
+			return key; //Just return the key
+		}
 	}
 
 	unsigned int operator()(unsigned long long key) const noexcept {
