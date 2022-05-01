@@ -1,7 +1,7 @@
 /*
  * Logger.cpp
  *
- * Log management
+ * Logging utility
  *
  *
  * Copyright (C) 2018 Amit Kumar (amitkriit@gmail.com)

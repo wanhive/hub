@@ -1,7 +1,7 @@
 /*
  * Logger.h
  *
- * Log management
+ * Logging utility
  *
  *
  * Copyright (C) 2018 Amit Kumar (amitkriit@gmail.com)
@@ -15,10 +15,6 @@
 #include "defines.h"
 
 namespace wanhive {
-/**
- * Application logger
- * Thread safe
- */
 
 enum LogLevel : unsigned char {
 	WH_LOGLEVEL_EMERGENCY,
@@ -35,6 +31,10 @@ enum LogTarget : unsigned char {
 	WH_LOG_STDERR, WH_LOG_SYS
 };
 
+/**
+ * Thread-safe logging utility for sending application-generated logs
+ * to syslog or stderr.
+ */
 class Logger {
 public:
 	Logger() noexcept;
