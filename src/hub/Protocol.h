@@ -20,7 +20,7 @@ namespace wanhive {
  * Expects blocking socket connection
  * Thread safe at class level
  */
-class Protocol: protected Endpoint {
+class Protocol: protected Endpoint, protected FlowControl {
 public:
 	Protocol() noexcept;
 	~Protocol();

@@ -1,7 +1,7 @@
 /*
  * Endpoint.cpp
  *
- * Basic routines for protocol implementation
+ * Request-response pattern implementation
  *
  *
  * Copyright (C) 2018 Amit Kumar (amitkriit@gmail.com)

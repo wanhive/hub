@@ -1,7 +1,7 @@
 /*
  * Hosts.cpp
  *
- * Database of Wanhive hosts
+ * The hosts database
  *
  *
  * Copyright (C) 2018 Amit Kumar (amitkriit@gmail.com)

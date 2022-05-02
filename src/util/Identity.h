@@ -20,45 +20,110 @@
 
 namespace wanhive {
 /**
- * Hub configuration, database and security keys
+ * Hub configuration, database and keys manager
  * Thread safe at class level
  */
 class Identity {
 public:
-	/*
-	 * If the <path> is nullptr then the initialization routine will attempt
-	 * to load the configuration file from a set of predefined paths.
+	/**
+	 * Constructor: call Identity::initialize() explicitly to perform complete
+	 * initialization.
+	 *
+	 * @param path pathname of the configuration file. Can be nullptr in which
+	 * case the initialization routine will attempt to load the configuration
+	 * file from a set of predefined paths.
 	 */
 	Identity(const char *path = nullptr) noexcept;
+
+	/**
+	 * Destructor
+	 */
 	~Identity();
 
-	//Initialize the object
+	/**
+	 * Initializes the object after performing any necessary cleanup (if the
+	 * object was initialized previously).
+	 */
 	void initialize();
+
+	/**
+	 * Returns the configuration data.
+	 *
+	 * @return a configuration data object
+	 */
 	const Configuration& getConfiguration() const noexcept;
+
+	/**
+	 * Returns the asymmetric cryptography facility
+	 *
+	 * @return pointer to the PKI object that implements the asymmetric
+	 * encryption algorithm
+	 */
 	const PKI* getPKI() const noexcept;
+
+	/**
+	 * Checks if the host verification is enabled.
+	 *
+	 * @return true is host verification is enabled, false otherwise
+	 */
 	bool verifyHost() const noexcept;
+
+	/**
+	 * Returns the context for SSL/TLS connections.
+	 *
+	 * @return pointer to the SSL/TLS context
+	 */
 	SSLContext* getSSLContext() noexcept;
+
+	/**
+	 * Checks if SSL/TLS is enabled.
+	 *
+	 * @return true if SSL/TLS is enabled, false otherwise
+	 */
 	bool allowSSL() const noexcept;
 	//-----------------------------------------------------------------
 	/**
-	 * For prevention of replay attacks during authentication
+	 * Generates cryptographically secure nonce to prevent replay attacks during
+	 * authentication.
+	 *
+	 * @param hash an object providing the hash algorithm
+	 * @param salt the salt
+	 * @param id the identifier (salt, id) pair should be unique
+	 * @param nonce the object for storing the result (nonce)
+	 * @return true if a nonce was successfully generated, false otherwise
 	 */
-	//Generate cryptographically secure nonce
 	bool generateNonce(Hash &hash, uint64_t salt, uint64_t id,
 			Digest *nonce) const noexcept;
-	//Verify a nonce during mutual authentication
+
+	/**
+	 * Verifies a nonce during mutual authentication
+	 *
+	 * @param hash an object providing the hash algorithm
+	 * @param salt the salt
+	 * @param id the identifier
+	 * @param nonce the nonce to verify
+	 * @return true on successful verification, false otherwise
+	 */
 	bool verifyNonce(Hash &hash, uint64_t salt, uint64_t id,
 			const Digest *nonce) const noexcept;
 	//-----------------------------------------------------------------
 	/**
-	 * Hosts management
+	 * Hosts management: returns the network address associated with the given
+	 * host identifier.
+	 *
+	 * @param uid the host identifier
+	 * @param ni object for storing the result
 	 */
-	//Returns network address of the host <uid> into <ni>
 	void getAddress(uint64_t uid, NameInfo &ni);
-	/*
-	 * Returns a randomized list of identifiers of the given <type> from the
-	 * hosts database. At most <count> identifiers are read. Returns the actual
-	 * number of identifiers transferred into <nodes>.
+
+	/**
+	 * Returns a randomized list of host identifiers of a given type from the
+	 * hosts database.
+	 *
+	 * @param nodes array for storing the output (list of identifiers)
+	 * @param count capacity of the output array
+	 * @param type the host type
+	 * @return the actual number of identifiers stored in the array
 	 */
 	unsigned int getIdentifiers(unsigned long long nodes[], unsigned int count,
 			int type);
@@ -67,34 +132,130 @@ public:
 	 * <section> and <option> in the configuration file. Returns the actual
 	 * number of identifiers transferred into <nodes>.
 	 */
+
+	/**
+	 * Reads a list host identifiers from a file.
+	 *
+	 * @param section the section name in the configuration file
+	 * @param option the option name in the configuration file to be used for
+	 * pathname resolution of the input file.
+	 * @param nodes array for storing the output (list of identifiers)
+	 * @param count capacity of the output array
+	 * @return the actual number of identifiers stored in the array
+	 */
 	unsigned int getIdentifiers(const char *section, const char *option,
 			unsigned long long nodes[], unsigned int count) noexcept;
 	//-----------------------------------------------------------------
 	/**
-	 * Absolute paths
+	 * Returns the pathname of the configuration file.
+	 *
+	 * @return pathname of the configuration file
 	 */
 	const char* getConfigurationFile() const noexcept;
+
+	/**
+	 * Returns the pathname of the hosts database file.
+	 *
+	 * @return pathname of the hosts database, nullptr if not available
+	 */
 	const char* getHostsDatabase() const noexcept;
+
+	/**
+	 * Returns the pathname of the hosts file (a tab-delimited text file).
+	 *
+	 * @return pathname of the hosts file, nullptr if not available
+	 */
 	const char* getHostsFile() const noexcept;
+
+	/**
+	 * Returns the pathname of the private key file.
+	 *
+	 * @return pathname of the private key file, nullptr if not available
+	 */
 	const char* getPrivateKeyFile() const noexcept;
+
+	/**
+	 * Returns the pathname of the public key file.
+	 *
+	 * @return pathname of the public key file, nullptr if not available
+	 */
 	const char* getPublicKeyFile() const noexcept;
+
+	/**
+	 * Returns the pathname of the trusted certificate (root CA) file.
+	 *
+	 * @return pathname of the trusted certificate file, nullptr if not available
+	 */
 	const char* getSSLTrustedCertificateFile() const noexcept;
+
+	/**
+	 * Returns the pathname of the SSL certificate file.
+	 *
+	 * @return pathname of the SSL certificate file, nullptr if not available
+	 */
 	const char* getSSLCertificateFile() const noexcept;
+
+	/**
+	 * Returns the pathname of the private SSL key file.
+	 *
+	 * @return pathname of the private SSL key file, nullptr if not available
+	 */
 	const char* getSSLHostKeyFile() const noexcept;
 	//-----------------------------------------------------------------
+	/**
+	 * Generates a new instance ID (deletes any existing one)
+	 */
 	void generateInstanceId();
+
+	/**
+	 * Reloads the configuration data
+	 */
 	void loadConfiguration();
+
+	/**
+	 * Reloads the hosts database (either from a sqlite3 database file or
+	 * from a text file).
+	 */
 	void loadHosts();
+
+	/**
+	 * Reinitializes the asymmetric cryptography facility
+	 */
 	void loadKeys();
+
+	/**
+	 * Reconfigures SSL/TLS
+	 */
 	void loadSSL();
 
+	/**
+	 * Reloads the hosts database from a sqlite3 database file
+	 */
 	void loadHostsDatabase();
+
+	/**
+	 * Reloads the hosts database from a text file
+	 */
 	void loadHostsFile();
 
+	/**
+	 * Reloads the private key of the asymmetric cryptography facility
+	 */
 	void loadPrivateKey();
+
+	/**
+	 * Reloads the public key of the asymmetric cryptography facility
+	 */
 	void loadPublicKey();
 
+	/**
+	 * Reloads the SSL certificates
+	 */
 	void loadSSLCertificate();
+
+	/**
+	 * Reloads the private SSL key
+	 */
 	void loadSSLHostKey();
 private:
 	char* locateConfigurationFile() noexcept;

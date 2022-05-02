@@ -20,16 +20,34 @@ namespace wanhive {
  */
 class InstanceID {
 public:
+	/**
+	 * Constructor: creates a new secret identifier
+	 */
 	InstanceID();
+
+	/**
+	 * Destructor: cleanly destroys the object
+	 */
 	~InstanceID();
-	/*
-	 * Generates a nonce suitable for handshaking and stores it inside <nonce>.
-	 * (<salt>, <id>) pair must be unique and <nonce> should be a valid pointer.
+
+	/**
+	 * Generates a nonce suitable for handshaking.
+	 *
+	 * @param hash the object that provides the hash function
+	 * @param salt the salt
+	 * @param id the identifier, (salt, id) pair should be unique.
+	 * @param nonce the object for storing the generated nonce
 	 */
 	void generateNonce(Hash &hash, uint64_t salt, uint64_t id,
 			Digest *nonce) const noexcept;
-	/*
-	 * Verifies the <nonce>, returns true on successful verification.
+
+	/**
+	 * Verifies a nonce.
+	 * @param hash the object that provides the hash function
+	 * @param salt the salt
+	 * @param id the identifier
+	 * @param nonce the nonce for verification
+	 * @return true on successful verification, false otherwise
 	 */
 	bool verifyNonce(Hash &hash, uint64_t salt, uint64_t id,
 			const Digest *nonce) const noexcept;

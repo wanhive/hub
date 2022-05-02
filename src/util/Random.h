@@ -20,8 +20,22 @@ namespace wanhive {
  */
 class Random {
 public:
+	/**
+	 * Constructor
+	 */
 	Random() noexcept;
+
+	/**
+	 * Destructor
+	 */
 	~Random();
+
+	/**
+	 * Generates pseudo random bytes
+	 *
+	 * @param block buffer for storing the output
+	 * @param count number of bytes to generate
+	 */
 	void bytes(void *block, unsigned int count);
 };
 

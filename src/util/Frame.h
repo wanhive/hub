@@ -27,7 +27,7 @@ struct Data {
 /**
  * The data unit for packet implementation. It consists of a routing header
  * and a frame buffer. The routing header is used locally for decision making
- * during message delivery and forwarding while the frame buffer contains the
+ * during packet delivery and forwarding while the frame buffer contains the
  * serialized binary data that is exchanged via the network.
  * Frame buffer's structure: [{MESSAGE HEADER}{VARIABLE LENGTH PAYLOAD}]
  * Routing header is an object of the type MessageHeader.

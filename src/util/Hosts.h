@@ -1,7 +1,7 @@
 /*
  * Hosts.h
  *
- * Database of Wanhive hosts
+ * The hosts database
  *
  *
  * Copyright (C) 2018 Amit Kumar (amitkriit@gmail.com)
@@ -18,45 +18,100 @@
 
 namespace wanhive {
 /**
- * Database of Wanhive hosts (uses SQLite 3)
+ * The hosts database
  * Thread safe at class level
  */
 class Hosts {
 public:
+	/**
+	 * Constructor: doesn't create any database connection. Call Hosts::open()
+	 * explicitly to create a database connection.
+	 */
 	Hosts() noexcept;
-	//Opens the hosts database at <path>
+
+	/**
+	 * Constructor: opens a new database connection
+	 *
+	 * @param path pathname of the database file
+	 * @param readOnly true for opening the database in read-only mode,
+	 * false otherwise.
+	 */
 	Hosts(const char *path, bool readOnly = false);
+
+	/**
+	 * Destructor: releases the resources
+	 */
 	~Hosts();
 
-	//Opens the hosts database at <path>
+	/**
+	 * Creates a new database connection after closing any existing one.
+	 *
+	 * @param path pathname of the database file
+	 * @param readOnly true for opening the database in read-only mode,
+	 * false otherwise.
+	 */
 	void open(const char *path, bool readOnly = false);
-	//Imports the hosts database from a TAB-delimited text file
+
+	/**
+	 * Imports hosts data from a TAB-delimited text file (hosts file).
+	 *
+	 * @param path pathname of the text file containing the hosts data
+	 */
 	void batchUpdate(const char *path);
-	//Exports the hosts database to a TAB-delimited text file
+
+	/**
+	 * Exports the hosts database to a tab-delimited text file.
+	 *
+	 * @param path pathname of the text file, if a file with the given name
+	 * doesn't exist then a new file will be created.
+	 * @param version the output format specifier
+	 */
 	void batchDump(const char *path, int version = 1);
-	/*
-	 * Retrieves network address of the host <uid>.
-	 * Returns 0 on success;1 if no record found; -1 on error.
+
+	/**
+	 * Retrieves the network address associated with the given host identifier.
+	 *
+	 * @param uid the host identifier
+	 * @param ni object for storing the network address
+	 * @return 0 on success, 1 if no record found, -1 on error
 	 */
 	int get(unsigned long long uid, NameInfo &ni) noexcept;
-	/*
-	 * Adds the host <uid> to the database if doesn't exist and associates
-	 * it with the network address <ni>. Returns 0 on success, -1 on error.
+
+	/**
+	 * Associates a network address to the given host identifier.
+	 *
+	 * @param uid the host identifier
+	 * @param ni the network address
+	 * @return 0 on success, -1 on error
 	 */
 	int put(unsigned long long uid, const NameInfo &ni) noexcept;
-	/*
-	 * Removes the details of the host <uid> from the database.
-	 * Returns 0 on success, -1 on error.
+
+	/**
+	 * Removes any record associated with the given host identifier.
+	 *
+	 * @param uid the host identifier
+	 * @return 0 on success, -1 on error
 	 */
 	int remove(unsigned long long uid) noexcept;
-	/*
-	 * Copies a random list of host identifiers of a given <type> into <uids>.
-	 * At most <count> identifiers are copied and the actual number of elements
-	 * transferred is returned via <count>. Returns 0 on success, -1 on error.
+
+	/**
+	 * Returns a randomized list of host identifiers of the given type.
+	 *
+	 * @param uids the output array for storing the host identifiers
+	 * @param count before the call it's value should be set to the maximum
+	 * capacity of the output array. The actual number of elements transferred
+	 * into the output array is written to this argument.
+	 * @param type the desired host type
+	 * @return 0 on success, -1 on error
 	 */
 	int list(unsigned long long uids[], unsigned int &count, int type) noexcept;
-	/*
-	 * Generates a dummy hosts file
+
+	/**
+	 * Generates a dummy hosts file.
+	 *
+	 * @param path pathname of the hosts file, if a file with the given name
+	 * doesn't exist then it will be created.
+	 * @param version the output format specifier
 	 */
 	static void createDummy(const char *path, int version = 1);
 private:
@@ -73,9 +128,12 @@ private:
 	void endTransaction();
 	void cancelTransaction();
 public:
-	//Enumeration of the special host types
+	/**
+	 * Host type enumeration
+	 */
 	enum : int {
-		BOOTSTRAP = 1, AUTHENTICATOR = 2
+		BOOTSTRAP = 1, /**< Bootstrapping host */
+		AUTHENTICATOR = 2/**< Authentication host */
 	};
 private:
 	struct {

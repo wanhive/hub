@@ -20,24 +20,62 @@ namespace wanhive {
  */
 class FlowControl {
 public:
+	/**
+	 * Constructor: initializes all the fields to zero (0)
+	 */
 	FlowControl() noexcept;
+	/**
+	 * Destructor
+	 */
 	~FlowControl();
 
-	//Returns the current sequence number
+	/**
+	 * Returns the current sequence number
+	 *
+	 * @return the sequence number
+	 */
 	uint16_t getSequenceNumber() const noexcept;
-	//Generates and returns the next sequence number
+
+	/**
+	 * Generates and returns a new sequence number
+	 *
+	 * @return the new sequence number
+	 */
 	uint16_t nextSequenceNumber() noexcept;
-	//Sets the sequence number
+
+	/**
+	 * Sets a new sequence number
+	 *
+	 * @param sequenceNumber the desired sequence number
+	 */
 	void setSequenceNumber(uint16_t sequenceNumber) noexcept;
 
-	//Returns the session identifier
+	/**
+	 * Returns the current session identifier
+	 *
+	 * @return the session identifier
+	 */
 	uint8_t getSession() const noexcept;
-	//Sets the session identifier
+
+	/**
+	 * Sets the session identifier
+	 *
+	 * @param session the desired session identifier
+	 */
 	void setSession(uint8_t session) noexcept;
 
-	//Returns the source identifier
+	/**
+	 * Returns the current source identifier
+	 *
+	 * @return the source identifier
+	 */
 	uint64_t getSource() const noexcept;
-	//Sets the source identifier
+
+	/**
+	 * Sets a new source identifier
+	 *
+	 * @param source the new source identifier
+	 */
 	void setSource(uint64_t source) noexcept;
 private:
 	uint64_t source;

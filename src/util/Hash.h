@@ -26,24 +26,49 @@ using EncodedDigest=char[128];
  */
 class Hash {
 public:
-	Hash() noexcept;
-	~Hash();
-	//-----------------------------------------------------------------
 	/**
-	 * Hash/verify a block of given size using SHA2-512.
-	 * None of the two functions must throw exception
+	 * Constructor: initializes the SHA-512 algorithm
 	 */
-	//Generate message <digest> for a <block> of the given <size>
+	Hash() noexcept;
+
+	/**
+	 * Destructor
+	 */
+	~Hash();
+
+	/**
+	 * Hashes a block of data
+	 *
+	 * @param block the input data
+	 * @param size size of the input data in bytes
+	 * @param digest the object for storing the digest value
+	 * @return true on success, false otherwise
+	 */
 	bool create(const void *block, unsigned int size, Digest *digest) noexcept;
-	//Verify message <digest> of a <block> of the given <size>
+
+	/**
+	 * Verifies a digest value with the original data
+	 *
+	 * @param digest the digest value to verify
+	 * @param block the reference data
+	 * @param size reference data's size in bytes
+	 * @return
+	 */
 	bool verify(const Digest *digest, const void *block,
 			unsigned int size) noexcept;
-	//-----------------------------------------------------------------
-	//Base-64 encode the message digest
+
+	/**
+	 * Base-64 encodes the given digest value
+	 * @param digest the digest value to encode
+	 * @param enc the object for storing the result
+	 *
+	 * @return length of the output (excluding the nul-terminator)
+	 */
 	static unsigned int encode(const Digest *digest,
 			EncodedDigest *enc) noexcept;
 public:
-	static constexpr unsigned int SIZE = Sha::length(WH_SHA512); //64 bytes
+	/** The output size in bytes (64 bytes) **/
+	static constexpr unsigned int SIZE = Sha::length(WH_SHA512);
 private:
 	Sha sha;
 };

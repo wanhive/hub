@@ -1,7 +1,7 @@
 /*
  * Endpoint.h
  *
- * Basic routines for protocol implementation
+ * Request-response pattern implementation
  *
  *
  * Copyright (C) 2018 Amit Kumar (amitkriit@gmail.com)
@@ -20,115 +20,236 @@
 
 namespace wanhive {
 /**
- * Utility class for protocol implementation
- * Expects blocking socket connection
+ * Request-response pattern implementation
+ * Expects blocking connection
  * Thread safe at class level
  */
-class Endpoint: protected FlowControl, protected Packet {
+class Endpoint: protected Packet {
 public:
+	/**
+	 * Constructor: initializes an unconnected endpoint
+	 */
 	Endpoint() noexcept;
+
+	/**
+	 * Destructor
+	 */
 	~Endpoint();
 	//-----------------------------------------------------------------
 	/**
-	 * SSL and public key management
+	 * Sets the context for SSL/TLS connections for this object.
+	 *
+	 * @param ctx pointer to the SSL/TLS context
 	 */
-	//Set the context for SSL connections
 	void setSSLContext(SSLContext *ctx) noexcept;
-	//Get the current SSL context associated with this object
+
+	/**
+	 * Returns the SSL/TLS context assigned to this object.
+	 *
+	 * @return pointer to the SSL/TLS context
+	 */
 	SSLContext* getSSLContext() const noexcept;
-	//Set the keys used for message signing and verification
+
+	/**
+	 * Sets the keys for message signing and verification for this object.
+	 *
+	 * @param pki pointer to the object containing the keys
+	 */
 	void useKeyPair(const PKI *pki = nullptr) noexcept;
-	//Current PKI object (can be nullptr)
+
+	/**
+	 * Returns the signing and verification keys assigned to this object.
+	 *
+	 * @return pointer to object containing the signing and verification keys
+	 */
 	const PKI* getKeyPair() const noexcept;
 	//-----------------------------------------------------------------
 	/**
-	 * Connection management
-	 */
-
-	/*
-	 * Establish a new connection after terminating the existing connection.
-	 * If the new connection is a unix domain socket connection then the SSL
-	 * context is cleared. <timeoutMils> specifies the IO timeout value in
-	 * milliseconds (0 to block forever, -1 to ignore).
+	 * Connects to a new host after terminating the existing connection.
+	 *
+	 * @param ni the resource name of the host
+	 * @param timeoutMils specifies the IO timeout value in milliseconds. Set
+	 * this value to 0 to block forever, -1 to ignore.
 	 */
 	void connect(const NameInfo &ni, int timeoutMils = -1);
-	//Terminate any existing connection
+
+	/**
+	 * Terminates any existing connection.
+	 */
 	void disconnect();
 
-	//Return the socket associated with this object
+	/**
+	 * Returns the socket file descriptor associated with the currently
+	 * established connection.
+	 *
+	 * @return the socket file descriptor, -1 if no connection
+	 */
 	int getSocket() const noexcept;
-	//Return the SSL connection associated with this object
+
+	/**
+	 * Returns a pointer to the SSL connection object associated with the
+	 * currently established connection.
+	 *
+	 * @return pointer to the SSL object, nullptr if no connection
+	 */
 	SSL* getSecureSocket() const noexcept;
-	/*
-	 * Close the existing connection and set a new one. Throws an exception on
-	 * SSL/TLS connection error.
+
+	/**
+	 * Establishes a new connection after closing the existing one.
+	 *
+	 * @param sfd the socket file descriptor associated with the new connection
 	 */
 	void setSocket(int sfd);
-	/*
-	 * Close the existing connection and set a new one. Throws an exception
-	 * on SSL/TLS connection error.
+
+	/**
+	 * Establishes a new secure connection after closing the existing one.
+	 *
+	 * @param ssl pointer to an object representing the new secure connection
 	 */
 	void setSecureSocket(SSL *ssl);
-	//Release the underlying connection and return it
+
+	/**
+	 * Releases the socket file descriptor associated with the currently
+	 * established connection and returns it. The object no longer owns the
+	 * file descriptor.
+	 *
+	 * @return the socket file descriptor, -1 if not connected
+	 */
 	int releaseSocket() noexcept;
-	//Release the underlying connection and return it
+
+	/**
+	 * Releases the pointer to the SSL object associated with the currently
+	 * established secure connection. The object no longer owns the SSL object.
+	 *
+	 * @return pointer to the SSL object, nullptr if no connection
+	 */
 	SSL* releaseSecureSocket() noexcept;
-	/*
-	 * Swap the underlying socket with <sfd> and return it. Throws an
-	 * exception on SSL/TLS connection error.
+
+	/**
+	 * Swaps the existing socket connection with a new one and returns the old
+	 * socket file descriptor.
+	 *
+	 * @param sfd the new socket file descriptor
+	 * @return the old socket file descriptor
 	 */
 	int swapSocket(int sfd);
-	/*
-	 * Swap the underlying SSL object with <ssl> and return it. Throws an
-	 * exception on SSL/TLS connection error.
+
+	/**
+	 * Swaps the existing secure connection with a new one and returns the old
+	 * SSL object.
+	 *
+	 * @param ssl pointer to the new SSL object
+	 * @return pointer to the old SSL object
 	 */
 	SSL* swapSecureSocket(SSL *ssl);
-	//Set receive and send timeout (milliseconds)
+
+	/**
+	 * Sets the receive and send timeout of the socket connection.
+	 *
+	 * @param recvTimeout the receive timeout in milliseconds. Set this value to
+	 * 0 to block forever, negative timeout value will be ignored.
+	 * @param sendTimeout the send timeout in milliseconds.  Set this value to
+	 * 0 to block forever, negative timeout value will be ignored.
+	 */
 	void setSocketTimeout(int recvTimeout, int sendTimeout) const;
 	//-----------------------------------------------------------------
 	/**
-	 * Messaging over blocking socket connection
-	 * NOTE: Assign a PKI key-pair for signing and verification.
+	 * Sends out a request, the message length is determined by the routing
+	 * header associated with this object.
+	 *
+	 * @param sign true to sign the message, false otherwise
 	 */
-	//Send out a message, message length is taken from the deserialized header
 	void send(bool sign = false);
-	//Receive a message matching the <sequenceNumber> (set to 0 to ignore)
+
+	/**
+	 * Receives a request.
+	 * @param sequenceNumber the expected sequence number (0 to ignore).
+	 * @param verify true to enable message verification, false otherwise.
+	 */
 	void receive(unsigned int sequenceNumber = 0, bool verify = false);
-	//Execute a request and receive the response, returns true on success
+
+	/**
+	 * Executes a request: sends a request and receives the response.
+	 *
+	 * @param sign true to sign the outgoing request, false otherwise
+	 * @param verify true to verify the incoming response, false otherwise
+	 * @return true on success, false otherwise
+	 */
 	bool executeRequest(bool sign = false, bool verify = false);
-	//Wait for receipt of a ping and respond with a pong (for testing)
+
+	/**
+	 * Waits for a ping and then responds with a pong (replays back the ping).
+	 */
 	void sendPong();
 	//-----------------------------------------------------------------
-	/*
-	 * Establish a blocking TCP socket connection with the host <ni> and return
-	 * the socket file descriptor. <timeoutMils> specifies the IO timeout value
-	 * in milliseconds (0 to block forever, -1 to ignore).
+	/**
+	 * Establishes a socket connection with the given host and returns the
+	 * socket file descriptor.
+	 *
+	 * @param ni the resource name of the host
+	 * @param sa the object for storing the socket address on success
+	 * @param timeoutMils the send and receive timeout value to set for the
+	 * newly created socket file descriptor. Set this value to 0 to block
+	 * forever, -1 to ignore.
+	 *
+	 * @return a socket file descriptor
 	 */
 	static int connect(const NameInfo &ni, SocketAddress &sa, int timeoutMils =
 			-1);
-	/*
-	 * If <pki> is provided then the packet will be signed with <pki>'s
-	 * private key. Socket descriptor <sfd> should be in blocking IO mode.
+
+	/**
+	 * Sends a request. If a signing key is provided (not nullptr) then the
+	 * outgoing request will be signed before it's dispatch.
+	 *
+	 * @param sfd the socket file descriptor
+	 * @param packet the outgoing request
+	 * @param pki the request signing key (nullptr to ignore)
 	 */
+
 	static void send(int sfd, Packet &packet, const PKI *pki = nullptr);
-	//Same as the above but uses SSL/TLS connection
+
+	/**
+	 * Sends a request.  If a signing key is provided (not nullptr) then the
+	 * outgoing request will be signed before it's dispatch.
+	 *
+	 * @param ssl pointer to a secure connection object
+	 * @param packet the outgoing request
+	 * @param pki the request signing key (nullptr to ignore)
+	 */
 	static void send(SSL *ssl, Packet &packet, const PKI *pki = nullptr);
-	/*
-	 * If <pki> is provided then the packet will be verified using <pki>'s
-	 * public key. If <sequenceNumber> is 0 then received packet's sequence
-	 * number will not be verified. Socket descriptor <sfd> should be in
-	 * blocking IO mode.
+
+	/**
+	 * Receives a response. If a verification key is provided (not nullptr) then
+	 * the response's digital signature will be verified after it's receipt. If
+	 * an "expected" sequence number is provided then any response not matching
+	 * the expected sequence number will be silently dropped.
+	 *
+	 * @param sfd the socket file descriptor
+	 * @param packet object for storing the incoming response
+	 * @param sequenceNumber expected sequence number (0 to ignore)
+	 * @param pki the response verification key (set to nullptr to ignore)
 	 */
 	static void receive(int sfd, Packet &packet,
 			unsigned int sequenceNumber = 0, const PKI *pki = nullptr);
-	//Same as the above but uses a secure SSL/TLS connection
+
+	/**
+	 * Receives a response. If a verification key is provided (not nullptr) then
+	 * the response's digital signature will be verified after it's receipt. If
+	 * an "expected" sequence number is provided then any response not matching
+	 * the expected sequence number will be silently dropped.
+	 *
+	 * @param ssl pointer to a secure connection object
+	 * @param packet object for storing the response
+	 * @param sequenceNumber the expected sequence number (0 to ignore)
+	 * @param pki the response verification key (set to nullptr to ignore)
+	 */
 	static void receive(SSL *ssl, Packet &packet, unsigned int sequenceNumber =
 			0, const PKI *pki = nullptr);
 private:
 	int sockfd; //The underlying socket
 	SSL *ssl;  //The underlying SSL/TLS connection
-	SSLContext *sslContext;
-	const PKI *pki; //PKI for message signing and verification
+	SSLContext *sslContext; //The SSL/TLS context
+	const PKI *pki; //Keys for message signing and verification
 };
 
 } /* namespace wanhive */

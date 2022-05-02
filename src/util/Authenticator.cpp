@@ -165,16 +165,16 @@ void Authenticator::generateFakeNonce(const unsigned char *&binary,
 }
 
 void Authenticator::generateFakeSalt(unsigned long long identity,
-		const unsigned char *&s, unsigned int &sLength) noexcept {
+		const unsigned char *&salt, unsigned int &length) noexcept {
 	char identityString[32];
 	memset(identityString, 0, sizeof(identityString));
 	snprintf(identityString, sizeof(identityString), "@*%llu*@", identity);
 
-	if (Srp::generateFakeSalt(identityString, s, sLength)) {
-		Srp::getFakeSalt(s, sLength);
+	if (Srp::generateFakeSalt(identityString, salt, length)) {
+		Srp::getFakeSalt(salt, length);
 	} else {
-		s = nullptr;
-		sLength = 0;
+		salt = nullptr;
+		length = 0;
 	}
 }
 
