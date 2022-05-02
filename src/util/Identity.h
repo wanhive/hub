@@ -260,8 +260,11 @@ public:
 private:
 	char* locateConfigurationFile() noexcept;
 public:
+	/** The default configuration file name */
 	static const char *CONF_FILE;
+	/** The default configuration file pathname (global) */
 	static const char *CONF_PATH;
+	/** The default configuration file pathname (system) */
 	static const char *CONF_SYSTEM_PATH;
 private:
 	//Unique ID of the currently running instance
