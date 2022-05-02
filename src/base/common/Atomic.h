@@ -33,6 +33,7 @@ enum MemoryOrder {
 	MO_ACQ_REL = __ATOMIC_ACQ_REL,/**< Combines Acquire-Release */
 	MO_SEQ_CST = __ATOMIC_SEQ_CST /**< Enforces total ordering */
 };
+
 /**
  * Following operations can be used with any integral scalar or pointer type
  * that is 1, 2, 4, or 8 bytes in length. If ‘__int128’ (see __int128) is
@@ -304,14 +305,6 @@ public:
 		__atomic_signal_fence(m);
 	}
 
-	/*
-	 * Returns true if objects of type X always generate lock-free atomic instructions
-	 * for the target architecture. Result resolves to a compile-time constant.
-	 * P is an optional pointer to the object that may be used to determine alignment.
-	 * A value of 0 indicates typical alignment should be used. The compiler may also
-	 * ignore this parameter.
-	 */
-
 	/**
 	 * Returns true if objects of the given type always generate lock-free atomic
 	 * instructions. Result resolves to a compile-time constant.
@@ -326,14 +319,6 @@ public:
 		return __atomic_always_lock_free(sizeof(X), P);
 	}
 
-	/*
-	 * Returns true if objects of type X always generate lock-free atomic instructions
-	 * for the target architecture. If the built-in function is not known to be
-	 * lock-free, a call is made to a runtime routine named __atomic_is_lock_free.
-	 * P is an optional pointer to the object that may be used to determine alignment.
-	 * A value of 0 indicates typical alignment should be used. The compiler may also
-	 * ignore this parameter.
-	 */
 	/**
 	 * Returns true if objects of the given type always generate lock-free atomic
 	 * instructions for the target architecture.
