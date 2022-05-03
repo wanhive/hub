@@ -20,7 +20,7 @@
 
 namespace wanhive {
 //-----------------------------------------------------------------
-enum MessageFlag {
+enum MessageFlag : uint32_t {
 	/*
 	 * Wait for Header -> Wait for Data -> Wait for Processing -> Processed
 	 * The first four flags must be set exclusively (clear other flags)
