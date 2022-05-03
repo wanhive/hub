@@ -28,7 +28,7 @@ bool Packet::packHeader(const MessageHeader &header) noexcept {
 	auto length = header.getLength();
 	if (testLength(length) && (frame().getIndex() == 0)
 			&& frame().setLimit(length)) {
-		return header.serialize(frame().array());
+		return header.write(frame().array());
 	} else {
 		return false;
 	}
@@ -39,11 +39,11 @@ bool Packet::packHeader() noexcept {
 }
 
 bool Packet::unpackHeader(MessageHeader &header) const noexcept {
-	return header.deserialize(frame().array());
+	return header.read(frame().array());
 }
 
 bool Packet::unpackHeader() noexcept {
-	auto length = MessageHeader::getLength(frame().array());
+	auto length = MessageHeader::readLength(frame().array());
 	return testLength(length) && (frame().getIndex() == 0)
 			&& frame().setLimit(length) && unpackHeader(header());
 }
@@ -51,7 +51,7 @@ bool Packet::unpackHeader() noexcept {
 bool Packet::bind(unsigned int length) noexcept {
 	if (testLength(length) && (frame().getIndex() == 0)
 			&& frame().setLimit(length)) {
-		MessageHeader::setLength(frame().array(), length);
+		MessageHeader::writeLength(frame().array(), length);
 		return true;
 	} else {
 		return false;

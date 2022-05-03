@@ -63,7 +63,7 @@ bool Message::build(Source<unsigned char> &in) {
 			frame().clear();
 			in.take(frame().offset(), Message::HEADER_SIZE);
 			//Prepare the routing header
-			header().deserialize(frame().array());
+			header().read(frame().array());
 			frame().setIndex(HEADER_SIZE);
 			putFlags(MSG_WAIT_DATA);
 		} else {
@@ -101,7 +101,7 @@ void Message::setLabel(uint64_t label) noexcept {
 	header().setLabel(label);
 }
 void Message::updateLabel(uint64_t label) noexcept {
-	MessageHeader::setLabel(frame().array(), label);
+	MessageHeader::writeLabel(frame().array(), label);
 }
 void Message::putLabel(uint64_t label) noexcept {
 	setLabel(label);
@@ -115,7 +115,7 @@ void Message::setSource(uint64_t source) noexcept {
 	header().setSource(source);
 }
 void Message::updateSource(uint64_t source) noexcept {
-	MessageHeader::setSource(frame().array(), source);
+	MessageHeader::writeSource(frame().array(), source);
 }
 void Message::putSource(uint64_t source) noexcept {
 	setSource(source);
@@ -129,7 +129,7 @@ void Message::setDestination(uint64_t destination) noexcept {
 	header().setDestination(destination);
 }
 void Message::updateDestination(uint64_t destination) noexcept {
-	MessageHeader::setDestination(frame().array(), destination);
+	MessageHeader::writeDestination(frame().array(), destination);
 }
 void Message::putDestination(uint64_t destination) noexcept {
 	setDestination(destination);
@@ -168,7 +168,7 @@ void Message::setSequenceNumber(uint16_t sequenceNumber) noexcept {
 	header().setSequenceNumber(sequenceNumber);
 }
 void Message::updateSequenceNumber(uint16_t sequenceNumber) noexcept {
-	MessageHeader::setSequenceNumber(frame().array(), sequenceNumber);
+	MessageHeader::writeSequenceNumber(frame().array(), sequenceNumber);
 }
 void Message::putSequenceNumber(uint16_t sequenceNumber) noexcept {
 	setSequenceNumber(sequenceNumber);
@@ -182,7 +182,7 @@ void Message::setSession(uint8_t session) noexcept {
 	header().setSession(session);
 }
 void Message::updateSession(uint8_t session) noexcept {
-	MessageHeader::setSession(frame().array(), session);
+	MessageHeader::writeSession(frame().array(), session);
 }
 void Message::putSession(uint8_t session) noexcept {
 	setSession(session);
@@ -196,7 +196,7 @@ void Message::setCommand(uint8_t command) noexcept {
 	header().setCommand(command);
 }
 void Message::updateCommand(uint8_t command) noexcept {
-	MessageHeader::setCommand(frame().array(), command);
+	MessageHeader::writeCommand(frame().array(), command);
 }
 void Message::putCommand(uint8_t command) noexcept {
 	setCommand(command);
@@ -210,7 +210,7 @@ void Message::setQualifier(uint8_t qualifier) noexcept {
 	header().setQualifier(qualifier);
 }
 void Message::updateQualifier(uint8_t qualifier) noexcept {
-	MessageHeader::setQualifier(frame().array(), qualifier);
+	MessageHeader::writeQualifier(frame().array(), qualifier);
 }
 void Message::putQualifier(uint8_t qualifier) noexcept {
 	setQualifier(qualifier);
@@ -224,7 +224,7 @@ void Message::setStatus(uint8_t status) noexcept {
 	header().setStatus(status);
 }
 void Message::updateStatus(uint8_t status) noexcept {
-	MessageHeader::setStatus(frame().array(), status);
+	MessageHeader::writeStatus(frame().array(), status);
 }
 void Message::putStatus(uint8_t status) noexcept {
 	setStatus(status);
@@ -481,7 +481,7 @@ bool Message::pack(const MessageHeader &header, const char *format,
 	this->header() = header;
 	this->header().setLength(0); //Length will be calculated
 
-	auto size = this->header().serialize(frame().array());
+	auto size = this->header().write(frame().array());
 	size += Serializer::vpack(frame().array() + HEADER_SIZE, PAYLOAD_SIZE,
 			format, ap);
 
@@ -509,7 +509,7 @@ bool Message::pack(const MessageHeader &header,
 bool Message::pack(const unsigned char *message) noexcept {
 	if (message) {
 		MessageHeader header;
-		header.deserialize(message);
+		header.read(message);
 
 		if (!putHeader(header)) {
 			return false;

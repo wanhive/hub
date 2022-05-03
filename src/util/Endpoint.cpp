@@ -181,9 +181,9 @@ void Endpoint::sendPong() {
 	receive();
 	auto s = header().getSource();
 	auto d = header().getDestination();
-	MessageHeader::setSource(buffer(), d);
-	MessageHeader::setDestination(buffer(), s);
-	MessageHeader::setStatus(buffer(), WH_AQLF_ACCEPTED);
+	MessageHeader::writeSource(buffer(), d);
+	MessageHeader::writeDestination(buffer(), s);
+	MessageHeader::writeStatus(buffer(), WH_AQLF_ACCEPTED);
 	send();
 }
 

@@ -357,7 +357,7 @@ unsigned int Protocol::createIdentificationRequest(
 	} else {
 		packet.clear();
 		auto len = HEADER_SIZE + nonce.length;
-		packet.header().load(address.source, address.destination, len,
+		packet.header().load(address.getSource(), address.getDestination(), len,
 				sequenceNumber, 0, WH_CMD_NULL, WH_QLF_IDENTIFY,
 				WH_AQLF_REQUEST);
 		packet.packHeader();
@@ -399,7 +399,7 @@ unsigned int Protocol::createAuthenticationRequest(
 	} else {
 		packet.clear();
 		auto len = HEADER_SIZE + proof.length;
-		packet.header().load(address.source, address.destination, len,
+		packet.header().load(address.getSource(), address.getDestination(), len,
 				sequenceNumber, 0, WH_CMD_NULL, WH_QLF_AUTHENTICATE,
 				WH_AQLF_REQUEST);
 		packet.packHeader();
@@ -434,7 +434,7 @@ unsigned int Protocol::createRegisterRequest(const MessageAddress &address,
 		length += Hash::SIZE;
 	}
 
-	packet.header().load(address.source, address.destination, length,
+	packet.header().load(address.getSource(), address.getDestination(), length,
 			sequenceNumber, 0, WH_CMD_BASIC, WH_QLF_REGISTER, WH_AQLF_REQUEST);
 	packet.packHeader();
 	return packet.header().getLength();
@@ -460,7 +460,7 @@ unsigned int Protocol::createGetKeyRequest(const MessageAddress &address,
 		length += Hash::SIZE;
 	}
 
-	packet.header().load(address.source, address.destination, length,
+	packet.header().load(address.getSource(), address.getDestination(), length,
 			sequenceNumber, 0, WH_CMD_BASIC, WH_QLF_GETKEY, WH_AQLF_REQUEST);
 	packet.packHeader();
 	return packet.header().getLength();
@@ -489,7 +489,7 @@ unsigned int Protocol::createFindRootRequest(const MessageAddress &address,
 		uint64_t identity, uint16_t sequenceNumber, Packet &packet) noexcept {
 	packet.clear();
 	auto len = HEADER_SIZE + sizeof(uint64_t);
-	packet.header().load(address.source, address.destination, len,
+	packet.header().load(address.getSource(), address.getDestination(), len,
 			sequenceNumber, 0, WH_CMD_BASIC, WH_QLF_FINDROOT, WH_AQLF_REQUEST);
 	packet.packHeader();
 	Serializer::pack(packet.payload(), "Q", identity);
