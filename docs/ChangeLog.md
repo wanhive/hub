@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 
 - **CircularBuffer::setStatus** and **StaticCircularBuffer::setStatus** methods compile correctly.
+- Assign correct type to the MessageFlag enumeration.
 
 ### Security
 
