@@ -34,34 +34,32 @@ public:
 
 	//-----------------------------------------------------------------
 	/**
-	 * Sets the frame buffer's header. Writes the given header object into the
-	 * frame buffer as serialized binary data (sequence of bytes). The routing
-	 * header (see Frame::header()) is not modified.
+	 * Sets the frame buffer's header. Serializes the given header and stores it
+	 * into the frame buffer. The routing header is not modified.
 	 * @param header the object to write into the frame buffer. Header's length
-	 * field should not contain a value outside [Frame::HEADER_SIZE, Frame::MTU].
+	 * field should have a value in the range [Frame::HEADER_SIZE, Frame::MTU].
 	 * @return true on success (valid length), false otherwise.
 	 */
 	bool packHeader(const MessageHeader &header) noexcept;
 	/**
-	 * Sets the frame buffer's header. Writes the routing header into the frame
-	 * buffer as serialized binary data (sequence of bytes). This call is the same
-	 * as packHeader(Frame::header()). The length field in the routing header
-	 * should contain a value in the range [Frame::HEADER_SIZE, Frame::MTU].
+	 * Sets the frame buffer's header. Serializes the routing header and stores
+	 * it into the frame buffer (equivalent to packHeader(Frame::header())). This
+	 * call will fail if routing header's length field contains value outside the
+	 * range [Frame::HEADER_SIZE, Frame::MTU].
 	 * @return true on success (valid length), false otherwise.
 	 */
 	bool packHeader() noexcept;
 	/**
-	 * Reads the frame buffer's header. Extracts the frame buffer's header data
-	 * into the given object.
-	 * @param header reference to the object which will store the result
+	 * Unpacks the frame buffer's header data into the given object.
+	 * @param header object for storing the data
 	 * @return always true
 	 */
 	bool unpackHeader(MessageHeader &header) const noexcept;
 	/**
-	 * Reads the frame buffer's header. Extracts the frame buffer's header data
-	 * into the routing header (equivalent to unpackHeader(Frame::header())).
-	 * This call will fail if the routing header's length field may end up with
-	 * an invalid value as a result of the operation.
+	 * Unpacks the frame buffer's header data into the routing header (equivalent
+	 * to unpackHeader(Frame::header())). This call will fail if as a result of
+	 * the operation, the routing header's length field might end up with an
+	 * invalid value.
 	 * @return true on success (valid length), false otherwise
 	 */
 	bool unpackHeader() noexcept;

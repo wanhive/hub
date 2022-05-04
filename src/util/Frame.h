@@ -29,7 +29,7 @@ struct Data {
  * and a frame buffer. The routing header is used locally for decision making
  * during packet delivery and forwarding while the frame buffer contains the
  * serialized binary data that is exchanged via the network.
- * Frame buffer's structure: [{MESSAGE HEADER}{VARIABLE LENGTH PAYLOAD}]
+ * Frame buffer's structure: [{HEADER}{VARIABLE LENGTH PAYLOAD}]
  * Routing header is an object of the type MessageHeader.
  *
  * Thread safe at class level.

@@ -70,8 +70,8 @@ public:
 
 	/**
 	 * Serializes this object.
-	 * @param buffer the buffer for storing the serialized header. The Minimum
-	 * buffer size (in bytes) should be MessageHeader::SIZE.
+	 * @param buffer pointer to a buffer for storing the serialized header. The
+	 * Minimum buffer size (in bytes) should be MessageHeader::SIZE.
 	 * @return serialized header size in bytes
 	 */
 	unsigned int write(unsigned char *buffer) const noexcept;
