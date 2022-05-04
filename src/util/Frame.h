@@ -37,8 +37,7 @@ struct Data {
 class Frame {
 public:
 	/**
-	 * Constructor
-	 *
+	 * Constructor: sets this frame's origin.
 	 * @param origin the local origin identifier
 	 */
 	Frame(uint64_t origin = 0) noexcept;
@@ -46,75 +45,65 @@ public:
 	 * Destructor
 	 */
 	~Frame();
-
+	//-----------------------------------------------------------------
 	/**
-	 * Returns the local origin identifier.
-	 *
-	 * @return the local origin identifier
+	 * Returns the origin identifier of this object.
+	 * @return the origin identifier
 	 */
 	uint64_t getOrigin() const noexcept;
 
 	/**
-	 * Returns a reference to the routing header. Please note that any change
-	 * made in the routing header is not automatically synchronized with the
-	 * serialized header data contained at the beginning of the frame buffer and
-	 * vice versa.
-	 *
+	 * Returns a reference to the routing header. Any change made in the routing
+	 * header is not automatically synchronized with the serialized header data
+	 * stored at the beginning of the frame buffer and vice versa.
 	 * @return reference to the routing header
 	 */
 	MessageHeader& header() noexcept;
 
 	/**
-	 * Returns a constant reference to the routing header. Please note that the
-	 * routing header data may not be in agreement with the serialized header
-	 * data contained at the beginning of the frame buffer.
-	 *
+	 * Returns a constant reference to the routing header. The routing header's
+	 * data may or may not be in agreement with the serialized header data stored
+	 * at the beginning of the frame buffer.
 	 * @return constant reference to the routing header
 	 */
 	const MessageHeader& header() const noexcept;
 
 	/**
-	 * Returns a pointer to the given offset from the beginning of the frame
-	 * buffer's backing array (serialized data). Any changes made through this
-	 * pointer are not reflected inside the routing header.
-	 *
-	 * @param offset the desired offset in bytes (should be less than the MTU)
+	 * Returns a pointer to the given offset within the frame buffer's backing
+	 * array (serialized data). Any changes made through this pointer are not
+	 * reflected inside the routing header.
+	 * @param offset the desired offset in bytes, this value should be less than
+	 * the Frame::MTU.
 	 * @return a pointer to the given offset inside the backing array if the
 	 * offset is valid, nullptr otherwise.
 	 */
 	unsigned char* buffer(unsigned int offset = 0) noexcept;
 
 	/**
-	 * Returns a constant pointer to the given offset from the beginning of the
-	 * frame buffer's backing array which stores the serialized data as a sequence
-	 * of bytes.
-	 *
-	 * @param offset the desired offset in bytes (should be less than the MTU)
-	 *
+	 * Returns a constant pointer to the given offset within the frame buffer's
+	 * backing array which stores the serialized data as a sequence of bytes.
+	 * @param offset the desired offset in bytes, this value should be less than
+	 * the Frame::MTU.
 	 * @return a constant pointer to the given offset inside the backing array
 	 * if the offset is valid, nullptr otherwise.
 	 */
 	const unsigned char* buffer(unsigned int offset = 0) const noexcept;
 
 	/**
-	 * Returns a pointer to the given offset from the beginning of the frame
-	 * buffer's payload section within it's backing array. This call is equivalent
-	 * to buffer(offset + HEADER_SIZE).
-	 *
-	 * @param offset the desired offset within the payload section (should be
-	 * less than PAYLOAD_SIZE).
+	 * Returns a pointer to the given offset within the frame buffer's payload
+	 * area. This call is equivalent to buffer(offset + Frame::HEADER_SIZE).
+	 * @param offset the desired offset within the payload section, this value
+	 * should be less than Frame::PAYLOAD_SIZE.
 	 * @return a pointer to the given offset inside the payload section if the
 	 * offset is valid, nullptr otherwise.
 	 */
 	unsigned char* payload(unsigned int offset = 0) noexcept;
 
 	/**
-	 * Returns a constant pointer to the given offset from the beginning of the
-	 * frame buffer's payload section within it's backing array. This call is
-	 * equivalent to buffer(offset + HEADER_SIZE).
-	 *
-	 * @param offset the desired offset within the payload section (should be
-	 * less than PAYLOAD_SIZE).
+	 * Returns a constant pointer to the given offset within the frame buffer's
+	 * payload area. This call is the same as buffer(offset + Frame::HEADER_SIZE).
+	 * @param offset the desired offset within the payload section, this value
+	 * should be less than Frame::PAYLOAD_SIZE.
 	 * @return a constant pointer to the given offset inside the payload section
 	 * if the offset is valid, nullptr otherwise.
 	 */
@@ -127,44 +116,37 @@ public:
 protected:
 	/**
 	 * For traffic shaping: returns the hop count.
-	 *
 	 * @return the hop count
 	 */
 	unsigned int getHopCount() const noexcept;
-
 	/**
 	 * For traffic shaping: sets the hop count.
-	 *
 	 * @param hopCount the desired hop count
 	 */
 	void setHopCount(unsigned int hopCount) noexcept;
 
 	/**
 	 * For multicasting: returns the reference count.
-	 *
 	 * @return the reference count
 	 */
 	unsigned int getReferenceCount() const noexcept;
-
 	/**
 	 * For multicasting: sets the reference count.
-	 *
 	 * @param referenceCount the desired reference count
 	 */
 	void setReferenceCount(unsigned int referenceCount) noexcept;
 
 	/**
-	 * Returns a constant reference to the frame buffer.
-	 *
+	 * Returns a constant reference to the frame buffer. This call allows the
+	 * derived classes to directly investigate the frame buffer.
 	 * @return a constant reference to the frame buffer
 	 */
 	auto& frame() const noexcept {
 		return _frame;
 	}
-
 	/**
-	 * Returns a reference to the frame buffer.
-	 *
+	 * Returns a reference to the frame buffer. This call allows the derived
+	 * classes to directly access the frame buffer's facilities.
 	 * @return a reference to the frame buffer
 	 */
 	auto& frame() noexcept {

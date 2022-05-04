@@ -22,7 +22,7 @@ namespace wanhive {
 class Packet: public Frame {
 public:
 	/**
-	 * Constructor
+	 * Constructor: sets this packet's origin.
 	 * @param origin the local origin identifier
 	 */
 	Packet(uint64_t origin = 0) noexcept;
@@ -37,39 +37,31 @@ public:
 	 * Sets the frame buffer's header. Writes the given header object into the
 	 * frame buffer as serialized binary data (sequence of bytes). The routing
 	 * header (see Frame::header()) is not modified.
-	 *
-	 * @param header the object to write into the frame buffer. Object's length
-	 * field should contain a value in the range (inclusive) [HEADER_SIZE, MTU].
-	 *
+	 * @param header the object to write into the frame buffer. Header's length
+	 * field should not contain a value outside [Frame::HEADER_SIZE, Frame::MTU].
 	 * @return true on success (valid length), false otherwise.
 	 */
 	bool packHeader(const MessageHeader &header) noexcept;
-
 	/**
 	 * Sets the frame buffer's header. Writes the routing header into the frame
-	 * buffer as serialized binary data (sequence of bytes). This call is
-	 * equivalent to packHeader(Frame::header()). The length field in the routing
-	 * header should contain a value in the range (inclusive) [HEADER_SIZE, MTU].
-	 *
+	 * buffer as serialized binary data (sequence of bytes). This call is the same
+	 * as packHeader(Frame::header()). The length field in the routing header
+	 * should contain a value in the range [Frame::HEADER_SIZE, Frame::MTU].
 	 * @return true on success (valid length), false otherwise.
 	 */
 	bool packHeader() noexcept;
-
 	/**
 	 * Reads the frame buffer's header. Extracts the frame buffer's header data
 	 * into the given object.
-	 *
 	 * @param header reference to the object which will store the result
 	 * @return always true
 	 */
 	bool unpackHeader(MessageHeader &header) const noexcept;
-
 	/**
 	 * Reads the frame buffer's header. Extracts the frame buffer's header data
 	 * into the routing header (equivalent to unpackHeader(Frame::header())).
 	 * This call will fail if the routing header's length field may end up with
 	 * an invalid value as a result of the operation.
-	 *
 	 * @return true on success (valid length), false otherwise
 	 */
 	bool unpackHeader() noexcept;
@@ -77,62 +69,51 @@ public:
 	/**
 	 * Sets the frame buffer's length. Updates the length field inside the
 	 * frame buffer's serialized header. Doesn't modify the routing header.
-	 *
 	 * @param length the value to write into the frame buffer. This value should
-	 * be in the range (inclusive) [HEADER_SIZE, MTU].
-	 *
+	 * be in the range [Frame::HEADER_SIZE, Frame::MTU].
 	 * @return true on success (valid length), false otherwise.
 	 */
 	bool bind(unsigned int length) noexcept;
-
 	/**
 	 * Sets the frame buffer's length. Serializes the value in the routing
 	 * header's length field into the frame buffer. This call is equivalent to
 	 * bind(Frame::header().getLength()). The length field of the routing header
-	 * should contain a valid value in the range (inclusive) [HEADER_SIZE, MTU].
+	 * should contain a value in the range [Frame::HEADER_SIZE, Frame::MTU] for
+	 * the call to succeed.
 	 *
 	 * @return true on success (valid length), false otherwise
 	 */
 	bool bind() noexcept;
-
 	/**
 	 * Validates this packet. A packet is considered valid if and only if:
 	 * [1]: The frame buffer has a valid length (see Packet::bind()).
 	 * [2]: Frame buffer's length equals the value in the routing header's
 	 * length field.
-	 *
 	 * @return true if the packet is valid, false otherwise.
 	 */
 	bool validate() const noexcept;
 	//-----------------------------------------------------------------
 	/**
-	 * Calculates the payload length using the routing header's length field.
-	 * This call is equivalent to (Frame::header().getLength() - HEADER_SIZE).
-	 *
+	 * Calculates the payload length using the routing header's length field. This
+	 * call is the same as (Frame::header().getLength() - Frame::HEADER_SIZE).
 	 * @return the payload length, zero (0) if the length is not valid
 	 */
 	unsigned int getPayloadLength() const noexcept;
-
 	/**
-	 * Tests the routing header's length field. The value should be in the range
-	 * (inclusive) [HEADER_SIZE, MTU].
-	 *
+	 * Tests the validity of routing header's length field. This value should be
+	 * in the range [Frame::HEADER_SIZE, Frame::MTU] for the call to succeed.
 	 * @return true if the length is valid, false otherwise
 	 */
 	bool testLength() const noexcept;
-
 	/**
 	 * Tests the given packet length.
-	 *
 	 * @param length the packet length for evaluation
 	 * @return true if the length is a valid packet length, false otherwise
 	 */
 	static bool testLength(unsigned int length) noexcept;
-
 	/**
 	 * Returns the number of packets required for carrying the given bytes of
 	 * data as payload.
-	 *
 	 * @param bytes the bytes of data to carry by the packets
 	 * @return the packet count
 	 */
@@ -140,7 +121,6 @@ public:
 	//-----------------------------------------------------------------
 	/**
 	 * Validates the given header object's context.
-	 *
 	 * @param header the object to validate
 	 * @param command the expected command
 	 * @param qualifier the expected qualifier
@@ -149,21 +129,17 @@ public:
 	 */
 	static bool checkContext(const MessageHeader &header, uint8_t command,
 			uint8_t qualifier) noexcept;
-
 	/**
 	 * Validates the routing header's context. This call is equivalent to
 	 * checkContext(Frame::header(), command, qualifier).
-	 *
 	 * @param command the expected command
 	 * @param qualifier the expected qualifier.
 	 * @return true if the routing header's command and qualifier fields match
 	 * the given values, false otherwise
 	 */
 	bool checkContext(uint8_t command, uint8_t qualifier) const noexcept;
-
 	/**
 	 * Validates the given header object's context.
-	 *
 	 * @param header the object to validate
 	 * @param command the expected command
 	 * @param qualifier the expected qualifier
@@ -171,13 +147,12 @@ public:
 	 * @return true if the header's command, qualifier and status fields match
 	 * the given values, false otherwise
 	 */
+
 	static bool checkContext(const MessageHeader &header, uint8_t command,
 			uint8_t qualifier, uint8_t status) noexcept;
-
 	/**
 	 * Validates the routing header's context. This call is equivalent to
 	 * checkContext(Frame::header(), command, qualifier, status).
-	 *
 	 * @param command the expected command
 	 * @param qualifier the expected qualifier
 	 * @param status the expected status code
@@ -189,15 +164,13 @@ public:
 	//-----------------------------------------------------------------
 	/**
 	 * Signs this packet.
-	 *
 	 * @param pki the object containing the signing key
 	 * @return true on success (or pki is nullptr), false otherwise
 	 */
 	bool sign(const PKI *pki) noexcept;
 
 	/**
-	 * Verifies this packet's signature
-	 *
+	 * Verifies this packet's signature.
 	 * @param pki the object containing the verification key
 	 * @return true on success (or pki is nullptr), false otherwise
 	 */
@@ -205,7 +178,6 @@ public:
 	//-----------------------------------------------------------------
 	/**
 	 * For debugging purposes, prints the header data to stderr.
-	 *
 	 * @param deep if true then the serialized header from IO buffer is
 	 * extracted and printed otherwise the routing header is printed.
 	 */
