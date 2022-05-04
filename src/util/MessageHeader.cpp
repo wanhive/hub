@@ -11,9 +11,8 @@
  */
 
 #include "MessageHeader.h"
-#include "../base/ds/Serializer.h"
+#include <cinttypes>
 #include <cstdio>
-#include <cstring>
 
 namespace wanhive {
 
