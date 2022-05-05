@@ -138,8 +138,9 @@ bool Protocol::findRootRequest(uint64_t host, uint64_t identity,
 
 unsigned int Protocol::createBootstrapRequest(uint64_t host) noexcept {
 	clear();
-	header().load(getSource(), host, HEADER_SIZE, nextSequenceNumber(), 0,
-			WH_CMD_BASIC, WH_QLF_BOOTSTRAP, WH_AQLF_REQUEST);
+	header().setAddress(getSource(), host);
+	header().setControl(HEADER_SIZE, nextSequenceNumber(), 0);
+	header().setContext(WH_CMD_BASIC, WH_QLF_BOOTSTRAP, WH_AQLF_REQUEST);
 	packHeader();
 	return header().getLength();
 }
@@ -184,9 +185,10 @@ unsigned int Protocol::createPublishRequest(uint64_t host, uint8_t topic,
 		return 0;
 	} else {
 		clear();
-		header().load(getSource(), host, HEADER_SIZE + data.length,
-				nextSequenceNumber(), topic, WH_CMD_MULTICAST, WH_QLF_PUBLISH,
-				WH_AQLF_REQUEST);
+		header().setAddress(getSource(), host);
+		header().setControl(HEADER_SIZE + data.length, nextSequenceNumber(),
+				topic);
+		header().setContext(WH_CMD_MULTICAST, WH_QLF_PUBLISH, WH_AQLF_REQUEST);
 		packHeader();
 		if (data.base) {
 			Serializer::packib(payload(), data.base, data.length);
@@ -207,8 +209,9 @@ bool Protocol::publishRequest(uint64_t host, uint8_t topic, const Data &data) {
 unsigned int Protocol::createSubscribeRequest(uint64_t host,
 		uint8_t topic) noexcept {
 	clear();
-	header().load(getSource(), host, HEADER_SIZE, nextSequenceNumber(), topic,
-			WH_CMD_MULTICAST, WH_QLF_SUBSCRIBE, WH_AQLF_REQUEST);
+	header().setAddress(getSource(), host);
+	header().setControl(HEADER_SIZE, nextSequenceNumber(), topic);
+	header().setContext(WH_CMD_MULTICAST, WH_QLF_SUBSCRIBE, WH_AQLF_REQUEST);
 	packHeader();
 	return header().getLength();
 }
@@ -239,8 +242,9 @@ bool Protocol::subscribeRequest(uint64_t host, uint8_t topic) {
 unsigned int Protocol::createUnsubscribeRequest(uint64_t host,
 		uint8_t topic) noexcept {
 	clear();
-	header().load(getSource(), host, HEADER_SIZE, nextSequenceNumber(), topic,
-			WH_CMD_MULTICAST, WH_QLF_UNSUBSCRIBE, WH_AQLF_REQUEST);
+	header().setAddress(getSource(), host);
+	header().setControl(HEADER_SIZE, nextSequenceNumber(), topic);
+	header().setContext(WH_CMD_MULTICAST, WH_QLF_UNSUBSCRIBE, WH_AQLF_REQUEST);
 	packHeader();
 	return header().getLength();
 }
@@ -357,8 +361,10 @@ unsigned int Protocol::createIdentificationRequest(
 	} else {
 		packet.clear();
 		auto len = HEADER_SIZE + nonce.length;
-		packet.header().load(address.getSource(), address.getDestination(), len,
-				sequenceNumber, 0, WH_CMD_NULL, WH_QLF_IDENTIFY,
+		packet.header().setAddress(address.getSource(),
+				address.getDestination());
+		packet.header().setControl(len, sequenceNumber, 0);
+		packet.header().setContext(WH_CMD_NULL, WH_QLF_IDENTIFY,
 				WH_AQLF_REQUEST);
 		packet.packHeader();
 		Serializer::packib(packet.payload(), nonce.base, nonce.length);
@@ -399,8 +405,10 @@ unsigned int Protocol::createAuthenticationRequest(
 	} else {
 		packet.clear();
 		auto len = HEADER_SIZE + proof.length;
-		packet.header().load(address.getSource(), address.getDestination(), len,
-				sequenceNumber, 0, WH_CMD_NULL, WH_QLF_AUTHENTICATE,
+		packet.header().setAddress(address.getSource(),
+				address.getDestination());
+		packet.header().setControl(len, sequenceNumber, 0);
+		packet.header().setContext(WH_CMD_NULL, WH_QLF_AUTHENTICATE,
 				WH_AQLF_REQUEST);
 		packet.packHeader();
 		Serializer::packib(packet.payload(), proof.base, proof.length);
@@ -434,8 +442,9 @@ unsigned int Protocol::createRegisterRequest(const MessageAddress &address,
 		length += Hash::SIZE;
 	}
 
-	packet.header().load(address.getSource(), address.getDestination(), length,
-			sequenceNumber, 0, WH_CMD_BASIC, WH_QLF_REGISTER, WH_AQLF_REQUEST);
+	packet.header().setAddress(address.getSource(), address.getDestination());
+	packet.header().setControl(length, sequenceNumber, 0);
+	packet.header().setContext(WH_CMD_BASIC, WH_QLF_REGISTER, WH_AQLF_REQUEST);
 	packet.packHeader();
 	return packet.header().getLength();
 }
@@ -460,8 +469,9 @@ unsigned int Protocol::createGetKeyRequest(const MessageAddress &address,
 		length += Hash::SIZE;
 	}
 
-	packet.header().load(address.getSource(), address.getDestination(), length,
-			sequenceNumber, 0, WH_CMD_BASIC, WH_QLF_GETKEY, WH_AQLF_REQUEST);
+	packet.header().setAddress(address.getSource(), address.getDestination());
+	packet.header().setControl(length, sequenceNumber, 0);
+	packet.header().setContext(WH_CMD_BASIC, WH_QLF_GETKEY, WH_AQLF_REQUEST);
 	packet.packHeader();
 	return packet.header().getLength();
 }
@@ -489,8 +499,9 @@ unsigned int Protocol::createFindRootRequest(const MessageAddress &address,
 		uint64_t identity, uint16_t sequenceNumber, Packet &packet) noexcept {
 	packet.clear();
 	auto len = HEADER_SIZE + sizeof(uint64_t);
-	packet.header().load(address.getSource(), address.getDestination(), len,
-			sequenceNumber, 0, WH_CMD_BASIC, WH_QLF_FINDROOT, WH_AQLF_REQUEST);
+	packet.header().setAddress(address.getSource(), address.getDestination());
+	packet.header().setControl(len, sequenceNumber, 0);
+	packet.header().setContext(WH_CMD_BASIC, WH_QLF_FINDROOT, WH_AQLF_REQUEST);
 	packet.packHeader();
 	Serializer::pack(packet.payload(), "Q", identity);
 	return len;
