@@ -43,23 +43,6 @@ public:
 	 * Zeroes out the header data
 	 */
 	void clear() noexcept;
-
-	/**
-	 * Populates the header data, all at once.
-	 *
-	 * @param source the source identifier
-	 * @param destination the destination identifier
-	 * @param length the message length
-	 * @param sequenceNumber the sequence number
-	 * @param session the session identifier
-	 * @param command the command classifier
-	 * @param qualifier the command qualifier
-	 * @param status the status code
-	 * @param label the label (optional)
-	 */
-	void load(uint64_t source, uint64_t destination, uint16_t length,
-			uint16_t sequenceNumber, uint8_t session, uint8_t command,
-			uint8_t qualifier, uint8_t status, uint64_t label = 0) noexcept;
 	//-----------------------------------------------------------------
 	/**
 	 * Deserializes the header data and stores them into this object.

@@ -273,8 +273,10 @@ void OverlayTool::authenticateCmd() {
 void OverlayTool::authorizeCmd() {
 	std::cout << "CMD: [AUTHORIZE]" << std::endl;
 	Packet::clear();
-	header().load(0, 0, Message::HEADER_SIZE, 0, 0, WH_DHT_CMD_BASIC,
-			WH_DHT_QLF_REGISTER, WH_DHT_AQLF_REQUEST);
+	header().setAddress(0, 0);
+	header().setControl(Message::HEADER_SIZE, 0, 0);
+	header().setContext(WH_DHT_CMD_BASIC, WH_DHT_QLF_REGISTER,
+			WH_DHT_AQLF_REQUEST);
 	packHeader();
 	try {
 		executeRequest(false, true);

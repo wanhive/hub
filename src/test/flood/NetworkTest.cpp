@@ -133,7 +133,9 @@ void NetworkTest::echo(unsigned int iterations) {
 void NetworkTest::produce() noexcept {
 	Packet out;
 	memset(out.buffer(), 0, MTU);
-	out.header().load(getSource(), destinationId, msgLen, 0, 0, 0, 0, 0);
+	out.header().setAddress(getSource(), destinationId);
+	out.header().setControl(msgLen, 0, 0);
+	out.header().setContext(0, 0, 0);
 	out.packHeader();
 	unsigned int i = 0;
 	try {

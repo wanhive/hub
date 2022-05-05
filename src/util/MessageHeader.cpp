@@ -36,15 +36,6 @@ void MessageHeader::clear() noexcept {
 	setContext(0, 0, 0);
 }
 
-void MessageHeader::load(uint64_t source, uint64_t destination, uint16_t length,
-		uint16_t sequenceNumber, uint8_t session, uint8_t command,
-		uint8_t qualifier, uint8_t status, uint64_t label) noexcept {
-	setLabel(label);
-	setAddress(source, destination);
-	setControl(length, sequenceNumber, session);
-	setContext(command, qualifier, status);
-}
-
 unsigned int MessageHeader::read(const unsigned char *buffer) noexcept {
 	readAddress(buffer);
 	readControl(buffer);
