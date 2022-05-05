@@ -24,8 +24,8 @@ Random::~Random() {
 
 }
 
-void Random::bytes(void *block, unsigned int count) {
-	if (!CSPRNG::bytes(block, count)) {
+void Random::bytes(void *buffer, unsigned int count) {
+	if (!CSPRNG::bytes(buffer, count)) {
 		throw Exception(EX_SECURITY);
 	}
 }

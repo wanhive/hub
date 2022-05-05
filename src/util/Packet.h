@@ -26,7 +26,6 @@ public:
 	 * @param origin the local origin identifier
 	 */
 	Packet(uint64_t origin = 0) noexcept;
-
 	/**
 	 * Destructor
 	 */
@@ -166,7 +165,6 @@ public:
 	 * @return true on success (or pki is nullptr), false otherwise
 	 */
 	bool sign(const PKI *pki) noexcept;
-
 	/**
 	 * Verifies this packet's signature.
 	 * @param pki the object containing the verification key

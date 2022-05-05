@@ -1,7 +1,7 @@
 /*
  * TransactionKey.h
  *
- * Asymmetric key and nonce used during mutual authentication
+ * Asymmetric keys and nonce for mutual authentication
  *
  *
  * Copyright (C) 2018 Amit Kumar (amitkriit@gmail.com)

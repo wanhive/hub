@@ -27,41 +27,36 @@ using EncodedDigest=char[128];
 class Hash {
 public:
 	/**
-	 * Constructor: initializes the SHA-512 algorithm
+	 * Constructor: initializes the SHA-512 algorithm.
 	 */
 	Hash() noexcept;
-
 	/**
-	 * Destructor
+	 * Destructor.
 	 */
 	~Hash();
-
+	//-----------------------------------------------------------------
 	/**
-	 * Hashes a block of data
-	 *
+	 * Hashes a block of data.
 	 * @param block the input data
 	 * @param size size of the input data in bytes
 	 * @param digest the object for storing the digest value
 	 * @return true on success, false otherwise
 	 */
 	bool create(const void *block, unsigned int size, Digest *digest) noexcept;
-
 	/**
-	 * Verifies a digest value with the original data
-	 *
+	 * Verifies a digest value with the original data.
 	 * @param digest the digest value to verify
 	 * @param block the reference data
 	 * @param size reference data's size in bytes
-	 * @return
+	 * @return true on successful verification, false otherwise
 	 */
 	bool verify(const Digest *digest, const void *block,
 			unsigned int size) noexcept;
-
+	//-----------------------------------------------------------------
 	/**
-	 * Base-64 encodes the given digest value
+	 * Base-64 encodes the given digest value.
 	 * @param digest the digest value to encode
 	 * @param enc the object for storing the result
-	 *
 	 * @return length of the output (excluding the nul-terminator)
 	 */
 	static unsigned int encode(const Digest *digest,

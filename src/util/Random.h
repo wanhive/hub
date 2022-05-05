@@ -21,10 +21,9 @@ namespace wanhive {
 class Random {
 public:
 	/**
-	 * Constructor
+	 * Default constructor: initializes the PRNG
 	 */
 	Random() noexcept;
-
 	/**
 	 * Destructor
 	 */
@@ -32,11 +31,10 @@ public:
 
 	/**
 	 * Generates pseudo random bytes
-	 *
-	 * @param block buffer for storing the output
+	 * @param buffer pointer to the buffer for storing the output
 	 * @param count number of bytes to generate
 	 */
-	void bytes(void *block, unsigned int count);
+	void bytes(void *buffer, unsigned int count);
 };
 
 } /* namespace wanhive */

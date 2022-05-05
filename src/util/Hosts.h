@@ -24,20 +24,17 @@ namespace wanhive {
 class Hosts {
 public:
 	/**
-	 * Constructor: doesn't create any database connection. Call Hosts::open()
-	 * explicitly to create a database connection.
+	 * Default constructor: doesn't create a database connection. Call
+	 * Hosts::open() explicitly to open a database connection.
 	 */
 	Hosts() noexcept;
-
 	/**
 	 * Constructor: opens a new database connection
-	 *
 	 * @param path pathname of the database file
 	 * @param readOnly true for opening the database in read-only mode,
 	 * false otherwise.
 	 */
 	Hosts(const char *path, bool readOnly = false);
-
 	/**
 	 * Destructor: releases the resources
 	 */
@@ -45,58 +42,48 @@ public:
 
 	/**
 	 * Creates a new database connection after closing any existing one.
-	 *
 	 * @param path pathname of the database file
 	 * @param readOnly true for opening the database in read-only mode,
 	 * false otherwise.
 	 */
 	void open(const char *path, bool readOnly = false);
-
+	//-----------------------------------------------------------------
 	/**
 	 * Imports hosts data from a TAB-delimited text file (hosts file).
-	 *
 	 * @param path pathname of the text file containing the hosts data
 	 */
 	void batchUpdate(const char *path);
 
 	/**
 	 * Exports the hosts database to a tab-delimited text file.
-	 *
 	 * @param path pathname of the text file, if a file with the given name
 	 * doesn't exist then a new file will be created.
 	 * @param version the output format specifier
 	 */
 	void batchDump(const char *path, int version = 1);
-
+	//-----------------------------------------------------------------
 	/**
 	 * Retrieves the network address associated with the given host identifier.
-	 *
 	 * @param uid the host identifier
 	 * @param ni object for storing the network address
 	 * @return 0 on success, 1 if no record found, -1 on error
 	 */
 	int get(unsigned long long uid, NameInfo &ni) noexcept;
-
 	/**
 	 * Associates a network address to the given host identifier.
-	 *
 	 * @param uid the host identifier
 	 * @param ni the network address
 	 * @return 0 on success, -1 on error
 	 */
 	int put(unsigned long long uid, const NameInfo &ni) noexcept;
-
 	/**
 	 * Removes any record associated with the given host identifier.
-	 *
 	 * @param uid the host identifier
 	 * @return 0 on success, -1 on error
 	 */
 	int remove(unsigned long long uid) noexcept;
-
 	/**
 	 * Returns a randomized list of host identifiers of the given type.
-	 *
 	 * @param uids the output array for storing the host identifiers
 	 * @param count before the call it's value should be set to the maximum
 	 * capacity of the output array. The actual number of elements transferred
@@ -105,10 +92,9 @@ public:
 	 * @return 0 on success, -1 on error
 	 */
 	int list(unsigned long long uids[], unsigned int &count, int type) noexcept;
-
+	//-----------------------------------------------------------------
 	/**
 	 * Generates a dummy hosts file.
-	 *
 	 * @param path pathname of the hosts file, if a file with the given name
 	 * doesn't exist then it will be created.
 	 * @param version the output format specifier

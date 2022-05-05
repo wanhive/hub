@@ -51,7 +51,6 @@ public:
 	 * @return the origin identifier
 	 */
 	uint64_t getOrigin() const noexcept;
-
 	/**
 	 * Returns a reference to the routing header. Any change made in the routing
 	 * header is not automatically synchronized with the serialized header data
@@ -59,7 +58,6 @@ public:
 	 * @return reference to the routing header
 	 */
 	MessageHeader& header() noexcept;
-
 	/**
 	 * Returns a constant reference to the routing header. The routing header's
 	 * data may or may not be in agreement with the serialized header data stored
@@ -78,7 +76,6 @@ public:
 	 * offset is valid, nullptr otherwise.
 	 */
 	unsigned char* buffer(unsigned int offset = 0) noexcept;
-
 	/**
 	 * Returns a constant pointer to the given offset within the frame buffer's
 	 * backing array which stores the serialized data as a sequence of bytes.
@@ -98,7 +95,6 @@ public:
 	 * offset is valid, nullptr otherwise.
 	 */
 	unsigned char* payload(unsigned int offset = 0) noexcept;
-
 	/**
 	 * Returns a constant pointer to the given offset within the frame buffer's
 	 * payload area. This call is the same as buffer(offset + Frame::HEADER_SIZE).
@@ -108,7 +104,7 @@ public:
 	 * if the offset is valid, nullptr otherwise.
 	 */
 	const unsigned char* payload(unsigned int offset = 0) const noexcept;
-
+	//-----------------------------------------------------------------
 	/**
 	 * Clears out the routing header and the frame buffer.
 	 */
@@ -135,7 +131,7 @@ protected:
 	 * @param referenceCount the desired reference count
 	 */
 	void setReferenceCount(unsigned int referenceCount) noexcept;
-
+	//-----------------------------------------------------------------
 	/**
 	 * Returns a constant reference to the frame buffer. This call allows the
 	 * derived classes to directly investigate the frame buffer.
