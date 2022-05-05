@@ -100,12 +100,12 @@ uint64_t Message::getLabel() const noexcept {
 void Message::setLabel(uint64_t label) noexcept {
 	header().setLabel(label);
 }
-void Message::updateLabel(uint64_t label) noexcept {
+void Message::writeLabel(uint64_t label) noexcept {
 	MessageHeader::writeLabel(frame().array(), label);
 }
 void Message::putLabel(uint64_t label) noexcept {
 	setLabel(label);
-	updateLabel(label);
+	writeLabel(label);
 }
 
 uint64_t Message::getSource() const noexcept {
@@ -114,12 +114,12 @@ uint64_t Message::getSource() const noexcept {
 void Message::setSource(uint64_t source) noexcept {
 	header().setSource(source);
 }
-void Message::updateSource(uint64_t source) noexcept {
+void Message::writeSource(uint64_t source) noexcept {
 	MessageHeader::writeSource(frame().array(), source);
 }
 void Message::putSource(uint64_t source) noexcept {
 	setSource(source);
-	updateSource(source);
+	writeSource(source);
 }
 
 uint64_t Message::getDestination() const noexcept {
@@ -128,12 +128,12 @@ uint64_t Message::getDestination() const noexcept {
 void Message::setDestination(uint64_t destination) noexcept {
 	header().setDestination(destination);
 }
-void Message::updateDestination(uint64_t destination) noexcept {
+void Message::writeDestination(uint64_t destination) noexcept {
 	MessageHeader::writeDestination(frame().array(), destination);
 }
 void Message::putDestination(uint64_t destination) noexcept {
 	setDestination(destination);
-	updateDestination(destination);
+	writeDestination(destination);
 }
 
 uint16_t Message::getLength() const noexcept {
@@ -149,11 +149,11 @@ bool Message::setLength(uint16_t length) noexcept {
 	}
 
 }
-bool Message::updateLength(uint16_t length) noexcept {
+bool Message::writeLength(uint16_t length) noexcept {
 	return bind(length);
 }
 bool Message::putLength(uint16_t length) noexcept {
-	if (updateLength(length)) {
+	if (writeLength(length)) {
 		header().setLength(length);
 		return true;
 	} else {
@@ -167,12 +167,12 @@ uint16_t Message::getSequenceNumber() const noexcept {
 void Message::setSequenceNumber(uint16_t sequenceNumber) noexcept {
 	header().setSequenceNumber(sequenceNumber);
 }
-void Message::updateSequenceNumber(uint16_t sequenceNumber) noexcept {
+void Message::writeSequenceNumber(uint16_t sequenceNumber) noexcept {
 	MessageHeader::writeSequenceNumber(frame().array(), sequenceNumber);
 }
 void Message::putSequenceNumber(uint16_t sequenceNumber) noexcept {
 	setSequenceNumber(sequenceNumber);
-	updateSequenceNumber(sequenceNumber);
+	writeSequenceNumber(sequenceNumber);
 }
 
 uint8_t Message::getSession() const noexcept {
@@ -181,12 +181,12 @@ uint8_t Message::getSession() const noexcept {
 void Message::setSession(uint8_t session) noexcept {
 	header().setSession(session);
 }
-void Message::updateSession(uint8_t session) noexcept {
+void Message::writeSession(uint8_t session) noexcept {
 	MessageHeader::writeSession(frame().array(), session);
 }
 void Message::putSession(uint8_t session) noexcept {
 	setSession(session);
-	updateSession(session);
+	writeSession(session);
 }
 
 uint8_t Message::getCommand() const noexcept {
@@ -195,12 +195,12 @@ uint8_t Message::getCommand() const noexcept {
 void Message::setCommand(uint8_t command) noexcept {
 	header().setCommand(command);
 }
-void Message::updateCommand(uint8_t command) noexcept {
+void Message::writeCommand(uint8_t command) noexcept {
 	MessageHeader::writeCommand(frame().array(), command);
 }
 void Message::putCommand(uint8_t command) noexcept {
 	setCommand(command);
-	updateCommand(command);
+	writeCommand(command);
 }
 
 uint8_t Message::getQualifier() const noexcept {
@@ -209,12 +209,12 @@ uint8_t Message::getQualifier() const noexcept {
 void Message::setQualifier(uint8_t qualifier) noexcept {
 	header().setQualifier(qualifier);
 }
-void Message::updateQualifier(uint8_t qualifier) noexcept {
+void Message::writeQualifier(uint8_t qualifier) noexcept {
 	MessageHeader::writeQualifier(frame().array(), qualifier);
 }
 void Message::putQualifier(uint8_t qualifier) noexcept {
 	setQualifier(qualifier);
-	updateQualifier(qualifier);
+	writeQualifier(qualifier);
 }
 
 uint8_t Message::getStatus() const noexcept {
@@ -223,12 +223,12 @@ uint8_t Message::getStatus() const noexcept {
 void Message::setStatus(uint8_t status) noexcept {
 	header().setStatus(status);
 }
-void Message::updateStatus(uint8_t status) noexcept {
+void Message::writeStatus(uint8_t status) noexcept {
 	MessageHeader::writeStatus(frame().array(), status);
 }
 void Message::putStatus(uint8_t status) noexcept {
 	setStatus(status);
-	updateStatus(status);
+	writeStatus(status);
 }
 
 void Message::getHeader(MessageHeader &header) const noexcept {
@@ -242,11 +242,11 @@ bool Message::setHeader(const MessageHeader &header) noexcept {
 		return false;
 	}
 }
-bool Message::updateHeader(const MessageHeader &header) noexcept {
+bool Message::writeHeader(const MessageHeader &header) noexcept {
 	return packHeader(header);
 }
 bool Message::putHeader(const MessageHeader &header) noexcept {
-	if (updateHeader(header)) {
+	if (writeHeader(header)) {
 		this->header() = header;
 		return true;
 	} else {
@@ -572,7 +572,7 @@ unsigned int Message::addReferenceCount() noexcept {
 	return getReferenceCount();
 }
 
-unsigned int Message::addTTL() noexcept {
+unsigned int Message::addHopCount() noexcept {
 	setHopCount(getHopCount() + 1);
 	return getHopCount();
 }

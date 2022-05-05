@@ -922,7 +922,7 @@ bool Hub::processConnection(Socket *connection) noexcept {
 
 bool Hub::dropMessage(Message *message) const noexcept {
 	return ctx.allowPacketDrop && !message->testFlags(MSG_PRIORITY)
-			&& (message->addTTL() > ctx.messageTTL);
+			&& (message->addHopCount() > ctx.messageTTL);
 }
 
 unsigned int Hub::throttle(const Socket *connection) const noexcept {

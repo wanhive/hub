@@ -173,8 +173,8 @@ int AuthenticationHub::handleAuthenticationRequest(Message *message) noexcept {
 		message->setBytes(0, binary, bytes);
 		message->putLength(Message::HEADER_SIZE + bytes);
 		message->putStatus(WH_AQLF_ACCEPTED);
-		message->updateSource(0);
-		message->updateDestination(0);
+		message->writeSource(0);
+		message->writeDestination(0);
 		message->setDestination(message->getOrigin());
 		return 0;
 	} else {
@@ -195,8 +195,8 @@ int AuthenticationHub::handleAuthorizationRequest(Message *message) noexcept {
 	}
 
 	//Message is signed on behalf of the authenticated client
-	message->updateSource(authenticator->getIdentity());
-	message->updateSession(authenticator->getGroup());
+	message->writeSource(authenticator->getIdentity());
+	message->writeSession(authenticator->getGroup());
 	if (message->sign(getPKI())) {
 		message->setDestination(message->getOrigin());
 		return 0;
@@ -206,8 +206,8 @@ int AuthenticationHub::handleAuthorizationRequest(Message *message) noexcept {
 }
 
 int AuthenticationHub::handleInvalidRequest(Message *message) noexcept {
-	message->updateSource(0);
-	message->updateDestination(0);
+	message->writeSource(0);
+	message->writeDestination(0);
 	message->putLength(Message::HEADER_SIZE);
 	message->putStatus(WH_AQLF_REJECTED);
 	message->setDestination(message->getOrigin());
@@ -280,8 +280,8 @@ int AuthenticationHub::generateIdentificationResponse(Message *message,
 				Message::HEADER_SIZE + 2 * sizeof(uint64_t) + saltLength
 						+ nonceLength);
 		message->putStatus(WH_AQLF_ACCEPTED);
-		message->updateSource(0);
-		message->updateDestination(0);
+		message->writeSource(0);
+		message->writeDestination(0);
 		message->setDestination(message->getOrigin());
 	}
 	return 0;

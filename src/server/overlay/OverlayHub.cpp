@@ -113,7 +113,7 @@ void OverlayHub::route(Message *message) noexcept {
 	auto source = message->getSource();
 	if (isExternalNode(origin) && !isWorkerId(origin)) {
 		//Preserve the group ID at insertion
-		message->updateLabel(message->getGroup());
+		message->writeLabel(message->getGroup());
 		//Assign the correct source ID
 		message->putSource(origin);
 	} else if (isInternalNode(origin) && isExternalNode(source)) {
@@ -139,7 +139,7 @@ void OverlayHub::route(Message *message) noexcept {
 	 * [DELIVERY]
 	 */
 	if (isExternalNode(message->getDestination())) {
-		message->updateLabel(0); //Clean up the label
+		message->writeLabel(0); //Clean up the label
 	}
 }
 
@@ -874,8 +874,8 @@ int OverlayHub::handleRegistrationRequest(Message *msg) noexcept {
 		WH_LOG_DEBUG("Registration request %" PRIu64"->%" PRIu64" approved",
 				origin, requestedUid);
 		//Request Accepted, message will be delivered on new UID
-		msg->updateSource(0);
-		msg->updateDestination(0);
+		msg->writeSource(0);
+		msg->writeDestination(0);
 		msg->setDestination(requestedUid);
 		msg->putLength(Message::HEADER_SIZE);
 		msg->putStatus(WH_DHT_AQLF_ACCEPTED);
@@ -883,8 +883,8 @@ int OverlayHub::handleRegistrationRequest(Message *msg) noexcept {
 		WH_LOG_DEBUG("Registration request %" PRIu64"->%" PRIu64" denied",
 				origin, requestedUid);
 		//Request denied, regret message will be sent on old ID
-		msg->updateSource(0);
-		msg->updateDestination(0);
+		msg->writeSource(0);
+		msg->writeDestination(0);
 		msg->setDestination(origin);
 		msg->putLength(Message::HEADER_SIZE);
 		msg->putStatus(WH_DHT_AQLF_REJECTED);
@@ -941,8 +941,8 @@ int OverlayHub::handleGetKeyRequest(Message *msg) noexcept {
 		memset(&hc, 0, sizeof(hc));
 		generateNonce(hashFn, origin, getUid(), &hc);
 		msg->appendBytes((const unsigned char*) &hc, Hash::SIZE);
-		msg->updateSource(0);
-		msg->updateDestination(0);
+		msg->writeSource(0);
+		msg->writeDestination(0);
 		msg->setDestination(origin);
 		msg->putStatus(WH_DHT_AQLF_ACCEPTED);
 	} else if (Socket::isEphemeralId(origin)
@@ -959,15 +959,15 @@ int OverlayHub::handleGetKeyRequest(Message *msg) noexcept {
 		memset(&hc, 0, sizeof(hc));
 		generateNonce(hashFn, origin, getUid(), &hc);
 		msg->setBytes(Hash::SIZE, (const unsigned char*) &hc, Hash::SIZE);
-		msg->updateSource(0);
-		msg->updateDestination(0);
+		msg->writeSource(0);
+		msg->writeDestination(0);
 		msg->setDestination(origin);
 		msg->putLength(Message::HEADER_SIZE + 2 * Hash::SIZE);
 		msg->putStatus(WH_DHT_AQLF_ACCEPTED);
 		msg->sign(getPKI());
 	} else {
-		msg->updateSource(0);
-		msg->updateDestination(0);
+		msg->writeSource(0);
+		msg->writeDestination(0);
 		msg->setDestination(origin);
 		msg->putLength(Message::HEADER_SIZE);
 		msg->putStatus(WH_DHT_AQLF_REJECTED);
@@ -992,11 +992,11 @@ int OverlayHub::handleFindRootRequest(Message *msg) noexcept {
 				&& msg->getPayloadLength() == (4 * sizeof(uint64_t))) {
 			msg->putLength(Message::HEADER_SIZE + 2 * sizeof(uint64_t));
 			msg->setDestination(msg->getData64(2 * sizeof(uint64_t)));
-			msg->updateSource(0);
+			msg->writeSource(0);
 			if (isController(msg->getDestination())) {
-				msg->updateDestination(msg->getData64(3 * sizeof(uint64_t)));
+				msg->writeDestination(msg->getData64(3 * sizeof(uint64_t)));
 			} else {
-				msg->updateDestination(0);
+				msg->writeDestination(0);
 			}
 			return 0;
 		} else {
@@ -1016,8 +1016,8 @@ int OverlayHub::handleFindRootRequest(Message *msg) noexcept {
 			//Request was initiated locally, send direct response
 			msg->putLength(Message::HEADER_SIZE + 2 * sizeof(uint64_t));
 			msg->setDestination(origin);
-			msg->updateSource(0);
-			msg->updateDestination(isController(origin) ? source : 0);
+			msg->writeSource(0);
+			msg->writeDestination(isController(origin) ? source : 0);
 			return 0;
 		} else {
 			//Request was initiated remotely, route towards the originator
@@ -1032,7 +1032,7 @@ int OverlayHub::handleFindRootRequest(Message *msg) noexcept {
 				msg->putLength(Message::HEADER_SIZE + 4 * sizeof(uint64_t));
 				msg->setData64(2 * sizeof(uint64_t), origin); //Record the origin
 				msg->setData64(3 * sizeof(uint64_t), source); //Final destination
-				msg->updateSource(getUid()); //Result will be looped back here
+				msg->writeSource(getUid()); //Result will be looped back here
 			} else {
 				return handleInvalidRequest(msg);
 			}
@@ -1058,8 +1058,8 @@ int OverlayHub::handleBootstrapRequest(Message *msg) noexcept {
 		return handleInvalidRequest(msg);
 	} else {
 		//Direct requests only
-		msg->updateSource(0);
-		msg->updateDestination(isExternalNode(origin) ? 0 : source);
+		msg->writeSource(0);
+		msg->writeDestination(isExternalNode(origin) ? 0 : source);
 	}
 	//-----------------------------------------------------------------
 	msg->setDestination(origin);
@@ -1098,9 +1098,9 @@ int OverlayHub::handlePublishRequest(Message *msg) noexcept {
 		++index;
 	}
 
-	msg->updateLabel(0); //Clean up internal information
-	msg->updateDestination(0); //There are multiple destinations
-	msg->updateStatus(WH_DHT_AQLF_ACCEPTED); //Prevent rebound
+	msg->writeLabel(0); //Clean up internal information
+	msg->writeDestination(0); //There are multiple destinations
+	msg->writeStatus(WH_DHT_AQLF_ACCEPTED); //Prevent rebound
 	msg->addReferenceCount(); //Account for Hub::publish
 	return 0;
 }
@@ -1118,7 +1118,7 @@ int OverlayHub::handleSubscribeRequest(Message *msg) noexcept {
 	auto topic = msg->getSession();
 	Socket *conn = (Socket*) getWatcher(msg->getOrigin());
 	buildResponseHeader(msg, Message::HEADER_SIZE);
-	msg->updateSource(0); //Obfuscate the source (this hub)
+	msg->writeSource(0); //Obfuscate the source (this hub)
 
 	if (!conn) {
 		return handleInvalidRequest(msg);
@@ -1152,7 +1152,7 @@ int OverlayHub::handleUnsubscribeRequest(Message *msg) noexcept {
 	}
 
 	buildResponseHeader(msg, Message::HEADER_SIZE);
-	msg->updateSource(0); //Obfuscate the source (this hub)
+	msg->writeSource(0); //Obfuscate the source (this hub)
 	msg->putStatus(WH_DHT_AQLF_ACCEPTED);
 	return 0;
 }
@@ -1347,7 +1347,7 @@ int OverlayHub::handleFindSuccesssorRequest(Message *msg) noexcept {
 		//Remove recursion, no point in forwarding to self
 		if (precedingNode != getUid()) {
 			msg->setDestination(CONTROLLER);
-			msg->updateDestination(precedingNode);
+			msg->writeDestination(precedingNode);
 		} else {
 			return handleInvalidRequest(msg);
 		}
@@ -1429,7 +1429,7 @@ int OverlayHub::handleMapRequest(Message *msg) noexcept {
 		auto destination = msg->getData64(index);
 
 		msg->setDestination(0);
-		msg->updateDestination(destination);
+		msg->writeDestination(destination);
 		msg->putSource(getUid());
 		msg->putLength(Message::HEADER_SIZE);
 		msg->putStatus(
@@ -1541,7 +1541,7 @@ void OverlayHub::buildResponseHeader(Message *msg, unsigned int length) noexcept
 	//-----------------------------------------------------------------
 	//Update the routing information
 	msg->setDestination(origin); //Forward
-	msg->updateDestination(source); //Destination
+	msg->writeDestination(source); //Destination
 
 	msg->putSource(getUid());
 
