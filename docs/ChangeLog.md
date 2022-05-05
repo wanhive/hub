@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+- New implementation of the wanhive protocol.
+- New security and cryptographic library implementation.
+
 ### Fixed
 
 - **CircularBuffer::setStatus** and **StaticCircularBuffer::setStatus** methods compile correctly.
