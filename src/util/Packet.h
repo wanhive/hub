@@ -23,14 +23,13 @@ class Packet: public Frame {
 public:
 	/**
 	 * Constructor: sets this packet's origin.
-	 * @param origin the local origin identifier
+	 * @param origin the origin identifier
 	 */
 	Packet(uint64_t origin = 0) noexcept;
 	/**
 	 * Destructor
 	 */
 	~Packet();
-
 	//-----------------------------------------------------------------
 	/**
 	 * Sets the frame buffer's header. Serializes the given header and stores it
@@ -117,11 +116,11 @@ public:
 	static unsigned int packets(unsigned int bytes) noexcept;
 	//-----------------------------------------------------------------
 	/**
-	 * Validates the given header object's context.
+	 * Validates the given header's context.
 	 * @param header the object to validate
 	 * @param command the expected command
 	 * @param qualifier the expected qualifier
-	 * @return true if the header's command and qualifier fields match the given
+	 * @return true if header's command and qualifier fields match the given
 	 * values, false otherwise
 	 */
 	static bool checkContext(const MessageHeader &header, uint8_t command,
@@ -135,16 +134,16 @@ public:
 	 * the given values, false otherwise
 	 */
 	bool checkContext(uint8_t command, uint8_t qualifier) const noexcept;
+
 	/**
-	 * Validates the given header object's context.
+	 * Validates the given header's context.
 	 * @param header the object to validate
 	 * @param command the expected command
 	 * @param qualifier the expected qualifier
 	 * @param status the expected status code
-	 * @return true if the header's command, qualifier and status fields match
+	 * @return true if header's command, qualifier and status fields match
 	 * the given values, false otherwise
 	 */
-
 	static bool checkContext(const MessageHeader &header, uint8_t command,
 			uint8_t qualifier, uint8_t status) noexcept;
 	/**
@@ -174,8 +173,8 @@ public:
 	//-----------------------------------------------------------------
 	/**
 	 * For debugging purposes, prints the header data to stderr.
-	 * @param deep if true then the serialized header from IO buffer is
-	 * extracted and printed otherwise the routing header is printed.
+	 * @param deep if true then the frame buffer's serialized header will be
+	 * printed, otherwise the routing header will printed.
 	 */
 	void printHeader(bool deep = false) const noexcept;
 };

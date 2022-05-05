@@ -38,7 +38,7 @@ class Frame {
 public:
 	/**
 	 * Constructor: sets this frame's origin.
-	 * @param origin the local origin identifier
+	 * @param origin the origin identifier
 	 */
 	Frame(uint64_t origin = 0) noexcept;
 	/**

@@ -111,12 +111,12 @@ public:
 	 */
 	unsigned int getIdentifiers(unsigned long long nodes[], unsigned int count,
 			int type);
-
 	/**
-	 * Reads a list host identifiers from a file.
-	 * @param section the section name in the configuration file
-	 * @param option the option name in the configuration file to be used for
-	 * pathname resolution of the input file.
+	 * Reads a list host identifiers from a file. Input file's pathname is
+	 * resolved through the configuration data.
+	 * @param section the section name of configuration data
+	 * @param option the option name under the given section for resolving the
+	 * input file's location.
 	 * @param nodes array for storing the output (list of identifiers)
 	 * @param count capacity of the output array
 	 * @return the actual number of identifiers stored in the array

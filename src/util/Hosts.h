@@ -53,7 +53,6 @@ public:
 	 * @param path pathname of the text file containing the hosts data
 	 */
 	void batchUpdate(const char *path);
-
 	/**
 	 * Exports the hosts database to a tab-delimited text file.
 	 * @param path pathname of the text file, if a file with the given name

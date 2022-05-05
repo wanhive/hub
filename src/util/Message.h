@@ -35,7 +35,7 @@ enum MessageFlag : uint32_t {
 };
 //-----------------------------------------------------------------
 /**
- * Wanhive message implementation
+ * Message implementation
  * Not thread safe
  */
 class Message final: public State, public Packet {
@@ -48,7 +48,7 @@ private:
 public:
 	/**
 	 * Creates a new message.
-	 * @param origin this message's origin
+	 * @param origin the origin identifier
 	 * @return pointer to the newly created message
 	 */
 	static Message* create(uint64_t origin = 0) noexcept;

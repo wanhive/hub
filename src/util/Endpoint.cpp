@@ -179,10 +179,8 @@ bool Endpoint::executeRequest(bool sign, bool verify) {
 
 void Endpoint::sendPong() {
 	receive();
-	auto s = header().getSource();
-	auto d = header().getDestination();
-	MessageHeader::writeSource(buffer(), d);
-	MessageHeader::writeDestination(buffer(), s);
+	MessageHeader::writeSource(buffer(), header().getDestination());
+	MessageHeader::writeDestination(buffer(), header().getSource());
 	MessageHeader::writeStatus(buffer(), WH_AQLF_ACCEPTED);
 	send();
 }

@@ -169,7 +169,6 @@ public:
 	 * @param packet the outgoing request
 	 * @param pki the request signing key (nullptr to ignore)
 	 */
-
 	static void send(int sfd, Packet &packet, const PKI *pki = nullptr);
 	/**
 	 * Sends a request.  If a signing key is provided (not nullptr) then the
