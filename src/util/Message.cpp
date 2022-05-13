@@ -279,7 +279,7 @@ bool Message::setData64(unsigned int index, uint64_t data) noexcept {
 }
 bool Message::appendData64(uint64_t data) noexcept {
 	auto offset = getLength();
-	if (putLength(offset + sizeof(uint64_t))) {
+	if (validate() && putLength(offset + sizeof(uint64_t))) {
 		Serializer::packi64((frame().array() + offset), data);
 		return true;
 	} else {
@@ -312,7 +312,7 @@ bool Message::setData32(unsigned int index, uint32_t data) noexcept {
 }
 bool Message::appendData32(uint32_t data) noexcept {
 	auto offset = getLength();
-	if (putLength(offset + sizeof(uint32_t))) {
+	if (validate() && putLength(offset + sizeof(uint32_t))) {
 		Serializer::packi32((frame().array() + offset), data);
 		return true;
 	} else {
@@ -345,7 +345,7 @@ bool Message::setData16(unsigned int index, uint16_t data) noexcept {
 }
 bool Message::appendData16(uint16_t data) noexcept {
 	auto offset = getLength();
-	if (putLength(offset + sizeof(uint16_t))) {
+	if (validate() && putLength(offset + sizeof(uint16_t))) {
 		Serializer::packi16((frame().array() + offset), data);
 		return true;
 	} else {
@@ -378,7 +378,7 @@ bool Message::setData8(unsigned int index, uint8_t data) noexcept {
 }
 bool Message::appendData8(uint8_t data) noexcept {
 	auto offset = getLength();
-	if (putLength(offset + sizeof(uint8_t))) {
+	if (validate() && putLength(offset + sizeof(uint8_t))) {
 		Serializer::packi8((frame().array() + offset), data);
 		return true;
 	} else {
@@ -411,7 +411,7 @@ bool Message::setDouble(unsigned int index, double data) noexcept {
 }
 bool Message::appendDouble(double data) noexcept {
 	auto offset = getLength();
-	if (putLength(offset + sizeof(uint64_t))) {
+	if (validate() && putLength(offset + sizeof(uint64_t))) {
 		Serializer::packf64((frame().array() + offset), data);
 		return true;
 	} else {
@@ -442,12 +442,13 @@ const unsigned char* Message::getBytes(unsigned int index) const noexcept {
 }
 bool Message::setBytes(unsigned int index, const unsigned char *data,
 		unsigned int length) noexcept {
-	if (length && data && (length <= PAYLOAD_SIZE)
-			&& (index <= (PAYLOAD_SIZE - length))) {
+	if ((length > PAYLOAD_SIZE) || (index > (PAYLOAD_SIZE - length))) {
+		return false;
+	} else if (!length) {
+		return true;
+	} else if (data) {
 		auto offset = HEADER_SIZE + index;
 		Serializer::packib((frame().array() + offset), data, length);
-		return true;
-	} else if (!length) {
 		return true;
 	} else {
 		return false;
@@ -456,11 +457,12 @@ bool Message::setBytes(unsigned int index, const unsigned char *data,
 bool Message::appendBytes(const unsigned char *data,
 		unsigned int length) noexcept {
 	auto offset = getLength();
-	if (length && data && (length <= PAYLOAD_SIZE)
-			&& putLength(offset + length)) {
-		Serializer::packib((frame().array() + offset), data, length);
-		return true;
+	if (!validate()) {
+		return false;
 	} else if (!length) {
+		return true;
+	} else if (data && (length <= PAYLOAD_SIZE) && putLength(offset + length)) {
+		Serializer::packib((frame().array() + offset), data, length);
 		return true;
 	} else {
 		return false;
