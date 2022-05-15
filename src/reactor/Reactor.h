@@ -19,79 +19,138 @@
 namespace wanhive {
 /**
  * Reactor pattern implementation (synchronous event demultiplexer and dispatcher)
- * Ref: http://www.dre.vanderbilt.edu/~schmidt/PDF/reactor-siemens.pdf
- * Thread safe at class level
+ * @ref http://www.dre.vanderbilt.edu/~schmidt/PDF/reactor-siemens.pdf
  */
 class Reactor {
 public:
-	//Doesn't initialize the object, call Reactor::initialize explicitly
+	/**
+	 * Default constructor: Doesn't initialize the underlying selector, call
+	 * Reactor::initialize() explicitly.
+	 */
 	Reactor() noexcept;
-	/*
-	 * <maxEvents> is the maximum number of events to be reported in each cycle.
-	 * If <signal> is true then the reactor handles asynchronous signal delivery
-	 * atomically, i.e. it can be safely interrupted by signal.
+	/**
+	 * Constructor: initializes this object.
+	 * @param maxEvents the maximum number of IO events to report in each call
+	 * to Reactor::monitor().
+	 * @param signal set to true for handling the asynchronous signal delivery
+	 * atomically, i.e. Reactor::monitor() can be reliably interrupted by a
+	 * signal handler.
 	 */
 	Reactor(unsigned int maxEvents, bool signal);
+	/**
+	 * Destructor: cleans up the internal resources.
+	 */
 	virtual ~Reactor();
-	/*
-	 * Initialize the selector, <maxEvents> is the maximum number of IO events
-	 * to be reported in each cycle. If <signal> is true then the reactor can
-	 * be safely interrupted by asynchronously delivered signal.
+	/**
+	 * Initializes the object after performing any necessary clean-up (if the
+	 * object was initialized previously).
+	 * @param maxEvents the maximum number of IO events to report in each call
+	 * to Reactor::monitor().
+	 * @param signal set to true for handling the asynchronous signal delivery
+	 * atomically, i.e. Reactor::monitor() can be reliably interrupted by a
+	 * signal handler.
 	 */
 	void initialize(unsigned int maxEvents, bool signal);
-	//Start monitoring the Watcher <w> for <events>
+	//-----------------------------------------------------------------
+	/**
+	 * Adds a watcher to this reactor. A watcher must be added only once, and to
+	 * only one reactor.
+	 * @param w the watcher to monitor
+	 * @param events the IO events of interest
+	 */
 	void add(Watcher *w, uint32_t events);
-	/*
-	 * Modify the <events> associated with a watcher. Can be used to re-arm the
-	 * watcher if TRIGGER_ONCE flag was specified in the events previously.
+	/**
+	 * Modifies the IO events of interest for the given watcher. Can be used to
+	 * re-arm the watcher if the TRIGGER_ONCE flag was specified in the events
+	 * previously.
+	 * @param w a watcher already being monitored by this reactor
+	 * @param events the new IO events
 	 */
 	void modify(Watcher *w, uint32_t events);
-	/*
-	 * Invalidates a watcher and returns true if it is still in use internally,
-	 * removes it immediately and returns false otherwise. Invalidated watcher
-	 * will be removed by the reactor synchronously in the next iteration if
-	 * it could not be removed immediately.
+	/**
+	 * Invalidates and removes a watcher from the event loop, the removed watcher
+	 * will no longer be monitored by this reactor.
+	 * @param w a watcher currently being monitored by this reactor
+	 * @return true if the watcher got invalidated but could not be removed from
+	 * the event loop immediately, false otherwise. An invalidated watcher will
+	 * be removed synchronously in the next iteration (event loop) if it could
+	 * not be removed immediately.
 	 */
 	bool disable(Watcher *w) noexcept;
-	/*
-	 * Waits for IO events, signal or timeout. If <block> is false then returns
-	 * immediately even if no event got reported, otherwise waits until the timeout.
-	 * To block indefinitely set the timeout value to -1 (default), a timeout value
-	 * of zero (0) will result in non-blocking operation in all the cases.
+	//-----------------------------------------------------------------
+	/**
+	 * The first step of the event loop: waits for IO events on the registered
+	 * watchers, signal-delivery, or timeout (see Reactor::setTimeout()).
+	 * @param block if true then the call will block until the timeout or signal
+	 * delivery. if false then the call will return immediately even if no IO
+	 * event got reported.
 	 */
 	void monitor(bool block);
-	//Processes the ready watchers
+	/**
+	 * The last step of the event loop: processes the ready watchers (reacts to
+	 * the IO events) and removes the invalid watchers (see Reactor::disable()).
+	 */
 	void dispatch() noexcept;
-	//Adds the watcher back into the ready list
+	/**
+	 * Adds a watcher to the ready-list, a list of watchers which have IO events
+	 * pending on them.
+	 * @param w a watcher being monitored by this reactor
+	 */
 	void retain(Watcher *w) noexcept;
-	//Returns true if Reactor::monitor got interrupted by a signal
+	/**
+	 * Checks whether the last call to Reactor::monitor() got interrupted by a
+	 * signal handler.
+	 * @return true on signal delivery, false otherwise
+	 */
 	bool interrupted() const noexcept;
-	//Returns true if Reactor::monitor got timed out
+	/**
+	 * Checks whether the last call to Reactor::monitor() got timed out.
+	 * @return true on timeout, false otherwise
+	 */
 	bool timedOut() const noexcept;
-	//Returns monitor's timeout value
+	/**
+	 * Returns the timeout value (see Reactor::monitor()).
+	 * @return the timeout value
+	 */
 	int getTimeout() const noexcept;
-	//Sets monitor's timeout value
+	/**
+	 * Sets a new timeout value in milliseconds (see Reactor::monitor()).
+	 * @param milliseconds the timeout value in milliseconds. Set this value to
+	 * -1 (default) to block indefinitely, setting it to zero (0) will result in
+	 * non-blocking operation.
+	 */
 	void setTimeout(int milliseconds) noexcept;
 private:
-	/*
-	 * Customizes the Watcher <w> and populates the associated records
-	 * before adding the Watcher to the reactor's event loop.
+	/**
+	 * Customizes a watcher before adding it to this reactor's event loop. This
+	 * method is called internally by Reactor::add().
+	 * @param w a watcher being added to this reactor
 	 */
 	virtual void adapt(Watcher *w) = 0;
-	/*
-	 * Processes the IO events reported on the Watcher <w>. Should return
-	 * <false> if further processing isn't needed, <true> otherwise.
+	/**
+	 * Reacts to the IO events reported on a watcher being monitored by this
+	 * reactor. This method is called internally by Reactor::dispatch().
+	 * @param w a watcher which has reported IO events
+	 * @return true if further processing is required (e.g. IO events are still
+	 * pending), false otherwise.
 	 */
 	virtual bool react(Watcher *w) noexcept = 0;
-	/*
-	 * Cleans up the Watcher <w> and the associated records after
-	 * the given Watcher's removal from the reactor's event loop.
+	/**
+	 * Cleans up a watcher and the associated records after removing it from the
+	 * event loop (see Reactor::disable() and Reactor::dispatch()).
+	 * @param w the watcher being removed
 	 */
 	virtual void stop(Watcher *w) noexcept = 0;
 private:
-	//Release the next watcher from the ready list
+	/**
+	 * Returns the next watcher from the ready-list.
+	 * @return a watcher which requires processing
+	 */
 	Watcher* release() noexcept;
-	//Remove a watcher (watcher will no longer be monitored)
+	/**
+	 * Removes a watcher permanently from the event loop.
+	 * @param w a watcher currently being monitored by this reactor
+	 */
 	void remove(Watcher *w) noexcept;
 private:
 	//Selector timeout in milliseconds (default value: -1)

@@ -24,47 +24,110 @@ namespace wanhive {
  */
 class Descriptor: public State, private File {
 public:
+	/**
+	 * Default constructor: doesn't assign a valid file descriptor.
+	 */
 	Descriptor() noexcept;
+	/**
+	 * Constructor: assigns a file descriptor to this object.
+	 * @param fd the file descriptor
+	 */
 	Descriptor(int fd) noexcept;
+	/**
+	 * Destructor: automatically closes the associated file descriptor.
+	 */
 	~Descriptor();
-
-	//Set <uid> as the unique identifier
+	//-----------------------------------------------------------------
+	/**
+	 * Sets an unique identifier.
+	 * @param uid the unique identifier
+	 */
 	void setUid(unsigned long long uid) noexcept;
-	//Return the unique identifier
+	/**
+	 * Return the unique identifier.
+	 */
 	unsigned long long getUid() const noexcept;
 	//-----------------------------------------------------------------
-	//Set blocking IO state of the file descriptor
+	/**
+	 * Sets the blocking IO mode.
+	 * @param block true for blocking IO, false for non-blocking IO
+	 */
 	void setBlocking(bool block);
-	//Check blocking IO state of the file descriptor
+	/**
+	 * Checks the blocking IO mode.
+	 * @return true if the underlying file descriptor has been configured for
+	 * blocking IO, false if the file descriptor has been configured for non-
+	 * blocking IO.
+	 */
 	bool isBlocking();
-	//Return the associated file descriptor
+	/**
+	 * Returns the associated file descriptor.
+	 * @return the associated file descriptor (can be invalid)
+	 */
 	int getHandle() const noexcept;
 protected:
-	//Set the file descriptor (existing file descriptor is closed)
+	/**
+	 * Sets a new file descriptor after closing the existing one.
+	 * @param fd the new file descriptor
+	 */
 	void setHandle(int fd) noexcept;
-	//Release and return the file descriptor
+	/**
+	 * Releases and returns the associated file descriptor. This object no
+	 * longer owns the file descriptor and hence the file will not be closed when
+	 * this object's destructor is called.
+	 * @return the released file descriptor (can be invalid)
+	 */
 	int releaseHandle() noexcept;
-	//Close and invalidate the file descriptor
+	/**
+	 * Closes and invalidates the associated file descriptor.
+	 * @return true on success, false on system error.
+	 */
 	bool closeHandle() noexcept;
-	/*
-	 * Return true if (false otherwise):
+	//-----------------------------------------------------------------
+	/**
+	 * Checks if an IO operation is pending on this object:
 	 * 1. IO error or peer shutdown reported
 	 * 2. Read event reported
 	 * 3. Write event reported and outgoing data is queued up
+	 * @param outgoing true if the object has outgoing data, false otherwise.
+	 * @return true if an IO operation is pending, false otherwise
 	 */
 	bool isReady(bool outgoing) const noexcept;
-	/*
-	 * Read operations return the number of bytes read on success (possibly 0),
-	 * -1 on EOF and 0 if the file descriptor is non-blocking and the operation
-	 * would block.
+	//-----------------------------------------------------------------
+	/**
+	 * Scatter/gather read operation.
+	 * @param vector describes the IO buffers for storing the data read from the
+	 * associated file descriptor.
+	 * @param count number of IO buffers
+	 * @return the number of bytes read on success (possibly 0), -1 on EOF
+	 * (end of file) and 0 if the file descriptor is non-blocking and the
+	 * operation would block.
 	 */
 	ssize_t readv(const iovec *vector, unsigned int count);
+	/**
+	 * Reads data from the associated file descriptor into the given buffer.
+	 * @param buf describes the buffer for storing the data
+	 * @param count the maximum number of bytes to read
+	 * @return the number of bytes read on success (possibly 0), -1 on EOF
+	 * (end of file) and 0 if the file descriptor is non-blocking and the
+	 * operation would block.
+	 */
 	ssize_t read(void *buf, size_t count);
-	/*
-	 * Write operations return the number of bytes written on success (possibly 0),
-	 * and 0 if the file descriptor is non-blocking and the operation would block.
+	/**
+	 * Scatter/gather write operation.
+	 * @param iov the buffers of data for writing
+	 * @param count the number of buffers
+	 * @return the number of bytes written on success (possibly 0), and 0 if the
+	 * file descriptor is non-blocking and the operation would block.
 	 */
 	ssize_t writev(const iovec *iov, unsigned int count);
+	/**
+	 * Writes data from the given buffer to the associated file descriptor.
+	 * @param buf describes the data to write
+	 * @param count the maximum number of bytes to write
+	 * @return the number of bytes written on success (possibly 0), and 0 if the
+	 * file descriptor is non-blocking and the operation would block.
+	 */
 	ssize_t write(const void *buf, size_t count);
 private:
 	UID uid;

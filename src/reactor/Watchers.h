@@ -18,63 +18,104 @@
 namespace wanhive {
 /**
  * Hash table of watchers
- * Thread safe at class level
  */
 class Watchers {
 public:
+	/**
+	 * Default constructor: initializes an empty container.
+	 */
 	Watchers() noexcept;
+	/**
+	 * Destructor
+	 */
 	~Watchers();
-	//Returns true if a watcher is registered with the given key
+	/**
+	 * Checks if a key is present in the hash table.
+	 * @param key the key to check for existence
+	 * @return true if the key exists in the hash table, false otherwise
+	 */
 	bool contains(unsigned long long key) const noexcept;
-	//Returns true is watcher is present in the hash table (UID used as the key)
+	/**
+	 * Checks if a watcher is present in the hash table.
+	 * @param w the watcher whose UID will be used as the key
+	 * @return true if the watcher's UID exists as a key in the hash table, false
+	 * otherwise.
+	 */
 	bool contains(const Watcher *w) const noexcept;
-	//Returns the watcher (or nullptr) registered with the given key
+	/**
+	 * Returns the watcher associated with the given key in the hash table.
+	 * @param uid the key for probing the hash table
+	 * @return the watcher associated with the key, nullptr if the key doesn't
+	 * exist.
+	 */
 	Watcher* get(unsigned long long uid) const noexcept;
-	/*
-	 * Inserts a watcher with the given <key> into the hash table if the key
-	 * doesn't exist. On success function returns true and watcher's uid is
-	 * set to <key>.
+	/**
+	 * Inserts a (identifier, watcher) pair into the hash table.
+	 * @param key an identifier used as the key
+	 * @param w a watcher to associate with the given key, it's UID will be
+	 * updated to match the given key.
+	 * @return true on success, false otherwise
 	 */
 	bool put(unsigned long long key, Watcher *w) noexcept;
-	/*
-	 * Inserts a watcher into the hash table with it's uid as the key if the key
-	 * doesn't exist. Returns true on success, false otherwise (key already exists).
+	/**
+	 * Inserts a watcher into the hash table.
+	 * @param w the watcher to insert into the hash table, it's UID will be
+	 * used as the key.
+	 * @return true on success, false otherwise
 	 */
 	bool put(Watcher *w) noexcept;
-	/*
-	 * Same as Watchers::put, however if another watcher is already registered
-	 * with the same key as the uid of <w> then the existing one is kicked out
-	 * and returned (nullptr is returned otherwise).
+	/**
+	 * Inserts a watcher into the hash table after resolving any conflict. if
+	 * another watcher is already associated with a key equal to the UID of the
+	 * given watcher then the existing one will be kicked out and returned.
+	 * @param w the watcher to insert into the hash table. It's UID will be used
+	 * as the key.
+	 * @return the existing watcher in case of a conflict, nullptr otherwise
 	 */
 	Watcher* replace(Watcher *w) noexcept;
-	//Removes the watcher with the given key from the hash table
+	/**
+	 * Removes the given key from the hash table.
+	 * @param key the key to remove
+	 */
 	void remove(unsigned long long key) noexcept;
-	//Removes the watcher from the hash table using it's UID as the key
+	/**
+	 * Removes a watcher from the hash table.
+	 * @param w the watcher to remove, it's UID will be used as the key
+	 */
 	void remove(const Watcher *w) noexcept;
-	/*
-	 * If the <first> watcher exists in the hash table and the <second> doesn't
-	 * exist then the <first> watcher is re-registered as the <second> and vice
-	 * versa. Moved watcher's UID is updated to match the key at the new position.
-	 * If both <first> and <second> watchers exist and if <swap> is true then
-	 * the two watchers are swapped, their UIDS are updated to match the keys
-	 * at their new positions. On failure (could not swap or neither of the two
-	 * watchers exists) false is returned, otherwise true is returned. Watchers
-	 * associated with the given UIDs are returned back to the caller via <w>.
+	/**
+	 * Moves the watchers associated with the given pair of keys. If only one of
+	 * the two keys exists in the hash table then the key entry will be removed
+	 * from the hash table and it's associated watcher will be reassigned to the
+	 * originally non-existent key (new entry will be made for the non-existent
+	 * key) and the watcher's UID will be updated to match it's new key. If both
+	 * the keys exist and swapping is enabled then the watchers associated with
+	 * the two keys will be swapped and their UIDs will be updated to match the
+	 * keys at their new positions.
+	 * @param first the first key in the key pair
+	 * @param second the second key in the key pair
+	 * @param w if not nullptr, then the watchers associated with the first and
+	 * the second key after the operation will be returned here (in that order).
+	 * @param swap true to enable swapping, false otherwise
+	 * @return true on success, false on failure (could not swap or neither of
+	 * the two keys exists).
 	 */
 	bool move(unsigned long long first, unsigned long long second,
 			Watcher *w[2], bool swap) noexcept;
-	/*
-	 * Iterate over the hash table, return values of <fn>:
-	 * [0]: Continue iteration
-	 * [1]: Remove from the hash table and continue
-	 * [Any other value]: Stop iteration
+	/**
+	 * Iterates over the hash table, callback function's return value determines
+	 * the actual behavior:
+	 * [0]: continue iteration
+	 * [1]: remove the current entry from the hash table and continue iteration
+	 * [Any other value]: stop iteration
+	 * @param fn the callback function
+	 * @param arg additional argument (for passing on to the callback function)
 	 */
 	void iterate(int (*fn)(Watcher *w, void *arg), void *arg);
 private:
-	Khash<unsigned long long, Watcher*> watchers;
+	Khash<unsigned long long, Watcher*> watchers; //The hash table
 	int (*itfn)(Watcher *w, void *arg); //The actual iterator
 	void *itfnarg;						//Iterator argument
-	//Calls <itfn> internally
 	static int _iterator(unsigned int index, void *arg);
 };
 

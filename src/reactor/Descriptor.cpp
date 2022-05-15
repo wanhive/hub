@@ -29,7 +29,7 @@ Descriptor::Descriptor(int fd) noexcept :
 }
 
 Descriptor::~Descriptor() {
-	closeHandle();
+
 }
 
 void Descriptor::setUid(unsigned long long uid) noexcept {

@@ -124,7 +124,7 @@ void Reactor::setTimeout(int milliseconds) noexcept {
 }
 
 Watcher* Reactor::release() noexcept {
-	Watcher *w = NULL;
+	Watcher *w = nullptr;
 	if (readyList.get(w)) {
 		w->clearFlags(WATCHER_READY);
 	}
