@@ -1,7 +1,7 @@
 /*
  * Inotifier.h
  *
- * File system monitor for Wanhive hubs
+ * File system monitor
  *
  *
  * Copyright (C) 2019 Amit Kumar (amitkriit@gmail.com)
@@ -16,36 +16,52 @@
 #include <sys/inotify.h>
 
 namespace wanhive {
-/**
- * Abstraction of Linux's inotify(7) mechanism
- * Reports file system events
- */
 using InotifyEvent=inotify_event;
+/**
+ * Reports file system events
+ * Abstraction of Linux's inotify(7) mechanism
+ */
 class Inotifier: public Watcher {
 public:
+	/**
+	 * Creates a new file-system monitor.
+	 * @param blocking true for blocking IO, false for non-blocking IO (default)
+	 */
 	Inotifier(bool blocking = false);
+	/**
+	 * Destructor.
+	 */
 	virtual ~Inotifier();
 	//-----------------------------------------------------------------
-	//Start the notifier (no-op)
 	void start() override final;
-	//Disarm the notifier (no-op)
 	void stop() noexcept override final;
-	//Handle the file system notification
 	bool callback(void *arg) noexcept override final;
-	//Always returns false
 	bool publish(void *arg) noexcept override final;
 	//-----------------------------------------------------------------
-	//Returns a unique identifier (watch descriptor) on success
+	/**
+	 * Adds a pathname (file/directory) to the monitor.
+	 * @param pathname the file/directory for monitoring
+	 * @param mask the events of interest
+	 * @return a unique identifier (watch descriptor)
+	 */
 	int add(const char *pathname, uint32_t mask = IN_CLOSE_WRITE | IN_ATTRIB);
-	//Removes an identifier (watch descriptor)
+	/**
+	 * Stops monitoring a file/directory.
+	 * @param identifier the watch descriptor (see Inotifier::add())
+	 */
 	void remove(int identifier);
-	/*
-	 * Returns the number of bytes read, possibly zero (buffer full or would
-	 * block), or -1 if the descriptor was closed. Each new call overwrites the
-	 * previous notifications.
+	/**
+	 * Reads file system events and stores them into the internal buffer. Call
+	 * Inotifier::next() to retrieve the notifications. Each new call overwrites
+	 * the previous notifications.
+	 * @return number of bytes read on success, 0 if non-blocking mode is on and
+	 * the call would block, -1 if the underlying file descriptor was closed.
 	 */
 	ssize_t read();
-	//Returns the next notification
+	/**
+	 * Returns the next notification (see Inotifier::read()).
+	 * @return the next notification, nullptr if no notification is pending
+	 */
 	const InotifyEvent* next();
 private:
 	unsigned char buffer[4096];	//MIN: sizeof(inotify_event) + NAME_MAX + 1

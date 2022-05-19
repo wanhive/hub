@@ -1,7 +1,7 @@
 /*
  * SignalWatcher.h
  *
- * Signal handler for Wanhive hubs
+ * Signal watcher
  *
  *
  * Copyright (C) 2019 Amit Kumar (amitkriit@gmail.com)
@@ -16,32 +16,39 @@
 #include <sys/signalfd.h>
 
 namespace wanhive {
-/**
- * Abstraction of Linux's signalfd(2) mechanism
- * Synchronous signal handler
- */
 using SignalInfo=signalfd_siginfo;
+/**
+ * Signal watcher
+ * Abstraction of Linux's signalfd(2) mechanism
+ */
 class SignalWatcher: public Watcher {
 public:
+	/**
+	 * Constructor: creates a watcher for accepting signals.
+	 * @param blocking true for blocking IO, false for non-blocking IO (default)
+	 */
 	SignalWatcher(bool blocking = false);
+	/**
+	 * Destructor
+	 */
 	virtual ~SignalWatcher();
 	//-----------------------------------------------------------------
-	//Start the notifier (no-op)
 	void start() override final;
-	//Disarm the notifier (no-op)
 	void stop() noexcept override final;
-	//Handle the file system notification
 	bool callback(void *arg) noexcept override final;
-	//Always returns false
 	bool publish(void *arg) noexcept override final;
 	//-----------------------------------------------------------------
-	/*
-	 * Returns the number of bytes read, possibly zero (buffer full or would
-	 * block), or -1 if the descriptor was closed. Each new call overwrites
-	 * the previous notification.
+	/**
+	 * Accepts a pending signal. Call SignalWatcher::getInfo to get the result.
+	 * @return number of bytes read on success, 0 if non-blocking mode is on and
+	 * the call would block, -1 if the underlying file descriptor was closed.
 	 */
 	ssize_t read();
-	//Returns the information about the most recently caught signal
+	/**
+	 * Returns the information about the most recently caught signal. (Each new
+	 * SignalWatcher::read() call overwrites the old value).
+	 * @return pointer to object containing the signal information
+	 */
 	const SignalInfo* getInfo() const noexcept;
 private:
 	void create(bool blocking);

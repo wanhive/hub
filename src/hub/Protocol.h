@@ -25,7 +25,7 @@ public:
 	Protocol() noexcept;
 	~Protocol();
 	//-----------------------------------------------------------------
-	/**
+	/*
 	 * Identification and authentication
 	 * <host> = remote host's identifier
 	 * <uid> = the local identifier
@@ -49,7 +49,7 @@ public:
 	bool authenticationRequest(const MessageAddress &address,
 			const Data &proof);
 	//-----------------------------------------------------------------
-	/**
+	/*
 	 * Registration and session creation
 	 * <host> = remote host's identifier
 	 * <uid> = the local identifier
@@ -70,7 +70,7 @@ public:
 	//Set <verify> to true if host verification is desired
 	bool getKeyRequest(const MessageAddress &address, Digest *hc, bool verify);
 	//-----------------------------------------------------------------
-	/**
+	/*
 	 * Bare minimum bootstrapping protocol
 	 * <host> = remote host's identifier
 	 * <uid> = the local identifier
@@ -92,7 +92,7 @@ public:
 	//Returns true on success, false otherwise
 	bool bootstrapRequest(uint64_t host, uint64_t keys[], uint32_t &limit);
 	//-----------------------------------------------------------------
-	/**
+	/*
 	 * Bare minimum pub/sub protocol
 	 * <host> = remote host's identifier
 	 * <uid> = the local identifier
@@ -117,7 +117,7 @@ public:
 	//Returns true on success, false otherwise
 	bool unsubscribeRequest(uint64_t host, uint8_t topic);
 	//-----------------------------------------------------------------
-	/**
+	/*
 	 * STATIC METHODS
 	 * Bare minimum bootstrapping and registration protocol
 	 * <host> = identifier of the remote host
@@ -156,7 +156,7 @@ public:
 			uint64_t identity, uint64_t &root) noexcept;
 private:
 	//-----------------------------------------------------------------
-	/**
+	/*
 	 * Helper functions
 	 * <host> = identifier of the remote host
 	 * <uid> = the local identifier

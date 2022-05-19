@@ -1,7 +1,7 @@
 /*
  * Clock.cpp
  *
- * Millisecond resolution time-keeper for Wanhive hubs
+ * Periodic timer
  *
  *
  * Copyright (C) 2019 Amit Kumar (amitkriit@gmail.com)
@@ -88,16 +88,16 @@ void Clock::reset(unsigned int expiration, unsigned int interval) {
 	this->interval = interval;
 }
 
+unsigned long long Clock::getCount() const noexcept {
+	return count;
+}
+
 unsigned int Clock::getExpiration() const noexcept {
 	return expiration;
 }
 
 unsigned int Clock::getInterval() const noexcept {
 	return interval;
-}
-
-unsigned long long Clock::getCount() const noexcept {
-	return count;
 }
 
 void Clock::create(bool blocking) {

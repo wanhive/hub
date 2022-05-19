@@ -1,7 +1,7 @@
 /*
  * ClientHub.cpp
  *
- * The base class for the Wanhive clients
+ * The base class for wanhive clients
  *
  *
  * Copyright (C) 2019 Amit Kumar (amitkriit@gmail.com)
@@ -41,10 +41,6 @@ ClientHub::ClientHub(unsigned long long uid, const char *path) noexcept :
 
 ClientHub::~ClientHub() {
 
-}
-
-bool ClientHub::isConnected() const noexcept {
-	return connected;
 }
 
 void ClientHub::stop(Watcher *w) noexcept {
@@ -175,6 +171,10 @@ void ClientHub::maintain() noexcept {
 		Hub::cancel();
 		break;
 	}
+}
+
+bool ClientHub::isConnected() const noexcept {
+	return connected;
 }
 
 void ClientHub::setPassword(const unsigned char *password, unsigned int length,

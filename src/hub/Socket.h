@@ -1,7 +1,7 @@
 /*
  * Socket.h
  *
- * Watcher for sending and receiving messages
+ * Message stream watcher
  *
  *
  * Copyright (C) 2019 Amit Kumar (amitkriit@gmail.com)
@@ -25,116 +25,182 @@
 
 namespace wanhive {
 //-----------------------------------------------------------------
-//Should not conflict with the Watcher flags
+/**
+ * Enumeration of socket flags, should not conflict with the watcher flags
+ */
 enum SocketFlag : uint32_t {
-	SOCKET_PRIORITY = 128,	//Priority connection
-	SOCKET_OVERLAY = 256,	//Overlay connection
-	SOCKET_LOCAL = 512 //Local unix domain socket
+	SOCKET_PRIORITY = 128,/**< Priority connection */
+	SOCKET_OVERLAY = 256, /**< Overlay connection */
+	SOCKET_LOCAL = 512 /**< Unix domain socket connection */
 };
 
+/**
+ * Enumeration of socket types
+ */
 enum SocketType {
-	SOCKET_LISTENER = 1, //A listening socket
-	SOCKET_PROXY = 2	//An outgoing connection socket
+	SOCKET_LISTENER = 1,/**< Listening socket */
+	SOCKET_PROXY = 2 /**< Outgoing connection socket  */
 };
 //-----------------------------------------------------------------
 /**
- * Socket stream watcher
+ * Message stream watcher
  * Not thread safe
  */
 class Socket: public Source<unsigned char>, public Watcher {
 public:
+	/**
+	 * Constructor: associates the given file descriptor to the object
+	 * @param fd the file descriptor to use with this object
+	 */
 	Socket(int fd) noexcept;
+	/**
+	 * Constructor: associates a secure connection to this object
+	 * @param ssl the SSL/TLS connection object
+	 */
 	Socket(SSL *ssl);
-	/*
-	 * Creates a connected Socket of type SOCKET_PROXY. If ni.service is "unix"
-	 * then a unix domain socket is created. Set the blocking IO timeout in
-	 * <timeoutMils> (-1 to ignore, 0 to block forever).
+	/**
+	 * Constructor: connects to a host.
+	 * @param ni the remote host's address, set the service filed to "unix" for
+	 * establishing a unix domain socket connection.
+	 * @param blocking true for blocking IO, false for non-blocking IO (default)
+	 * @param timeoutMils the IO timeout for blocking connection, set 0 to block
+	 * forever, -1 to ignore (use the default behavior).
 	 */
 	Socket(const NameInfo &ni, bool blocking = false, int timeoutMils = -1);
-	/*
-	 * Creates a server Socket of type SOCKET_LISTENER. If <isUnix> is true
-	 * then a unix domain socket is created.
+	/**
+	 * Constructor: creates a host which can accept incoming connections.
+	 * @param service the service name (usually the listening port number for
+	 * TCP/IP socket, and the pathname for a unix domain socket).
+	 * @param backlog the listening backlog
+	 * @param isUnix true for creating a unix domain socket, false for creating
+	 * a TCP/IP socket (default).
+	 * @param blocking true for blocking IO, false for non-blocking IO (default)
 	 */
 	Socket(const char *service, int backlog, bool isUnix = false,
 			bool blocking = false);
-
+	/**
+	 * Destructor
+	 */
 	virtual ~Socket();
-
+	//-----------------------------------------------------------------
 	void* operator new(size_t size);
 	void operator delete(void *p) noexcept;
-	//=================================================================
-	/**
+	//-----------------------------------------------------------------
+	/*
 	 * Source interface implementation
 	 */
 	size_t take(unsigned char *buffer, size_t count) override final;
 	size_t available() const noexcept override final;
-	//=================================================================
-	/**
+	//-----------------------------------------------------------------
+	/*
 	 * Watcher interface implementation
 	 */
-	//Does nothing
 	void start() override final;
-	//Calls shutdown on the underlying socket (cannot be undone)
 	void stop() noexcept override final;
 	bool callback(void *arg) noexcept override final;
 	bool publish(void *arg) noexcept override final;
+
 	void setTopic(unsigned int index) noexcept override final;
 	void clearTopic(unsigned int index) noexcept override final;
 	bool testTopic(unsigned int index) const noexcept override final;
-	//=================================================================
-	/*
-	 * Wrapper for Network::accept. Returns the newly created connection on
-	 * success. If <blocking> is true then the new connection is configured
-	 * for blocking IO. Returns nullptr if the call would block.
+	//-----------------------------------------------------------------
+	/**
+	 * Accepts an incoming connection request.
+	 * @param blocking true for configuring the incoming connection for blocking
+	 * IO, false for non-blocking IO.
+	 * @return a new incoming connection, nullptr if the call would block
 	 */
 	Socket* accept(bool blocking = false);
-	/*
-	 * Returns the number of bytes read, possibly zero (buffer full or would
-	 * block), or -1 if the connection has been closed cleanly. Clears out the
-	 * read IO event from this connection if the call would block.
+	/**
+	 * Reads incoming messages (see Socket::getMessage()).
+	 * @return the number of bytes read on success (possible zero(0) if the
+	 * internal buffer is full), zero(0) if the non-blocking mode is on and the
+	 * read operation would block, -1 if the connection was closed cleanly.
 	 */
 	ssize_t read();
-	/*
-	 * Returns the number of bytes written, possibly zero (no message queued up).
-	 * Clears the write IO event from this connection if the call would block.
+	/**
+	 * Writes outgoing messages to the underlying connection.
+	 * @return the number of bytes written, possibly zero (0) if no outgoing
+	 * message queued up.
 	 */
 	ssize_t write();
-	/*
-	 * Fetches the next message from this connection. The returned message
-	 * is configured correctly for reading from or writing to it's IO buffer.
+	/**
+	 * Returns the incoming messages read from the connection (see Socket::read()).
+	 * @return the next incoming message
 	 */
 	Message* getMessage();
-	//Whether the connection has outlived the specified timeOut (in miliseconds)
+	//-----------------------------------------------------------------
+	/**
+	 * Checks if this object has outlived the given timeout value (old age).
+	 * @param timeOut the timeout value in milliseconds
+	 * @return true on timeout, false otherwise
+	 */
 	bool hasTimedOut(unsigned int timeOut) const noexcept;
-	/*
-	 * Limit on the maximum number of outgoing messages this socket is allowed
-	 * to hold in it's internal queue. Setting value to 0 disables it (no limit).
+	/**
+	 * Sets the maximum number of outgoing messages this object can hold in it's
+	 * internal queue (see Watcher::publish()).
+	 * @param limit the maximum number of messages which can be queued up, (set
+	 * 0 for no limit).
 	 */
 	void setOutputQueueLimit(unsigned int limit) noexcept;
+	/**
+	 * Returns the maximum number of outgoing messages this object can hold in it's
+	 * internal queue (see Watcher::publish()).
+	 * @return the outgoing message queue limit
+	 */
 	unsigned int getOutputQueueLimit() const noexcept;
-	//Returns true if the <id> not in the range of the active IDs
+	/**
+	 * Checks whether the given value is a temporary socket connection identifier.
+	 * Identifiers outside the range [Socket::MIN_ACTIVE_ID, Socket::MAX_ACTIVE_ID]
+	 * are used as the temporary socket identifier.
+	 * @param id the value to check
+	 * @return true if the given value is a temporary id, false otherwise.
+	 */
 	static bool isEphemeralId(unsigned long long id) noexcept;
-	//Returns the underlying SSL/TLS connection (potentially nullptr)
+	/**
+	 * Returns the underlying secure connection object
+	 * @return the SSL/TLS connection object, nullptr if the underlying connection
+	 * is not secure.
+	 */
 	SSL* getSecureSocket() const noexcept;
-	//=================================================================
-	/*
-	 * Creates a unix domain socket pair, encapsulates one end of it into a new
-	 * Socket and stores the other end into <sfd>.Type of the newly created
-	 * Socket is set to SOCKET_PROXY.
+	//-----------------------------------------------------------------
+	/**
+	 * Creates a socket pair.
+	 * @param sfd object for storing the other end of the socket pair
+	 * @param blocking true for configuring the socket pair for blocking IO,
+	 * false for non-blocking IO.
+	 * @return object containing one end of the socket pair
 	 */
 	static Socket* createSocketPair(int &sfd, bool blocking = false);
-	//Sets the context for SSL connections
+	/**
+	 * Sets the context for secure connections
+	 * @param ctx object containing the SSL/TLS context
+	 */
 	static void setSSLContext(SSLContext *ctx) noexcept;
 	//=================================================================
-	//Initializes the memory pool
+	/**
+	 * Initializes the object pool
+	 * @param size object pool's size
+	 */
 	static void initPool(unsigned int size);
-	//Destroys the memory pool
+	/**
+	 * Destroys the object pool
+	 */
 	static void destroyPool();
-	//Returns the memory pool size
+	/**
+	 * Returns the object pool's capacity
+	 * @return object pool's capacity
+	 */
 	static unsigned int poolSize() noexcept;
-	//Returns the allocated objects count
+	/**
+	 * Returns the number of object currently allocated from the object pool.
+	 * @return the allocated objects count
+	 */
 	static unsigned int allocated() noexcept;
-	//Returns the unallocated objects count
+	/**
+	 * Returns the number of objects which can be allocated from the object pool.
+	 * @return the unallocated objects count
+	 */
 	static unsigned int unallocated() noexcept;
 private:
 	//Read from a raw socket connection
@@ -169,12 +235,13 @@ private:
 	//Free internal resources
 	void cleanup() noexcept;
 public:
-	//0-9223372036854775807 are used as Active Socket IDs
+	/** The minimum value for active socket identifier */
 	static constexpr uint64_t MIN_ACTIVE_ID = 0;
+	/** The maximum value for active socket identifier */
 	static constexpr uint64_t MAX_ACTIVE_ID = INT64_MAX;
-	//Set to at least twice of the MTU, must be power of two
+	/** The incoming message buffer size in bytes (must be power of two) */
 	static constexpr unsigned int READ_BUFFER_SIZE = (Message::MTU << 3);
-	//Size of scatter-gather OP buffers, must be power of two
+	/** Size of the output queue (must be power of two) */
 	static constexpr unsigned int OUT_QUEUE_SIZE = 1024;
 private:
 	//-----------------------------------------------------------------
@@ -206,7 +273,7 @@ private:
 	//Container for scatter-gather O/P
 	StaticBuffer<iovec, OUT_QUEUE_SIZE> outgoingMessages;
 	//-----------------------------------------------------------------
-	static MemoryPool pool;
+	static MemoryPool pool; //Object pool
 	static SSLContext *sslCtx; //SSL/TLS context
 };
 

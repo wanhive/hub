@@ -1,7 +1,7 @@
 /*
  * ClientHub.h
  *
- * The base class for the Wanhive clients
+ * The base class for wanhive clients
  *
  *
  * Copyright (C) 2019 Amit Kumar (amitkriit@gmail.com)
@@ -17,16 +17,21 @@
 
 namespace wanhive {
 /**
- * Wanhive client implementation
+ * Client hub implementation
  * Thread safe at class level
  */
 class ClientHub: public Hub {
 public:
+	/**
+	 * Constructor: creates a new client
+	 * @param uid hub's unique identifier
+	 * @param path pathname of the configuration file
+	 */
 	ClientHub(unsigned long long uid, const char *path = nullptr) noexcept;
+	/**
+	 * Destructor
+	 */
 	virtual ~ClientHub();
-
-	//Returns true if the client is connected with the network
-	bool isConnected() const noexcept;
 protected:
 	//-----------------------------------------------------------------
 	void stop(Watcher *w) noexcept override;
@@ -35,7 +40,18 @@ protected:
 	void route(Message *message) noexcept override;
 	void maintain() noexcept override;
 	//-----------------------------------------------------------------
-	//Allow derived classes to override the values loaded during configuration
+	/**
+	 * Checks the network connection.
+	 * @return true if connected, false otherwise
+	 */
+	bool isConnected() const noexcept;
+	/**
+	 * Allows derived classes to override the secure password loaded from the
+	 * configuration file.
+	 * @param password the secure password
+	 * @param length passowrd length in bytes
+	 * @param rounds number of hash rounds
+	 */
 	void setPassword(const unsigned char *password, unsigned int length,
 			unsigned int rounds) noexcept;
 private:
@@ -73,9 +89,10 @@ private:
 	void clearIdentifiers() noexcept;
 	void clear() noexcept;
 private:
-	volatile bool connected;
-	/**
-	 * Client hub configuration
+	bool connected;
+
+	/*
+	 * The configuration data
 	 */
 	struct {
 		//Usually, clear text password
@@ -90,7 +107,7 @@ private:
 		unsigned int retryInterval;
 	} ctx;
 
-	/**
+	/*
 	 * For bootstrapping and connection management
 	 */
 	static constexpr unsigned int NODES = 16;

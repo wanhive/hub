@@ -1,7 +1,7 @@
 /*
  * EventNotifier.cpp
  *
- * Event notification mechanism for Wanhive hubs
+ * Events counter
  *
  *
  * Copyright (C) 2019 Amit Kumar (amitkriit@gmail.com)

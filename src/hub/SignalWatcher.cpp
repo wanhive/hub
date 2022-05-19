@@ -1,7 +1,7 @@
 /*
  * SignalWatcher.cpp
  *
- * Signal handler for Wanhive hubs
+ * Signal watcher
  *
  *
  * Copyright (C) 2019 Amit Kumar (amitkriit@gmail.com)

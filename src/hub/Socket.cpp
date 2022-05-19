@@ -1,7 +1,7 @@
 /*
  * Socket.cpp
  *
- * Watcher for sending and receiving messages
+ * Message stream watcher
  *
  *
  * Copyright (C) 2019 Amit Kumar (amitkriit@gmail.com)

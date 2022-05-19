@@ -1,7 +1,7 @@
 /*
  * Inotifier.cpp
  *
- * File system monitor for Wanhive hubs
+ * File system monitor
  *
  *
  * Copyright (C) 2019 Amit Kumar (amitkriit@gmail.com)

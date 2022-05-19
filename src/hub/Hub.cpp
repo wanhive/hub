@@ -1,7 +1,7 @@
 /*
  * Hub.cpp
  *
- * The base class for the Wanhive hubs
+ * The base class for wanhive hubs
  *
  *
  * Copyright (C) 2019 Amit Kumar (amitkriit@gmail.com)

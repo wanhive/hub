@@ -1,7 +1,7 @@
 /*
  * Clock.h
  *
- * Millisecond resolution time-keeper for Wanhive hubs
+ * Periodic timer
  *
  *
  * Copyright (C) 2019 Amit Kumar (amitkriit@gmail.com)
@@ -16,43 +16,59 @@
 
 namespace wanhive {
 /**
- * Millisecond resolution time keeper
- * Abstraction of Linux's timerfd mechanism (timerfd_create(2))
+ * Millisecond resolution periodic timer
+ * Abstraction of the Linux's timerfd mechanism (timerfd_create(2))
  */
 class Clock: public Watcher {
 public:
-	//Creates however doesn't arm the clock
+	/**
+	 * Constructor: creates a new timer (doesn't start it).
+	 * @param expiration initial expiration in miliseconds (set 0 to disarm)
+	 * @param interval interval for periodic timer in milliseconds
+	 * @param blocking true for blocking IO, false for non-blocking IO (default)
+	 */
 	Clock(unsigned int expiration, unsigned int interval,
 			bool blocking = false);
+	/**
+	 * Destructor.
+	 */
 	virtual ~Clock();
 	//-----------------------------------------------------------------
-	//Start the clock with the current settings
 	void start() override final;
-	//Disarm the clock, the current settings are preserved
 	void stop() noexcept override final;
-	//Handle the periodic timer expiration notification
 	bool callback(void *arg) noexcept override final;
-	//Always returns false
 	bool publish(void *arg) noexcept override final;
 	//-----------------------------------------------------------------
-	/*
-	 * Returns the number of bytes read, possibly zero (buffer full or would
-	 * block), or -1 if the descriptor was closed. Each new call overwrites
-	 * the expiration count.
+	/**
+	 * Reads the timer expiration count. Call Clock::getCount() to get the result.
+	 * @return the number of bytes read (8 bytes) on success, 0 if non-blocking
+	 * mode is on and the call would block, -1 if the underlying file descriptor
+	 * was closed.
 	 */
 	ssize_t read();
-	/*
-	 * Updates clock's settings and restarts it.
-	 * NOTE: setting <expiration> to zero (0) will disarm the clock.
+	/**
+	 * Updates the settings and restarts the timer.
+	 * @param expiration initial expiration in miliseconds (set 0 to disarm)
+	 * @param interval interval for periodic timer in milliseconds
 	 */
 	void reset(unsigned int expiration, unsigned int interval);
-	//-----------------------------------------------------------------
-	//Initial expiration in milliseconds
-	unsigned int getExpiration() const noexcept;
-	//Period in milliseconds
-	unsigned int getInterval() const noexcept;
-	//Return the number of times the periodic timer expired
+	/**
+	 * Returns the number of times the periodic timer expired (each new
+	 * Clock::read() call overwrites the old value).
+	 * @return the expiration count
+	 */
 	unsigned long long getCount() const noexcept;
+	/**
+	 * Returns the initial expiration in milliseconds.
+	 * @return initial expiration in miliseconds
+	 */
+	unsigned int getExpiration() const noexcept;
+	/**
+	 * Returns the periodic timer interval (repeated timer expiration after the
+	 * initial expiration) in milliseconds.
+	 * @return interval of periodic timer in milliseconds
+	 */
+	unsigned int getInterval() const noexcept;
 private:
 	//Creates a new Timer file descriptor
 	void create(bool blocking);
