@@ -170,8 +170,8 @@ protected:
 	Watcher* registerWatcher(unsigned long long id, unsigned long long newId,
 			bool replace = false) noexcept;
 	/**
-	 * Watcher management: iterates through the list of registered watcher. Return
-	 * value of the callback function controls the iteration:
+	 * Watcher management: iterates through the list of registered watchers. The
+	 * return value of callback function controls the behavior:
 	 * [0]: continue iteration
 	 * [1]: dissociate the watcher from it's key and continue iteration (call
 	 * Reactor::disable() explicitly inside the callback function to remove the
@@ -239,7 +239,7 @@ private:
 	 * Adapter: the hub maintenance routine.
 	 */
 	virtual void maintain() noexcept;
-
+	//-----------------------------------------------------------------
 	/**
 	 * Adapter: callback for periodic timer notification.
 	 * @param uid the source identifier
@@ -268,9 +268,9 @@ private:
 	 */
 	virtual void processSignalNotification(unsigned long long uid,
 			const SignalInfo *info) noexcept;
-
+	//-----------------------------------------------------------------
 	/**
-	 * Adapter: return true to allow worker thread creation.
+	 * Adapter: allow worker thread creation.
 	 * @return true to create a worker thread, false otherwise
 	 */
 	virtual bool enableWorker() const noexcept;
