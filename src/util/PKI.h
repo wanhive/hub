@@ -61,7 +61,6 @@ public:
 
 	/**
 	 * Initializes the public key (discards the existing one).
-	 *
 	 * @param publicKey the public key
 	 * @param fromFile true if <publicKey> argument must be treated as pathname
 	 * to a pem-formatted file, false if <publicKey> must be treated as base-16
@@ -86,7 +85,6 @@ public:
 	bool hasPublicKey() const noexcept;
 	/**
 	 * Checks the existence of host (private) key.
-	 *
 	 * @return true if this object contains a host (private) key, false otherwise
 	 */
 	bool hasHostKey() const noexcept;

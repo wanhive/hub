@@ -159,7 +159,9 @@ protected:
 	/**
 	 * Watcher management: associates the watcher assigned to the given (old) key
 	 * with a new key. If another watcher is already associated with the new key
-	 * and replacement is allowed then the existing watcher will be removed.
+	 * and replacement is allowed then the existing watcher will be removed. On
+	 * success, the effected watcher has it's WATCHER_ACTIVE flag set and it's
+	 * UID is updated to match the new key.
 	 * @param id the old key
 	 * @param newId the new (desired) key
 	 * @param replace true to allow replacement on conflict, false to fail on

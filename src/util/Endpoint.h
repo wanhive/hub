@@ -58,7 +58,6 @@ public:
 	//-----------------------------------------------------------------
 	/**
 	 * Connects to a new host after terminating the existing connection.
-	 *
 	 * @param ni the resource name of the host
 	 * @param timeoutMils specifies the IO timeout value in milliseconds. Set
 	 * this value to 0 to block forever, -1 to ignore.
