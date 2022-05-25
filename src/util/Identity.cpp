@@ -1,7 +1,7 @@
 /*
  * Identity.cpp
  *
- * Identity and configuration manager
+ * Hub's identity
  *
  *
  * Copyright (C) 2018 Amit Kumar (amitkriit@gmail.com)
@@ -95,10 +95,6 @@ SSLContext* Identity::getSSLContext() noexcept {
 	} else {
 		return nullptr;
 	}
-}
-
-bool Identity::allowSSL() const noexcept {
-	return ssl.enabled;
 }
 
 bool Identity::generateNonce(Hash &hash, uint64_t salt, uint64_t id,
