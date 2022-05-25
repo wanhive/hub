@@ -9,7 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
-- New implementation of the wanhive protocol.
+- New data unit implementation.
 - New security and cryptographic library implementation.
 
 ### Fixed
