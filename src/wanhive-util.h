@@ -20,7 +20,6 @@
 #include "util/InstanceID.h"
 #include "util/Message.h"
 #include "util/Random.h"
-#include "util/TransactionKey.h"
 #include "util/commands.h"
 
 #endif /* WH_WANHIVE_UTIL_H_ */

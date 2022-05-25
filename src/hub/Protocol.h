@@ -14,10 +14,18 @@
 #define WH_HUB_PROTOCOL_H_
 #include "../util/Endpoint.h"
 #include "../util/FlowControl.h"
+#include "../util/Hash.h"
 #include "../util/Message.h"
-#include "../util/TransactionKey.h"
 
 namespace wanhive {
+/**
+ * Asymmetric key and nonce for handshaking
+ */
+struct TransactionKey {
+	const PKI *keys;
+	Digest *nonce;
+};
+//-----------------------------------------------------------------
 /**
  * Bare minimum protocol implementation
  * Expects blocking connection
