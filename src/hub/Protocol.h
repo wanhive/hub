@@ -13,6 +13,9 @@
 #ifndef WH_HUB_PROTOCOL_H_
 #define WH_HUB_PROTOCOL_H_
 #include "../util/Endpoint.h"
+#include "../util/FlowControl.h"
+#include "../util/Message.h"
+#include "../util/TransactionKey.h"
 
 namespace wanhive {
 /**

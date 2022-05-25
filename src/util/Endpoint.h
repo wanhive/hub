@@ -12,9 +12,7 @@
 
 #ifndef WH_UTIL_ENDPOINT_H_
 #define WH_UTIL_ENDPOINT_H_
-#include "FlowControl.h"
-#include "Message.h"
-#include "TransactionKey.h"
+#include "Packet.h"
 #include "../base/Network.h"
 #include "../base/security/SSLContext.h"
 
