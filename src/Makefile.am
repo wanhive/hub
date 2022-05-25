@@ -87,7 +87,7 @@ WH_HUBHEADERS = hub/Alarm.h hub/ClientHub.h hub/Event.h hub/Hub.h \
 	hub/Identity.h hub/Inotifier.h hub/Interrupt.h hub/Protocol.h \
 	hub/Socket.h hub/Topic.h
 WH_HUBSOURCES = hub/Alarm.cpp hub/ClientHub.cpp hub/Event.cpp hub/Hub.cpp \
-	hub/Identity.cpp hub/Inotifier.cpp  hub/Interrupt.cpp hub/Protocol.cpp \
+	hub/Identity.cpp hub/Inotifier.cpp hub/Interrupt.cpp hub/Protocol.cpp \
 	hub/Socket.cpp hub/Topic.cpp
 
 ## src/server collection
