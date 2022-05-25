@@ -10,9 +10,8 @@
  *
  */
 
-#include "Clock.h"
+#include "Alarm.h"
 #include "Hub.h"
-#include "../base/Timer.h"
 #include "../base/unix/SystemException.h"
 #include <sys/timerfd.h>
 
@@ -33,40 +32,40 @@ long long specToMils(timespec &ts) {
 
 namespace wanhive {
 
-Clock::Clock(unsigned int expiration, unsigned int interval, bool blocking) :
+Alarm::Alarm(unsigned int expiration, unsigned int interval, bool blocking) :
 		expiration(expiration), interval(interval), count(0) {
 	create(blocking);
 }
 
-Clock::~Clock() {
+Alarm::~Alarm() {
 
 }
 
-void Clock::start() {
+void Alarm::start() {
 	update(expiration, interval);
 }
 
-void Clock::stop() noexcept {
+void Alarm::stop() noexcept {
 	try {
 		update(0, 0);
 	} catch (const BaseException &e) {
 	}
 }
 
-bool Clock::callback(void *arg) noexcept {
+bool Alarm::callback(void *arg) noexcept {
 	if (getReference() != nullptr) {
-		Handler<Clock> *h = static_cast<Hub*>(getReference());
+		Handler<Alarm> *h = static_cast<Hub*>(getReference());
 		return h->handle(this);
 	} else {
 		return false;
 	}
 }
 
-bool Clock::publish(void *arg) noexcept {
+bool Alarm::publish(void *arg) noexcept {
 	return false;
 }
 
-ssize_t Clock::read() {
+ssize_t Alarm::read() {
 	count = 0; //Reset the count
 	uint64_t expiryCount;
 	auto nRead = Descriptor::read(&expiryCount, sizeof(expiryCount));
@@ -81,26 +80,26 @@ ssize_t Clock::read() {
 	}
 }
 
-void Clock::reset(unsigned int expiration, unsigned int interval) {
+void Alarm::reset(unsigned int expiration, unsigned int interval) {
 	update(expiration, interval);
 	//Update the settings only if the system call succeeded
 	this->expiration = expiration;
 	this->interval = interval;
 }
 
-unsigned long long Clock::getCount() const noexcept {
+unsigned long long Alarm::getCount() const noexcept {
 	return count;
 }
 
-unsigned int Clock::getExpiration() const noexcept {
+unsigned int Alarm::getExpiration() const noexcept {
 	return expiration;
 }
 
-unsigned int Clock::getInterval() const noexcept {
+unsigned int Alarm::getInterval() const noexcept {
 	return interval;
 }
 
-void Clock::create(bool blocking) {
+void Alarm::create(bool blocking) {
 	auto fd = timerfd_create(CLOCK_MONOTONIC, blocking ? 0 : TFD_NONBLOCK);
 	if (fd != -1) {
 		setHandle(fd);
@@ -109,7 +108,7 @@ void Clock::create(bool blocking) {
 	}
 }
 
-void Clock::update(unsigned int expiration, unsigned int interval) {
+void Alarm::update(unsigned int expiration, unsigned int interval) {
 	struct itimerspec time;
 	milsToSpec(expiration, time.it_value);
 	milsToSpec(interval, time.it_interval);
@@ -118,7 +117,7 @@ void Clock::update(unsigned int expiration, unsigned int interval) {
 	}
 }
 
-void Clock::settings(unsigned int &expiration, unsigned int &interval) {
+void Alarm::settings(unsigned int &expiration, unsigned int &interval) {
 	struct itimerspec time;
 	if (timerfd_gettime(getHandle(), &time) == 0) {
 		expiration = specToMils(time.it_value);

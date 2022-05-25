@@ -10,8 +10,8 @@
  *
  */
 
-#ifndef WH_HUB_CLOCK_H_
-#define WH_HUB_CLOCK_H_
+#ifndef WH_HUB_ALARM_H_
+#define WH_HUB_ALARM_H_
 #include "../reactor/Watcher.h"
 
 namespace wanhive {
@@ -19,7 +19,7 @@ namespace wanhive {
  * Millisecond resolution periodic timer
  * Abstraction of the Linux's timerfd mechanism (timerfd_create(2))
  */
-class Clock: public Watcher {
+class Alarm: public Watcher {
 public:
 	/**
 	 * Constructor: creates a new timer (doesn't start it).
@@ -27,12 +27,12 @@ public:
 	 * @param interval interval for periodic timer in milliseconds
 	 * @param blocking true for blocking IO, false for non-blocking IO (default)
 	 */
-	Clock(unsigned int expiration, unsigned int interval,
+	Alarm(unsigned int expiration, unsigned int interval,
 			bool blocking = false);
 	/**
 	 * Destructor.
 	 */
-	virtual ~Clock();
+	virtual ~Alarm();
 	//-----------------------------------------------------------------
 	void start() override final;
 	void stop() noexcept override final;
@@ -84,4 +84,4 @@ private:
 
 } /* namespace wanhive */
 
-#endif /* WH_HUB_CLOCK_H_ */
+#endif /* WH_HUB_ALARM_H_ */

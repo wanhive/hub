@@ -10,43 +10,43 @@
  *
  */
 
-#include "SignalWatcher.h"
+#include "Interrupt.h"
 #include "Hub.h"
 #include "../base/unix/SystemException.h"
 
 namespace wanhive {
 
-SignalWatcher::SignalWatcher(bool blocking) {
+Interrupt::Interrupt(bool blocking) {
 	create(blocking);
 	memset(&info, 0, sizeof(info));
 }
 
-SignalWatcher::~SignalWatcher() {
+Interrupt::~Interrupt() {
 
 }
 
-void SignalWatcher::start() {
+void Interrupt::start() {
 
 }
 
-void SignalWatcher::stop() noexcept {
+void Interrupt::stop() noexcept {
 
 }
 
-bool SignalWatcher::callback(void *arg) noexcept {
+bool Interrupt::callback(void *arg) noexcept {
 	if (getReference() != nullptr) {
-		Handler<SignalWatcher> *h = static_cast<Hub*>(getReference());
+		Handler<Interrupt> *h = static_cast<Hub*>(getReference());
 		return h->handle(this);
 	} else {
 		return false;
 	}
 }
 
-bool SignalWatcher::publish(void *arg) noexcept {
+bool Interrupt::publish(void *arg) noexcept {
 	return false;
 }
 
-ssize_t SignalWatcher::read() {
+ssize_t Interrupt::read() {
 	memset(&info, 0, sizeof(info)); //Clear out the data
 	auto nRead = Descriptor::read(&info, sizeof(info));
 	if (nRead == sizeof(info)) {
@@ -59,11 +59,11 @@ ssize_t SignalWatcher::read() {
 	}
 }
 
-const SignalInfo* SignalWatcher::getInfo() const noexcept {
+const SignalInfo* Interrupt::getInfo() const noexcept {
 	return &info;
 }
 
-void SignalWatcher::create(bool blocking) {
+void Interrupt::create(bool blocking) {
 	int fd;
 	sigset_t mask;
 	if (sigfillset(&mask) == -1) {

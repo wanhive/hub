@@ -12,11 +12,11 @@
 
 #ifndef WH_HUB_HUB_H_
 #define WH_HUB_HUB_H_
-#include "Clock.h"
-#include "EventNotifier.h"
+#include "Alarm.h"
+#include "Event.h"
 #include "Identity.h"
 #include "Inotifier.h"
-#include "SignalWatcher.h"
+#include "Interrupt.h"
 #include "Socket.h"
 #include "../base/Timer.h"
 #include "../base/Thread.h"
@@ -30,10 +30,10 @@ namespace wanhive {
 /**
  * Hub implementation
  */
-class Hub: public Handler<Clock>,
-		public Handler<EventNotifier>,
+class Hub: public Handler<Alarm>,
+		public Handler<Event>,
 		public Handler<Inotifier>,
-		public Handler<SignalWatcher>,
+		public Handler<Interrupt>,
 		public Handler<Socket>,
 		protected Identity,
 		protected Reactor,
@@ -289,10 +289,10 @@ private:
 	/*
 	 * Implementations of the Handler interfaces
 	 */
-	bool handle(Clock *clock) noexcept override final;
-	bool handle(EventNotifier *enotifier) noexcept override final;
+	bool handle(Alarm *clock) noexcept override final;
+	bool handle(Event *enotifier) noexcept override final;
 	bool handle(Inotifier *inotifier) noexcept override final;
-	bool handle(SignalWatcher *signalWatcher) noexcept override final;
+	bool handle(Interrupt *signalWatcher) noexcept override final;
 	bool handle(Socket *connection) noexcept override final;
 	//-----------------------------------------------------------------
 	/*
@@ -389,10 +389,10 @@ private:
 	 */
 	struct {
 		Socket *listener; //The listener
-		Clock *clock; //Clock watcher
-		EventNotifier *enotifier; //Events watcher
+		Alarm *clock; //Clock watcher
+		Event *enotifier; //Events watcher
 		Inotifier *inotifier;	//File system watcher
-		SignalWatcher *signalWatcher; //Signal watcher
+		Interrupt *signalWatcher; //Signal watcher
 	} notifiers;
 	//-----------------------------------------------------------------
 	/*

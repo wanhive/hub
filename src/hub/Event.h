@@ -10,8 +10,8 @@
  *
  */
 
-#ifndef WH_HUB_EVENTNOTIFIER_H_
-#define WH_HUB_EVENTNOTIFIER_H_
+#ifndef WH_HUB_EVENT_H_
+#define WH_HUB_EVENT_H_
 #include "../reactor/Watcher.h"
 
 namespace wanhive {
@@ -19,7 +19,7 @@ namespace wanhive {
  * Events counter
  * Abstraction of linux's event wait/notify mechanism (see eventfd(2))
  */
-class EventNotifier: public Watcher {
+class Event: public Watcher {
 public:
 	/**
 	 * Constructor: creates a new events counter.
@@ -27,11 +27,11 @@ public:
 	 * EventNotifier::read()).
 	 * @param blocking true for blocking IO, false for non-blocking IO (default)
 	 */
-	EventNotifier(bool semaphore, bool blocking = false);
+	Event(bool semaphore, bool blocking = false);
 	/**
 	 * Destructor.
 	 */
-	virtual ~EventNotifier();
+	virtual ~Event();
 	//-----------------------------------------------------------------
 	void start() override final;
 	void stop() noexcept override final;
@@ -67,4 +67,4 @@ private:
 
 } /* namespace wanhive */
 
-#endif /* WH_HUB_EVENTNOTIFIER_H_ */
+#endif /* WH_HUB_EVENT_H_ */

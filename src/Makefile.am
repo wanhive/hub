@@ -83,12 +83,12 @@ WH_UTILSOURCES = util/Authenticator.cpp util/Endpoint.cpp util/FlowControl.cpp \
 	util/Packet.cpp util/Random.cpp
 
 ## src/hub collection
-WH_HUBHEADERS = hub/ClientHub.h hub/Clock.h hub/EventNotifier.h hub/Hub.h \
-	hub/Identity.h hub/Inotifier.h hub/Protocol.h hub/SignalWatcher.h \
+WH_HUBHEADERS = hub/Alarm.h hub/ClientHub.h hub/Event.h hub/Hub.h \
+	hub/Identity.h hub/Inotifier.h hub/Interrupt.h hub/Protocol.h \
 	hub/Socket.h hub/Topic.h
-WH_HUBSOURCES = hub/ClientHub.cpp hub/Clock.cpp hub/EventNotifier.cpp \
-	hub/Hub.cpp hub/Identity.cpp hub/Inotifier.cpp hub/Protocol.cpp \
-	hub/SignalWatcher.cpp hub/Socket.cpp hub/Topic.cpp
+WH_HUBSOURCES = hub/Alarm.cpp hub/ClientHub.cpp hub/Event.cpp hub/Hub.cpp \
+	hub/Identity.cpp hub/Inotifier.cpp  hub/Interrupt.cpp hub/Protocol.cpp \
+	hub/Socket.cpp hub/Topic.cpp
 
 ## src/server collection
 WH_SERVERHEADERS = server/auth/AuthenticationHub.h server/overlay/commands.h \

@@ -10,8 +10,8 @@
  *
  */
 
-#ifndef WH_HUB_SIGNALWATCHER_H_
-#define WH_HUB_SIGNALWATCHER_H_
+#ifndef WH_HUB_INTERRUPT_H_
+#define WH_HUB_INTERRUPT_H_
 #include "../reactor/Watcher.h"
 #include <sys/signalfd.h>
 
@@ -21,17 +21,17 @@ using SignalInfo=signalfd_siginfo;
  * Signal watcher
  * Abstraction of Linux's signalfd(2) mechanism
  */
-class SignalWatcher: public Watcher {
+class Interrupt: public Watcher {
 public:
 	/**
 	 * Constructor: creates a watcher for accepting signals.
 	 * @param blocking true for blocking IO, false for non-blocking IO (default)
 	 */
-	SignalWatcher(bool blocking = false);
+	Interrupt(bool blocking = false);
 	/**
 	 * Destructor
 	 */
-	virtual ~SignalWatcher();
+	virtual ~Interrupt();
 	//-----------------------------------------------------------------
 	void start() override final;
 	void stop() noexcept override final;
@@ -58,4 +58,4 @@ private:
 
 } /* namespace wanhive */
 
-#endif /* WH_HUB_SIGNALWATCHER_H_ */
+#endif /* WH_HUB_INTERRUPT_H_ */

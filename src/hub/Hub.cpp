@@ -436,7 +436,7 @@ void Hub::stopWork() noexcept {
 
 }
 
-bool Hub::handle(Clock *clock) noexcept {
+bool Hub::handle(Alarm *clock) noexcept {
 	try {
 		if (clock == nullptr) {
 			return false;
@@ -457,7 +457,7 @@ bool Hub::handle(Clock *clock) noexcept {
 	}
 }
 
-bool Hub::handle(EventNotifier *enotifier) noexcept {
+bool Hub::handle(Event *enotifier) noexcept {
 	try {
 		if (enotifier == nullptr) {
 			return false;
@@ -502,7 +502,7 @@ bool Hub::handle(Inotifier *inotifier) noexcept {
 	}
 }
 
-bool Hub::handle(SignalWatcher *signalWatcher) noexcept {
+bool Hub::handle(Interrupt *signalWatcher) noexcept {
 	try {
 		ssize_t nRead = 0;
 		if (signalWatcher == nullptr) {
@@ -647,10 +647,10 @@ void Hub::initListener() {
 }
 
 void Hub::initClock() {
-	Clock *clock = nullptr;
+	Alarm *clock = nullptr;
 	try {
 		if (ctx.timerExpiration) {
-			clock = new Clock(ctx.timerExpiration, ctx.timerInterval);
+			clock = new Alarm(ctx.timerExpiration, ctx.timerInterval);
 			putWatcher(clock, IO_READ, WATCHER_ACTIVE);
 			notifiers.clock = clock;
 		} else {
@@ -670,9 +670,9 @@ void Hub::initClock() {
 }
 
 void Hub::initEventNotifier() {
-	EventNotifier *enotifier = nullptr;
+	Event *enotifier = nullptr;
 	try {
-		enotifier = new EventNotifier(ctx.semaphore);
+		enotifier = new Event(ctx.semaphore);
 		putWatcher(enotifier, IO_READ, WATCHER_ACTIVE);
 		notifiers.enotifier = enotifier;
 	} catch (const BaseException &e) {
@@ -704,10 +704,10 @@ void Hub::initInotifier() {
 }
 
 void Hub::initSignalWatcher() {
-	SignalWatcher *signalWatcher = nullptr;
+	Interrupt *signalWatcher = nullptr;
 	try {
 		if (ctx.signal) {
-			signalWatcher = new SignalWatcher();
+			signalWatcher = new Interrupt();
 			putWatcher(signalWatcher, IO_READ, WATCHER_ACTIVE);
 			notifiers.signalWatcher = signalWatcher;
 		} else {

@@ -10,14 +10,14 @@
  *
  */
 
-#include "EventNotifier.h"
+#include "Event.h"
 #include "Hub.h"
 #include "../base/unix/SystemException.h"
 #include <sys/eventfd.h>
 
 namespace wanhive {
 
-EventNotifier::EventNotifier(bool semaphore, bool blocking) :
+Event::Event(bool semaphore, bool blocking) :
 		count(0) {
 	auto flags = (semaphore ? EFD_SEMAPHORE : 0)
 			| (blocking ? 0 : EFD_NONBLOCK);
@@ -29,32 +29,32 @@ EventNotifier::EventNotifier(bool semaphore, bool blocking) :
 	}
 }
 
-EventNotifier::~EventNotifier() {
+Event::~Event() {
 
 }
 
-void EventNotifier::start() {
+void Event::start() {
 
 }
 
-void EventNotifier::stop() noexcept {
+void Event::stop() noexcept {
 
 }
 
-bool EventNotifier::callback(void *arg) noexcept {
+bool Event::callback(void *arg) noexcept {
 	if (getReference() != nullptr) {
-		Handler<EventNotifier> *h = static_cast<Hub*>(getReference());
+		Handler<Event> *h = static_cast<Hub*>(getReference());
 		return h->handle(this);
 	} else {
 		return false;
 	}
 }
 
-bool EventNotifier::publish(void *arg) noexcept {
+bool Event::publish(void *arg) noexcept {
 	return false;
 }
 
-ssize_t EventNotifier::read() {
+ssize_t Event::read() {
 	count = 0; //Reset the count
 	uint64_t eventCount;
 	auto nRead = Descriptor::read(&eventCount, sizeof(eventCount));
@@ -69,12 +69,12 @@ ssize_t EventNotifier::read() {
 	}
 }
 
-ssize_t EventNotifier::write(unsigned long long events) {
+ssize_t Event::write(unsigned long long events) {
 	uint64_t eventCount = events;
 	return Descriptor::write(&eventCount, sizeof(eventCount));
 }
 
-unsigned long long EventNotifier::getCount() const noexcept {
+unsigned long long Event::getCount() const noexcept {
 	return count;
 }
 
