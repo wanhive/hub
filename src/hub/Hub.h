@@ -40,10 +40,10 @@ class Hub: public Handler<Alarm>,
 		private Task {
 public:
 	/**
-	 * Constructor: creates a new hub with the given identity.
+	 * Constructor: creates a new hub.
 	 * @param uid the unique identifier of this hub
 	 * @param path pathname of the configuration file, if nullptr then a search
-	 * will be performed at predefined locations to locate the configuration file.
+	 * will be performed at predefined locations to find the configuration file.
 	 */
 	Hub(unsigned long long uid, const char *path = nullptr) noexcept;
 	/**
@@ -76,7 +76,7 @@ protected:
 	 * @param expiration object for storing the initial expiration
 	 * @param interval object for storing the interval of periodic timer
 	 */
-	void getClockSettings(unsigned int &expiration,
+	void getAlarmSettings(unsigned int &expiration,
 			unsigned int &interval) noexcept;
 	/**
 	 * Adds the given value to the events counter. This method can be safely
@@ -214,15 +214,14 @@ protected:
 	void stop(Watcher *w) noexcept override;
 	//-----------------------------------------------------------------
 	/**
-	 * Initialization routine: loads settings on startup. Always call the base
-	 * class instance first in the derived class implementation.
+	 * Initialization routine: configures the hub before entering the event loop.
+	 * Always call the base class instance first in the derived classes.
 	 * @param arg additional argument
 	 */
 	virtual void configure(void *arg);
 	/**
-	 * Cleanup routine: performs internal cleanup after exiting the event loop.
-	 * Always call the base class instance at the bottom of the derived class
-	 * implementation.
+	 * Cleanup routine: cleans up the hub after exiting the event loop. Always
+	 * call the base class instance at last in the derived classes.
 	 */
 	virtual void cleanup() noexcept;
 private:
@@ -243,32 +242,32 @@ private:
 	virtual void maintain() noexcept;
 	//-----------------------------------------------------------------
 	/**
-	 * Adapter: callback for periodic timer notification.
+	 * Adapter: callback for periodic timer expiration.
 	 * @param uid the source identifier
 	 * @param ticks timer expiration count
 	 */
-	virtual void processClockNotification(unsigned long long uid,
+	virtual void processAlarm(unsigned long long uid,
 			unsigned long long ticks) noexcept;
 	/**
-	 * Adapter: callback for event notification.
+	 * Adapter: callback for user-space events.
 	 * @param uid the source identifier
 	 * @param events the events count
 	 */
-	virtual void processEventNotification(unsigned long long uid,
+	virtual void processEvent(unsigned long long uid,
 			unsigned long long events) noexcept;
 	/**
-	 * Adapter: callback for file system events notification.
+	 * Adapter: callback for file system events.
 	 * @param uid the source identifier
 	 * @param event the file system event
 	 */
 	virtual void processInotification(unsigned long long uid,
 			const InotifyEvent *event) noexcept;
 	/**
-	 * Adapter: callback for signal.
+	 * Adapter: callback for interrupt.
 	 * @param uid the source identifier
 	 * @param info information about the delivered signal
 	 */
-	virtual void processSignalNotification(unsigned long long uid,
+	virtual void processInterrupt(unsigned long long uid,
 			const SignalInfo *info) noexcept;
 	//-----------------------------------------------------------------
 	/**
@@ -289,11 +288,11 @@ private:
 	/*
 	 * Implementations of the Handler interfaces
 	 */
-	bool handle(Alarm *clock) noexcept override final;
-	bool handle(Event *enotifier) noexcept override final;
+	bool handle(Alarm *alarm) noexcept override final;
+	bool handle(Event *event) noexcept override final;
 	bool handle(Inotifier *inotifier) noexcept override final;
-	bool handle(Interrupt *signalWatcher) noexcept override final;
-	bool handle(Socket *connection) noexcept override final;
+	bool handle(Interrupt *interrupt) noexcept override final;
+	bool handle(Socket *socket) noexcept override final;
 	//-----------------------------------------------------------------
 	/*
 	 * Implementation of the Task interface
@@ -313,7 +312,7 @@ private:
 	void initBuffers();
 	void initReactor();
 	void initListener();
-	void initClock();
+	void initAlarm();
 	void initEventNotifier();
 	void initInotifier();
 	void initSignalWatcher();
@@ -389,10 +388,10 @@ private:
 	 */
 	struct {
 		Socket *listener; //The listener
-		Alarm *clock; //Clock watcher
-		Event *enotifier; //Events watcher
+		Alarm *alarm; //Clock watcher
+		Event *event; //Events watcher
 		Inotifier *inotifier;	//File system watcher
-		Interrupt *signalWatcher; //Signal watcher
+		Interrupt *interrupt; //Signal watcher
 	} notifiers;
 	//-----------------------------------------------------------------
 	/*

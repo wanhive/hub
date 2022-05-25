@@ -64,11 +64,11 @@ void Hub::cancel() noexcept {
 	setStatus(0);
 }
 
-void Hub::getClockSettings(unsigned int &expiration,
+void Hub::getAlarmSettings(unsigned int &expiration,
 		unsigned int &interval) noexcept {
-	if (notifiers.clock) {
-		expiration = notifiers.clock->getExpiration();
-		interval = notifiers.clock->getInterval();
+	if (notifiers.alarm) {
+		expiration = notifiers.alarm->getExpiration();
+		interval = notifiers.alarm->getInterval();
 	} else {
 		expiration = 0;
 		interval = 0;
@@ -76,8 +76,8 @@ void Hub::getClockSettings(unsigned int &expiration,
 }
 
 void Hub::reportEvents(unsigned long long events) {
-	if (notifiers.enotifier) {
-		notifiers.enotifier->write(events);
+	if (notifiers.event) {
+		notifiers.event->write(events);
 	} else {
 		throw Exception(EX_RESOURCE);
 	}
@@ -240,9 +240,9 @@ void Hub::stop(Watcher *w) noexcept {
 	 * Bail out if any one of these ever fails. This provision allows the
 	 * worker thread to safely interact with these watchers.
 	 */
-	auto error = (w == notifiers.listener) || (w == notifiers.clock)
-			|| (w == notifiers.enotifier) || (w == notifiers.inotifier)
-			|| (w == notifiers.signalWatcher);
+	auto error = (w == notifiers.listener) || (w == notifiers.alarm)
+			|| (w == notifiers.event) || (w == notifiers.inotifier)
+			|| (w == notifiers.interrupt);
 
 	if (error) {
 		WH_LOG_ERROR("Fatal component failure, exiting.");
@@ -332,7 +332,7 @@ void Hub::configure(void *arg) {
 		initBuffers();
 		initReactor();
 		initListener();
-		initClock();
+		initAlarm();
 		initEventNotifier();
 		initInotifier();
 		initSignalWatcher();
@@ -404,12 +404,12 @@ void Hub::maintain() noexcept {
 
 }
 
-void Hub::processClockNotification(unsigned long long uid,
+void Hub::processAlarm(unsigned long long uid,
 		unsigned long long ticks) noexcept {
 
 }
 
-void Hub::processEventNotification(unsigned long long uid,
+void Hub::processEvent(unsigned long long uid,
 		unsigned long long events) noexcept {
 
 }
@@ -419,7 +419,7 @@ void Hub::processInotification(unsigned long long uid,
 
 }
 
-void Hub::processSignalNotification(unsigned long long uid,
+void Hub::processInterrupt(unsigned long long uid,
 		const SignalInfo *info) noexcept {
 
 }
@@ -436,46 +436,45 @@ void Hub::stopWork() noexcept {
 
 }
 
-bool Hub::handle(Alarm *clock) noexcept {
+bool Hub::handle(Alarm *alarm) noexcept {
 	try {
-		if (clock == nullptr) {
+		if (alarm == nullptr) {
 			return false;
-		} else if (clock->testEvents(IO_CLOSE)) {
-			return disable(clock);
-		} else if (clock->testEvents(IO_READ) && clock->read() == -1) {
-			return disable(clock);
+		} else if (alarm->testEvents(IO_CLOSE)) {
+			return disable(alarm);
+		} else if (alarm->testEvents(IO_READ) && alarm->read() == -1) {
+			return disable(alarm);
 		}
 		//-----------------------------------------------------------------
-		if (clock->getCount()) {
-			auto uid = (clock == notifiers.clock ? 0 : clock->getUid());
-			processClockNotification(uid, clock->getCount());
+		if (alarm->getCount()) {
+			auto uid = (alarm == notifiers.alarm ? 0 : alarm->getUid());
+			processAlarm(uid, alarm->getCount());
 		}
-		return clock->isReady();
+		return alarm->isReady();
 	} catch (const BaseException &e) {
 		WH_LOG_EXCEPTION(e);
-		return disable(clock);
+		return disable(alarm);
 	}
 }
 
-bool Hub::handle(Event *enotifier) noexcept {
+bool Hub::handle(Event *event) noexcept {
 	try {
-		if (enotifier == nullptr) {
+		if (event == nullptr) {
 			return false;
-		} else if (enotifier->testEvents(IO_CLOSE)) {
-			return disable(enotifier);
-		} else if (enotifier->testEvents(IO_READ) && enotifier->read() == -1) {
-			return disable(enotifier);
+		} else if (event->testEvents(IO_CLOSE)) {
+			return disable(event);
+		} else if (event->testEvents(IO_READ) && event->read() == -1) {
+			return disable(event);
 		}
 		//-----------------------------------------------------------------
-		if (enotifier->getCount()) {
-			auto uid = (
-					enotifier == notifiers.enotifier ? 0 : enotifier->getUid());
-			processEventNotification(uid, enotifier->getCount());
+		if (event->getCount()) {
+			auto uid = (event == notifiers.event ? 0 : event->getUid());
+			processEvent(uid, event->getCount());
 		}
-		return enotifier->isReady();
+		return event->isReady();
 	} catch (const BaseException &e) {
 		WH_LOG_EXCEPTION(e);
-		return disable(enotifier);
+		return disable(event);
 	}
 }
 
@@ -502,40 +501,39 @@ bool Hub::handle(Inotifier *inotifier) noexcept {
 	}
 }
 
-bool Hub::handle(Interrupt *signalWatcher) noexcept {
+bool Hub::handle(Interrupt *interrupt) noexcept {
 	try {
 		ssize_t nRead = 0;
-		if (signalWatcher == nullptr) {
+		if (interrupt == nullptr) {
 			return false;
-		} else if (signalWatcher->testEvents(IO_CLOSE)) {
-			return disable(signalWatcher);
-		} else if (signalWatcher->testEvents(IO_READ)
-				&& (nRead = signalWatcher->read()) == -1) {
-			return disable(signalWatcher);
+		} else if (interrupt->testEvents(IO_CLOSE)) {
+			return disable(interrupt);
+		} else if (interrupt->testEvents(IO_READ)
+				&& (nRead = interrupt->read()) == -1) {
+			return disable(interrupt);
 		}
 		//-----------------------------------------------------------------
 		if (nRead > 0) {
 			auto uid = (
-					signalWatcher == notifiers.signalWatcher ?
-							0 : signalWatcher->getUid());
-			processSignalNotification(uid, signalWatcher->getInfo());
+					interrupt == notifiers.interrupt ? 0 : interrupt->getUid());
+			processInterrupt(uid, interrupt->getInfo());
 		}
-		return signalWatcher->isReady();
+		return interrupt->isReady();
 	} catch (const BaseException &e) {
 		WH_LOG_EXCEPTION(e);
-		return disable(signalWatcher);
+		return disable(interrupt);
 	}
 }
 
-bool Hub::handle(Socket *connection) noexcept {
-	if (connection == nullptr) {
+bool Hub::handle(Socket *socket) noexcept {
+	if (socket == nullptr) {
 		return false;
-	} else if (connection->testEvents(IO_CLOSE)) {
-		return disable(connection);
-	} else if (connection->isType(SOCKET_LISTENER)) {
-		return acceptConnection(connection);
+	} else if (socket->testEvents(IO_CLOSE)) {
+		return disable(socket);
+	} else if (socket->isType(SOCKET_LISTENER)) {
+		return acceptConnection(socket);
 	} else {
-		return processConnection(connection);
+		return processConnection(socket);
 	}
 }
 
@@ -646,42 +644,42 @@ void Hub::initListener() {
 	}
 }
 
-void Hub::initClock() {
-	Alarm *clock = nullptr;
+void Hub::initAlarm() {
+	Alarm *alarm = nullptr;
 	try {
 		if (ctx.timerExpiration) {
-			clock = new Alarm(ctx.timerExpiration, ctx.timerInterval);
-			putWatcher(clock, IO_READ, WATCHER_ACTIVE);
-			notifiers.clock = clock;
+			alarm = new Alarm(ctx.timerExpiration, ctx.timerInterval);
+			putWatcher(alarm, IO_READ, WATCHER_ACTIVE);
+			notifiers.alarm = alarm;
 		} else {
-			WH_LOG_DEBUG("Internal clock disabled");
-			notifiers.clock = nullptr;
+			WH_LOG_DEBUG("Internal alarm disabled");
+			notifiers.alarm = nullptr;
 			return;
 		}
 	} catch (const BaseException &e) {
 		WH_LOG_EXCEPTION(e);
-		delete clock;
+		delete alarm;
 		throw;
 	} catch (...) {
 		WH_LOG_EXCEPTION_U();
-		delete clock;
+		delete alarm;
 		throw Exception(EX_ALLOCFAILED);
 	}
 }
 
 void Hub::initEventNotifier() {
-	Event *enotifier = nullptr;
+	Event *event = nullptr;
 	try {
-		enotifier = new Event(ctx.semaphore);
-		putWatcher(enotifier, IO_READ, WATCHER_ACTIVE);
-		notifiers.enotifier = enotifier;
+		event = new Event(ctx.semaphore);
+		putWatcher(event, IO_READ, WATCHER_ACTIVE);
+		notifiers.event = event;
 	} catch (const BaseException &e) {
 		WH_LOG_EXCEPTION(e);
-		delete enotifier;
+		delete event;
 		throw;
 	} catch (...) {
 		WH_LOG_EXCEPTION_U();
-		delete enotifier;
+		delete event;
 		throw Exception(EX_ALLOCFAILED);
 	}
 }
@@ -704,24 +702,24 @@ void Hub::initInotifier() {
 }
 
 void Hub::initSignalWatcher() {
-	Interrupt *signalWatcher = nullptr;
+	Interrupt *interrupt = nullptr;
 	try {
 		if (ctx.signal) {
-			signalWatcher = new Interrupt();
-			putWatcher(signalWatcher, IO_READ, WATCHER_ACTIVE);
-			notifiers.signalWatcher = signalWatcher;
+			interrupt = new Interrupt();
+			putWatcher(interrupt, IO_READ, WATCHER_ACTIVE);
+			notifiers.interrupt = interrupt;
 		} else {
 			WH_LOG_DEBUG("Synchronous signal disabled");
-			notifiers.signalWatcher = nullptr;
+			notifiers.interrupt = nullptr;
 			return;
 		}
 	} catch (const BaseException &e) {
 		WH_LOG_EXCEPTION(e);
-		delete signalWatcher;
+		delete interrupt;
 		throw;
 	} catch (...) {
 		WH_LOG_EXCEPTION_U();
-		delete signalWatcher;
+		delete interrupt;
 		throw Exception(EX_ALLOCFAILED);
 	}
 }
