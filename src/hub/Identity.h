@@ -10,11 +10,11 @@
  *
  */
 
-#ifndef WH_UTIL_IDENTITY_H_
-#define WH_UTIL_IDENTITY_H_
-#include "Hosts.h"
-#include "InstanceID.h"
-#include "PKI.h"
+#ifndef WH_HUB_IDENTITY_H_
+#define WH_HUB_IDENTITY_H_
+#include "../util/Hosts.h"
+#include "../util/InstanceID.h"
+#include "../util/PKI.h"
 #include "../base/Configuration.h"
 #include "../base/security/SSLContext.h"
 
@@ -256,4 +256,4 @@ private:
 
 } /* namespace wanhive */
 
-#endif /* WH_UTIL_IDENTITY_H_ */
+#endif /* WH_HUB_IDENTITY_H_ */

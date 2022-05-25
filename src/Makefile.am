@@ -72,22 +72,23 @@ WH_REACTORSOURCES = reactor/Descriptor.cpp reactor/Reactor.cpp reactor/Watcher.c
 
 ## src/util collection
 WH_UTILHEADERS = util/Authenticator.h util/Endpoint.h util/FlowControl.h \
-	util/Frame.h util/Hash.h util/Hosts.h util/Identity.h util/InstanceID.h \
-	util/Message.h util/MessageAddress.h util/MessageContext.h \
-	util/MessageControl.h util/MessageHeader.h util/PKI.h util/Packet.h \
-	util/Random.h util/TransactionKey.h util/commands.h
-WH_UTILSOURCES = util/Authenticator.cpp util/Endpoint.cpp  util/FlowControl.cpp \
-	util/Frame.cpp util/Hash.cpp util/Hosts.cpp util/Identity.cpp util/InstanceID.cpp \
-	util/Message.cpp  util/MessageAddress.cpp util/MessageContext.cpp \
-	util/MessageControl.cpp util/MessageHeader.cpp util/PKI.cpp util/Packet.cpp \
-	util/Random.cpp
+	util/Frame.h util/Hash.h util/Hosts.h util/InstanceID.h util/Message.h \
+	util/MessageAddress.h util/MessageContext.h util/MessageControl.h \
+	util/MessageHeader.h util/PKI.h util/Packet.h util/Random.h \
+	util/TransactionKey.h util/commands.h
+WH_UTILSOURCES = util/Authenticator.cpp util/Endpoint.cpp util/FlowControl.cpp \
+	util/Frame.cpp util/Hash.cpp util/Hosts.cpp util/InstanceID.cpp \
+	util/Message.cpp util/MessageAddress.cpp util/MessageContext.cpp \
+	util/MessageControl.cpp util/MessageHeader.cpp util/PKI.cpp \
+	util/Packet.cpp util/Random.cpp
 
 ## src/hub collection
 WH_HUBHEADERS = hub/ClientHub.h hub/Clock.h hub/EventNotifier.h hub/Hub.h \
-	hub/Inotifier.h hub/Protocol.h hub/SignalWatcher.h hub/Socket.h hub/Topic.h
+	hub/Identity.h hub/Inotifier.h hub/Protocol.h hub/SignalWatcher.h \
+	hub/Socket.h hub/Topic.h
 WH_HUBSOURCES = hub/ClientHub.cpp hub/Clock.cpp hub/EventNotifier.cpp \
-	hub/Hub.cpp hub/Inotifier.cpp hub/Protocol.cpp hub/SignalWatcher.cpp \
-	hub/Socket.cpp hub/Topic.cpp
+	hub/Hub.cpp hub/Identity.cpp hub/Inotifier.cpp hub/Protocol.cpp \
+	hub/SignalWatcher.cpp hub/Socket.cpp hub/Topic.cpp
 
 ## src/server collection
 WH_SERVERHEADERS = server/auth/AuthenticationHub.h server/overlay/commands.h \

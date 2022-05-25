@@ -15,7 +15,6 @@
 
 #include "util/Authenticator.h"
 #include "util/Endpoint.h"
-#include "util/Identity.h"
 #include "util/Random.h"
 #include "util/commands.h"
 

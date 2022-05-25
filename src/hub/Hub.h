@@ -14,6 +14,7 @@
 #define WH_HUB_HUB_H_
 #include "Clock.h"
 #include "EventNotifier.h"
+#include "Identity.h"
 #include "Inotifier.h"
 #include "SignalWatcher.h"
 #include "Socket.h"
@@ -24,7 +25,6 @@
 #include "../reactor/Handler.h"
 #include "../reactor/Reactor.h"
 #include "../reactor/Watchers.h"
-#include "../util/Identity.h"
 
 namespace wanhive {
 /**

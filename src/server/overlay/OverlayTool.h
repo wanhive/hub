@@ -13,8 +13,8 @@
 #ifndef WH_SERVER_OVERLAY_OVERLAYTOOL_H_
 #define WH_SERVER_OVERLAY_OVERLAYTOOL_H_
 #include "OverlayProtocol.h"
+#include "../../hub/Identity.h"
 #include "../../util/Authenticator.h"
-#include "../../util/Identity.h"
 
 namespace wanhive {
 /**

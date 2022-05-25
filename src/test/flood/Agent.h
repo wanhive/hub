@@ -12,8 +12,8 @@
 
 #ifndef WH_TEST_FLOOD_AGENT_H_
 #define WH_TEST_FLOOD_AGENT_H_
+#include "../../hub/Identity.h"
 #include "../../hub/Protocol.h"
-#include "../../util/Identity.h"
 
 namespace wanhive {
 /**
