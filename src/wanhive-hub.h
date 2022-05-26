@@ -13,6 +13,7 @@
 #ifndef WH_WANHIVE_HUB_H_
 #define WH_WANHIVE_HUB_H_
 
-#include "hub/ClientHub.h"   //Already includes Hub.h
+#include "hub/ClientHub.h"
+#include "hub/Protocol.h"
 
 #endif /* WH_WANHIVE_HUB_H_ */
