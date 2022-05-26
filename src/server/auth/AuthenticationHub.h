@@ -50,9 +50,9 @@ private:
 	//Iterator for cleaning up the lookup table during shut down
 	static int _deleteAuthenticators(unsigned int index, void *arg) noexcept;
 private:
-	//Look up table of the authenticators
+	//Hash table of pending authentication requests
 	Khash<unsigned long long, Authenticator*> session;
-	//For obfuscating failed identification
+	//For obfuscation of failed identification requests
 	Authenticator fake;
 
 	struct {
