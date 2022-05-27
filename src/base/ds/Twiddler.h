@@ -22,7 +22,6 @@ namespace wanhive {
  */
 class Twiddler {
 public:
-	//=================================================================
 	/**
 	 * Frequently used unsigned integer operations
 	 */
@@ -38,12 +37,12 @@ public:
 	static unsigned int modExp2(unsigned int n, unsigned int exp) noexcept;
 	//Swap values of the two integers <x> and <y>
 	static void exchange(unsigned int &x, unsigned int &y) noexcept;
-	//=================================================================
+	//-----------------------------------------------------------------
 	//Greatest power-of-two integer less than or equal to <x>
 	static unsigned int power2Floor(unsigned int x) noexcept;
 	//Least power-of-two integer greater than or equal to <x>
 	static unsigned int power2Ceil(unsigned int x) noexcept;
-	//=================================================================
+	//-----------------------------------------------------------------
 	/**
 	 * Thomas Wang's mix functions for integers, better for non-random input
 	 */
@@ -51,11 +50,13 @@ public:
 	static unsigned long mix(unsigned long i) noexcept;
 	//For 64-bit values
 	static unsigned long long mix(unsigned long long l) noexcept;
-	//=================================================================
+	//64-bit to 32-bit hash function
+	static unsigned long hash(unsigned long long l) noexcept;
+	//-----------------------------------------------------------------
 	//FVN-1a hash (Fowler–Noll–Vo hash)
 	static unsigned long long FVN1aHash(const void *data,
 			unsigned int bytes) noexcept;
-	//=================================================================
+	//-----------------------------------------------------------------
 	/**
 	 * Interval functions
 	 */
@@ -65,7 +66,7 @@ public:
 	//Check whether value is inside the closed *CIRCULAR* interval [<from>, <to>]
 	static bool isInRange(unsigned int value, unsigned int from,
 			unsigned int to) noexcept;
-	//=================================================================
+	//-----------------------------------------------------------------
 	/**
 	 * Basic bit mask operations on 32-bit values
 	 */
@@ -79,7 +80,7 @@ public:
 	static uint32_t test(uint32_t word, uint32_t bitmask) noexcept;
 	//Merge bits of two integers x and y [(x & ~bitmask) | (y & bitmask))]
 	static uint32_t merge(uint32_t x, uint32_t y, uint32_t bitmask) noexcept;
-	//=================================================================
+	//-----------------------------------------------------------------
 	/**
 	 * Bit array implementation primitives.
 	 * All functions assume 8-bit unsigned char.
@@ -112,16 +113,16 @@ public:
 	static void toggle(unsigned char *bitmap, unsigned int index) noexcept;
 	//Test  <index>th bit in the bitmap
 	static bool test(const unsigned char *bitmap, unsigned int index) noexcept;
-	//=================================================================
+	//-----------------------------------------------------------------
 	/*
-	 * Returns the smallest multiple of <alignment> greater than or equal to <size>
-	 * *<alignment> must be power of two
+	 * Returns the smallest multiple of <alignment> greater than or equal
+	 * to <size>. The <alignment> value must be power of two.
 	 */
 	static unsigned int align(unsigned int size,
 			unsigned int alignment) noexcept;
 	//Returns the ceiling of n/k (least integer >= n/k)
 	static unsigned int ceiling(unsigned int n, unsigned int k) noexcept;
-	//=================================================================
+	//-----------------------------------------------------------------
 	/**
 	 * ASCII STRING MANIPULATIONS
 	 * Pointers cannot be null

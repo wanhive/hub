@@ -114,6 +114,16 @@ unsigned long long Twiddler::mix(unsigned long long l) noexcept {
 	return l;
 }
 
+unsigned long Twiddler::hash(unsigned long long l) noexcept {
+	l = (~l) + (l << 18); // l = (l << 18) - l - 1;
+	l = l ^ (l >> 31);
+	l = l * 21; // l = (l + (l << 2)) + (l << 4);
+	l = l ^ (l >> 11);
+	l = l + (l << 6);
+	l = l ^ (l >> 22);
+	return static_cast<unsigned long>(l);
+}
+
 unsigned long long Twiddler::FVN1aHash(const void *data,
 		unsigned int bytes) noexcept {
 	auto p = (const unsigned char*) data;
