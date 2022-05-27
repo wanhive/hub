@@ -1,7 +1,7 @@
 /*
  * BaseException.h
  *
- * Base class for all exceptions
+ * Base class for exceptions
  *
  *
  * Copyright (C) 2018 Amit Kumar (amitkriit@gmail.com)
@@ -15,12 +15,23 @@
 
 namespace wanhive {
 /**
- * Base class for all exceptions
+ * Base class for exceptions
  */
 class BaseException {
 public:
+	/**
+	 * Virtual destructor
+	 */
 	virtual ~BaseException() = default;
+	/**
+	 * Returns a string that describes the error/exception.
+	 * @return error description string
+	 */
 	virtual const char* what() const noexcept = 0;
+	/**
+	 * Returns the error code.
+	 * @return the error code
+	 */
 	virtual int errorCode() const noexcept = 0;
 };
 

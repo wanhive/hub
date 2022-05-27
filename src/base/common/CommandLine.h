@@ -19,11 +19,19 @@ namespace wanhive {
  */
 class CommandLine {
 public:
+	/**
+	 * Default constructor
+	 */
 	CommandLine();
+	/**
+	 * Destructor
+	 */
 	~CommandLine();
-	/*
-	 * Returns true if an error occurred while processing the input at
-	 * std::cin and consumes the cause of the error.
+	/**
+	 * Consumes the cause of error while processing the input at std::cin.
+	 * @param verbose if true then a message is printed to std::cerr on error,
+	 * if false then no message is printed.
+	 * @return true if an error occurred, false otherwise
 	 */
 	static bool inputError(bool verbose = true);
 };

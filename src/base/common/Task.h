@@ -19,9 +19,24 @@ namespace wanhive {
  */
 class Task {
 public:
+	/**
+	 * Virtual destructor
+	 */
 	virtual ~Task() = default;
+	/**
+	 * Runs this task.
+	 * @param arg the additional argument
+	 */
 	virtual void run(void *arg) noexcept = 0;
+	/**
+	 * Returns the status code.
+	 * @return the status
+	 */
 	virtual int getStatus() const noexcept = 0;
+	/**
+	 * Sets a new status code.
+	 * @param status the new status
+	 */
 	virtual void setStatus(int status) noexcept = 0;
 };
 

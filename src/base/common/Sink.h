@@ -20,8 +20,22 @@ namespace wanhive {
  */
 template<typename X> class Sink {
 public:
+	/**
+	 * Virtual destructor
+	 */
 	virtual ~Sink() = default;
+	/**
+	 * Consumes data from the given buffer.
+	 * @param buffer memory location containing the data
+	 * @param count number of data units to consume
+	 * @return number of data units actually consumed
+	 */
 	virtual size_t put(X *buffer, size_t count) = 0;
+	/**
+	 * Returns the maximum number of data units which can be consumed by
+	 * this sink.
+	 * @return the remaining capacity
+	 */
 	virtual size_t space() const noexcept = 0;
 };
 
