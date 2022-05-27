@@ -1,7 +1,7 @@
 /*
  * Finger.h
  *
- * Finger implementation for the Chord (distributed hash table)
+ * Finger implementation for the chord (distributed hash table)
  *
  *
  * Copyright (C) 2019 Wanhive Systems Private Limited (info@wanhive.com)
@@ -15,7 +15,7 @@
 
 namespace wanhive {
 /**
- * Finger implementation for the Chord (distributed hash table)
+ * Finger implementation for the chord (distributed hash table)
  * Ref: https://pdos.csail.mit.edu/papers/chord:sigcomm01/chord_sigcomm.pdf
  */
 class Finger {

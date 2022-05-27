@@ -19,8 +19,7 @@ namespace wanhive {
 /**
  * Chord (distributed hash table) implementation
  * Ref: https://pdos.csail.mit.edu/papers/chord:sigcomm01/chord_sigcomm.pdf
- * Values of Identifiers passed to the functions must remain within the range
- * of the DHT Key Space [0, MAX_ID].
+ * An identifier should have value in the range of [0, MAX_ID].
  */
 class Node {
 public:
@@ -50,7 +49,7 @@ public:
 	unsigned int getPredecessor() const noexcept;
 	//Sets this node's predecessor
 	bool setPredecessor(unsigned int id) noexcept;
-	//Was the value of predecessor changed but not committed
+	//Was the predecessor's value changed but not committed
 	bool predessorChanged() const noexcept;
 	//Commit the last change in predecessor's value
 	void makePredecessorConsistent() noexcept;
@@ -60,7 +59,7 @@ public:
 	//Set this node's successor
 	bool setSuccessor(unsigned int id) noexcept;
 
-	//Is the finger table in a stable/consistent state
+	//Is the finger table in a stable state
 	bool isStable() const noexcept;
 	//Set finger table's <stable> state
 	void setStable(bool stable) noexcept;
@@ -79,19 +78,18 @@ public:
 			unsigned int index) noexcept;
 	//=================================================================
 	/**
-	 * Modified Chord DHT Recursive Routing Routines
+	 * Customized routines for recursive routing
 	 */
 	//Returns true if this node is the root of <id>
 	bool isLocal(unsigned int id) const noexcept;
 	/*
-	 * Equivalent to the find_successor algorithm of Chord DHT
-	 * Finds next hop in the lookup for destination <id>,
-	 * customized for recursive routing.
+	 * Equivalent to the standard find_successor algorithm. Finds the next hop in
+	 * the lookup for destination <id>.
 	 */
 	unsigned int nextHop(unsigned int id) const noexcept;
 	//=================================================================
 	/**
-	 * Modified Chord DHT Stabilization Routines: WIKI
+	 * Customized stabilization routines.
 	 * IDs passed to the functions must strictly remain within
 	 * the DHT Key Space [0, MAX_ID]
 	 */
@@ -102,12 +100,12 @@ public:
 	 */
 	unsigned int localSuccessor(unsigned int id) const noexcept;
 	/*
-	 * Returns the highest predecessor of <id> in the local finger table
-	 * If <checkConnected> is true, then returns an entry which is connected.
+	 * Returns the highest predecessor of <id> in finger table. If <checkConnected>
+	 * is true, then returns an entry which is connected.
 	 */
 	unsigned int closestPredecessor(unsigned int id,
 			bool checkConnected = false) const noexcept;
-	//<id> is the successor of this node
+	//Use <id> to join the network
 	void join(unsigned int id) noexcept;
 	//<id> is current successor's predecessor, returns true on success
 	bool stabilize(unsigned int id) noexcept;
@@ -115,7 +113,8 @@ public:
 	bool notify(unsigned int id) noexcept;
 	/*
 	 * Node <id> has either joined or left the network. Update the routing table
-	 * information accordingly. Returns true if the routing table was updated.
+	 * accordingly. Returns true if the routing table got updated, false if no
+	 * change was made.
 	 */
 	bool update(unsigned int id, bool joined) noexcept;
 	//Returns true if <id> exists in the internal records (incl. 0 and node's key)

@@ -15,57 +15,57 @@
 #include "../../util/commands.h"
 
 namespace wanhive {
-/*
- * Classification of commands.
+/**
+ * Enumeration of commands
  */
 enum WhpDhtCommand {
-	WH_DHT_CMD_NULL = WH_CMD_NULL,
-	WH_DHT_CMD_BASIC = WH_CMD_BASIC,
-	WH_DHT_CMD_MULTICAST = WH_CMD_MULTICAST,
-	WH_DHT_CMD_NODE,
-	WH_DHT_CMD_OVERLAY
+	WH_DHT_CMD_NULL = WH_CMD_NULL, /**< null commands */
+	WH_DHT_CMD_BASIC = WH_CMD_BASIC, /**< basic commands */
+	WH_DHT_CMD_MULTICAST = WH_CMD_MULTICAST,/**< multicast commands */
+	WH_DHT_CMD_NODE, /**< node management commands */
+	WH_DHT_CMD_OVERLAY /**< network management commands */
 };
 
-/*
- * Each command can have multiple qualifiers/functions.
+/**
+ * Enumeration of qualifiers/functions
  */
 enum WhpDhtQualifier {
 	//WH_DHT_CMD_NULL
-	WH_DHT_QLF_NULL = WH_QLF_NULL,
-	WH_DHT_QLF_IDENTIFY = WH_QLF_IDENTIFY,
-	WH_DHT_QLF_AUTHENTICATE = WH_QLF_AUTHENTICATE,
-	WH_DHT_QLF_DESCRIBE = WH_QLF_DESCRIBE,
+	WH_DHT_QLF_NULL = WH_QLF_NULL, /**< null */
+	WH_DHT_QLF_IDENTIFY = WH_QLF_IDENTIFY, /**< identification */
+	WH_DHT_QLF_AUTHENTICATE = WH_QLF_AUTHENTICATE,/**< authentication */
+	WH_DHT_QLF_DESCRIBE = WH_QLF_DESCRIBE, /**< hub statistics */
 	//WH_DHT_CMD_BASIC
-	WH_DHT_QLF_REGISTER = WH_QLF_REGISTER,
-	WH_DHT_QLF_GETKEY = WH_QLF_GETKEY,
-	WH_DHT_QLF_FINDROOT = WH_QLF_FINDROOT,
-	WH_DHT_QLF_BOOTSTRAP = WH_QLF_BOOTSTRAP,
+	WH_DHT_QLF_REGISTER = WH_QLF_REGISTER, /**< registration */
+	WH_DHT_QLF_GETKEY = WH_QLF_GETKEY, /**< session key */
+	WH_DHT_QLF_FINDROOT = WH_QLF_FINDROOT, /**< root host */
+	WH_DHT_QLF_BOOTSTRAP = WH_QLF_BOOTSTRAP, /**< bootstrap nodes */
 	//WH_DHT_CMD_MULTICAST
-	WH_DHT_QLF_PUBLISH = WH_QLF_PUBLISH,
-	WH_DHT_QLF_SUBSCRIBE = WH_QLF_SUBSCRIBE,
-	WH_DHT_QLF_UNSUBSCRIBE = WH_QLF_UNSUBSCRIBE,
+	WH_DHT_QLF_PUBLISH = WH_QLF_PUBLISH, /**< publish */
+	WH_DHT_QLF_SUBSCRIBE = WH_QLF_SUBSCRIBE, /**< subscribe */
+	WH_DHT_QLF_UNSUBSCRIBE = WH_QLF_UNSUBSCRIBE, /**< unsubscribe */
 	//WH_DHT_CMD_NODE
-	WH_DHT_QLF_GETPREDECESSOR = 0,
-	WH_DHT_QLF_SETPREDECESSOR = 1,
-	WH_DHT_QLF_GETSUCCESSOR = 2,
-	WH_DHT_QLF_SETSUCCESSOR = 3,
-	WH_DHT_QLF_GETFINGER = 4,
-	WH_DHT_QLF_SETFINGER = 5,
-	WH_DHT_QLF_GETNEIGHBOURS = 6,
-	WH_DHT_QLF_NOTIFY = 7,
+	WH_DHT_QLF_GETPREDECESSOR = 0, /**< get predecessor */
+	WH_DHT_QLF_SETPREDECESSOR = 1, /**< set predecessor */
+	WH_DHT_QLF_GETSUCCESSOR = 2, /**< get successor */
+	WH_DHT_QLF_SETSUCCESSOR = 3, /**< set successor */
+	WH_DHT_QLF_GETFINGER = 4, /**< get finger table entry */
+	WH_DHT_QLF_SETFINGER = 5, /**< set finger table entry */
+	WH_DHT_QLF_GETNEIGHBOURS = 6, /**< get immediate neighbors */
+	WH_DHT_QLF_NOTIFY = 7, /**< notify successor */
 	//WH_DHT_CMD_OVERLAY
-	WH_DHT_QLF_FINDSUCCESSOR = 0,
-	WH_DHT_QLF_PING = 1,
-	WH_DHT_QLF_MAP = 2
+	WH_DHT_QLF_FINDSUCCESSOR = 0, /**< find successor */
+	WH_DHT_QLF_PING = 1, /**< ping the host */
+	WH_DHT_QLF_MAP = 2 /**< map request */
 };
 
-/*
- * Request and response status.
+/**
+ * Enumeration of status codes
  */
 enum WhpDhtStatus {
-	WH_DHT_AQLF_REJECTED = WH_AQLF_REJECTED,
-	WH_DHT_AQLF_ACCEPTED = WH_AQLF_ACCEPTED,
-	WH_DHT_AQLF_REQUEST = WH_AQLF_REQUEST
+	WH_DHT_AQLF_REJECTED = WH_AQLF_REJECTED,/**< request rejected */
+	WH_DHT_AQLF_ACCEPTED = WH_AQLF_ACCEPTED,/**< request accepted */
+	WH_DHT_AQLF_REQUEST = WH_AQLF_REQUEST /**< request */
 };
 
 }  // namespace wanhive

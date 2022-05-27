@@ -21,16 +21,11 @@ class DHT {
 public:
 	DHT() noexcept;
 	~DHT();
-
 	static constexpr unsigned int identifierLength() noexcept {
 		return IDENTIFIER_LENGTH;
 	}
 public:
-	/*
-	 * Identifier length as number of bits.
-	 * Actual implementations are allowed to use equal or smaller values.
-	 * This value acts as an architectural limit.
-	 */
+	/** The maximum identifier length in bits */
 	static constexpr unsigned int IDENTIFIER_LENGTH = 16;
 };
 

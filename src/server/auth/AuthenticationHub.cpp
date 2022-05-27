@@ -31,10 +31,10 @@ AuthenticationHub::~AuthenticationHub() {
 
 void AuthenticationHub::stop(Watcher *w) noexcept {
 	Authenticator *authenticator = nullptr;
-	auto index = session.get(w->getUid());
-	if (index != session.end()) {
-		session.getValue(index, authenticator);
-		session.remove(index);
+	auto index = waitlist.get(w->getUid());
+	if (index != waitlist.end()) {
+		waitlist.getValue(index, authenticator);
+		waitlist.remove(index);
 	}
 	delete authenticator;
 	Hub::stop(w);
@@ -67,7 +67,7 @@ void AuthenticationHub::configure(void *arg) {
 }
 
 void AuthenticationHub::cleanup() noexcept {
-	session.iterate(_deleteAuthenticators, this);
+	waitlist.iterate(_deleteAuthenticators, this);
 	memset(&ctx, 0, sizeof(ctx));
 	//Clean up the base class object
 	Hub::cleanup();
@@ -101,7 +101,7 @@ int AuthenticationHub::handleIdentificationRequest(Message *message) noexcept {
 	auto origin = message->getOrigin();
 	auto nonceLength = message->getPayloadLength();
 	//-----------------------------------------------------------------
-	if (!nonceLength || session.contains(origin)) {
+	if (!nonceLength || waitlist.contains(origin)) {
 		return handleInvalidRequest(message);
 	}
 	//-----------------------------------------------------------------
@@ -111,7 +111,7 @@ int AuthenticationHub::handleIdentificationRequest(Message *message) noexcept {
 	bool success = !isBanned(identity) && (authenticator =
 			new (std::nothrow) Authenticator(true))
 			&& loadIdentity(authenticator, identity, nonce, nonceLength)
-			&& session.hmPut(origin, authenticator);
+			&& waitlist.hmPut(origin, authenticator);
 	//-----------------------------------------------------------------
 	if (success) {
 		unsigned int saltLength = 0;
@@ -126,7 +126,7 @@ int AuthenticationHub::handleIdentificationRequest(Message *message) noexcept {
 	} else {
 		//Free up the memory and stop the <source> from making further requests
 		delete authenticator;
-		session.hmPut(origin, nullptr);
+		waitlist.hmPut(origin, nullptr);
 
 		if (ctx.salt && ctx.saltLength) {
 			/*
@@ -159,7 +159,7 @@ int AuthenticationHub::handleAuthenticationRequest(Message *message) noexcept {
 	auto origin = message->getOrigin();
 	Authenticator *authenticator = nullptr;
 	//-----------------------------------------------------------------
-	if (!session.hmGet(origin, authenticator) || !authenticator) {
+	if (!waitlist.hmGet(origin, authenticator) || !authenticator) {
 		return handleInvalidRequest(message);
 	}
 	//-----------------------------------------------------------------
@@ -180,7 +180,7 @@ int AuthenticationHub::handleAuthenticationRequest(Message *message) noexcept {
 	} else {
 		//Free up the memory and stop the <source> from making further requests
 		delete authenticator;
-		session.hmReplace(origin, nullptr, authenticator);
+		waitlist.hmReplace(origin, nullptr, authenticator);
 		return handleInvalidRequest(message);
 	}
 }
@@ -188,7 +188,7 @@ int AuthenticationHub::handleAuthenticationRequest(Message *message) noexcept {
 int AuthenticationHub::handleAuthorizationRequest(Message *message) noexcept {
 	auto origin = message->getOrigin();
 	Authenticator *authenticator = nullptr;
-	session.hmGet(origin, authenticator);
+	waitlist.hmGet(origin, authenticator);
 
 	if (!authenticator || !authenticator->isAuthenticated()) {
 		return handleInvalidRequest(message);
@@ -290,7 +290,7 @@ int AuthenticationHub::generateIdentificationResponse(Message *message,
 int AuthenticationHub::_deleteAuthenticators(unsigned int index,
 		void *arg) noexcept {
 	Authenticator *authenticator = nullptr;
-	((AuthenticationHub*) arg)->session.getValue(index, authenticator);
+	((AuthenticationHub*) arg)->waitlist.getValue(index, authenticator);
 	delete authenticator;
 	return 1;
 }

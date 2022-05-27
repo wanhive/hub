@@ -1,7 +1,7 @@
 /*
  * OverlayHubInfo.h
  *
- * Data structure for storing the runtime statistics of an overlay hub
+ * Runtime statistics of an overlay hub
  *
  *
  * Copyright (C) 2019 Wanhive Systems Private Limited (info@wanhive.com)
@@ -16,7 +16,7 @@
 
 namespace wanhive {
 /**
- * Various runtime metrics of an overlay hub
+ * Runtime metrics of an overlay hub
  */
 struct OverlayHubInfo {
 	unsigned long long uid;
