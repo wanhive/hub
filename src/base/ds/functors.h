@@ -30,14 +30,14 @@ struct wh_hash_fn {
 
 	unsigned int operator()(unsigned long key) const noexcept {
 		if constexpr (sizeof(unsigned long) > 4) {
-			return static_cast<unsigned int>((key) >> 33 ^ (key) ^ (key) << 11);
+			return static_cast<unsigned int>(key >> 33 ^ key ^ key << 11);
 		} else {
 			return key; //Just return the key
 		}
 	}
 
 	unsigned int operator()(unsigned long long key) const noexcept {
-		return static_cast<unsigned int>((key) >> 33 ^ (key) ^ (key) << 11);
+		return static_cast<unsigned int>(key >> 33 ^ key ^ key << 11);
 	}
 
 	unsigned int operator()(const char *s) const noexcept {
