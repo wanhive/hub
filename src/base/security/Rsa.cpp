@@ -309,7 +309,7 @@ EVP_PKEY* Rsa::createFromFile(const char *filename, bool isPublicKey,
 
 bool Rsa::verifyRSAKey(EVP_PKEY *key) noexcept {
 #if OPENSSL_VERSION_MAJOR == 3
-	return key && EVP_PKEY_is_a(key, "RSA") != 1;
+	return key && EVP_PKEY_is_a(key, "RSA") == 1;
 #else
 	return key && EVP_PKEY_base_id(key) == EVP_PKEY_RSA;
 #endif
