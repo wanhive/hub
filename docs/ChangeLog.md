@@ -9,13 +9,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
-- New data unit implementation.
-- New security and cryptographic library implementation.
+- Major package restructuring and API changes.
+- Simplify the data-unit implementation.
 
 ### Fixed
 
 - **CircularBuffer::setStatus** and **StaticCircularBuffer::setStatus** methods compile correctly.
-- Assign correct type to the MessageFlag enumeration.
+- Assign correct data type to the MessageFlag enumeration.
 
 ### Security
 
