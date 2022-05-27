@@ -121,12 +121,12 @@ private:
  * compilers (gcc, llvm/clang and VS).
  */
 
-#define WH_DEF_LOGGER Logger::getDefault()
+#define WH_DEFAULT_LOGGER Logger::getDefault()
 #define WH_LOG_LEVEL_STR(l) Logger::levelString(l)
 
-#define WH_LOG(l, format, ...) WH_DEF_LOGGER.log(l, format "\n", ##__VA_ARGS__)
-#define WH_LOGL(l, format, ...) WH_DEF_LOGGER.log(l, "[%s]: " format "\n", WH_LOG_LEVEL_STR(l), ##__VA_ARGS__)
-#define WH_LOGLF(l, format, ...) WH_DEF_LOGGER.log(l, "[%s] [%s]: " format "\n", WH_LOG_LEVEL_STR(l), WH_FUNCTION, ##__VA_ARGS__)
+#define WH_LOG(l, format, ...) WH_DEFAULT_LOGGER.log(l, format "\n", ##__VA_ARGS__)
+#define WH_LOGL(l, format, ...) WH_LOG(l, "[%s]: " format, WH_LOG_LEVEL_STR(l), ##__VA_ARGS__)
+#define WH_LOGLF(l, format, ...) WH_LOG(l, "[%s] [%s]: " format, WH_LOG_LEVEL_STR(l), WH_FUNCTION, ##__VA_ARGS__)
 //-----------------------------------------------------------------
 //For general logging
 #define WH_LOG_DEBUG(format, ...) WH_LOGLF(WH_LOGLEVEL_DEBUG, format, ##__VA_ARGS__)
