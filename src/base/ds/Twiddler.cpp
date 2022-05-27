@@ -94,24 +94,23 @@ unsigned int Twiddler::power2Ceil(unsigned int x) noexcept {
 }
 
 unsigned long Twiddler::mix(unsigned long i) noexcept {
-	i += ~(i << 15);
-	i ^= (i >> 10);
-	i += (i << 3);
-	i ^= (i >> 6);
-	i += ~(i << 11);
-	i ^= (i >> 16);
+	i = ~i + (i << 15); // i = (i << 15) - i - 1;
+	i = i ^ (i >> 12);
+	i = i + (i << 2);
+	i = i ^ (i >> 4);
+	i = i * 2057; // i = (i + (i << 3)) + (i << 11);
+	i = i ^ (i >> 16);
 	return i;
 }
 
 unsigned long long Twiddler::mix(unsigned long long l) noexcept {
-	l += ~(l << 32);
-	l ^= (l >> 22);
-	l += ~(l << 13);
-	l ^= (l >> 8);
-	l += (l << 3);
-	l ^= (l >> 15);
-	l += ~(l << 27);
-	l ^= (l >> 31);
+	l = (~l) + (l << 21); // l = (l << 21) - l - 1;
+	l = l ^ (l >> 24);
+	l = (l + (l << 3)) + (l << 8); // l * 265
+	l = l ^ (l >> 14);
+	l = (l + (l << 2)) + (l << 4); // l * 21
+	l = l ^ (l >> 28);
+	l = l + (l << 31);
 	return l;
 }
 
