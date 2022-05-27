@@ -24,7 +24,7 @@ AX_CXX_COMPILE_STDCXX(17, [noext], [mandatory])
 
 # Checks for libraries.
 LT_INIT
-AC_CHECK_LIB([crypto], [EVP_PKEY_is_a],,[AC_MSG_ERROR([libcrypto required for cryptographic routines not found.])])
+AC_CHECK_LIB([crypto], [BN_clear_free],,[AC_MSG_ERROR([libcrypto required for cryptographic routines not found.])])
 AC_CHECK_LIB([pthread], [pthread_create],,[AC_MSG_ERROR([libpthread required for posix thread not found.])])
 AC_CHECK_LIB([sqlite3], [sqlite3_open_v2],,[AC_MSG_ERROR([libsqlite3 required for embedded database not found.])])
 AC_CHECK_LIB([ssl], [OPENSSL_init_ssl],,[AC_MSG_ERROR([libssl required for secure socket not found.])])

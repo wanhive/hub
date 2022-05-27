@@ -82,15 +82,15 @@ private:
 	//filename can be nullptr (results in noop)
 	static EVP_PKEY* createFromFile(const char *filename, bool isPublicKey,
 			char *password) noexcept;
+	static bool verifyRSAKey(EVP_PKEY *key) noexcept;
 	static void destroyKey(EVP_PKEY *rsa) noexcept;
 	//=================================================================
 	/**
 	 * Used for key pair generation
 	 */
 	static EVP_PKEY* generateRSAKey(int bits) noexcept;
-	static EVP_PKEY* generatePrivateKey(RSA *rsa) noexcept;
 	//If a password is provided and cipher is nullptr then AES256-CBC is used
-	static bool generatePem(const char *filename, EVP_PKEY *pKey,
+	static bool generatePem(const char *filename, EVP_PKEY *key,
 			bool isPublicKey, char *password = nullptr,
 			const EVP_CIPHER *cipher = nullptr) noexcept;
 private:

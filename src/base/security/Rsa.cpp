@@ -270,7 +270,7 @@ EVP_PKEY* Rsa::create(const char *key, bool isPublicKey,
 		rsa = PEM_read_bio_PrivateKey(keybio, nullptr, 0, password);
 	}
 
-	if (rsa && EVP_PKEY_is_a(rsa, "RSA") != 1) {
+	if (!verifyRSAKey(rsa)) {
 		EVP_PKEY_free(rsa);
 		rsa = nullptr;
 	}
@@ -298,7 +298,7 @@ EVP_PKEY* Rsa::createFromFile(const char *filename, bool isPublicKey,
 		rsa = PEM_read_PrivateKey(fp, nullptr, 0, password);
 	}
 
-	if (rsa && EVP_PKEY_is_a(rsa, "RSA") != 1) {
+	if (!verifyRSAKey(rsa)) {
 		EVP_PKEY_free(rsa);
 		rsa = nullptr;
 	}
@@ -307,32 +307,55 @@ EVP_PKEY* Rsa::createFromFile(const char *filename, bool isPublicKey,
 	return rsa;
 }
 
+bool Rsa::verifyRSAKey(EVP_PKEY *key) noexcept {
+#if OPENSSL_VERSION_MAJOR == 3
+	return key && EVP_PKEY_is_a(key, "RSA") != 1;
+#else
+	return key && EVP_PKEY_base_id(key) == EVP_PKEY_RSA;
+#endif
+}
+
 void Rsa::destroyKey(EVP_PKEY *rsa) noexcept {
 	EVP_PKEY_free(rsa);
 }
 
 EVP_PKEY* Rsa::generateRSAKey(int bits) noexcept {
+#if OPENSSL_VERSION_MAJOR == 3
 	return EVP_RSA_gen(bits);
-}
-
-EVP_PKEY* Rsa::generatePrivateKey(RSA *rsa) noexcept {
-	if (!rsa) {
+#else
+	auto bigNumber = BN_new();
+	if (!bigNumber || !BN_set_word(bigNumber, RSA_F4)) {
+		BN_clear_free(bigNumber);
 		return nullptr;
 	}
 
+	auto rsa = RSA_new();
+	if (!rsa || !RSA_generate_key_ex(rsa, bits, bigNumber, nullptr)
+			|| !RSA_check_key(rsa)) {
+		RSA_free(rsa);
+		BN_clear_free(bigNumber);
+		return nullptr;
+	}
+
+	//Clean-up and proceed
+	BN_clear_free(bigNumber);
+
+	//Assign the reference key
 	auto pkey = EVP_PKEY_new();
 	if (!pkey || !EVP_PKEY_assign_RSA(pkey, rsa)) {
 		EVP_PKEY_free(pkey);
+		RSA_free(rsa);
 		return nullptr;
 	}
 
-	//Return the private key structure
+	//Return the key
 	return pkey;
+#endif
 }
 
-bool Rsa::generatePem(const char *filename, EVP_PKEY *pKey, bool isPublicKey,
+bool Rsa::generatePem(const char *filename, EVP_PKEY *key, bool isPublicKey,
 		char *password, const EVP_CIPHER *cipher) noexcept {
-	if (!filename || !pKey) {
+	if (!filename || !key) {
 		return false;
 	}
 
@@ -340,20 +363,20 @@ bool Rsa::generatePem(const char *filename, EVP_PKEY *pKey, bool isPublicKey,
 	auto passPhraseLength = password ? strlen(password) : 0;
 
 	//Open the file for writing in text mode
-	auto pFile = Storage::openStream(filename, "w", true);
-	if (!pFile) {
+	auto file = Storage::openStream(filename, "w", true);
+	if (!file) {
 		return false;
 	}
 
 	int ret = 0;
 	if (isPublicKey) {
-		ret = PEM_write_PUBKEY(pFile, pKey);
+		ret = PEM_write_PUBKEY(file, key);
 	} else {
-		ret = PEM_write_PrivateKey(pFile, pKey, pCipher,
+		ret = PEM_write_PrivateKey(file, key, pCipher,
 				(unsigned char*) password, passPhraseLength, nullptr, nullptr);
 	}
 
-	Storage::closeStream(pFile);
+	Storage::closeStream(file);
 	return (bool) ret;
 }
 
