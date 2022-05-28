@@ -23,26 +23,29 @@ class Condition {
 public:
 	Condition() noexcept;
 	~Condition();
-	/*
-	 * Calling threads wait for notification. In case of pending notification
-	 * exactly one of the competing threads is woken up and the notifications
-	 * are cleared. Always returns true.
+	/**
+	 * Waits for a notification. If a notification become pending then exactly
+	 * one of the competing threads gets woken up and the notification is cleared.
+	 * @return always true
 	 */
 	bool wait();
-	/*
-	 * Calling threads wait until at most <milliseconds> duration for a
-	 * notification. In case of pending notification competing threads may
-	 * be spuriously woken up, however exactly one of them sees <true> as
-	 * the returned value and the notifications are cleared. Returns false
-	 * on timeout.
+	/**
+	 * Waits for a notification or timeout. If a notification becomes pending then
+	 * exactly one of the competing threads gets woken up and the notification is
+	 * cleared.
+	 * @param milliseconds timeout value in milliseconds
+	 * @return true if a notification was received, false on timeout.
 	 */
 	bool timedWait(unsigned int milliseconds);
-	//Delivers a notification to this object.
+	/**
+	 * Delivers a notification to the threads waiting on this object.
+	 */
 	void notify();
 private:
 	pthread_mutex_t mutex;
 	pthread_cond_t condition;
-	bool flag;
+	size_t waiters { };
+	bool flag { false };
 };
 
 } /* namespace wanhive */

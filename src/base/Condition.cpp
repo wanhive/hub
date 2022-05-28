@@ -20,7 +20,6 @@ namespace wanhive {
 Condition::Condition() noexcept {
 	mutex = PTHREAD_MUTEX_INITIALIZER;
 	condition = PTHREAD_COND_INITIALIZER;
-	flag = false;
 }
 
 Condition::~Condition() {
@@ -36,10 +35,12 @@ Condition::~Condition() {
 bool Condition::wait() {
 	auto status = pthread_mutex_lock(&mutex);
 	if (status == 0) {
+		++waiters;
 		int rc = 0;
 		while (!flag && rc == 0) {
 			rc = pthread_cond_wait(&condition, &mutex);
 		}
+		--waiters;
 		auto value = flag;
 		flag = false;
 		pthread_mutex_unlock(&mutex);
@@ -57,6 +58,7 @@ bool Condition::wait() {
 bool Condition::timedWait(unsigned int milliseconds) {
 	auto status = pthread_mutex_lock(&mutex);
 	if (status == 0) {
+		++waiters;
 		int rc = 0;
 		if (!flag && milliseconds) {
 			struct timespec tv;
@@ -67,9 +69,11 @@ bool Condition::timedWait(unsigned int milliseconds) {
 			//Adjust for overflow
 			tv.tv_sec += tv.tv_nsec / 1000000000L;
 			tv.tv_nsec %= 1000000000L;
-
-			rc = pthread_cond_timedwait(&condition, &mutex, &tv);
+			while (!flag && rc == 0) {
+				rc = pthread_cond_timedwait(&condition, &mutex, &tv);
+			}
 		}
+		--waiters;
 		auto value = flag;
 		flag = false;
 		pthread_mutex_unlock(&mutex);
