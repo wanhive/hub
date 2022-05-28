@@ -49,7 +49,7 @@ void Configuration::clear() noexcept {
 	memset(&data, 0, sizeof(data));
 }
 
-bool Configuration::load(const char *filename, size_t *lastRow) noexcept {
+bool Configuration::load(const char *filename, size_t *count) noexcept {
 	char buffer[MAX_LINE_LEN * 2];
 	char section[MAX_SECTION_LEN];
 	char key[MAX_KEY_LEN];
@@ -72,7 +72,8 @@ bool Configuration::load(const char *filename, size_t *lastRow) noexcept {
 	//-----------------------------------------------------------------
 	while (fgets(buffer, sizeof(buffer), fp)) {
 		rows++;
-
+		key[0] = '\0';
+		value[0] = '\0';
 		unsigned int eol = 0;
 		auto line = Twiddler::trim(buffer, eol);
 		if (line[0] == '#' || line[0] == '%' || line[0] == '!' || line[0] == ';'
@@ -100,8 +101,8 @@ bool Configuration::load(const char *filename, size_t *lastRow) noexcept {
 	}
 
 	//Return the number of rows processed so far
-	if (lastRow) {
-		*lastRow = rows;
+	if (count) {
+		*count = rows;
 	}
 
 	//Restore the dirty flag
@@ -167,7 +168,7 @@ bool Configuration::print(FILE *stream, const char *name) noexcept {
 
 bool Configuration::setString(const char *section, const char *option,
 		const char *value) noexcept {
-	if (section && option && value) {
+	if (section && option && value && option[0] && value[0]) {
 		// Check whether the entry already exists
 		Section *s = nullptr;
 		auto e = findEntry(section, option, &s);
