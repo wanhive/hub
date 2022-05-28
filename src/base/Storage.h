@@ -22,61 +22,141 @@ namespace wanhive {
  */
 class Storage {
 public:
-	//Creates the directory structure if <createPath> is true, returns nullptr on error
+	/**
+	 * Opens a file stream (wrapper for fopen(3) library function).
+	 * @param path file's pathname
+	 * @param modes the mode string describing how to open the file
+	 * @param createPath true to create the directory structure, false otherwise
+	 * @return a valid file pointer on success, nullptr on error
+	 */
 	static FILE* openStream(const char *path, const char *modes,
 			bool createPath) noexcept;
-	//Returns 0 on success, EOF on error
+	/**
+	 * Closes a file stream (wrapper for fclose(3) library function).
+	 * @param fp the file pointer
+	 * @return value returned by fclose(3)
+	 */
 	static int closeStream(FILE *fp) noexcept;
-	//Wrapper for fileno(3), returns the file descriptor
+	/**
+	 * Returns the stream's associated file descriptor (wrapper for fileno(3)).
+	 * @param stream the file stream
+	 * @return file descriptor
+	 */
 	static int getDescriptor(FILE *stream);
-	//=================================================================
-	//Wrapper for open(2) system call, if <createPath> then tries to create directories
+	//-----------------------------------------------------------------
+	/**
+	 * Opens a file: wrapper for open(2) system call.
+	 * @param path pathname of the file
+	 * @param flags the status flags
+	 * @param mode the mode flags
+	 * @param createPath true to create the directory structure, false otherwise
+	 * @return file descriptor
+	 */
 	static int open(const char *path, int flags, mode_t mode, bool createPath);
-	//Wrapper for close(2) system call, returns 0 on success, -1 on error
+	/**
+	 * CLoses a file descriptor: wrapper for close(2) system call.
+	 * @param fd file descriptor
+	 * @return value returned by close(2)
+	 */
 	static int close(int fd) noexcept;
-	//Wrapper for fdopen(3), opens a file as stream
+	/**
+	 * Opens a file stream: wrapper for fdopen(3) library function.
+	 * @param fd file descriptor
+	 * @param modes he mode string describing how to open the file
+	 * @return pointer to file stream
+	 */
 	static FILE* getStream(int fd, const char *modes);
-	//If <strict> flag is set, then fails if <count> bytes could not be read
+	//-----------------------------------------------------------------
+	/**
+	 * Reads data from the given file.
+	 * @param fd file descriptor to read from
+	 * @param buffer buffer for storing the data
+	 * @param count maximum number of bytes of data to read
+	 * @param strict true to read exactly the given bytes of data, false to read
+	 * at most the given bytes of data.
+	 * @return number of bytes read (possibly zero if EOF encountered)
+	 */
 	static size_t read(int fd, void *buffer, size_t count, bool strict);
-	//Returns the number of bytes written, throws SystemException
+	/**
+	 * Writes data to the given file.
+	 * @param fd file descriptor for writing
+	 * @param buffer the data to write
+	 * @param count number of bytes to write
+	 * @return number of bytes written
+	 */
 	static size_t write(int fd, const void *buffer, size_t count);
-	//Wrapper for fsync(2): commits the data to the disk
+	/**
+	 * Commits data to the disk: wrapper for fsync(2) system call.
+	 * @param fd file descriptor
+	 */
 	static void sync(int fd);
-	//wrapper for lseek(2) system call
+	/**
+	 * Repositions file offset: wrapper for lseek(2) system call.
+	 * @param fd file descriptor
+	 * @param offset the offset value
+	 * @param whence the offset directive
+	 * @return offset from beginning of the file in bytes
+	 */
 	static off_t seek(int fd, off_t offset, int whence);
-	//Fills the file <fd> with the character <c>
+	/**
+	 * Fills up a file with the given character
+	 * @param fd file descriptor
+	 * @param size number of characters to write
+	 * @param c the character to write
+	 */
 	static void fill(int fd, size_t size, unsigned char c);
-	//=================================================================
-	//Implementation of "mkdir -p"
+	//-----------------------------------------------------------------
+	/**
+	 * Makes the directory and it's parent directories as needed (equivalent to
+	 * "mkdir -p").
+	 * @param pathname directory's pathname
+	 */
 	static void createDirectory(const char *pathname);
-	//Recursively remove all entries in a directory (rm -rf)
+	/**
+	 * Removes a directory and it's contents (equivalent to rm -rf).
+	 * @param pathname directory's pathname
+	 */
 	static void removeDirectory(const char *pathname);
-	//=================================================================
-	//Returns 1 if a directory, 0 otherwise, -1 on error
+	//-----------------------------------------------------------------
+	/**
+	 * Checks if the given pathname belongs to a directory.
+	 * @param pathname the pathname to check
+	 * @return 1 if directory, 0 if not a directory, -1 on error
+	 */
 	static int testDirectory(const char *pathname) noexcept;
-	// Returns 1 if a regular file, 0 otherwise, -1 on error
+	/**
+	 * Checks if the given pathname belongs to a regular file.
+	 * @param pathname the pathname to check
+	 * @return 1 if regular file, 0 if not a regular file, -1 on error
+	 */
 	static int testFile(const char *pathname) noexcept;
-	//Returns 1 if a symbolic link, 0 otherwise, -1 on error
+	/**
+	 * Checks if the given pathname belongs to a symbolic link.
+	 * @param pathname the pathname to check
+	 * @return 1 if symbolic link, 0 if not a symbolic link, -1 on error
+	 */
 	static int testLink(const char *pathname) noexcept;
-	//=================================================================
-	/*
+	//-----------------------------------------------------------------
+	/**
 	 * Performs posix shell like expansion of pathname.
-	 * Returned buffer should be freed using WH_free
+	 * @param pathname the pathname for expansion
+	 * @return the expanded pathname (the caller should free it using WH_free()
+	 * or free(3)).
 	 */
 	static char* expandPathName(const char *pathname) noexcept;
 private:
-	/*
-	 * Creates the complete directory structure for storing a file
-	 * Returns true on success, false on error
-	 */
 	static bool createDirectoryForFile(const char *pathname) noexcept;
-	//Returns true on success, returns false on error (pathname may be modified)
 	static bool _createDirectory(char *pathname) noexcept;
 public:
+	/** The directory separator character */
 	static const char DIR_SEPARATOR;
+	/** The directory separator string */
 	static const char *DIR_SEPARATOR_STR;
+	/** The path separator character */
 	static const char PATH_SEPARATOR;
+	/** The path separator string */
 	static const char *PATH_SEPARATOR_STR;
+	/** The newline string */
 	static const char *NEWLINE;
 };
 

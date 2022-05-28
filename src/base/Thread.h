@@ -21,7 +21,15 @@ namespace wanhive {
  */
 class Thread: private PThread {
 public:
+	/**
+	 * Constructor: creates and executes a posix thread.
+	 * @param task the task to execute
+	 * @param arg additional argument for the task (see Task::run())
+	 */
 	Thread(Task &task, void *arg = nullptr);
+	/**
+	 * Destructor
+	 */
 	~Thread();
 	using PThread::join;
 	using PThread::getStatus;

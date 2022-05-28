@@ -32,7 +32,9 @@ enum SelectorEvent : uint32_t {
 	IO_ERROR = EPOLLERR,
 	IO_ALL = (IO_WR | IO_CLOSE | IO_PRIORITY | IO_ERROR)
 };
-enum SelectorFlag: uint32_t {
+
+//Trigger mechanism
+enum SelectorFlag : uint32_t {
 	TRIGGER_EDGE = EPOLLET, TRIGGER_ONCE = EPOLLONESHOT
 };
 //-----------------------------------------------------------------
@@ -42,51 +44,91 @@ enum SelectorFlag: uint32_t {
  */
 class Selector {
 public:
-	//Doesn't initialize the object, call Selector::initialize
+	/**
+	 * Default constructor: call Selector::initialize() for initialization.
+	 */
 	Selector() noexcept;
-	/*
-	 * <maxEvents> is the maximum number of events to be reported in each cycle.
-	 * If <signal> is true then the selector handles asynchronous signal delivery
-	 * atomically, i.e. the selector can be safely interrupted by signal.
+	/**
+	 * Constructor: initializes the object.
+	 * @param maxEvents the maximum number of events to report in each call to
+	 * Selector::select().
+	 * @param signal true for atomic handling of asynchronous signal delivery i.e.
+	 * Selector::select()can be safely interrupted by signal, false for default
+	 * behavior (signal delivery may not get noticed).
 	 */
 	Selector(unsigned int maxEvents, bool signal);
+	/**
+	 * Destructor
+	 */
 	~Selector();
-	/*
-	 * Initialize the selector, <maxEvents> is the maximum number of IO events
-	 * to be reported in each cycle. If <signal> is true then the selector can
-	 * be safely interrupted by asynchronously delivered signal.
+	/**
+	 * Initializes the object (performs clean up if the object was previously
+	 * initialized).
+	 * @param maxEvents the maximum number of events to report in each call to
+	 * Selector::select().
+	 * @param signal true for atomic handling of asynchronous signal delivery i.e.
+	 * Selector::select()can be safely interrupted by signal, false for default
+	 * behavior (signal delivery may not get noticed).
 	 */
 	void initialize(unsigned int maxEvents, bool signal);
-	/*
-	 * Start monitoring the file descriptor <fd> for <events> and preserve
-	 * the <handle> for future reference
+	//-----------------------------------------------------------------
+	/**
+	 * Starts monitoring a file descriptor for the given events
+	 * @param fd file descriptor to monitor
+	 * @param events events of interest (see Selector::events())
+	 * @param handle the future reference (see Selector::attachment())
 	 */
 	void add(int fd, uint32_t events, void *handle = nullptr);
-	/*
-	 * Modify the <events> and <handle> associated with the file descriptor <fd>
+	/**
+	 * Modify the events and reference associated with the given file descriptor.
+	 * @param fd file descriptor being monitored (see Selector::add())
+	 * @param events new events of interest (see Selector::events())
+	 * @param handle new future reference (see Selector::attachment())
 	 */
 	void modify(int fd, uint32_t events, void *handle = nullptr);
-	/*
-	 * Remove the file descriptor <fd> from the Selector
+	/**
+	 * Stops monitoring of the given file descriptor
+	 * @param fd file descriptor being monitored (see Selector::add())
 	 */
 	void remove(int fd);
-	/*
-	 * Waits for an IO event, timeout or a signal, returns the number of ready
-	 * file descriptors (possibly zero). <timeout> is specified in milliseconds,
-	 * to block indefinitely set this value to -1, to return immediately set
-	 * this value to zero (0).
+	//-----------------------------------------------------------------
+	/**
+	 * Waits for IO event, timeout or signal.
+	 * @param timeout the wait timeout value in milliseconds, set -1 to block
+	 * indefinitely, set 0 to return immediately.
+	 * @return number of ready file descriptors (see Selector::next()), possibly
+	 * zero if the call got interrupted due to timeout or signal delivery.
 	 */
 	unsigned int select(int timeout = -1);
-
-	//Returns true if Selector::select got interrupted by a signal
+	/**
+	 * Checks if the selector got interrupted by signal delivery.
+	 * @return true if the most recent Selector::select() call got interrupted
+	 * by a signal, false otherwise.
+	 */
 	bool interrupted() const noexcept;
-	//Returns true if Selector::select got timed out
+	/**
+	 * Checks if the selector got timed out while waiting for IO events.
+	 * @return Returns true if the most recent Selector::select() got timed out,
+	 * false otherwise.
+	 */
 	bool timedOut() const noexcept;
-	//Returns information about the next ready file descriptor
+	//-----------------------------------------------------------------
+	/**
+	 * Returns information about the next ready file descriptor.
+	 * @return object describing a ready file descriptor
+	 */
 	SelectionEvent* next() noexcept;
-	//Returns the handle associated with a ready file descriptor
+	/**
+	 * Returns the handle associated with a ready file descriptor.
+	 * @param se object describing a ready file descriptor
+	 * @return object associated with the ready file descriptor
+	 */
 	static void* attachment(const SelectionEvent *se) noexcept;
-	//Returns the IO events reported on a file descriptor
+	/**
+	 * Returns the IO events reported on a ready file descriptor.
+	 * @param se object describing a ready file descriptor
+	 * @return IO events reported on the file descriptor
+	 */
 	static uint32_t events(const SelectionEvent *se) noexcept;
 private:
 	void create();

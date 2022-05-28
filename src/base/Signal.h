@@ -21,22 +21,41 @@ namespace wanhive {
  */
 class Signal {
 public:
-	//Block a signal, will be delivered when unblocked
+	/**
+	 * Blocks the given signal signal, will be delivered when unblocked.
+	 * @param signum the signal number
+	 */
 	static void block(int signum);
-	//Unblock a signal
+	/**
+	 * Unblocks the given signal.
+	 * @param signum the signal number
+	 */
 	static void unblock(int signum);
-	//Block all signals
+	/**
+	 * Blocks all signals.
+	 */
 	static void blockAll();
-	//Unblock all signals, will be delivered when unblocked
+	/**
+	 * Unblock all signals.
+	 */
 	static void unblockAll();
-	//Specified signal should be ignored (handler set to SIG_IGN)
+	/**
+	 * Specifies that the given signal should be ignored (the signal handler set
+	 * to SIG_IGN).
+	 * @param signum the signal number
+	 */
 	static void ignore(int signum);
-	//Specified signal should have default behavior (handler set to SIG_DFL)
+	/**
+	 * Specifies that the given signal should be assigned it's default behavior
+	 * (the handler set to SIG_DFL).
+	 * @param signum the signal number
+	 */
 	static void reset(int signum);
-	/*
-	 * Install a handler for the signal <signum>, if <handler> is nullptr then
-	 * a dummy handler is installed. If <restart> is true then the SA_RESTART
-	 * flag is set.
+	/**
+	 * Installs a callback (handler) for the given signal.
+	 * @param signum the signal number
+	 * @param handler the signal handler, if nullptr then a dummy handler is used
+	 * @param restart true to set the SA_RESTART flag, false otherwise
 	 */
 	static void handle(int signum, void (*handler)(int)=nullptr, bool restart =
 			true);
