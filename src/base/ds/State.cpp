@@ -1,7 +1,7 @@
 /*
  * State.cpp
  *
- * State machine base
+ * State machine
  *
  *
  * Copyright (C) 2018 Amit Kumar (amitkriit@gmail.com)
