@@ -34,7 +34,7 @@ public:
 	/**
 	 * Returns the maximum number of data units which can be read from
 	 * this source.
-	 * @return the remaining capacity
+	 * @return the available elements
 	 */
 	virtual size_t available() const noexcept = 0;
 };
