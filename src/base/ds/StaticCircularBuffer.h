@@ -19,95 +19,128 @@
 
 namespace wanhive {
 /**
- * Lock free circular buffer for POD types
+ * Lock free circular buffer (single-producer-single-consumer) for POD types
  * Read/write real-time safe for single-producer-single-consumer
- * REF: Dennis Lang's Ring Buffer (http://landenlabs.com/code/ring/ring.html)
+ * @ref Dennis Lang's Ring Buffer (http://landenlabs.com/code/ring/ring.html)
  */
 template<typename X, unsigned int SIZE, bool ATOMIC = false> class StaticCircularBuffer {
 public:
+	/**
+	 * Default constructor: creates a new buffer.
+	 */
 	StaticCircularBuffer() noexcept;
+	/**
+	 * Destructor
+	 */
 	~StaticCircularBuffer();
-
-	//Returns max capacity of this buffer
-	unsigned int capacity() const noexcept;
-	//How much data can be read from the buffer
-	unsigned int readSpace() const noexcept;
-	//How much data can be written to the buffer
-	unsigned int writeSpace() const noexcept;
-	/*
-	 * Reset the read and write pointers, making an empty buffer.
-	 * Not thread safe
+	//-----------------------------------------------------------------
+	/**
+	 * Empties the buffer (not thread safe).
 	 */
 	void clear() noexcept;
-	/*
-	 * Returns true if the buffer is full
+	/**
+	 * Returns this buffer's capacity (see CircularBuffer::initialize())
+	 * @return buffer's capacity
+	 */
+	unsigned int capacity() const noexcept;
+	/**
+	 * Returns the number of elements available for reading from the buffer.
+	 * @return how much data can be read from the buffer
+	 */
+	unsigned int readSpace() const noexcept;
+	/**
+	 * Returns the number of elements which can be written to the buffer.
+	 * @return how much data can be written to the buffer
+	 */
+	unsigned int writeSpace() const noexcept;
+	/**
+	 * Checks if the buffer is full (cannot add more elements into the buffer).
+	 * @return true if the buffer is full, false otherwise
 	 */
 	bool isFull() const noexcept;
-	/*
-	 * Returns true if the buffer is empty
+	/**
+	 * Checks if the buffer is empty (cannot read values from the buffer).
+	 * @return true if the buffer is empty, false otherwise
 	 */
 	bool isEmpty() const noexcept;
-	/*
-	 * Read one element from the buffer, fails if the buffer is empty
+	/**
+	 * Gets the status of this buffer.
+	 * @return this buffer's status
 	 */
-	bool get(X &value) noexcept;
-	/*
-	 * Read one element from the buffer and return the pointer, returns nullptr
-	 * if the buffer is empty. Not thread safe
+	int getStatus() const noexcept;
+	/**
+	 * Sets the status of this buffer.
+	 * @param status the new status value
 	 */
-	X* get() noexcept;
-	/*
-	 * Put an element into the buffer, fails if the buffer is full
-	 */
-	bool put(X const &value) noexcept;
-	/*
-	 * Stores description of readable linear segments into <vector>.
-	 * Returns total count of readable slots
+	void setStatus(int status) noexcept;
+	//-----------------------------------------------------------------
+	/**
+	 * Returns the description of readable linear segments.
+	 * @param vector object for storing the information
+	 * @return the total readable elements count
 	 */
 	unsigned int getReadable(CircularBufferVector<X> &vector) noexcept;
-	/*
-	 * Stores description of writable linear segments into <vector>.
-	 * Returns total count of writable slots
+	/**
+	 * Returns the description of writable linear segments.
+	 * @param vector object for storing the information
+	 * @return the total number of slots available for writing
 	 */
 	unsigned int getWritable(CircularBufferVector<X> &vector) noexcept;
-	//Move the read index forward by <count> slots
+	/**
+	 * Moves the read index forward.
+	 * @param count the number of readable slots to skip
+	 */
 	void skipRead(unsigned int count) noexcept;
-	//Move the write index forward by <count> slots
+	/**
+	 * Move the write index forward.
+	 * @param count the number of writable slots to skip
+	 */
 	void skipWrite(unsigned int count) noexcept;
-	/*
-	 * Bulk read, transfers at most <length> elements from this buffer
-	 * into the given destination array and the read index is updated,
-	 * returns the actual number of elements transferred
+	//-----------------------------------------------------------------
+	/**
+	 * Reads one element from the buffer, fails if the buffer is empty.
+	 * @param value object for storing the value
+	 * @return true on success, false on failure (empty buffer)
+	 */
+	bool get(X &value) noexcept;
+	/**
+	 * Reads one element from the buffer and returns its pointer (not thread safe).
+	 * @return pointer to the next element, nullptr if the buffer is empty
+	 */
+	X* get() noexcept;
+	/**
+	 * Writes an element into the buffer, fails if the buffer is full.
+	 * @param value the value to write
+	 * @return true on success, false otherwise (buffer full)
+	 */
+	bool put(X const &value) noexcept;
+	/**
+	 * Bulk read operation: transfers elements from the buffer into the given
+	 * destination and updates the read index.
+	 * @param dest memory space for storing the values
+	 * @param length maximum number of elements to read
+	 * @return the actual number of elements transferred
 	 */
 	unsigned int read(X *dest, unsigned int length) noexcept;
-	/*
-	 * Bulk write, transfers at most <length> elements from the
-	 * source array into the buffer, and the write index is updated,
-	 * returns the actual number of elements transferred
+	/**
+	 * Bulk write operation: transfers values into the buffer from the given source
+	 * and updates the write index.
+	 * @param src source of data
+	 * @param length maximum number of element to write
+	 * @return actual number of elements copied into the buffer
 	 */
 	unsigned int write(const X *src, unsigned int length) noexcept;
-	//Returns a pointer to the backing array
-	X* array() noexcept;
-	//Returns a const pointer to the backing array
-	const X* array() const noexcept;
-
+	//-----------------------------------------------------------------
 	/**
-	 * Used to maintain status of the buffer
+	 * Returns a pointer to the backing array.
+	 * @return pointer to the backing array
 	 */
-	int getStatus() const noexcept {
-		if (ATOMIC) {
-			return Atomic<int>::load(&status);
-		} else {
-			return status;
-		}
-	}
-	void setStatus(int status) noexcept {
-		if (ATOMIC) {
-			Atomic<int>::store(&this->status, status);
-		} else {
-			this->status = status;
-		}
-	}
+	X* array() noexcept;
+	/**
+	 * Returns a constant pointer to the backing array.
+	 * @return pointer to the backing array
+	 */
+	const X* array() const noexcept;
 private:
 	unsigned int skip(unsigned int index, unsigned int count) const noexcept;
 	unsigned int readSpaceInternal(unsigned int r,
@@ -151,22 +184,14 @@ private:
 		}
 	}
 
-	/*
-	 * Load-Load barrier:  prevent memory reordering of the read-acquire
-	 * with any read or write operation that follows it. All memory operations
-	 * below this barrier remain below it.
-	 */
+	//Load-Load barrier:  memory operations below this barrier remain below it.
 	void acquireBarrier() const noexcept {
 		if (ATOMIC) {
 			Atomic<>::threadFence(MO_ACQUIRE);
 		}
 	}
 
-	/*
-	 * Store-Store barrier: prevent memory reordering of the write-release
-	 * with any read or write operation that precedes it. All memory operations
-	 * above this barrier remain above it.
-	 */
+	//Store-Store barrier: memory operations above this barrier remain above it.
 	void releaseBarrier() const noexcept {
 		if (ATOMIC) {
 			Atomic<>::threadFence(MO_RELEASE);
@@ -195,6 +220,12 @@ template<typename X, unsigned int SIZE, bool ATOMIC> wanhive::StaticCircularBuff
 		X, SIZE, ATOMIC>::~StaticCircularBuffer() {
 }
 
+template<typename X, unsigned int SIZE, bool ATOMIC> void wanhive::StaticCircularBuffer<
+		X, SIZE, ATOMIC>::clear() noexcept {
+	storeReadIndex(0);
+	storeWriteIndex(0);
+}
+
 template<typename X, unsigned int SIZE, bool ATOMIC> unsigned int wanhive::StaticCircularBuffer<
 		X, SIZE, ATOMIC>::capacity() const noexcept {
 	return _capacity;
@@ -210,12 +241,6 @@ template<typename X, unsigned int SIZE, bool ATOMIC> unsigned int wanhive::Stati
 	return writeSpaceInternal(loadReadIndex(), loadWriteIndex());
 }
 
-template<typename X, unsigned int SIZE, bool ATOMIC> void wanhive::StaticCircularBuffer<
-		X, SIZE, ATOMIC>::clear() noexcept {
-	storeReadIndex(0);
-	storeWriteIndex(0);
-}
-
 template<typename X, unsigned int SIZE, bool ATOMIC> bool wanhive::StaticCircularBuffer<
 		X, SIZE, ATOMIC>::isFull() const noexcept {
 	return isFullInternal(loadReadIndex(), loadWriteIndex());
@@ -224,6 +249,58 @@ template<typename X, unsigned int SIZE, bool ATOMIC> bool wanhive::StaticCircula
 template<typename X, unsigned int SIZE, bool ATOMIC> bool wanhive::StaticCircularBuffer<
 		X, SIZE, ATOMIC>::isEmpty() const noexcept {
 	return isEmptyInternal(loadReadIndex(), loadWriteIndex());
+}
+
+template<typename X, unsigned int SIZE, bool ATOMIC> int wanhive::StaticCircularBuffer<
+		X, SIZE, ATOMIC>::getStatus() const noexcept {
+	if (ATOMIC) {
+		return Atomic<int>::load(&status);
+	} else {
+		return status;
+	}
+}
+
+template<typename X, unsigned int SIZE, bool ATOMIC> void wanhive::StaticCircularBuffer<
+		X, SIZE, ATOMIC>::setStatus(int status) noexcept {
+	if (ATOMIC) {
+		Atomic<int>::store(&this->status, status);
+	} else {
+		this->status = status;
+	}
+}
+
+template<typename X, unsigned int SIZE, bool ATOMIC> unsigned int wanhive::StaticCircularBuffer<
+		X, SIZE, ATOMIC>::getReadable(CircularBufferVector<X> &vector) noexcept {
+	auto w = loadWriteIndex();
+	auto r = loadReadIndex();
+	acquireBarrier();
+
+	auto space = readSpaceInternal(r, w);
+	getSegmentsInternal(r, space, vector);
+	return space;
+}
+
+template<typename X, unsigned int SIZE, bool ATOMIC> unsigned int wanhive::StaticCircularBuffer<
+		X, SIZE, ATOMIC>::getWritable(CircularBufferVector<X> &vector) noexcept {
+	auto w = loadWriteIndex();
+	auto r = loadReadIndex();
+	acquireBarrier();
+
+	auto space = writeSpaceInternal(r, w);
+	getSegmentsInternal(w, space, vector);
+	return space;
+}
+
+template<typename X, unsigned int SIZE, bool ATOMIC> void wanhive::StaticCircularBuffer<
+		X, SIZE, ATOMIC>::skipRead(unsigned int count) noexcept {
+	releaseBarrier();
+	storeReadIndex(skip(loadReadIndex(), count));
+}
+
+template<typename X, unsigned int SIZE, bool ATOMIC> void wanhive::StaticCircularBuffer<
+		X, SIZE, ATOMIC>::skipWrite(unsigned int count) noexcept {
+	releaseBarrier();
+	storeWriteIndex(skip(loadWriteIndex(), count));
 }
 
 template<typename X, unsigned int SIZE, bool ATOMIC> bool wanhive::StaticCircularBuffer<
@@ -265,40 +342,6 @@ template<typename X, unsigned int SIZE, bool ATOMIC> bool wanhive::StaticCircula
 	releaseBarrier();
 	storeWriteIndex(skip(w, 1));
 	return true;
-}
-
-template<typename X, unsigned int SIZE, bool ATOMIC> unsigned int wanhive::StaticCircularBuffer<
-		X, SIZE, ATOMIC>::getReadable(CircularBufferVector<X> &vector) noexcept {
-	auto w = loadWriteIndex();
-	auto r = loadReadIndex();
-	acquireBarrier();
-
-	auto space = readSpaceInternal(r, w);
-	getSegmentsInternal(r, space, vector);
-	return space;
-}
-
-template<typename X, unsigned int SIZE, bool ATOMIC> unsigned int wanhive::StaticCircularBuffer<
-		X, SIZE, ATOMIC>::getWritable(CircularBufferVector<X> &vector) noexcept {
-	auto w = loadWriteIndex();
-	auto r = loadReadIndex();
-	acquireBarrier();
-
-	auto space = writeSpaceInternal(r, w);
-	getSegmentsInternal(w, space, vector);
-	return space;
-}
-
-template<typename X, unsigned int SIZE, bool ATOMIC> void wanhive::StaticCircularBuffer<
-		X, SIZE, ATOMIC>::skipRead(unsigned int count) noexcept {
-	releaseBarrier();
-	storeReadIndex(skip(loadReadIndex(), count));
-}
-
-template<typename X, unsigned int SIZE, bool ATOMIC> void wanhive::StaticCircularBuffer<
-		X, SIZE, ATOMIC>::skipWrite(unsigned int count) noexcept {
-	releaseBarrier();
-	storeWriteIndex(skip(loadWriteIndex(), count));
 }
 
 template<typename X, unsigned int SIZE, bool ATOMIC> unsigned int wanhive::StaticCircularBuffer<
