@@ -34,8 +34,6 @@
 #include "base/ds/Counter.h"
 #include "base/ds/Encoding.h"
 #include "base/ds/Khash.h"
-#include "base/ds/List.h"
-#include "base/ds/ListNode.h"
 #include "base/ds/MemoryPool.h"
 #include "base/ds/MersenneTwister.h"
 #include "base/ds/Serializer.h"
