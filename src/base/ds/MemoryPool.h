@@ -16,44 +16,71 @@
 
 namespace wanhive {
 /**
- * Memory pool for efficient memory management.
- * Trades off safety and versatility for fast allocation and deallocation.
- * Thread safe at class level.
+ * Memory pool for efficient memory allocation and deallocation.
+ * Trades-off safety and versatility for speed.
  */
 class MemoryPool {
 public:
-	//Doesn't initialize the pool
+	/**
+	 * Default constructor: creates a zero-capacity memory pool.
+	 */
 	MemoryPool() noexcept;
-	//Initializes the pool, throws Exception
+	/**
+	 * Constructor: creates a memory pool
+	 * @param size size of each memory block
+	 * @param count number of memory blocks
+	 */
 	MemoryPool(unsigned int size, unsigned int count);
-	//Aborts on memory leak
+	/**
+	 * Destructor: calls abort() on memory leak
+	 */
 	~MemoryPool();
-	/*
-	 * Initializes a memory pool containing <count> blocks of <size> bytes each.
-	 * Throws Exception if called improperly or already initialized. <count> can
-	 * be zero which results in a noop.
+	/**
+	 * Initializes the memory pool if not already initialized.
+	 * @param size size of each memory block
+	 * @param count number of memory blocks (0 will result in no-op)
 	 */
 	void initialize(unsigned int size, unsigned int count);
-	/*
-	 * Frees the memory pool and returns the number of blocks still in use.
-	 * A non-zero returned value indicates a memory leak and an imminent
-	 * segmentation fault. On success, the memory pool can be re-initialized.
+	/**
+	 * Frees the memory pool. On success, the memory pool can be reinitialized.
+	 * @return number of memory blocks still in use. Non-zero value indicates a
+	 * memory leak and/or an imminent segmentation fault.
 	 */
 	unsigned int destroy() noexcept;
 	//-----------------------------------------------------------------
-	//Allocates a memory block from the pool
+	/**
+	 * Allocates a memory block.
+	 * @return pointer to the newly allocated memory block
+	 */
 	void* allocate() noexcept;
-	//Deallocates the given memory block and return it into the pool
+	/**
+	 * Frees the given memory block and returns it into the pool. Freeing an
+	 * already freed memory block or an external memory block will result in
+	 * undefined behavior.
+	 * @param p the memory block to deallocate
+	 */
 	void deallocate(void *p) noexcept;
-	//-----------------------------------------------------------------
-	//Returns true if the memory pool was successfully initialized
-	bool isInitialized() const noexcept;
-	//Number of allocated blocks
+	/**
+	 * Returns the allocated memory blocks count.
+	 * @return number of allocated blocks
+	 */
 	unsigned int allocated() const noexcept;
-	//Total number of blocks in this pool (including the allocated ones)
+	/**
+	 * Returns the total number of memory blocks including the allocated ones.
+	 * @return this memory pool's capacity
+	 */
 	unsigned int capacity() const noexcept;
-	//Size of each memory block
+	/**
+	 * Returns the size of each memory block.
+	 * @return memory block's size
+	 */
 	unsigned int blockSize() const noexcept;
+	//-----------------------------------------------------------------
+	/**
+	 * Returns the memory pool's initialization status.
+	 * @return true if successfully initialized, false otherwise
+	 */
+	bool isInitialized() const noexcept;
 private:
 	void *_bucket;
 	void *_head;				//Pointer to the first available block

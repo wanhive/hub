@@ -51,101 +51,186 @@ namespace wanhive {
 template<typename KEY = int, typename VALUE = char, bool ISMAP = true,
 		typename HFN = wh_hash_fn, typename EQFN = wh_eq_fn> class Khash {
 public:
+	/**
+	 * Default constructor: creates an empty hash table.
+	 */
 	Khash() noexcept;
+	/**
+	 * Destructor
+	 */
 	~Khash();
-
-	//Returns true if the <key> is in the table
+	//-----------------------------------------------------------------
+	/**
+	 * Hash-map/hash-set operation: checks if the given key exists in the
+	 * hash table.
+	 * @param key the key to search for
+	 * @return true if the key exists, false otherwise
+	 */
 	bool contains(KEY const &key) const noexcept;
-	//Removes the <key> from the table
+	/**
+	 * Hash-map/hash-set operation: removes the given key from the hash table.
+	 * @param key the key for removal
+	 * @return true if the key existed, false otherwise
+	 */
 	bool removeKey(KEY const &key) noexcept;
-	//Gets the <value> associated with the <key>, returns true on success
+	//-----------------------------------------------------------------
+	/**
+	 * Hash-map operation: reads the value associated with the given key.
+	 * @param key the key to search for
+	 * @param val object to store the value associated with the given key
+	 * @return true on success (key found), false otherwise (key doesn't exist)
+	 */
 	bool hmGet(KEY const &key, VALUE &val) const noexcept;
-	//Stores the <key>, <val> pair, fails if the <key> already exists
+	/**
+	 * Hash-map operation: inserts a new key-value pair in the hash table.
+	 * @param key the key to insert
+	 * @param val value to associate with the given key
+	 * @return true on success, false on failure (the key already exists)
+	 */
 	bool hmPut(KEY const &key, VALUE const &val) noexcept;
-	/*
-	 * Returns true if old value was replaced, false otherwise
-	 * Extra Return Value <oldVal>: Old Value associated with the key
+	/**
+	 * Hash-map operation: stores a key-value pair in the hash table. If the key
+	 * already exists then assigns the desired value to the existing key and
+	 * returns the old value.
+	 * @param key the key to insert or update
+	 * @param val the value to assign to the given key
+	 * @param oldVal object for returning the old value
+	 * @return true if old value was replaced (key exists), false otherwise
 	 */
 	bool hmReplace(KEY const &key, VALUE const &val, VALUE &oldVal) noexcept;
-	/*
-	 * If <first> key exists and <second> key doesn't exist then the <first> value is re-registered
-	 * as <second> (and vice-versa). If both <first> and <second> keys exist and if <swap> is true
-	 * then the values associated with the keys are swapped. On success returns true, otherwise
-	 * false (could not swap or neither of the two keys exist). Iterators to <first> and <second>
-	 * keys after operation are returned in that order via <iterators>.
-	 *
-	 * NOTE: subsequent method calls which modify the hash table invalidate the iterators.
+	/**
+	 * Hash-map operation: swaps the values associated with the given pair of keys.
+	 * If only one of the two keys exists in the hash table then the existing key
+	 * is removed and it's value gets assigned to the non-existing key. If both
+	 * the keys exist and swapping is allowed then the values associated with the
+	 * two keys are swapped/exchanged.
+	 * @param first the first key in the key pair
+	 * @param second the second key in the key pair
+	 * @param iterators object for returning the iterators associated with the
+	 * pair of keys. These iterators will remain valid only as long as the hash
+	 * table is not updated.
+	 * @param swap true to allow swapping, false to disallow swapping in which
+	 * case the operation will fail if both the keys exist.
+	 * @return true on success, false on failure (neither of the two keys exists
+	 * or both the keys exist and swapping is not allowed).
 	 */
 	bool hmSwap(KEY const &first, KEY const &second, unsigned int iterators[2],
 			bool swap) noexcept;
-	bool hsPut(KEY const &key) noexcept;
-	//=================================================================
+	//-----------------------------------------------------------------
 	/**
-	 * Primitive hash table operations
-	 * NOTE: iterator is invalidated by the operations which modify the hash
-	 * table hence an iterator should be used immediately after retrieval.
+	 * Hash-set operation: inserts a new key into the hash table.
+	 * @param key the key to add
+	 * @return true on success, false otherwise (key already exists)
 	 */
-
-	/*
-	 * Resize the hash table to new capacity (resize or bust mode).
-	 * Resizing invalidates the iterators. Always returns 0.
+	bool hsPut(KEY const &key) noexcept;
+	//-----------------------------------------------------------------
+	/**
+	 * Resizes the hash table.
+	 * @param newCapacity the new capacity
+	 * @return always 0
 	 */
 	int resize(unsigned int newCapacity) noexcept;
-	/*
-	 * Returns iterator to the found element, or end() if the element is absent
+	/**
+	 * Returns iterator to the given key.
+	 * @param key the key to search for
+	 * @return iterator to the found element, or Khash::end() if not found.
 	 */
 	unsigned int get(KEY const &key) const noexcept;
-	/*
-	 * Inserts a key into the hash table. Returns iterator to the inserted element.
-	 * Check the extra return codes in <ret> which have been described below.
-	 * Extra return codes: 0 if the key is already present in the hash table;
-	 * 1 if the bucket was empty (never used); 2 if the element in the bucket
-	 * had been deleted.
+	/**
+	 * Inserts a key into the hash table.
+	 * @param key the key to insert
+	 * @param ret object for storing the extra return code: 0 if the key is
+	 * already present, 1 if the bucket was empty and not deleted, 2 if the
+	 * bucket was deleted previously.
+	 * @return iterator to the inserted element
 	 */
 	unsigned int put(KEY const &key, int &ret) noexcept;
-	/*
-	 * Remove a key from the hash table and if specified, try to shrink the
-	 * sparsely populated hash table. Shrinking invalidates the iterators.
+	/**
+	 * Removes a key from the hash table.
+	 * @param x iterator of the key (see Khash::get())
+	 * @param shrink true to shrink the hash table if it gets sparsely populated,
+	 * false otherwise. Shrinking invalidates the iterators.
 	 */
 	void remove(unsigned int x, bool shrink = true) noexcept;
-	/*
-	 * Iterates the function <fn> over the hash table.
-	 * <fn> receives iterator of the next filled bucket via <index>
-	 * <fn> also receives the caller-provided argument via <arg>
-	 * To continue iterating <fn> must return 0
-	 * To remove the key at the current position and continue <fn> must return 1
-	 * Any other value returned by <fn> will stop the iteration
+	/**
+	 * Iterates the callback function over the hash table. The callback function
+	 * receives the iterator of the next filled bucket and an extra argument. The
+	 * callback function must return zero (0) to continue iterating, 1 to remove
+	 * the key at current position, and any other value to stop the iteration.
+	 * @param fn the callback function
+	 * @param arg extra argument for the callback function
 	 */
 	void iterate(int (*fn)(unsigned int index, void *arg), void *arg);
-	//Returns the number of buckets in the hash table
+	/**
+	 * Returns hash table's capacity.
+	 * @return number of buckets in the hash table
+	 */
 	unsigned int capacity() const noexcept;
-	//Returns the number of elements in the hash table (deleted slots not included)
+	/**
+	 * Returns the number of keys in the hash table.
+	 * @return number of existing keys
+	 */
 	unsigned int size() const noexcept;
-	/*
-	 * Returns the number of buckets currently occupied. A bucket is occupied if
-	 * it is either filled or deleted.
+	/**
+	 * Returns the number of occupied buckets in the hash table. A bucket is
+	 * occupied if it is either filled or deleted.
+	 * @return number of occupied buckets
 	 */
 	unsigned int occupied() const noexcept;
-	//The upper bound on the number of occupied slots permitted at the current capacity.
+	/**
+	 * Returns the maximum number of buckets which can be occupied at the
+	 * current capacity.
+	 * @return the upper bound on the permissible number of occupied buckets.
+	 */
 	unsigned int upperBound() const noexcept;
-	/*
-	 * Returns true if the bucket at the index <x> is filled i.e. it is neither
+	/**
+	 * Checks if the bucket at the given index is filled, i.e. it is neither
 	 * empty nor deleted.
+	 * @param x the index to check
+	 * @return true if the bucket is filled, false if the bucket is either
+	 * empty or deleted.
 	 */
 	bool exists(unsigned int x) const noexcept;
-	//Returns the key present in the bucket at given index
+	/**
+	 * Returns the key present in the bucket at the given index.
+	 * @param x the index
+	 * @param key object for storing the key
+	 * @return true on success, false otherwise (invalid index)
+	 */
 	bool getKey(unsigned int x, KEY &key) const noexcept;
-	//Returns the value present in the bucket at given index
+	/**
+	 * Returns the value present in the bucket at given index
+	 * @param x the index
+	 * @param value object for storing the value
+	 * @return true on success, false otherwise (invalid index)
+	 */
 	bool getValue(unsigned int x, VALUE &value) const noexcept;
-	//Sets a value in the bucket at given index
+	/**
+	 * Sets a value in the bucket at given index
+	 * @param x the index
+	 * @param value the new value to store at the given index
+	 * @return true on success, false otherwise (invalid index)
+	 */
 	bool setValue(unsigned int x, VALUE const &value) noexcept;
-	//Returns the pointer to the stored value at given index <x>
+	/**
+	 * Returns the pointer to the stored value at the given index.
+	 * @param x the index
+	 * @return pointer to the bucket, nullptr if the the index is invalid
+	 */
 	VALUE* getValueReference(unsigned int x) const noexcept;
-	//Returns the start iterator
+	/**
+	 * Returns the start iterator that determines the inclusive lower bound.
+	 * @return start iterator's value
+	 */
 	unsigned int begin() const noexcept;
-	//Returns the end iterator
+	/**
+	 * Returns the end iterator that determines the exclusive upper bound.
+	 * @return end iterator's value
+	 */
 	unsigned int end() const noexcept;
-	//Reset the hash table without deallocating memory
+	/**
+	 * Clear all elements from the hash table without deallocating it's memory.
+	 */
 	void clear() noexcept;
 private:
 	//Initialize a hash table.

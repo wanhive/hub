@@ -19,40 +19,61 @@ namespace wanhive {
  */
 class Counter {
 public:
-	//Creates a new counter and sets the limit
+	/**
+	 * Constructor: creates a new counter with the given limit.
+	 * @param limit counter's upper limit
+	 */
 	Counter(unsigned long long limit = 0) noexcept;
+	/**
+	 * Destructor
+	 */
 	~Counter();
-
-	//Returns the current total count
+	/**
+	 * Returns the current total count.
+	 * @return total count
+	 */
 	unsigned long long getCount() const noexcept;
-	/*
-	 * Sets the total count. Fails if the given value is greater than
-	 * the current limit. Returns true on success, false otherwise.
+	/**
+	 * Overrides the total count. This call will fail if given value is greater
+	 * than the current limit.
+	 * @param count the new total count
+	 * @return true on success, false otherwise (invalid count)
 	 */
 	bool setCount(unsigned long long count) noexcept;
-	//Returns the current limit
+	/**
+	 * Returns the current upper limit.
+	 * @return current limit
+	 */
 	unsigned long long getLimit() const noexcept;
-	/*
-	 * Sets a new limit, fails if the given value is less than the
-	 * current count. Returns true on success, false otherwise.
+	/**
+	 * Sets a new upper limit. This call will fail if the given value is less
+	 * than the current count.
+	 * @param limit the new upper limit
+	 * @return true on success, false otherwise (invalid limit)
 	 */
 	bool setLimit(unsigned long long limit) noexcept;
-	//Clears out the total count and sets a new limit
+	/**
+	 * Resets the counter: clears out the total count and sets a new limit.
+	 * @param limit the new upper limit
+	 */
 	void reset(unsigned long long limit) noexcept;
-	/*
-	 * Increments the total count by <step> if the resulting total count
-	 * will not violate the current limit and returns true. Fails and
-	 * returns false otherwise.
+	/**
+	 * Increments the total count. This call will fail if as a result of the
+	 * operation the total count will become larger than the current limit.
+	 * @param step value to add to the total count
+	 * @return true on success, false otherwise
 	 */
 	bool up(unsigned int step = 1) noexcept;
-	/*
-	 * Decrements the total count by <step> if the resulting total count will
-	 * not become negative and returns true. Fails and returns false otherwise.
+	/**
+	 * Decrements the total count. This call will fail if as a result of the
+	 * operation the total count will wrap around (underflow).
+	 * @param step value to subtract from the total count
+	 * @return true on success, false otherwise
 	 */
 	bool down(unsigned int step = 1) noexcept;
 private:
-	unsigned long long limit; //Current upper limit (inclusive)
-	unsigned long long count; //Current total count
+	unsigned long long limit; //upper limit (inclusive)
+	unsigned long long count; //total count
 };
 
 } /* namespace wanhive */

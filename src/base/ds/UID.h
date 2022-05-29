@@ -16,29 +16,41 @@
 
 namespace wanhive {
 /**
- * Unique identifier (thread-safe)
- *
+ * Thread-safe unique identifier generator
  * The 64-bit counter used for generating the next identifier will eventually
- * roll over. However, such an event will take several decades or centuries to
- * occur under normal conditions. For e.g, @10 billion new uid per second, the
+ * roll over. However, such an event will take from several decades to centuries
+ * to occur under normal conditions. For e.g, @10 billion new uid per second, the
  * counter will take more than 200 years to roll over.
  */
 class UID {
 public:
+	/**
+	 * Default constructor: creates a new unique identifier.
+	 */
 	UID() noexcept;
+	/**
+	 * Destructor
+	 */
 	~UID();
-
-	//Sets the identifier (overwrites the automatically generated uid)
+	/**
+	 * Sets a new numerical identifier which may or may not be unique (overwrites
+	 * the automatically generated identifier which is guaranteed to be unique).
+	 * @param id the new identifier
+	 */
 	void set(unsigned long long id) noexcept;
-	//Returns the identifier
+	/**
+	 * Returns the 64-bit numerical identifier.
+	 * @return 64-bit identifier value
+	 */
 	unsigned long long get() const noexcept;
 private:
-	//Generates the next uid
+	//Generates the next value
 	static unsigned long long next() noexcept;
 public:
-	//[9223372036854775808, 18446744073709551615] are used by the generator
+	/** Minimum value of automatically generated identifier */
 	static constexpr unsigned long long MIN = ((unsigned long long) INT64_MAX)
 			+ 1;
+	/** Maximum value of automatically generated identifier */
 	static constexpr unsigned long long MAX = UINT64_MAX;
 private:
 	unsigned long long uid;

@@ -100,10 +100,6 @@ void MemoryPool::deallocate(void *p) noexcept {
 	}
 }
 
-bool MemoryPool::isInitialized() const noexcept {
-	return _bucket;
-}
-
 unsigned int MemoryPool::allocated() const noexcept {
 	return _allocated;
 }
@@ -114,6 +110,10 @@ unsigned int MemoryPool::capacity() const noexcept {
 
 unsigned int MemoryPool::blockSize() const noexcept {
 	return _blockSize;
+}
+
+bool MemoryPool::isInitialized() const noexcept {
+	return _bucket;
 }
 
 } /* namespace wanhive */

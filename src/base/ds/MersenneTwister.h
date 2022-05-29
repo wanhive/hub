@@ -21,16 +21,29 @@ namespace wanhive {
  */
 class MersenneTwister {
 public:
+	/**
+	 * Constructor: creates a new random number generator.
+	 * @param s value for seeding the generator
+	 */
 	MersenneTwister(unsigned long s = 5489) noexcept;
+	/**
+	 * Destructor
+	 */
 	virtual ~MersenneTwister();
-	//Re-seeds the generator
+	/**
+	 * Applies a new seed to the generator.
+	 * @param s the new seed's value
+	 */
 	void seed(unsigned long s) noexcept;
-	//Returns a random number
+	/**
+	 * Generates and returns a 32-bit random number.
+	 * @return the random number
+	 */
 	unsigned long next() noexcept;
 private:
 	void twist() noexcept;
 private:
-	/**
+	/*
 	 * Coefficients
 	 */
 	static constexpr unsigned long MASK = 0xffffffffUL;
@@ -43,7 +56,7 @@ private:
 	static constexpr unsigned long LBM = (1UL << R) - 1; //Lower bit mask (0x7fffffffUL)
 	static constexpr unsigned long UBM = MASK & (~LBM); //Upper bit mask (0x80000000UL)
 
-	/**
+	/*
 	 * Tempering shifts and masks
 	 */
 	static constexpr unsigned int U = 11;
@@ -56,7 +69,7 @@ private:
 
 	static constexpr unsigned long F = 1812433253UL; //Parameter for generator
 
-	/**
+	/*
 	 * Internal state
 	 */
 	unsigned long mt[N];
