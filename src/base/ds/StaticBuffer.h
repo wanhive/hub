@@ -20,109 +20,186 @@
 namespace wanhive {
 /**
  * A sequential container for POD types
- * Simulates single track magnetic tape storage
- * Thread safe at class level
+ * Simulates a single-track magnetic tape storage
  */
 template<typename X, unsigned int SIZE> class StaticBuffer {
 public:
+	/**
+	 * Default constructor: creates a new buffer.
+	 */
 	StaticBuffer() noexcept;
+	/**
+	 * Destructor
+	 */
 	~StaticBuffer();
-
-	//Returns buffer's capacity.
-	unsigned int capacity() const noexcept;
-	//Returns buffer's current index.
-	unsigned int getIndex() const noexcept;
-	/*
-	 * Sets buffer's index. The new index should not be greater than the current
-	 * limit. Returns true on success, false otherwise.
-	 */
-	bool setIndex(unsigned int index) noexcept;
-	//Returns buffer's current limit.
-	unsigned int getLimit() const noexcept;
-	/*
-	 * Sets buffer's limit. The new limit should not be greater than the
-	 * capacity, and, should not be less than the current index. Returns
-	 * true on success, false otherwise.
-	 */
-	bool setLimit(unsigned int limit) noexcept;
-	/*
-	 * Resets the buffer to it's initial state.
-	 * The index is set to zero and the limit is set to the capacity.
+	//-----------------------------------------------------------------
+	/**
+	 * Clears the buffer: index is set to zero and limit is set to capacity.
 	 */
 	void clear() noexcept;
-	/*
-	 * Rewinds the buffer after a sequence of relative put operations.
-	 * The limit is set to the current index and then the index is set to zero.
+	/**
+	 * Rewinds the buffer: limit is set to the current index and then the index
+	 * is set to zero.
 	 */
 	void rewind() noexcept;
-	//Returns the number of elements between the current index and the limit.
-	unsigned int space() const noexcept;
-	//Returns true if there are any elements between the current index and the limit.
-	bool hasSpace() const noexcept;
-	/*
-	 * Relative get method reads the element at the current index and then
-	 * increments the index. Returns true on success, false otherwise.
-	 */
-	bool get(X &value) noexcept;
-	/*
-	 * Absolute get method reads the element at the given index.
-	 * Returns true on success, false otherwise.
-	 */
-	bool get(X &value, unsigned int index) const noexcept;
-	/*
-	 * Relative bulk get method transfers elements from the buffer into the given
-	 * destination starting at the current index of the buffer. At most <length>
-	 * elements are transferred, index is updated and actual number of elements
-	 * copied from the buffer is returned.
-	 */
-	unsigned int get(X *dest, unsigned int length) noexcept;
-	/*
-	 * Relative get method returns a pointer to the element stored
-	 * at the current index and then increments the index.
-	 */
-	X* get() noexcept;
-	/*
-	 * Relative put method writes the given element into the buffer at
-	 * the current index and then increments the index.
-	 */
-	bool put(X const &value) noexcept;
-	/*
-	 * Absolute put method writes the given element at the given index.
-	 * Returns true on success, false otherwise.
-	 */
-	bool put(X const &value, unsigned int index) noexcept;
-	/*
-	 * Relative bulk put method transfers elements into the buffer from the given
-	 * source starting at the current index of the buffer. At most <length> elements
-	 * are transferred, index is updated and actual number of elements copied into
-	 * the buffer is returned.
-	 */
-	unsigned int put(const X *src, unsigned int length) noexcept;
-	/*
-	 * Moves elements in the interval [index, limit) to the beginning of the buffer.
-	 * The index is then set to (limit-index) and the limit is set to the capacity.
+	/**
+	 * Packs the buffer: moves elements in the interval [index, limit) to the
+	 * beginning of the buffer. Index is then set to (limit-index) and limit is
+	 * set to the capacity.
 	 */
 	void pack() noexcept;
-	//Returns a pointer to the backing array.
-	X* array() noexcept;
-	//Returns a const pointer to the backing array.
-	const X* array() const noexcept;
-	//Returns a pointer to the backing array offset by the index.
-	X* offset() noexcept;
-	//Returns a const pointer to the backing array offset by the index.
-	const X* offset() const noexcept;
-	//Get the status of this buffer
-	int getStatus() const noexcept;
-	//Set the status of this buffer
-	void setStatus(int status) noexcept;
-	//=================================================================
+	//-----------------------------------------------------------------
 	/**
-	 * Stack operations
+	 * Returns buffer's capacity.
+	 * @return buffer's capacity
+	 */
+	unsigned int capacity() const noexcept;
+	/**
+	 * Returns buffer's current index.
+	 * @return the current index
+	 */
+	unsigned int getIndex() const noexcept;
+	/**
+	 * Sets buffer's index: new index should not be greater than the current limit.
+	 * @param index the new index's value
+	 * @return true on success, false on failure (invalid index)
+	 */
+	bool setIndex(unsigned int index) noexcept;
+	/**
+	 * Returns buffer's current limit.
+	 * @return the current limit
+	 */
+	unsigned int getLimit() const noexcept;
+	/**
+	 * Sets buffer's limit: the new limit should not be greater than the
+	 * capacity, and, should not be less than the current index.
+	 * @param limit the new limit value
+	 * @return true on success, false on failure (invalid limit)
+	 */
+	bool setLimit(unsigned int limit) noexcept;
+	/**
+	 * Returns the number of elements between the current index and the limit.
+	 * @return number of elements remaining in the buffer
+	 */
+	unsigned int space() const noexcept;
+	/**
+	 * Checks if there are any elements between the current index and the limit.
+	 * @return true if there are elements remaining in the buffer, false otherwise
+	 */
+	bool hasSpace() const noexcept;
+	/**
+	 * Gets the status of this buffer.
+	 * @return this buffer's status
+	 */
+	int getStatus() const noexcept;
+	/**
+	 * Sets the status of this buffer.
+	 * @param status the new status value
+	 */
+	void setStatus(int status) noexcept;
+	//-----------------------------------------------------------------
+	/**
+	 * Relative get method: reads the element at the current index and then
+	 * increments the index.
+	 * @param value object for storing the value
+	 * @return true on success, false on failure (no remaining element)
+	 */
+	bool get(X &value) noexcept;
+	/**
+	 * Absolute get method: reads element at the given index which should be less
+	 * than the current limit.
+	 * @param value object for storing the value
+	 * @param index the index to read from
+	 * @return true on success, false otherwise (invalid index)
+	 */
+	bool get(X &value, unsigned int index) const noexcept;
+	/**
+	 * Relative bulk get method: transfers elements from the buffer into the given
+	 * destination starting at the current index of the buffer and then updates
+	 * the index.
+	 * @param dest memory space for storing the values
+	 * @param length maximum number of elements to read
+	 * @return actual number of elements copied from the buffer
+	 */
+	unsigned int get(X *dest, unsigned int length) noexcept;
+	/**
+	 * Relative get method: returns a pointer to the element stored at the current
+	 * index and then increments the index.
+	 * @return pointer to element at the current index
+	 */
+	X* get() noexcept;
+	/**
+	 * Relative put method: writes the given value into the buffer at the current
+	 * index and then increments the index.
+	 * @param value value to put into the buffer
+	 * @return true on success, false otherwise (no space remaining)
+	 */
+	bool put(X const &value) noexcept;
+	/**
+	 * Absolute put method: writes a value at the given index. The given index's
+	 * value should be less than the current limit.
+	 * @param value value to write at the given index
+	 * @param index the index to write at
+	 * @return true on success, false otherwise (invalid index)
+	 */
+	bool put(X const &value, unsigned int index) noexcept;
+	/**
+	 * Relative bulk put method: transfers values into the buffer from the given
+	 * source starting at the current index of the buffer and updates the index.
+	 * @param src source of data
+	 * @param length maximum number of elements to write
+	 * @return actual number of elements copied into the buffer
+	 */
+	unsigned int put(const X *src, unsigned int length) noexcept;
+	//-----------------------------------------------------------------
+	/**
+	 * Returns a pointer to the backing array.
+	 * @return pointer to the backing array
+	 */
+	X* array() noexcept;
+	/**
+	 * Returns a constant pointer to the backing array.
+	 * @return pointer to the backing array
+	 */
+	const X* array() const noexcept;
+	/**
+	 * Returns a pointer to the backing array offset by the index.
+	 * @return pointer to the backing subarray starting at the current index
+	 */
+	X* offset() noexcept;
+	/**
+	 * Returns a constant pointer to the backing array offset by the index.
+	 * @return pointer to the backing subarray starting at the current index
+	 */
+	const X* offset() const noexcept;
+	//-----------------------------------------------------------------
+	/**
+	 * Pushes a value on top of the stack.
+	 * @param e the value to write
+	 * @return true on success, false otherwise (stack is full)
 	 */
 	bool push(X const &e) noexcept;
+	/**
+	 * Pops a value from top of the stack.
+	 * @param e object for storing the value
+	 * @return true on success, false otherwise (stack is empty)
+	 */
 	bool pop(X &e) noexcept;
+	/**
+	 * Peeks into the value on top of stack.
+	 * @param e object for storing the value
+	 * @return true on success, false otherwise (stack is empty)
+	 */
 	bool peek(X &e) noexcept;
+	/**
+	 * Checks if the stack is full.
+	 * @return true if the stack is full, false otherwise.
+	 */
 	bool isFull() const noexcept;
+	/**
+	 * Checks if the stack is empty.
+	 * @return true if the stack is empty, false otherwise.
+	 */
 	bool isEmpty() const noexcept;
 private:
 	WH_POD_ASSERT(X);
@@ -142,6 +219,27 @@ template<typename X, unsigned int SIZE> wanhive::StaticBuffer<X, SIZE>::StaticBu
 }
 
 template<typename X, unsigned int SIZE> wanhive::StaticBuffer<X, SIZE>::~StaticBuffer() {
+
+}
+
+template<typename X, unsigned int SIZE> void wanhive::StaticBuffer<X, SIZE>::clear() noexcept {
+	_limit = _capacity;
+	_index = 0;
+}
+
+template<typename X, unsigned int SIZE> void wanhive::StaticBuffer<X, SIZE>::rewind() noexcept {
+	_limit = _index;
+	_index = 0;
+}
+
+template<typename X, unsigned int SIZE> void wanhive::StaticBuffer<X, SIZE>::pack() noexcept {
+	auto n = space();
+	if (_index && n) {
+		memmove(storage, storage + _index, n * sizeof(X));
+	}
+
+	_limit = _capacity;
+	_index = n;
 }
 
 template<typename X, unsigned int SIZE> unsigned int wanhive::StaticBuffer<X,
@@ -179,16 +277,6 @@ template<typename X, unsigned int SIZE> bool wanhive::StaticBuffer<X, SIZE>::set
 	}
 }
 
-template<typename X, unsigned int SIZE> void wanhive::StaticBuffer<X, SIZE>::clear() noexcept {
-	_limit = _capacity;
-	_index = 0;
-}
-
-template<typename X, unsigned int SIZE> void wanhive::StaticBuffer<X, SIZE>::rewind() noexcept {
-	_limit = _index;
-	_index = 0;
-}
-
 template<typename X, unsigned int SIZE> unsigned int wanhive::StaticBuffer<X,
 		SIZE>::space() const noexcept {
 	return _limit - _index;
@@ -196,6 +284,15 @@ template<typename X, unsigned int SIZE> unsigned int wanhive::StaticBuffer<X,
 
 template<typename X, unsigned int SIZE> bool wanhive::StaticBuffer<X, SIZE>::hasSpace() const noexcept {
 	return _limit != _index;
+}
+
+template<typename X, unsigned int SIZE> int wanhive::StaticBuffer<X, SIZE>::getStatus() const noexcept {
+	return status;
+}
+
+template<typename X, unsigned int SIZE> void wanhive::StaticBuffer<X, SIZE>::setStatus(
+		int status) noexcept {
+	this->status = status;
 }
 
 template<typename X, unsigned int SIZE> bool wanhive::StaticBuffer<X, SIZE>::get(
@@ -270,16 +367,6 @@ template<typename X, unsigned int SIZE> unsigned int wanhive::StaticBuffer<X,
 	}
 }
 
-template<typename X, unsigned int SIZE> void wanhive::StaticBuffer<X, SIZE>::pack() noexcept {
-	auto n = space();
-	if (_index && n) {
-		memmove(storage, storage + _index, n * sizeof(X));
-	}
-
-	_limit = _capacity;
-	_index = n;
-}
-
 template<typename X, unsigned int SIZE> X* wanhive::StaticBuffer<X, SIZE>::array() noexcept {
 	return storage;
 }
@@ -294,15 +381,6 @@ template<typename X, unsigned int SIZE> X* wanhive::StaticBuffer<X, SIZE>::offse
 
 template<typename X, unsigned int SIZE> const X* wanhive::StaticBuffer<X, SIZE>::offset() const noexcept {
 	return storage + _index;
-}
-
-template<typename X, unsigned int SIZE> int wanhive::StaticBuffer<X, SIZE>::getStatus() const noexcept {
-	return status;
-}
-
-template<typename X, unsigned int SIZE> void wanhive::StaticBuffer<X, SIZE>::setStatus(
-		int status) noexcept {
-	this->status = status;
 }
 
 template<typename X, unsigned int SIZE> bool wanhive::StaticBuffer<X, SIZE>::push(
