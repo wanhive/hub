@@ -38,35 +38,86 @@ template<typename X> struct wh_bhfn_fn {
 template<typename X = int, typename CMPFN = wh_lt_fn,
 		typename BHFN = wh_bhfn_fn<X> > class BinaryHeap {
 public:
+	/**
+	 * Default constructor: creates a zero-capacity heap.
+	 */
 	BinaryHeap() noexcept;
+	/**
+	 * Constructor: creates a binary heap with given capacity.
+	 * @param size binary heap's capacity
+	 */
 	BinaryHeap(unsigned int size);
+	/**
+	 * Destructor
+	 */
 	~BinaryHeap();
-
-	//Initializes the heap to a particular size
+	//-----------------------------------------------------------------
+	/**
+	 * Initializes the binary heap to the given capacity.
+	 * @param size binary heap's capacity
+	 */
 	void initialize(unsigned int size);
-	//Clears the heap (doesn't clean up the contents)
+	/**
+	 * Empties the binary heap.
+	 */
 	void clear() noexcept;
-
-	//Returns heap's capacity
+	//-----------------------------------------------------------------
+	/**
+	 * Returns the binary heap's capacity.
+	 * @return the capacity
+	 */
 	unsigned int capacity() const noexcept;
-	//Returns the number of elements in the heap
+	/**
+	 * Returns the number of elements in the heap.
+	 * @return number of elements
+	 */
 	unsigned int size() const noexcept;
-	//Returns true if the heap is empty, false otherwise
+	/**
+	 * Checks if the heap is empty.
+	 * @return true if the heap is empty, false otherwise
+	 */
 	bool isEmpty() const noexcept;
-	//Returns true if the heap is full, false otherwise
+	/**
+	 * Checks if the heap is full.
+	 * @return true if the heap is full, false otherwise
+	 */
 	bool isFull() const noexcept;
-
-	//Reads the element at the given <index> (the root is at index = 0)
+	//-----------------------------------------------------------------
+	/**
+	 * Reads an element from the binary heap (doesn't remove it).
+	 * @param e object for storing the value
+	 * @param index the index to read from (root is at index = 0)
+	 * @return true on success, false otherwise (invalid index or heap is empty)
+	 */
 	bool get(X &e, unsigned int index = 0) const noexcept;
-	//Insert the element <e> into the binary heap
+	/**
+	 * Inserts an element into the binary heap.
+	 * @param e the element to insert
+	 * @return true on success, false otherwise (heap is full)
+	 */
 	bool insert(const X &e) noexcept;
-	//Remove the element at the given <index> (the root is at index = 0)
+	/**
+	 * Removes an element from the binary heap.
+	 * @param index index of the element to remove (root is at index = 0)
+	 * @return true on success, false otherwise (invalid index or heap is empty)
+	 */
 	bool remove(unsigned int index = 0) noexcept;
-	//Binary heap traversal, <f> must return 0 to continue
+	/**
+	 * Binary heap traversal.
+	 * @param f the callback function (return 0 to continue, 1 to halt)
+	 * @param data additional argument for the callback function
+	 */
 	void map(int (*f)(const X &e, void *arg), void *data);
-	//Returns a pointer to the backing array
+	//-----------------------------------------------------------------
+	/**
+	 * Returns a pointer to the backing array.
+	 * @return pointer to the backing array (potentially nullptr)
+	 */
 	X* array() noexcept;
-	//Returns a const pointer to the backing array
+	/**
+	 * Returns a constant pointer to the backing array.
+	 * @return pointer to the backing array (potentially nullptr)
+	 */
 	const X* array() const noexcept;
 private:
 	//Swaps the slots at the indices <i> and <j>
