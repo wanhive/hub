@@ -84,7 +84,8 @@ public:
 	/**
 	 * Bit array implementation primitives.
 	 * All functions assume 8-bit unsigned char.
-	 * All functions assume valid parameters e.g. valid non-null pointer and valid index.
+	 * All functions assume valid parameters e.g. valid non-null pointer
+	 * and valid index.
 	 */
 	//Fast modulus 8 of an unsigned integer
 	static unsigned int mod8(unsigned int x) noexcept;
@@ -124,8 +125,9 @@ public:
 	static unsigned int ceiling(unsigned int n, unsigned int k) noexcept;
 	//-----------------------------------------------------------------
 	/**
-	 * ASCII STRING MANIPULATIONS
-	 * Pointers cannot be null
+	 * ASCII string utilities
+	 * All functions assume valid parameters  e.g. valid non-null pointer
+	 * and valid length.
 	 */
 
 	/*

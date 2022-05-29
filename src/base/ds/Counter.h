@@ -34,8 +34,8 @@ public:
 	 */
 	unsigned long long getCount() const noexcept;
 	/**
-	 * Overrides the total count. This call will fail if given value is greater
-	 * than the current limit.
+	 * Overrides the total count. This call will fail if the given value is
+	 * greater than the current limit.
 	 * @param count the new total count
 	 * @return true on success, false otherwise (invalid count)
 	 */

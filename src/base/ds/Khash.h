@@ -167,7 +167,7 @@ public:
 	 */
 	unsigned int capacity() const noexcept;
 	/**
-	 * Returns the number of keys in the hash table.
+	 * Returns the total number of filled buckets in the hash table.
 	 * @return number of existing keys
 	 */
 	unsigned int size() const noexcept;
