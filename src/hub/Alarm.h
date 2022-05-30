@@ -19,7 +19,7 @@ namespace wanhive {
  * Millisecond resolution periodic timer
  * Abstraction of the Linux's timerfd mechanism (timerfd_create(2))
  */
-class Alarm: public Watcher {
+class Alarm final: public Watcher {
 public:
 	/**
 	 * Constructor: creates a new timer (doesn't start it).
@@ -30,14 +30,14 @@ public:
 	Alarm(unsigned int expiration, unsigned int interval,
 			bool blocking = false);
 	/**
-	 * Destructor.
+	 * Destructor
 	 */
-	virtual ~Alarm();
+	~Alarm();
 	//-----------------------------------------------------------------
-	void start() override final;
-	void stop() noexcept override final;
-	bool callback(void *arg) noexcept override final;
-	bool publish(void *arg) noexcept override final;
+	void start() override;
+	void stop() noexcept override;
+	bool callback(void *arg) noexcept override;
+	bool publish(void *arg) noexcept override;
 	//-----------------------------------------------------------------
 	/**
 	 * Reads the timer expiration count. Call Clock::getCount() to get the result.

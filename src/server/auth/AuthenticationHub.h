@@ -20,16 +20,16 @@ namespace wanhive {
  * The authentication hub
  * Uses SRP-6a protocol
  */
-class AuthenticationHub: public Hub {
+class AuthenticationHub final: public Hub {
 public:
 	AuthenticationHub(unsigned long long uid,
 			const char *path = nullptr) noexcept;
-	virtual ~AuthenticationHub();
+	~AuthenticationHub();
 private:
-	void stop(Watcher *w) noexcept override final;
-	void configure(void *arg) final;
-	void cleanup() noexcept override final;
-	void route(Message *message) noexcept override final;
+	void stop(Watcher *w) noexcept override;
+	void configure(void *arg) override;
+	void cleanup() noexcept override;
+	void route(Message *message) noexcept override;
 	//-----------------------------------------------------------------
 	//User -> Host:  I, A; Host -> User:  s, B
 	int handleIdentificationRequest(Message *message) noexcept;

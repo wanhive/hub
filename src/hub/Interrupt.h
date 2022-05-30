@@ -21,7 +21,7 @@ using SignalInfo=signalfd_siginfo;
  * Signal watcher
  * Abstraction of Linux's signalfd(2) mechanism
  */
-class Interrupt: public Watcher {
+class Interrupt final: public Watcher {
 public:
 	/**
 	 * Constructor: creates a watcher for accepting signals.
@@ -31,12 +31,12 @@ public:
 	/**
 	 * Destructor
 	 */
-	virtual ~Interrupt();
+	~Interrupt();
 	//-----------------------------------------------------------------
-	void start() override final;
-	void stop() noexcept override final;
-	bool callback(void *arg) noexcept override final;
-	bool publish(void *arg) noexcept override final;
+	void start() override;
+	void stop() noexcept override;
+	bool callback(void *arg) noexcept override;
+	bool publish(void *arg) noexcept override;
 	//-----------------------------------------------------------------
 	/**
 	 * Accepts a pending signal. Call SignalWatcher::getInfo to get the result.

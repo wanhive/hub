@@ -46,7 +46,7 @@ enum SocketType {
  * Message stream watcher
  * Not thread safe
  */
-class Socket: public Source<unsigned char>, public Watcher {
+class Socket final: public Source<unsigned char>, public Watcher {
 public:
 	/**
 	 * Constructor: associates the given file descriptor to the object
@@ -81,7 +81,7 @@ public:
 	/**
 	 * Destructor
 	 */
-	virtual ~Socket();
+	~Socket();
 	//-----------------------------------------------------------------
 	void* operator new(size_t size);
 	void operator delete(void *p) noexcept;
@@ -89,20 +89,20 @@ public:
 	/*
 	 * Source interface implementation
 	 */
-	size_t take(unsigned char *buffer, size_t count) override final;
-	size_t available() const noexcept override final;
+	size_t take(unsigned char *buffer, size_t count) override;
+	size_t available() const noexcept override;
 	//-----------------------------------------------------------------
 	/*
 	 * Watcher interface implementation
 	 */
-	void start() override final;
-	void stop() noexcept override final;
-	bool callback(void *arg) noexcept override final;
-	bool publish(void *arg) noexcept override final;
+	void start() override;
+	void stop() noexcept override;
+	bool callback(void *arg) noexcept override;
+	bool publish(void *arg) noexcept override;
 
-	void setTopic(unsigned int index) noexcept override final;
-	void clearTopic(unsigned int index) noexcept override final;
-	bool testTopic(unsigned int index) const noexcept override final;
+	void setTopic(unsigned int index) noexcept override;
+	void clearTopic(unsigned int index) noexcept override;
+	bool testTopic(unsigned int index) const noexcept override;
 	//-----------------------------------------------------------------
 	/**
 	 * Accepts an incoming connection request.

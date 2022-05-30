@@ -19,7 +19,7 @@ namespace wanhive {
  * Events counter
  * Abstraction of linux's event wait/notify mechanism (see eventfd(2))
  */
-class Event: public Watcher {
+class Event final: public Watcher {
 public:
 	/**
 	 * Constructor: creates a new events counter.
@@ -29,14 +29,14 @@ public:
 	 */
 	Event(bool semaphore, bool blocking = false);
 	/**
-	 * Destructor.
+	 * Destructor
 	 */
-	virtual ~Event();
+	~Event();
 	//-----------------------------------------------------------------
-	void start() override final;
-	void stop() noexcept override final;
-	bool callback(void *arg) noexcept override final;
-	bool publish(void *arg) noexcept override final;
+	void start() override;
+	void stop() noexcept override;
+	bool callback(void *arg) noexcept override;
+	bool publish(void *arg) noexcept override;
 	//-----------------------------------------------------------------
 	/**
 	 * Reads the events count. If semaphore-like behavior was enabled then each

@@ -31,7 +31,7 @@ public:
 	/**
 	 * Destructor
 	 */
-	virtual ~ClientHub();
+	~ClientHub();
 protected:
 	//-----------------------------------------------------------------
 	void stop(Watcher *w) noexcept override;

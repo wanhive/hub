@@ -21,7 +21,7 @@ using InotifyEvent=inotify_event;
  * Reports file system events
  * Abstraction of Linux's inotify(7) mechanism
  */
-class Inotifier: public Watcher {
+class Inotifier final: public Watcher {
 public:
 	/**
 	 * Creates a new file-system monitor.
@@ -29,14 +29,14 @@ public:
 	 */
 	Inotifier(bool blocking = false);
 	/**
-	 * Destructor.
+	 * Destructor
 	 */
-	virtual ~Inotifier();
+	~Inotifier();
 	//-----------------------------------------------------------------
-	void start() override final;
-	void stop() noexcept override final;
-	bool callback(void *arg) noexcept override final;
-	bool publish(void *arg) noexcept override final;
+	void start() override;
+	void stop() noexcept override;
+	bool callback(void *arg) noexcept override;
+	bool publish(void *arg) noexcept override;
 	//-----------------------------------------------------------------
 	/**
 	 * Adds a pathname (file/directory) to the monitor.

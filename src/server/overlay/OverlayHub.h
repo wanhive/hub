@@ -20,23 +20,23 @@ namespace wanhive {
 /**
  * Overlay hub implementation
  */
-class OverlayHub: public Hub, private Node {
+class OverlayHub final: public Hub, private Node {
 public:
 	OverlayHub(unsigned long long uid, const char *path = nullptr);
-	virtual ~OverlayHub();
+	~OverlayHub();
 private:
 	//-----------------------------------------------------------------
-	void stop(Watcher *w) noexcept override final;
-	void configure(void *arg) override final;
-	void cleanup() noexcept override final;
-	bool trapMessage(Message *message) noexcept override final;
-	void route(Message *message) noexcept override final;
-	void maintain() noexcept override final;
+	void stop(Watcher *w) noexcept override;
+	void configure(void *arg) override;
+	void cleanup() noexcept override;
+	bool trapMessage(Message *message) noexcept override;
+	void route(Message *message) noexcept override;
+	void maintain() noexcept override;
 	void processInotification(unsigned long long uid,
-			const InotifyEvent *event) noexcept override final;
-	bool enableWorker() const noexcept override final;
-	void doWork(void *arg) noexcept override final;
-	void stopWork() noexcept override final;
+			const InotifyEvent *event) noexcept override;
+	bool enableWorker() const noexcept override;
+	void doWork(void *arg) noexcept override;
+	void stopWork() noexcept override;
 	//-----------------------------------------------------------------
 	void installService();
 	void installSettingsMonitor();

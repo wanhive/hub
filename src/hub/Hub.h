@@ -49,7 +49,7 @@ public:
 	/**
 	 * Destructor
 	 */
-	virtual ~Hub();
+	~Hub();
 	//-----------------------------------------------------------------
 	/**
 	 * Returns this hub's identity.
@@ -288,18 +288,18 @@ private:
 	/*
 	 * Implementations of the Handler interfaces
 	 */
-	bool handle(Alarm *alarm) noexcept override final;
-	bool handle(Event *event) noexcept override final;
-	bool handle(Inotifier *inotifier) noexcept override final;
-	bool handle(Interrupt *interrupt) noexcept override final;
-	bool handle(Socket *socket) noexcept override final;
+	bool handle(Alarm *alarm) noexcept final;
+	bool handle(Event *event) noexcept final;
+	bool handle(Inotifier *inotifier) noexcept final;
+	bool handle(Interrupt *interrupt) noexcept final;
+	bool handle(Socket *socket) noexcept final;
 	//-----------------------------------------------------------------
 	/*
 	 * Implementation of the Task interface
 	 */
-	void run(void *arg) noexcept override final;
-	int getStatus() const noexcept override final;
-	void setStatus(int status) noexcept override final;
+	void run(void *arg) noexcept final;
+	int getStatus() const noexcept final;
+	void setStatus(int status) noexcept final;
 	//-----------------------------------------------------------------
 	//Configure the hub and start the worker thread
 	void setup(void *arg);
@@ -447,14 +447,14 @@ private:
 	/*
 	 * The worker thread
 	 */
-	class Worker: public Task {
+	class Worker final: public Task {
 	public:
 		Worker(Hub *hub) noexcept;
-		virtual ~Worker();
+		~Worker();
 
-		void run(void *arg) noexcept override final;
-		int getStatus() const noexcept override final;
-		void setStatus(int status) noexcept override final;
+		void run(void *arg) noexcept override;
+		int getStatus() const noexcept override;
+		void setStatus(int status) noexcept override;
 	private:
 		Hub *hub;
 	};
