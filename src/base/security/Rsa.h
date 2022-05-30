@@ -83,7 +83,7 @@ private:
 	static EVP_PKEY* createFromFile(const char *filename, bool isPublicKey,
 			char *password) noexcept;
 	static bool verifyRSAKey(EVP_PKEY *key) noexcept;
-	static void destroyKey(EVP_PKEY *rsa) noexcept;
+	static void destroyKey(EVP_PKEY *key) noexcept;
 	//=================================================================
 	/**
 	 * Used for key pair generation

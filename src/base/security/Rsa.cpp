@@ -315,8 +315,8 @@ bool Rsa::verifyRSAKey(EVP_PKEY *key) noexcept {
 #endif
 }
 
-void Rsa::destroyKey(EVP_PKEY *rsa) noexcept {
-	EVP_PKEY_free(rsa);
+void Rsa::destroyKey(EVP_PKEY *key) noexcept {
+	EVP_PKEY_free(key);
 }
 
 EVP_PKEY* Rsa::generateRSAKey(int bits) noexcept {
