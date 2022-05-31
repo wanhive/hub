@@ -80,19 +80,19 @@ public:
 	static unsigned int power2Ceil(unsigned int x) noexcept;
 	//-----------------------------------------------------------------
 	/**
-	 * Thomas wang's mixing function: for 32-bit integers.
+	 * Thomas Wang's mix function: for 32-bit integers.
 	 * @param i the 32-bit value
 	 * @return 32-bit hash value
 	 */
 	static unsigned long mix(unsigned long i) noexcept;
 	/**
-	 * Thomas wang's mixing function: for 64-bit integers.
+	 * Thomas Wang's mix function: for 64-bit integers.
 	 * @param l the 64-bit value
 	 * @return 64-bit hash value
 	 */
 	static unsigned long long mix(unsigned long long l) noexcept;
 	/**
-	 * Tomas wang's 64-bit to 32-bit hash function.
+	 * Thomas Wang's 64-bit to 32-bit hash function.
 	 * @param l the 64-bit value
 	 * @return 32-bit hash value
 	 */
