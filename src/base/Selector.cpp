@@ -83,7 +83,7 @@ unsigned int Selector::select(int timeout) {
 		return n;
 	} else if (n == 0) {
 		//Timed out
-		_timedOut = (timeout > 0);
+		_timedOut = true;
 		return n;
 	} else if (errno == EINTR) {
 		//Received a signal

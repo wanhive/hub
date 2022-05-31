@@ -76,14 +76,14 @@ public:
 	 * Starts monitoring a file descriptor for the given events
 	 * @param fd file descriptor to monitor
 	 * @param events events of interest (see Selector::events())
-	 * @param handle the future reference (see Selector::attachment())
+	 * @param handle pointer to the user data (see Selector::attachment())
 	 */
 	void add(int fd, uint32_t events, void *handle = nullptr);
 	/**
 	 * Modify the events and reference associated with the given file descriptor.
 	 * @param fd file descriptor being monitored (see Selector::add())
 	 * @param events new events of interest (see Selector::events())
-	 * @param handle new future reference (see Selector::attachment())
+	 * @param handle pointer to the user data (see Selector::attachment())
 	 */
 	void modify(int fd, uint32_t events, void *handle = nullptr);
 	/**
@@ -93,40 +93,41 @@ public:
 	void remove(int fd);
 	//-----------------------------------------------------------------
 	/**
-	 * Waits for IO event, timeout or signal.
+	 * Waits for IO events, timeout or signal.
 	 * @param timeout the wait timeout value in milliseconds, set -1 to block
-	 * indefinitely, set 0 to return immediately.
+	 * indefinitely, set 0 to return immediately even if no events are available.
 	 * @return number of ready file descriptors (see Selector::next()), possibly
 	 * zero if the call got interrupted due to timeout or signal delivery.
 	 */
 	unsigned int select(int timeout = -1);
 	/**
 	 * Checks if the selector got interrupted by signal delivery.
-	 * @return true if the most recent Selector::select() call got interrupted
+	 * @return true if the most recent call to Selector::select() got interrupted
 	 * by a signal, false otherwise.
 	 */
 	bool interrupted() const noexcept;
 	/**
 	 * Checks if the selector got timed out while waiting for IO events.
-	 * @return Returns true if the most recent Selector::select() got timed out,
-	 * false otherwise.
+	 * @return Returns true if the most recent call to Selector::select() got
+	 * timed out, false otherwise.
 	 */
 	bool timedOut() const noexcept;
 	//-----------------------------------------------------------------
 	/**
-	 * Returns information about the next ready file descriptor.
+	 * Returns information about the next ready file descriptor that has some
+	 * events available.
 	 * @return object describing a ready file descriptor
 	 */
 	SelectionEvent* next() noexcept;
 	/**
-	 * Returns the handle associated with a ready file descriptor.
-	 * @param se object describing a ready file descriptor
-	 * @return object associated with the ready file descriptor
+	 * Returns pointer to the user data associated with a ready file descriptor.
+	 * @param se object describing a ready file descriptor (see Selector::next())
+	 * @return pointer value associated with the ready file descriptor
 	 */
 	static void* attachment(const SelectionEvent *se) noexcept;
 	/**
 	 * Returns the IO events reported on a ready file descriptor.
-	 * @param se object describing a ready file descriptor
+	 * @param se object describing a ready file descriptor (see Selector::next())
 	 * @return IO events reported on the file descriptor
 	 */
 	static uint32_t events(const SelectionEvent *se) noexcept;
