@@ -18,8 +18,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
-- **CircularBuffer::setStatus** and **StaticCircularBuffer::setStatus** methods compile correctly.
+- **CircularBuffer::setStatus** and **StaticCircularBuffer::setStatus** methods should compile.
 - Assign correct data type to the MessageFlag enumeration.
+- Handle zero (immediate) timeout correctly in the **Selector**.
 
 ### Security
 
