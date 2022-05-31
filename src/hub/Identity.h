@@ -21,7 +21,6 @@
 namespace wanhive {
 /**
  * Hub's identity and properties
- * Thread safe at class level
  */
 class Identity {
 public:

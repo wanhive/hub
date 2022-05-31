@@ -16,7 +16,6 @@
 namespace wanhive {
 /**
  * Topic-based subscription management
- * Thread safe at class level
  */
 class Topic {
 public:

@@ -18,7 +18,6 @@
 namespace wanhive {
 /**
  * Client hub implementation
- * Thread safe at class level
  */
 class ClientHub: public Hub {
 public:
