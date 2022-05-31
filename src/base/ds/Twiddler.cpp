@@ -153,7 +153,7 @@ bool Twiddler::isInRange(unsigned int value, unsigned int from,
 }
 
 uint32_t Twiddler::mask(uint32_t word, uint32_t bitmask, bool set) noexcept {
-	//For superscalar CPUs
+	//For superscalar CPUs: if (set) word |= mask; else word &= ~bitmask;
 	return ((word & ~bitmask) | (-set & bitmask));
 }
 
@@ -162,7 +162,7 @@ uint32_t Twiddler::set(uint32_t word, uint32_t bitmask) noexcept {
 }
 
 uint32_t Twiddler::clear(uint32_t word, uint32_t bitmask) noexcept {
-	return word &= ~bitmask;
+	return word & ~bitmask;
 }
 
 uint32_t Twiddler::test(uint32_t word, uint32_t bitmask) noexcept {
