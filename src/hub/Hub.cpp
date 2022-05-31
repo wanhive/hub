@@ -567,7 +567,7 @@ void Hub::setup(void *arg) {
 
 void Hub::loop() {
 	while (running) {
-		monitor(outgoingMessages.isEmpty());
+		poll(outgoingMessages.isEmpty());
 		publish();
 		dispatch();
 		processMessages();

@@ -66,7 +66,7 @@ bool Reactor::disable(Watcher *w) noexcept {
 	}
 }
 
-void Reactor::monitor(bool block) {
+void Reactor::poll(bool block) {
 	auto to = (readyList.isEmpty() && block) ? timeout : 0;
 	selector.select(to);
 

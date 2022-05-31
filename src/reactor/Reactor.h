@@ -31,10 +31,9 @@ public:
 	/**
 	 * Constructor: initializes this object.
 	 * @param maxEvents the maximum number of IO events to report in each call
-	 * to Reactor::monitor().
+	 * to Reactor::poll().
 	 * @param signal set to true for handling the asynchronous signal delivery
-	 * atomically, i.e. Reactor::monitor() can be reliably interrupted by a
-	 * signal handler.
+	 * atomically, i.e. Reactor::poll() can be reliably interrupted by a signal.
 	 */
 	Reactor(unsigned int maxEvents, bool signal);
 	/**
@@ -45,10 +44,9 @@ public:
 	 * Initializes the object after performing any necessary clean-up (if the
 	 * object was initialized previously).
 	 * @param maxEvents the maximum number of IO events to report in each call
-	 * to Reactor::monitor().
+	 * to Reactor::poll().
 	 * @param signal set to true for handling the asynchronous signal delivery
-	 * atomically, i.e. Reactor::monitor() can be reliably interrupted by a
-	 * signal handler.
+	 * atomically, i.e. Reactor::poll() can be reliably interrupted by a signal.
 	 */
 	void initialize(unsigned int maxEvents, bool signal);
 	//-----------------------------------------------------------------
@@ -79,42 +77,42 @@ public:
 	bool disable(Watcher *w) noexcept;
 	//-----------------------------------------------------------------
 	/**
-	 * The first step of the event loop: waits for IO events on the registered
+	 * The first step of an event loop: waits for IO events on the registered
 	 * watchers, signal-delivery, or timeout (see Reactor::setTimeout()).
 	 * @param block if true then the call will block until the timeout or signal
 	 * delivery. if false then the call will return immediately even if no IO
 	 * event got reported.
 	 */
-	void monitor(bool block);
+	void poll(bool block);
 	/**
-	 * The last step of the event loop: processes the ready watchers (reacts to
+	 * The last step of an event loop: processes the ready watchers (reacts to
 	 * the IO events) and removes the invalid watchers (see Reactor::disable()).
 	 */
 	void dispatch() noexcept;
 	/**
-	 * Adds a watcher to the ready-list, a list of watchers which have IO events
-	 * pending on them.
+	 * Adds a watcher to the ready-list, a list of watchers which are ready for
+	 * dispatch (see Reactor::dispatch()).
 	 * @param w a watcher being monitored by this reactor
 	 */
 	void retain(Watcher *w) noexcept;
 	/**
-	 * Checks whether the last call to Reactor::monitor() got interrupted by a
-	 * signal handler.
+	 * Checks whether the last call to Reactor::poll() got interrupted by a
+	 * signal.
 	 * @return true on signal delivery, false otherwise
 	 */
 	bool interrupted() const noexcept;
 	/**
-	 * Checks whether the last call to Reactor::monitor() got timed out.
+	 * Checks whether the last call to Reactor::poll() got timed out.
 	 * @return true on timeout, false otherwise
 	 */
 	bool timedOut() const noexcept;
 	/**
-	 * Returns the timeout value (see Reactor::monitor()).
+	 * Returns the timeout value (see Reactor::poll()).
 	 * @return the timeout value
 	 */
 	int getTimeout() const noexcept;
 	/**
-	 * Sets a new timeout value in milliseconds (see Reactor::monitor()).
+	 * Sets a new timeout value in milliseconds (see Reactor::poll()).
 	 * @param milliseconds the timeout value in milliseconds. Set this value to
 	 * -1 (default) to block indefinitely, setting it to zero (0) will result in
 	 * non-blocking operation.
