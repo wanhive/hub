@@ -85,12 +85,12 @@ public:
 	 */
 	void poll(bool block);
 	/**
-	 * The last step of an event loop: processes the ready watchers (reacts to
-	 * the IO events) and removes the invalid watchers (see Reactor::disable()).
+	 * The last step of an event loop: processes the ready list of watchers that
+	 * have some events available and removes the invalid watchers.
 	 */
 	void dispatch() noexcept;
 	/**
-	 * Adds a watcher to the ready-list, a list of watchers which are ready for
+	 * Adds a watcher back to the ready-list of watchers which are ready for
 	 * dispatch (see Reactor::dispatch()).
 	 * @param w a watcher being monitored by this reactor
 	 */
