@@ -556,19 +556,19 @@ unsigned int Encoding::decode(EncodingBase base, unsigned char *dest,
 
 unsigned int Encoding::encodedLength(EncodingBase base,
 		unsigned int size) noexcept {
-	const Traits &traits = TRAITS[base];
+	auto &traits = TRAITS[base];
 	return (Twiddler::ceiling(size, traits.encoder) * traits.decoder) + 1;
 }
 
 unsigned int Encoding::decodedLength(EncodingBase base,
 		unsigned int size) noexcept {
-	const Traits &traits = TRAITS[base];
+	auto &traits = TRAITS[base];
 	return (Twiddler::ceiling(size, traits.decoder) * traits.encoder);
 }
 
 bool Encoding::validate(EncodingBase base, const char *src,
 		unsigned int size) noexcept {
-	const Traits &traits = TRAITS[base];
+	auto &traits = TRAITS[base];
 	auto list = INVERSE_LISTS[base];
 
 	if (!src || (size % traits.decoder != 0)) { //Invalid length
