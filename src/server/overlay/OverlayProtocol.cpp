@@ -37,9 +37,7 @@ unsigned int OverlayProtocol::createDescribeRequest(uint64_t id) noexcept {
 
 unsigned int OverlayProtocol::processDescribeResponse(
 		OverlayHubInfo &info) const noexcept {
-	if (!validate()) {
-		return 0;
-	} else if (!checkContext(WH_DHT_CMD_NULL, WH_DHT_QLF_DESCRIBE)) {
+	if (!checkContext(WH_DHT_CMD_NULL, WH_DHT_QLF_DESCRIBE)) {
 		return 0;
 	} else if (getPayloadLength() < OverlayHubInfo::MIN_BYTES) {
 		return 0;
@@ -124,9 +122,7 @@ unsigned int OverlayProtocol::createGetPredecessorRequest(uint64_t id) noexcept 
 
 unsigned int OverlayProtocol::processGetPredecessorResponse(
 		uint64_t &key) const noexcept {
-	if (!validate()) {
-		return 0;
-	} else if (!checkContext(WH_DHT_CMD_NODE, WH_DHT_QLF_GETPREDECESSOR)) {
+	if (!checkContext(WH_DHT_CMD_NODE, WH_DHT_QLF_GETPREDECESSOR)) {
 		return 0;
 	} else if (getPayloadLength() != sizeof(uint64_t)) {
 		return 0;
@@ -163,9 +159,7 @@ unsigned int OverlayProtocol::createSetPredecessorRequest(uint64_t id,
 
 unsigned int OverlayProtocol::processSetPredecessorResponse(
 		uint64_t key) const noexcept {
-	if (!validate()) {
-		return 0;
-	} else if (!checkContext(WH_DHT_CMD_NODE, WH_DHT_QLF_SETPREDECESSOR)) {
+	if (!checkContext(WH_DHT_CMD_NODE, WH_DHT_QLF_SETPREDECESSOR)) {
 		return 0;
 	} else if (getPayloadLength() != sizeof(uint64_t)) {
 		return 0;
@@ -202,9 +196,7 @@ unsigned int OverlayProtocol::createGetSuccessorRequest(uint64_t id) noexcept {
 
 unsigned int OverlayProtocol::processGetSuccessorResponse(
 		uint64_t &key) const noexcept {
-	if (!validate()) {
-		return 0;
-	} else if (!checkContext(WH_DHT_CMD_NODE, WH_DHT_QLF_GETSUCCESSOR)) {
+	if (!checkContext(WH_DHT_CMD_NODE, WH_DHT_QLF_GETSUCCESSOR)) {
 		return 0;
 	} else if (getPayloadLength() != sizeof(uint64_t)) {
 		return 0;
@@ -241,9 +233,7 @@ unsigned int OverlayProtocol::createSetSuccessorRequest(uint64_t id,
 
 unsigned int OverlayProtocol::processSetSuccessorResponse(
 		uint64_t key) const noexcept {
-	if (!validate()) {
-		return 0;
-	} else if (!checkContext(WH_DHT_CMD_NODE, WH_DHT_QLF_SETSUCCESSOR)) {
+	if (!checkContext(WH_DHT_CMD_NODE, WH_DHT_QLF_SETSUCCESSOR)) {
 		return 0;
 	} else if (getPayloadLength() != sizeof(uint64_t)) {
 		return 0;
@@ -283,9 +273,7 @@ unsigned int OverlayProtocol::createGetFingerRequest(uint64_t id,
 
 unsigned int OverlayProtocol::processGetFingerResponse(uint32_t index,
 		uint64_t &key) const noexcept {
-	if (!validate()) {
-		return 0;
-	} else if (!checkContext(WH_DHT_CMD_NODE, WH_DHT_QLF_GETFINGER)) {
+	if (!checkContext(WH_DHT_CMD_NODE, WH_DHT_QLF_GETFINGER)) {
 		return 0;
 	} else if (getPayloadLength() != sizeof(uint32_t) + sizeof(uint64_t)) {
 		return 0;
@@ -330,9 +318,7 @@ unsigned int OverlayProtocol::createSetFingerRequest(uint64_t id,
 
 unsigned int OverlayProtocol::processSetFingerResponse(uint32_t index,
 		uint64_t key) const noexcept {
-	if (!validate()) {
-		return 0;
-	} else if (!checkContext(WH_DHT_CMD_NODE, WH_DHT_QLF_SETFINGER)) {
+	if (!checkContext(WH_DHT_CMD_NODE, WH_DHT_QLF_SETFINGER)) {
 		return 0;
 	} else if (getPayloadLength() != sizeof(uint32_t) + sizeof(uint64_t)) {
 		return 0;
@@ -371,9 +357,7 @@ unsigned int OverlayProtocol::createGetNeighboursRequest(uint64_t id) noexcept {
 
 unsigned int OverlayProtocol::processGetNeighboursResponse(
 		uint64_t &predecessor, uint64_t &successor) const noexcept {
-	if (!validate()) {
-		return 0;
-	} else if (!checkContext(WH_DHT_CMD_NODE, WH_DHT_QLF_GETNEIGHBOURS)) {
+	if (!checkContext(WH_DHT_CMD_NODE, WH_DHT_QLF_GETNEIGHBOURS)) {
 		return 0;
 	} else if (getPayloadLength() != (2 * sizeof(uint64_t))) {
 		return 0;
@@ -448,9 +432,7 @@ unsigned int OverlayProtocol::createFindSuccessorRequest(uint64_t id,
 
 unsigned int OverlayProtocol::processFindSuccessorResponse(uint64_t uid,
 		uint64_t &key) const noexcept {
-	if (!validate()) {
-		return 0;
-	} else if (!checkContext(WH_DHT_CMD_OVERLAY, WH_DHT_QLF_FINDSUCCESSOR)) {
+	if (!checkContext(WH_DHT_CMD_OVERLAY, WH_DHT_QLF_FINDSUCCESSOR)) {
 		return 0;
 	} else if (getPayloadLength() != (2 * sizeof(uint64_t))) {
 		return 0;

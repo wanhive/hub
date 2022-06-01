@@ -147,9 +147,7 @@ unsigned int Protocol::createBootstrapRequest(uint64_t host) noexcept {
 
 unsigned int Protocol::processBootstrapResponse(uint64_t keys[],
 		uint32_t &limit) const noexcept {
-	if (!validate()) {
-		return 0;
-	} else if (!keys || !limit) {
+	if (!keys || !limit) {
 		return 0;
 	} else if (!checkContext(WH_CMD_BASIC, WH_QLF_BOOTSTRAP)) {
 		return 0;
@@ -374,10 +372,7 @@ unsigned int Protocol::createIdentificationRequest(
 
 unsigned int Protocol::processIdentificationResponse(const Packet &packet,
 		Data &salt, Data &nonce) noexcept {
-	if (!packet.validate()) {
-		return 0;
-	} else if (!packet.checkContext(WH_CMD_NULL, WH_QLF_IDENTIFY,
-			WH_AQLF_ACCEPTED)) {
+	if (!packet.checkContext(WH_CMD_NULL, WH_QLF_IDENTIFY, WH_AQLF_ACCEPTED)) {
 		return 0;
 	} else if (packet.getPayloadLength() <= 2 * sizeof(uint16_t)) {
 		return 0;
@@ -418,9 +413,7 @@ unsigned int Protocol::createAuthenticationRequest(
 
 unsigned int Protocol::processAuthenticationResponse(const Packet &packet,
 		Data &proof) noexcept {
-	if (!packet.validate()) {
-		return 0;
-	} else if (!packet.checkContext(WH_CMD_NULL, WH_QLF_AUTHENTICATE,
+	if (!packet.checkContext(WH_CMD_NULL, WH_QLF_AUTHENTICATE,
 			WH_AQLF_ACCEPTED)) {
 		return 0;
 	} else if (!packet.getPayloadLength()) {
@@ -478,10 +471,7 @@ unsigned int Protocol::createGetKeyRequest(const MessageAddress &address,
 
 unsigned int Protocol::processGetKeyResponse(const Packet &packet,
 		Digest *hc) noexcept {
-	if (!packet.validate()) {
-		return 0;
-	} else if (!packet.checkContext(WH_CMD_BASIC, WH_QLF_GETKEY,
-			WH_AQLF_ACCEPTED)) {
+	if (!packet.checkContext(WH_CMD_BASIC, WH_QLF_GETKEY, WH_AQLF_ACCEPTED)) {
 		return 0;
 	} else if (!hc || packet.getPayloadLength() < (2 * Hash::SIZE)) {
 		return 0;
@@ -509,10 +499,7 @@ unsigned int Protocol::createFindRootRequest(const MessageAddress &address,
 
 unsigned int Protocol::processFindRootResponse(const Packet &packet,
 		uint64_t identity, uint64_t &root) noexcept {
-	if (!packet.validate()) {
-		return 0;
-	} else if (!packet.checkContext(WH_CMD_BASIC, WH_QLF_FINDROOT,
-			WH_AQLF_ACCEPTED)) {
+	if (!packet.checkContext(WH_CMD_BASIC, WH_QLF_FINDROOT, WH_AQLF_ACCEPTED)) {
 		return 0;
 	} else if (packet.getPayloadLength() != (2 * sizeof(uint64_t))) {
 		return 0;

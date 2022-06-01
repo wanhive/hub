@@ -69,7 +69,7 @@ bool Packet::validate() const noexcept {
 }
 
 unsigned int Packet::getPayloadLength() const noexcept {
-	if (testLength()) {
+	if (validate()) {
 		return header().getLength() - HEADER_SIZE;
 	} else {
 		return 0;
@@ -131,7 +131,7 @@ bool Packet::sign(const PKI *pki) noexcept {
 }
 
 bool Packet::verify(const PKI *pki) const noexcept {
-	if (pki && validate() && getPayloadLength() >= PKI::SIGNATURE_LENGTH) {
+	if (pki && getPayloadLength() >= PKI::SIGNATURE_LENGTH) {
 		auto length = header().getLength() - PKI::SIGNATURE_LENGTH;
 		return pki->verify(buffer(), length, (const Signature*) buffer(length));
 	} else {

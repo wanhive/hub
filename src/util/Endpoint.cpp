@@ -237,8 +237,8 @@ void Endpoint::receive(int sfd, Packet &packet, unsigned int sequenceNumber,
 		}
 
 		//Receive the payload
-		Network::receiveStream(sfd, packet.payload(),
-				packet.getPayloadLength());
+		auto payloadLength = packet.header().getLength() - HEADER_SIZE;
+		Network::receiveStream(sfd, packet.payload(), payloadLength);
 	} while (sequenceNumber
 			&& (packet.header().getSequenceNumber() != sequenceNumber));
 
@@ -260,8 +260,8 @@ void Endpoint::receive(SSL *ssl, Packet &packet, unsigned int sequenceNumber,
 		}
 
 		//Receive the payload
-		SSLContext::receiveStream(ssl, packet.payload(),
-				packet.getPayloadLength());
+		auto payloadLength = packet.header().getLength() - HEADER_SIZE;
+		SSLContext::receiveStream(ssl, packet.payload(), payloadLength);
 	} while (sequenceNumber
 			&& (packet.header().getSequenceNumber() != sequenceNumber));
 

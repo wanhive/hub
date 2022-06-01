@@ -84,8 +84,9 @@ public:
 	bool validate() const noexcept;
 	//-----------------------------------------------------------------
 	/**
-	 * Calculates the payload length using the routing header's data.
-	 * @return the payload length, zero (0) if the length is not valid
+	 * Returns the payload length. This call will fail if the packet is
+	 * invalid (see Packet::validate()).
+	 * @return payload length on success, 0 on error (invalid packet)
 	 */
 	unsigned int getPayloadLength() const noexcept;
 	/**
