@@ -517,10 +517,7 @@ bool Message::pack(const unsigned char *message) noexcept {
 			return false;
 		}
 
-		if (getPayloadLength()) {
-			setBytes(0, message + HEADER_SIZE, getPayloadLength());
-		}
-		return true;
+		return setBytes(0, message + HEADER_SIZE, getPayloadLength());
 	} else {
 		return false;
 	}
@@ -557,7 +554,7 @@ bool Message::unpack(const char *format, ...) const noexcept {
 }
 
 bool Message::unpack(const char *format, va_list ap) const noexcept {
-	if (format && format[0] && validate()) {
+	if (format && format[0]) {
 		return Serializer::vunpack(frame().array() + HEADER_SIZE,
 				getPayloadLength(), format, ap);
 	} else {
