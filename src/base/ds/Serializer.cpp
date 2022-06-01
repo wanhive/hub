@@ -1,7 +1,7 @@
 /*
  * Serializer.cpp
  *
- * Host-to-network serializer and deserializer
+ * Byte order converter
  *
  *
  * Copyright (C) 2018 Amit Kumar (amitkriit@gmail.com)
