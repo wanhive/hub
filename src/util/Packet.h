@@ -17,7 +17,8 @@
 
 namespace wanhive {
 /**
- * The data unit for message implementation.
+ * The basic data-unit implementation. Provides error-checking routines over the
+ * bare-bone implementation.
  */
 class Packet: public Frame {
 public:
@@ -32,50 +33,44 @@ public:
 	~Packet();
 	//-----------------------------------------------------------------
 	/**
-	 * Serializes and stores the given header's data into the frame buffer. This
-	 * function doesn't modify the routing header.
-	 * @param header the header to write into the frame buffer. Header's length
-	 * field should have a value in the range [Frame::HEADER_SIZE, Frame::MTU].
-	 * @return true on success (valid length), false otherwise.
+	 * Serializes and stores the given header data into the frame buffer. This
+	 * function doesn't modify the routing header. This call will fail if the
+	 * header's length field has invalid value (see Packet::testLength()).
+	 * @param header the header to write into the frame buffer.
+	 * @return true on success, false on error (invalid length)
 	 */
 	bool packHeader(const MessageHeader &header) noexcept;
 	/**
-	 * Serializes and stores the routing header's data into the frame buffer. This
+	 * Serializes and stores the routing header data into the frame buffer. This
 	 * call is equivalent to (equivalent to packHeader(Frame::header())). This
-	 * call will fail if routing header's length field contains an invalid value
-	 * outside the range [Frame::HEADER_SIZE, Frame::MTU].
-	 * @return true on success, false otherwise (invalid length)
+	 * call will fail if the routing header's length field contains an invalid
+	 * value (see Packet::testLength()).
+	 * @return true on success, false on error (invalid length)
 	 */
 	bool packHeader() noexcept;
 	/**
-	 * Unpacks the frame buffer's serialized header data into the given object.
+	 * Unpacks header data from the frame buffer.
 	 * @param header object for storing the header data
 	 * @return always true
 	 */
 	bool unpackHeader(MessageHeader &header) const noexcept;
 	/**
-	 * Unpacks the frame buffer's serialized header data into the routing header.
-	 * This call is equivalent to unpackHeader(Frame::header()). This call may
-	 * fail if as a result of the operation, the routing header's length field
-	 * will end up with an invalid value (see Packet::testLength()).
-	 * @return true on success (valid length), false otherwise
+	 * Unpacks header data from frame buffer into the routing header. This call
+	 * is equivalent to Packet::unpackHeader(Frame::header()). This call will
+	 * fail if the serialized header data contains invalid value(s).
+	 * @return true on success, false on error (invalid data)
 	 */
 	bool unpackHeader() noexcept;
 	//-----------------------------------------------------------------
 	/**
-	 * Sets the frame buffer's length and updates the serialized header's length
-	 * field inside the frame buffer. Doesn't modify the routing header.
-	 * @param length the value to write into the frame buffer. This value
-	 * should be in the range [Frame::HEADER_SIZE, Frame::MTU].
-	 * @return true on success (valid length), false otherwise.
+	 * Sets the frame buffer's length (doesn't modify the routing header).
+	 * @param length frame buffer's length in bytes
+	 * @return true on success, false on error (invalid length)
 	 */
 	bool bind(unsigned int length) noexcept;
 	/**
-	 * Sets the frame buffer's length. Serializes the routing header's length
-	 * field into the frame buffer's serialized header. This call is equivalent
-	 * to bind(Frame::header().getLength()). The routing header's length field
-	 * should have a valid value (see Packet::testLength()).
-	 *
+	 * Sets the frame buffer's length using the routing header's data. This call
+	 * is equivalent to Packet::bind(Frame::header().getLength()).
 	 * @return true on success, false on error (invalid length)
 	 */
 	bool bind() noexcept;
