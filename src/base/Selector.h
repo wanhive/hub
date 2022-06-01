@@ -18,9 +18,15 @@
 
 namespace wanhive {
 //-----------------------------------------------------------------
-//Treat this as an opaque object, use the methods provided by Selector
+/**
+ * Treat this as an opaque object, use the methods provided by the Selector to
+ * fetch additional information.
+ */
 using SelectionEvent=epoll_event;
-//Events listed in the epoll man page
+
+/**
+ * Supported IO events
+ */
 enum SelectorEvent : uint32_t {
 	IO_READ = EPOLLIN, IO_WRITE = EPOLLOUT, IO_WR = (EPOLLIN | EPOLLOUT),
 	//Hang-up happened, can't write to the descriptor
@@ -33,14 +39,17 @@ enum SelectorEvent : uint32_t {
 	IO_ALL = (IO_WR | IO_CLOSE | IO_PRIORITY | IO_ERROR)
 };
 
-//Trigger mechanism
+/**
+ * Supported trigger mechanisms
+ */
 enum SelectorFlag : uint32_t {
 	TRIGGER_EDGE = EPOLLET, TRIGGER_ONCE = EPOLLONESHOT
 };
 //-----------------------------------------------------------------
 /**
- * Abstraction of Linux epoll(7) mechanism
- * Thread safe at class level
+ * IO multiplexer: monitors multiple file descriptors to see if any one of them
+ * is ready for performing an IO operation.
+ * @note Provides abstraction of Linux's epoll(7) mechanism.
  */
 class Selector {
 public:
