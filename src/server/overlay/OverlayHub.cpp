@@ -430,6 +430,17 @@ void OverlayHub::addToCache(unsigned long long id) noexcept {
 	nodes.index = (nodes.index + 1) & (NODECACHE_SIZE - 1);
 }
 
+bool OverlayHub::isValidStabilizationResponse(const Message *msg) const noexcept {
+	const MessageHeader &sh = worker.header;
+	return msg->getStatus() != WH_DHT_AQLF_REQUEST
+			&& msg->getLabel() == sh.getLabel()
+			&& isHostId(msg->getDestination())
+			&& msg->getSequenceNumber() == sh.getSequenceNumber()
+			&& msg->getSession() == sh.getSession()
+			&& msg->getCommand() == sh.getCommand()
+			&& msg->getQualifier() == sh.getQualifier();
+}
+
 bool OverlayHub::isValidRegistrationRequest(const Message *msg) noexcept {
 	/*
 	 * 1. Confirm that the requested ID is valid
@@ -541,17 +552,6 @@ int OverlayHub::getModeOfRegistration(unsigned long long oldUid,
 				&& !(isSupernode() && (Socket::unallocated() <= TABLESIZE)) ?
 				2 : -1;
 	}
-}
-
-bool OverlayHub::isValidStabilizationResponse(const Message *msg) const noexcept {
-	const MessageHeader &sh = worker.header;
-	return msg->getStatus() != WH_DHT_AQLF_REQUEST
-			&& msg->getLabel() == sh.getLabel()
-			&& isHostId(msg->getDestination())
-			&& msg->getSequenceNumber() == sh.getSequenceNumber()
-			&& msg->getSession() == sh.getSession()
-			&& msg->getCommand() == sh.getCommand()
-			&& msg->getQualifier() == sh.getQualifier();
 }
 
 int OverlayHub::createRoute(Message *message) noexcept {
@@ -1405,6 +1405,15 @@ void OverlayHub::buildDirectResponse(Message *msg, unsigned int length) noexcept
 	}
 }
 
+unsigned int OverlayHub::mapKey(unsigned long long key) noexcept {
+	if (key > (MAX_ID + MAX_NODES)) {
+		//Take the higher bits into account
+		return static_cast<unsigned int>(Twiddler::mix(key) & MAX_ID);
+	} else {
+		return static_cast<unsigned int>(key & MAX_ID);
+	}
+}
+
 unsigned long long OverlayHub::nonceToId(const Digest *nonce) const noexcept {
 	unsigned int i = 0;
 	for (; i <= TABLESIZE; i++) {
@@ -1421,16 +1430,16 @@ unsigned long long OverlayHub::nonceToId(const Digest *nonce) const noexcept {
 	}
 }
 
-bool OverlayHub::isPrivileged(unsigned long long uid) const noexcept {
-	return isInternalNode(uid) || isWorkerId(uid);
-}
-
 unsigned long long OverlayHub::getWorkerId() const noexcept {
 	return worker.id;
 }
 
 bool OverlayHub::isWorkerId(unsigned long long uid) const noexcept {
 	return (uid == worker.id) && !isHostId(uid);
+}
+
+bool OverlayHub::isPrivileged(unsigned long long uid) const noexcept {
+	return isInternalNode(uid) || isWorkerId(uid);
 }
 
 bool OverlayHub::isSupernode() const noexcept {
@@ -1441,25 +1450,16 @@ bool OverlayHub::isHostId(unsigned long long uid) const noexcept {
 	return uid == getUid();
 }
 
-bool OverlayHub::isInternalNode(unsigned long long uid) noexcept {
-	return uid <= MAX_ID;
-}
-
 bool OverlayHub::isController(unsigned long long uid) noexcept {
 	return uid == CONTROLLER;
 }
 
-bool OverlayHub::isExternalNode(unsigned long long uid) noexcept {
-	return uid > MAX_ID;
+bool OverlayHub::isInternalNode(unsigned long long uid) noexcept {
+	return uid <= MAX_ID;
 }
 
-unsigned int OverlayHub::mapKey(unsigned long long key) noexcept {
-	if (key > (MAX_ID + MAX_NODES)) {
-		//Take the higher bits into account
-		return static_cast<unsigned int>(Twiddler::mix(key) & MAX_ID);
-	} else {
-		return static_cast<unsigned int>(key & MAX_ID);
-	}
+bool OverlayHub::isExternalNode(unsigned long long uid) noexcept {
+	return uid > MAX_ID;
 }
 
 Watcher* OverlayHub::connect(int &sfd, bool blocking, int timeout) {

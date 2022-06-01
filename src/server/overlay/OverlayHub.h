@@ -121,26 +121,26 @@ private:
 	 */
 	void buildDirectResponse(Message *msg, unsigned int length = 0) noexcept;
 	//-----------------------------------------------------------------
+	//Map an arbitrary 64-bit key to the dht key-space
+	static unsigned int mapKey(unsigned long long key) noexcept;
 	//Returns the identifier associated with the given hash code
 	unsigned long long nonceToId(const Digest *hc) const noexcept;
-	//Can the connection <uid> send privileged requests
-	bool isPrivileged(unsigned long long uid) const noexcept;
-	//Get the ID of the connection associated with the worker task (hub's ID if no worker)
+	//Worker task's connection ID (hub's ID if no worker)
 	unsigned long long getWorkerId() const noexcept;
 	//Check whether the ID belongs to the worker task's connection
 	bool isWorkerId(unsigned long long uid) const noexcept;
-	//Returns true if this particular node is part of overlay network (excl. Controller)
+	//Can the connection <uid> send privileged requests
+	bool isPrivileged(unsigned long long uid) const noexcept;
+	//Returns true if this hub is part of overlay network (excl. Controller)
 	bool isSupernode() const noexcept;
 	//Returns true if <uid> equals this hub's key
 	bool isHostId(unsigned long long uid) const noexcept;
-	//Returns true if <uid> belongs to the overlay nodes (incl. controller)
-	static bool isInternalNode(unsigned long long uid) noexcept;
 	//Returns true if <uid> belongs to controller
 	static bool isController(unsigned long long uid) noexcept;
+	//Returns true if <uid> belongs to the overlay nodes (incl. controller)
+	static bool isInternalNode(unsigned long long uid) noexcept;
 	//Returns true if <uid> doesn't belong to the overlay nodes
 	static bool isExternalNode(unsigned long long uid) noexcept;
-	//Map an arbitrary 64-bit key to the dht key-space
-	static unsigned int mapKey(unsigned long long key) noexcept;
 	//-----------------------------------------------------------------
 	/*
 	 * Create and register a local unix socket, return the other end in <sfd>
