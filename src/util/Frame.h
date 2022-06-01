@@ -21,15 +21,14 @@ namespace wanhive {
  */
 struct Data {
 	const unsigned char *base; /**< The base pointer */
-	unsigned int length; /**< Binary data's size in bytes */
+	unsigned int length; /**< data size in bytes */
 };
 
 /**
- * The bare-bone data unit implementation. It consists of a routing header
- * and a frame buffer. Purpose of the routing header is to provide the local
- * route information during message delivery and forwarding. The frame buffer
- * contains the actual binary data (formatted in network byte order) which
- * is exchanged over the network.
+ * The bare-bone data unit implementation. It consists of a routing header and a
+ * frame buffer. Purpose of routing header is to provide the route information
+ * during message delivery and forwarding. Frame buffer contains the actual
+ * binary data (in network byte order) which is exchanged over the network.
  * Frame buffer's structure: [{MESSAGE HEADER}{VARIABLE LENGTH PAYLOAD}]
  *
  * Thread safe at class level.
@@ -142,7 +141,7 @@ protected:
 	}
 	/**
 	 * Returns a reference to the frame buffer. This call allows the derived
-	 * classes to directly access the frame buffer's facilities.
+	 * classes to directly manipulate the frame buffer.
 	 * @return a reference to the frame buffer
 	 */
 	auto& frame() noexcept {

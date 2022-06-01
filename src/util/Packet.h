@@ -17,8 +17,8 @@
 
 namespace wanhive {
 /**
- * The basic data-unit implementation. Provides error-checking routines over the
- * bare-bone implementation.
+ * Enhanced data-unit implementation. Extends the bare-bone implementation to
+ * add error checking functions.
  */
 class Packet: public Frame {
 public:
