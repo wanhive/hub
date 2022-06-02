@@ -497,29 +497,29 @@ public:
 	bool appendBytes(const unsigned char *data, unsigned int length) noexcept;
 	//-----------------------------------------------------------------
 	/**
-	 * Writes the header and the payload data into this message.
+	 * Writes header and payload data into this message.
 	 * @param header the header data. It's length field is ignored and the correct
 	 * message length is calculated.
-	 * @param format the payload format. If the payload is empty then it's value
-	 * should either be nullptr or an empty string. The payload data is passed
-	 * through the extra arguments following it.
+	 * @param format the payload format string. If payload is empty then the
+	 * format string should either be nullptr or an empty string. Payload data
+	 * is passed through the additional arguments following it.
 	 * @return true on success, false on failure (payload overflow)
 	 */
 	bool pack(const MessageHeader &header, const char *format, ...) noexcept;
 	/**
-	 * Writes the header and the payload data into this message.
+	 * Writes header and payload data into this message.
 	 * @param header the header data. It's length field is ignored and the correct
 	 * message length is calculated.
-	 * @param format the payload format. If the payload is empty then it's value
-	 * should either be nullptr or an empty string.
-	 * @param ap the variadic argument for accessing the payload data
+	 * @param format the payload format string. If payload is empty then the
+	 * format string should either be nullptr or an empty string.
+	 * @param ap list of additional arguments providing the payload data
 	 * @return true on success, false on failure (payload overflow)
 	 */
 	bool pack(const MessageHeader &header, const char *format,
 			va_list ap) noexcept;
 	//-----------------------------------------------------------------
 	/**
-	 * Writes the header and the payload data into this message.
+	 * Writes header and payload data into this message.
 	 * @param header the header data. It's length field determines the message
 	 * length and should be in the range [Frame::HEADER_SIZE, FRAME::MTU].
 	 * @param payload the serialized payload data (can be nullptr)
@@ -528,7 +528,7 @@ public:
 	bool pack(const MessageHeader &header,
 			const unsigned char *payload) noexcept;
 	/**
-	 * Reads the serialized data and stores them into this object.
+	 * Stores the serialized message data into this object.
 	 * @param message pointer to the serialized data
 	 * @return true on success, false on error (invalid data)
 	 */
@@ -537,31 +537,31 @@ public:
 	/**
 	 * Appends additional data to this message's payload and updates this
 	 * message's length.
-	 * @param format the payload format. The payload data is passed through the
-	 * extra arguments following it.
+	 * @param format the payload data format string. Payload data is passed
+	 * through the additional arguments following it.
 	 * @return true on success, false otherwise (payload overflow)
 	 */
 	bool append(const char *format, ...) noexcept;
 	/**
 	 * Appends additional data to this message's payload and updates this
 	 * message's length.
-	 * @param format the payload format
-	 * @param ap the variadic argument for accessing the payload data
+	 * @param format the payload data format
+	 * @param ap list of additional arguments providing the payload data
 	 * @return true on success, false otherwise (payload overflow)
 	 */
 	bool append(const char *format, va_list ap) noexcept;
 	//-----------------------------------------------------------------
 	/**
 	 * Extracts this message's payload data.
-	 * @param format the payload data format. The result is stored into the extra
-	 * arguments following it.
+	 * @param format the payload data format string. Payload data is stored
+	 * in the locations pointed to by the pointer arguments following it.
 	 * @return true on success, false on error (invalid message or format)
 	 */
 	bool unpack(const char *format, ...) const noexcept;
 	/**
 	 * Extracts this message's payload data.
-	 * @param format  the payload data format.
-	 * @param ap variadic arguments for storing the output
+	 * @param format the payload data format string
+	 * @param ap list of pointer arguments pointing to the output locations
 	 * @return true on success, false on error (invalid message or format)
 	 */
 	bool unpack(const char *format, va_list ap) const noexcept;
@@ -569,8 +569,8 @@ public:
 	/**
 	 * Checks if the given number of messages can be created.
 	 * @param count number of messages to create
-	 * @return true if the given number of messages can be created, false
-	 * otherwise.
+	 * @return true if the given number of messages can be allocated from the
+	 * memory pool, false otherwise.
 	 */
 	static bool available(unsigned int count) noexcept;
 	//-----------------------------------------------------------------
