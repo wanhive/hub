@@ -9,7 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-- Clear and detailed API documentation for the developers (work in progress).
+- Clear API documentation for application developers (work in progress).
 
 ### Changed
 
@@ -24,7 +24,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Security
 
-- Upgrade to the OpenSSL version 3.0 (the new LTS version).
+- Upgrade to OpenSSL version 3.0 (the new LTS version).
 
 ## [7.0.1] - 2022-02-28
 
