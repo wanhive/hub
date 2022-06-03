@@ -16,8 +16,8 @@
 
 namespace wanhive {
 /**
- * Configuration manager which accepts files matching
- * the INI file format with several restrictions.
+ * Configuration manager that accepts simplified INI file format.
+ * @ref https://en.wikipedia.org/wiki/INI_file
  */
 class Configuration {
 public:
