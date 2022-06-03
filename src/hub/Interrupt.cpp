@@ -75,4 +75,8 @@ void Interrupt::create(bool blocking) {
 	}
 }
 
+int Interrupt::getSignalNumber(const SignalInfo *si) noexcept {
+	return si->ssi_signo;
+}
+
 } /* namespace wanhive */

@@ -50,6 +50,12 @@ public:
 	 * @return pointer to object containing the signal information
 	 */
 	const SignalInfo* getInfo() const noexcept;
+	/**
+	 * Returns the signal number associated with the given notification.
+	 * @param si the notification
+	 * @return the signal number
+	 */
+	static int getSignalNumber(const SignalInfo *si) noexcept;
 private:
 	void create(bool blocking);
 private:
