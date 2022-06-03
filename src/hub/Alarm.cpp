@@ -1,5 +1,5 @@
 /*
- * Clock.cpp
+ * Alarm.cpp
  *
  * Periodic timer
  *

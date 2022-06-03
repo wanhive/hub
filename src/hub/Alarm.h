@@ -1,5 +1,5 @@
 /*
- * Clock.h
+ * Alarm.h
  *
  * Periodic timer
  *
@@ -40,7 +40,7 @@ public:
 	bool publish(void *arg) noexcept override;
 	//-----------------------------------------------------------------
 	/**
-	 * Reads the timer expiration count. Call Clock::getCount() to get the result.
+	 * Reads the timer expiration count. Call Alarm::getCount() to get the result.
 	 * @return the number of bytes read (8 bytes) on success, 0 if non-blocking
 	 * mode is on and the call would block, -1 if the underlying file descriptor
 	 * was closed.
@@ -54,7 +54,7 @@ public:
 	void reset(unsigned int expiration, unsigned int interval);
 	/**
 	 * Returns the number of times the periodic timer expired (each new
-	 * Clock::read() call overwrites the old value).
+	 * Alarm::read() call overwrites the old value).
 	 * @return the expiration count
 	 */
 	unsigned long long getCount() const noexcept;

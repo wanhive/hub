@@ -1,5 +1,5 @@
 /*
- * EventNotifier.h
+ * Event.h
  *
  * Events counter
  *

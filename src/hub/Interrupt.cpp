@@ -1,5 +1,5 @@
 /*
- * SignalWatcher.cpp
+ * Interrupt.cpp
  *
  * Signal watcher
  *

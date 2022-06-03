@@ -1,5 +1,5 @@
 /*
- * EventNotifier.cpp
+ * Event.cpp
  *
  * Events counter
  *

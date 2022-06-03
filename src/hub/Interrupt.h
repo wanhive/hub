@@ -1,5 +1,5 @@
 /*
- * SignalWatcher.h
+ * Interrupt.h
  *
  * Signal watcher
  *
@@ -39,14 +39,14 @@ public:
 	bool publish(void *arg) noexcept override;
 	//-----------------------------------------------------------------
 	/**
-	 * Accepts a pending signal. Call SignalWatcher::getInfo to get the result.
+	 * Reads a pending signal. Call Interrupt::getInfo() to get the result.
 	 * @return number of bytes read on success, 0 if non-blocking mode is on and
 	 * the call would block, -1 if the underlying file descriptor was closed.
 	 */
 	ssize_t read();
 	/**
 	 * Returns the information about the most recently caught signal. (Each new
-	 * SignalWatcher::read() call overwrites the old value).
+	 * Interrupt::read() call overwrites the old value).
 	 * @return pointer to object containing the signal information
 	 */
 	const SignalInfo* getInfo() const noexcept;
