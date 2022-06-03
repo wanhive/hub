@@ -9,7 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-- Clear API documentation for application developers (work in progress).
+- Clear and concise API documentation for application developers (work in progress).
 
 ### Changed
 
@@ -18,8 +18,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
-- **CircularBuffer::setStatus** and **StaticCircularBuffer::setStatus** methods should compile.
+- Assign correct alignment to **Inotifier**'s read buffer.
 - Assign correct data type to the MessageFlag enumeration.
+- **CircularBuffer::setStatus** and **StaticCircularBuffer::setStatus** methods have syntax error.
 - Handle zero (immediate) timeout correctly in the **Selector**.
 
 ### Security
