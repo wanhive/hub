@@ -16,7 +16,12 @@
 #include <sys/inotify.h>
 
 namespace wanhive {
+/**
+ * Treat this as an opaque object and use the methods provided by Inotifier to
+ * fetch additional information.
+ */
 using InotifyEvent=inotify_event;
+
 /**
  * Reports file system events
  * Abstraction of Linux's inotify(7) mechanism
@@ -63,9 +68,36 @@ public:
 	 * @return the next notification, nullptr if no notification is pending
 	 */
 	const InotifyEvent* next();
+	/**
+	 * Returns the watch descriptor associated with the given notification.
+	 * @param e the notification
+	 * @return watch descriptor's value
+	 */
+	static int getWatchDescriptor(const InotifyEvent *e) noexcept;
+	/**
+	 * Returns the events associated with the given notification.
+	 * @param e the notification
+	 * @return 32-bit event mask
+	 */
+	static uint32_t getMask(const InotifyEvent *e) noexcept;
+	/**
+	 * Returns the unique cookie associating related events (for rename(2)).
+	 * @param e the notification
+	 * @return the cookie for tracking a renamed file
+	 */
+	static uint32_t getCookie(const InotifyEvent *e) noexcept;
+	/**
+	 * Returns file's name which generated the notification.
+	 * @param e the notification
+	 * @return the filename within the watched directory
+	 */
+	static const char* getFileName(const InotifyEvent *e) noexcept;
 private:
-	unsigned char buffer[4096];	//MIN: sizeof(inotify_event) + NAME_MAX + 1
+	//MIN: sizeof(inotify_event) + NAME_MAX + 1
+	alignas(InotifyEvent) unsigned char buffer[4096];
+	//Offset within the buffer
 	unsigned int offset;
+	//Notifications count
 	unsigned int limit;
 };
 
