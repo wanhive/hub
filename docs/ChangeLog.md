@@ -5,7 +5,7 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased]
+## [8.0.0] - 2022-06-06
 
 ### Added
 
@@ -18,10 +18,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
-- Assign correct alignment to **Inotifier**'s read buffer.
+- Align **Inotifier**'s read buffer correctly.
 - Assign correct data type to the MessageFlag enumeration.
 - **CircularBuffer::setStatus** and **StaticCircularBuffer::setStatus** methods have syntax error.
-- Handle zero (immediate) timeout correctly in the **Selector**.
+- Handle zero (immediate) timeout correctly in **Selector**.
 
 ### Security
 
