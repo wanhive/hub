@@ -76,6 +76,8 @@ private:
 	int getModeOfRegistration(unsigned long long oldUid,
 			unsigned long long newUid) noexcept;
 	//-----------------------------------------------------------------
+	bool interceptMessage(Message *message) noexcept;
+	void applyFlowControl(Message *message) noexcept;
 	//Generates a route for the given message
 	int createRoute(Message *message) noexcept;
 	unsigned long long getNextHop(unsigned long long destination) const noexcept;

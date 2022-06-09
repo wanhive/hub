@@ -90,44 +90,27 @@ bool OverlayHub::trapMessage(Message *message) noexcept {
 void OverlayHub::route(Message *message) noexcept {
 	//-----------------------------------------------------------------
 	/*
-	 * Intercept and handle registration and session-key requests, because any
-	 * modification in the message will result in verification failure.
+	 * [REGISTRATION]: Intercept and handle registration and session-key requests
+	 * because modification in the message will result in verification failure.
 	 */
-	if (message->getCommand() == WH_DHT_CMD_BASIC) {
-		auto qlf = message->getQualifier();
-		if (qlf == WH_DHT_QLF_REGISTER) {
-			handleRegistrationRequest(message);
-			message->setGroup(0); //Ignore the group ID
-			return;
-		} else if (qlf == WH_DHT_QLF_GETKEY) {
-			handleGetKeyRequest(message);
-			message->setGroup(0); //Ignore the group ID
-			return;
-		}
+	if (interceptMessage(message)) {
+		message->setGroup(0); //Ignore the group ID
+		return;
 	}
 	//-----------------------------------------------------------------
 	/*
-	 * [FLOW CONTROL]: apply correct source and label
+	 * [FLOW CONTROL]: apply correct source, group, and label
 	 */
-	auto origin = message->getOrigin();
-	auto source = message->getSource();
-	if (isExternalNode(origin) && !isWorkerId(origin)) {
-		//Preserve the group ID at insertion
-		message->writeLabel(message->getGroup());
-		//Assign the correct source ID
-		message->putSource(origin);
-	} else if (isInternalNode(origin) && isExternalNode(source)) {
-		//Retrieve the group ID during routing
-		message->setGroup(message->getLabel());
-	} else if (source && isInternalNode(source) && !isHostId(source)) {
-		addToCache(source);
-	}
+	applyFlowControl(message);
 	//-----------------------------------------------------------------
 	/*
 	 * [ROUTING]: Hub's ID is the sink
 	 */
 	createRoute(message);
-
+	//-----------------------------------------------------------------
+	/*
+	 * [PROCESSING]: Process the local requests
+	 */
 	if (isHostId(message->getDestination())
 			&& !message->testFlags(MSG_INVALID)) {
 		//Maintain this order
@@ -136,7 +119,7 @@ void OverlayHub::route(Message *message) noexcept {
 	}
 	//-----------------------------------------------------------------
 	/*
-	 * [DELIVERY]
+	 * [DELIVERY]: deliver to the local destination
 	 */
 	if (isExternalNode(message->getDestination())) {
 		message->writeLabel(0); //Clean up the label
@@ -426,12 +409,14 @@ void OverlayHub::onRecycle(Watcher *w) noexcept {
 }
 
 void OverlayHub::addToCache(unsigned long long id) noexcept {
-	nodes.cache[nodes.index] = id;
-	nodes.index = (nodes.index + 1) & (NODECACHE_SIZE - 1);
+	if (id && isInternalNode(id) && !isHostId(id)) {
+		nodes.cache[nodes.index] = id;
+		nodes.index = (nodes.index + 1) & (NODECACHE_SIZE - 1);
+	}
 }
 
 bool OverlayHub::isValidStabilizationResponse(const Message *msg) const noexcept {
-	const MessageHeader &sh = worker.header;
+	auto &sh = worker.header;
 	return msg->getStatus() != WH_DHT_AQLF_REQUEST
 			&& msg->getLabel() == sh.getLabel()
 			&& isHostId(msg->getDestination())
@@ -554,6 +539,37 @@ int OverlayHub::getModeOfRegistration(unsigned long long oldUid,
 	}
 }
 
+bool OverlayHub::interceptMessage(Message *message) noexcept {
+	if (message->getCommand() != WH_DHT_CMD_BASIC) {
+		return false;
+	} else if (message->getQualifier() == WH_DHT_QLF_REGISTER) {
+		handleRegistrationRequest(message);
+		return true;
+	} else if (message->getQualifier() == WH_DHT_QLF_GETKEY) {
+		handleGetKeyRequest(message);
+		return true;
+	} else {
+		return false;
+	}
+}
+
+void OverlayHub::applyFlowControl(Message *message) noexcept {
+	if (isWorkerId(message->getOrigin())) {
+		message->putLabel(getWorkerId() + getUid());
+		message->getHeader(worker.header);
+	} else if (isExternalNode(message->getOrigin())) {
+		//Preserve the group ID at insertion
+		message->writeLabel(message->getGroup());
+		//Assign the correct source ID
+		message->putSource(message->getOrigin());
+	} else if (isExternalNode(message->getSource())) {
+		//Retrieve the group ID during routing
+		message->setGroup(message->getLabel());
+	} else {
+		addToCache(message->getSource());
+	}
+}
+
 int OverlayHub::createRoute(Message *message) noexcept {
 	//Message's origin is immutable
 	auto origin = message->getOrigin();
@@ -563,8 +579,6 @@ int OverlayHub::createRoute(Message *message) noexcept {
 	 * CREATE THE ROUTE
 	 */
 	if (isWorkerId(origin)) {
-		message->putLabel(getWorkerId() + getUid());
-		message->getHeader(worker.header);
 		if (!isHostId(destination)) {
 			//Stabilization request sent via controller
 			message->setDestination(CONTROLLER);
