@@ -571,13 +571,8 @@ void OverlayHub::applyFlowControl(Message *message) noexcept {
 }
 
 bool OverlayHub::createRoute(Message *message) noexcept {
-	//Message's origin is immutable
 	auto origin = message->getOrigin();
 	auto destination = message->getDestination();
-	//-----------------------------------------------------------------
-	/*
-	 * CREATE THE ROUTE
-	 */
 	if (isWorkerId(origin)) {
 		if (!isHostId(destination)) {
 			//Stabilization request sent via controller
@@ -663,104 +658,115 @@ bool OverlayHub::process(Message *message) noexcept {
 }
 
 bool OverlayHub::processNullRequest(Message *message) noexcept {
-	auto origin = message->getOrigin();
-	auto cmd = message->getCommand();
-	auto qlf = message->getQualifier();
-	auto status = message->getStatus();
-	if (cmd != WH_DHT_CMD_NULL) {
+	if (message->getCommand() != WH_DHT_CMD_NULL) {
 		return handleInvalidRequest(message);
-	} else if (!isPrivileged(origin) || status != WH_DHT_AQLF_REQUEST) {
+	}
+
+	if (!isPrivileged(message->getOrigin())
+			|| message->getStatus() != WH_DHT_AQLF_REQUEST) {
 		return handleInvalidRequest(message);
-	} else if (qlf == WH_DHT_QLF_DESCRIBE) {
+	}
+
+	switch (message->getQualifier()) {
+	case WH_DHT_QLF_DESCRIBE:
 		return handleDescribeNodeRequest(message);
-	} else {
+	default:
 		return handleInvalidRequest(message);
 	}
 }
 
 bool OverlayHub::processBasicRequest(Message *message) noexcept {
-	auto cmd = message->getCommand();
-	auto qlf = message->getQualifier();
-	auto status = message->getStatus();
-	if (cmd != WH_DHT_CMD_BASIC) {
+	if (message->getCommand() != WH_DHT_CMD_BASIC) {
 		return handleFindRootRequest(message);
-	} else if (qlf == WH_DHT_QLF_FINDROOT) {
+	}
+
+	switch (message->getQualifier()) {
+	case WH_DHT_QLF_FINDROOT:
 		return handleFindRootRequest(message);
-	} else if (qlf == WH_DHT_QLF_BOOTSTRAP && status == WH_DHT_AQLF_REQUEST) {
-		return handleBootstrapRequest(message);
-	} else {
+	case WH_DHT_QLF_BOOTSTRAP:
+		if (message->getStatus() == WH_DHT_AQLF_REQUEST) {
+			return handleBootstrapRequest(message);
+		} else {
+			return handleInvalidRequest(message);
+		}
+	default:
 		return handleInvalidRequest(message);
 	}
 }
 
 bool OverlayHub::processMulticastRequest(Message *message) noexcept {
-	auto origin = message->getOrigin();
-	auto cmd = message->getCommand();
-	auto qlf = message->getQualifier();
-	auto status = message->getStatus();
-	if (cmd != WH_DHT_CMD_MULTICAST) {
+	if (message->getCommand() != WH_DHT_CMD_MULTICAST) {
 		return handleInvalidRequest(message);
-	} else if (isSupernode() || isInternalNode(origin)
-			|| Socket::isEphemeralId(origin) || status != WH_DHT_AQLF_REQUEST) {
+	}
+
+	if (isSupernode() || isInternalNode(message->getOrigin())
+			|| Socket::isEphemeralId(message->getOrigin())
+			|| message->getStatus() != WH_DHT_AQLF_REQUEST) {
 		return handleInvalidRequest(message);
-	} else if (qlf == WH_DHT_QLF_PUBLISH) {
+	}
+
+	switch (message->getQualifier()) {
+	case WH_DHT_QLF_PUBLISH:
 		return handlePublishRequest(message);
-	} else if (qlf == WH_DHT_QLF_SUBSCRIBE) {
+	case WH_DHT_QLF_SUBSCRIBE:
 		return handleSubscribeRequest(message);
-	} else if (qlf == WH_DHT_QLF_UNSUBSCRIBE) {
+	case WH_DHT_QLF_UNSUBSCRIBE:
 		return handleUnsubscribeRequest(message);
-	} else {
+	default:
 		return handleInvalidRequest(message);
 	}
 }
 
 bool OverlayHub::processNodeRequest(Message *message) noexcept {
-	auto origin = message->getOrigin();
-	auto cmd = message->getCommand();
-	auto qlf = message->getQualifier();
-	auto status = message->getStatus();
-	if (cmd != WH_DHT_CMD_NODE) {
+	if (message->getCommand() != WH_DHT_CMD_NODE) {
 		return handleInvalidRequest(message);
-	} else if (!(isController(origin) || isWorkerId(origin))
-			|| status != WH_DHT_AQLF_REQUEST) {
+	}
+
+	if (!(isController(message->getOrigin()) || isWorkerId(message->getOrigin()))
+			|| message->getStatus() != WH_DHT_AQLF_REQUEST) {
 		return handleInvalidRequest(message);
-	} else if (qlf == WH_DHT_QLF_GETPREDECESSOR) {
+	}
+
+	switch (message->getQualifier()) {
+	case WH_DHT_QLF_GETPREDECESSOR:
 		return handleGetPredecessorRequest(message);
-	} else if (qlf == WH_DHT_QLF_SETPREDECESSOR) {
+	case WH_DHT_QLF_SETPREDECESSOR:
 		return handleSetPredecessorRequest(message);
-	} else if (qlf == WH_DHT_QLF_GETSUCCESSOR) {
+	case WH_DHT_QLF_GETSUCCESSOR:
 		return handleGetSuccessorRequest(message);
-	} else if (qlf == WH_DHT_QLF_SETSUCCESSOR) {
+	case WH_DHT_QLF_SETSUCCESSOR:
 		return handleSetSuccessorRequest(message);
-	} else if (qlf == WH_DHT_QLF_GETFINGER) {
+	case WH_DHT_QLF_GETFINGER:
 		return handleGetFingerRequest(message);
-	} else if (qlf == WH_DHT_QLF_SETFINGER) {
+	case WH_DHT_QLF_SETFINGER:
 		return handleSetFingerRequest(message);
-	} else if (qlf == WH_DHT_QLF_GETNEIGHBOURS) {
+	case WH_DHT_QLF_GETNEIGHBOURS:
 		return handleGetNeighboursRequest(message);
-	} else if (qlf == WH_DHT_QLF_NOTIFY) {
+	case WH_DHT_QLF_NOTIFY:
 		return handleNotifyRequest(message);
-	} else {
+	default:
 		return handleInvalidRequest(message);
 	}
 }
 
 bool OverlayHub::processOverlayRequest(Message *message) noexcept {
-	auto origin = message->getOrigin();
-	auto cmd = message->getCommand();
-	auto qlf = message->getQualifier();
-	auto status = message->getStatus();
-	if (cmd != WH_DHT_CMD_OVERLAY) {
+	if (message->getCommand() != WH_DHT_CMD_OVERLAY) {
 		return handleInvalidRequest(message);
-	} else if (!isPrivileged(origin) || status != WH_DHT_AQLF_REQUEST) {
+	}
+
+	if (!isPrivileged(message->getOrigin())
+			|| message->getStatus() != WH_DHT_AQLF_REQUEST) {
 		return handleInvalidRequest(message);
-	} else if (qlf == WH_DHT_QLF_FINDSUCCESSOR) {
+	}
+
+	switch (message->getQualifier()) {
+	case WH_DHT_QLF_FINDSUCCESSOR:
 		return handleFindSuccesssorRequest(message);
-	} else if (qlf == WH_DHT_QLF_PING) {
+	case WH_DHT_QLF_PING:
 		return handlePingNodeRequest(message);
-	} else if (qlf == WH_DHT_QLF_MAP) {
+	case WH_DHT_QLF_MAP:
 		return handleMapRequest(message);
-	} else {
+	default:
 		return handleInvalidRequest(message);
 	}
 }
