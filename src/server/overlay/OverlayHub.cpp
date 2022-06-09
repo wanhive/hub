@@ -646,78 +646,121 @@ bool OverlayHub::checkMask(unsigned long long source,
 }
 
 bool OverlayHub::process(Message *message) noexcept {
+	switch (message->getCommand()) {
+	case WH_DHT_CMD_NULL:
+		return processNullRequest(message);
+	case WH_DHT_CMD_BASIC:
+		return processBasicRequest(message);
+	case WH_DHT_CMD_MULTICAST:
+		return processMulticastRequest(message);
+	case WH_DHT_CMD_NODE:
+		return processNodeRequest(message);
+	case WH_DHT_CMD_OVERLAY:
+		return processOverlayRequest(message);
+	default:
+		return handleInvalidRequest(message);
+	}
+}
+
+bool OverlayHub::processNullRequest(Message *message) noexcept {
 	auto origin = message->getOrigin();
 	auto cmd = message->getCommand();
 	auto qlf = message->getQualifier();
 	auto status = message->getStatus();
-	switch (cmd) {
-	case WH_DHT_CMD_NULL:
-		if (!isPrivileged(origin) || status != WH_DHT_AQLF_REQUEST) {
-			return handleInvalidRequest(message);
-		} else if (qlf == WH_DHT_QLF_DESCRIBE) {
-			return handleDescribeNodeRequest(message);
-		} else {
-			return handleInvalidRequest(message);
-		}
-	case WH_DHT_CMD_BASIC:
-		if (qlf == WH_DHT_QLF_FINDROOT) {
-			return handleFindRootRequest(message);
-		} else if (qlf == WH_DHT_QLF_BOOTSTRAP
-				&& status == WH_DHT_AQLF_REQUEST) {
-			return handleBootstrapRequest(message);
-		} else {
-			return handleInvalidRequest(message);
-		}
-	case WH_DHT_CMD_MULTICAST:
-		if (isSupernode() || isInternalNode(origin)
-				|| Socket::isEphemeralId(origin)
-				|| status != WH_DHT_AQLF_REQUEST) {
-			return handleInvalidRequest(message);
-		} else if (qlf == WH_DHT_QLF_PUBLISH) {
-			return handlePublishRequest(message);
-		} else if (qlf == WH_DHT_QLF_SUBSCRIBE) {
-			return handleSubscribeRequest(message);
-		} else if (qlf == WH_DHT_QLF_UNSUBSCRIBE) {
-			return handleUnsubscribeRequest(message);
-		} else {
-			return handleInvalidRequest(message);
-		}
-	case WH_DHT_CMD_NODE:
-		if (!(isController(origin) || isWorkerId(origin))
-				|| status != WH_DHT_AQLF_REQUEST) {
-			return handleInvalidRequest(message);
-		} else if (qlf == WH_DHT_QLF_GETPREDECESSOR) {
-			return handleGetPredecessorRequest(message);
-		} else if (qlf == WH_DHT_QLF_SETPREDECESSOR) {
-			return handleSetPredecessorRequest(message);
-		} else if (qlf == WH_DHT_QLF_GETSUCCESSOR) {
-			return handleGetSuccessorRequest(message);
-		} else if (qlf == WH_DHT_QLF_SETSUCCESSOR) {
-			return handleSetSuccessorRequest(message);
-		} else if (qlf == WH_DHT_QLF_GETFINGER) {
-			return handleGetFingerRequest(message);
-		} else if (qlf == WH_DHT_QLF_SETFINGER) {
-			return handleSetFingerRequest(message);
-		} else if (qlf == WH_DHT_QLF_GETNEIGHBOURS) {
-			return handleGetNeighboursRequest(message);
-		} else if (qlf == WH_DHT_QLF_NOTIFY) {
-			return handleNotifyRequest(message);
-		} else {
-			return handleInvalidRequest(message);
-		}
-	case WH_DHT_CMD_OVERLAY:
-		if (!isPrivileged(origin) || status != WH_DHT_AQLF_REQUEST) {
-			return handleInvalidRequest(message);
-		} else if (qlf == WH_DHT_QLF_FINDSUCCESSOR) {
-			return handleFindSuccesssorRequest(message);
-		} else if (qlf == WH_DHT_QLF_PING) {
-			return handlePingNodeRequest(message);
-		} else if (qlf == WH_DHT_QLF_MAP) {
-			return handleMapRequest(message);
-		} else {
-			return handleInvalidRequest(message);
-		}
-	default:
+	if (cmd != WH_DHT_CMD_NULL) {
+		return handleInvalidRequest(message);
+	} else if (!isPrivileged(origin) || status != WH_DHT_AQLF_REQUEST) {
+		return handleInvalidRequest(message);
+	} else if (qlf == WH_DHT_QLF_DESCRIBE) {
+		return handleDescribeNodeRequest(message);
+	} else {
+		return handleInvalidRequest(message);
+	}
+}
+
+bool OverlayHub::processBasicRequest(Message *message) noexcept {
+	auto cmd = message->getCommand();
+	auto qlf = message->getQualifier();
+	auto status = message->getStatus();
+	if (cmd != WH_DHT_CMD_BASIC) {
+		return handleFindRootRequest(message);
+	} else if (qlf == WH_DHT_QLF_FINDROOT) {
+		return handleFindRootRequest(message);
+	} else if (qlf == WH_DHT_QLF_BOOTSTRAP && status == WH_DHT_AQLF_REQUEST) {
+		return handleBootstrapRequest(message);
+	} else {
+		return handleInvalidRequest(message);
+	}
+}
+
+bool OverlayHub::processMulticastRequest(Message *message) noexcept {
+	auto origin = message->getOrigin();
+	auto cmd = message->getCommand();
+	auto qlf = message->getQualifier();
+	auto status = message->getStatus();
+	if (cmd != WH_DHT_CMD_MULTICAST) {
+		return handleInvalidRequest(message);
+	} else if (isSupernode() || isInternalNode(origin)
+			|| Socket::isEphemeralId(origin) || status != WH_DHT_AQLF_REQUEST) {
+		return handleInvalidRequest(message);
+	} else if (qlf == WH_DHT_QLF_PUBLISH) {
+		return handlePublishRequest(message);
+	} else if (qlf == WH_DHT_QLF_SUBSCRIBE) {
+		return handleSubscribeRequest(message);
+	} else if (qlf == WH_DHT_QLF_UNSUBSCRIBE) {
+		return handleUnsubscribeRequest(message);
+	} else {
+		return handleInvalidRequest(message);
+	}
+}
+
+bool OverlayHub::processNodeRequest(Message *message) noexcept {
+	auto origin = message->getOrigin();
+	auto cmd = message->getCommand();
+	auto qlf = message->getQualifier();
+	auto status = message->getStatus();
+	if (cmd != WH_DHT_CMD_NODE) {
+		return handleInvalidRequest(message);
+	} else if (!(isController(origin) || isWorkerId(origin))
+			|| status != WH_DHT_AQLF_REQUEST) {
+		return handleInvalidRequest(message);
+	} else if (qlf == WH_DHT_QLF_GETPREDECESSOR) {
+		return handleGetPredecessorRequest(message);
+	} else if (qlf == WH_DHT_QLF_SETPREDECESSOR) {
+		return handleSetPredecessorRequest(message);
+	} else if (qlf == WH_DHT_QLF_GETSUCCESSOR) {
+		return handleGetSuccessorRequest(message);
+	} else if (qlf == WH_DHT_QLF_SETSUCCESSOR) {
+		return handleSetSuccessorRequest(message);
+	} else if (qlf == WH_DHT_QLF_GETFINGER) {
+		return handleGetFingerRequest(message);
+	} else if (qlf == WH_DHT_QLF_SETFINGER) {
+		return handleSetFingerRequest(message);
+	} else if (qlf == WH_DHT_QLF_GETNEIGHBOURS) {
+		return handleGetNeighboursRequest(message);
+	} else if (qlf == WH_DHT_QLF_NOTIFY) {
+		return handleNotifyRequest(message);
+	} else {
+		return handleInvalidRequest(message);
+	}
+}
+
+bool OverlayHub::processOverlayRequest(Message *message) noexcept {
+	auto origin = message->getOrigin();
+	auto cmd = message->getCommand();
+	auto qlf = message->getQualifier();
+	auto status = message->getStatus();
+	if (cmd != WH_DHT_CMD_OVERLAY) {
+		return handleInvalidRequest(message);
+	} else if (!isPrivileged(origin) || status != WH_DHT_AQLF_REQUEST) {
+		return handleInvalidRequest(message);
+	} else if (qlf == WH_DHT_QLF_FINDSUCCESSOR) {
+		return handleFindSuccesssorRequest(message);
+	} else if (qlf == WH_DHT_QLF_PING) {
+		return handlePingNodeRequest(message);
+	} else if (qlf == WH_DHT_QLF_MAP) {
+		return handleMapRequest(message);
+	} else {
 		return handleInvalidRequest(message);
 	}
 }

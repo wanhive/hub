@@ -90,6 +90,12 @@ private:
 	//Processes a direct request
 	bool process(Message *message) noexcept;
 
+	bool processNullRequest(Message *message) noexcept;
+	bool processBasicRequest(Message *message) noexcept;
+	bool processMulticastRequest(Message *message) noexcept;
+	bool processNodeRequest(Message *message) noexcept;
+	bool processOverlayRequest(Message *message) noexcept;
+
 	bool handleInvalidRequest(Message *msg) noexcept;
 	bool handleDescribeNodeRequest(Message *msg) noexcept;
 
