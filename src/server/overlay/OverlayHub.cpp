@@ -570,7 +570,7 @@ void OverlayHub::applyFlowControl(Message *message) noexcept {
 	}
 }
 
-int OverlayHub::createRoute(Message *message) noexcept {
+bool OverlayHub::createRoute(Message *message) noexcept {
 	//Message's origin is immutable
 	auto origin = message->getOrigin();
 	auto destination = message->getDestination();
@@ -598,7 +598,7 @@ int OverlayHub::createRoute(Message *message) noexcept {
 		message->setDestination(getUid());
 	}
 
-	return 0;
+	return true;
 }
 
 unsigned long long OverlayHub::getNextHop(
@@ -645,7 +645,7 @@ bool OverlayHub::checkMask(unsigned long long source,
 			|| ((source & ctx.netMask) == (destination & ctx.netMask));
 }
 
-int OverlayHub::process(Message *message) noexcept {
+bool OverlayHub::process(Message *message) noexcept {
 	auto origin = message->getOrigin();
 	auto cmd = message->getCommand();
 	auto qlf = message->getQualifier();
@@ -722,15 +722,15 @@ int OverlayHub::process(Message *message) noexcept {
 	}
 }
 
-int OverlayHub::handleInvalidRequest(Message *msg) noexcept {
+bool OverlayHub::handleInvalidRequest(Message *msg) noexcept {
 	//The message will be recycled
 	msg->setCommand(WH_DHT_CMD_NULL);
 	msg->setStatus(WH_DHT_AQLF_REJECTED);
 	msg->setDestination(getUid());
-	return 0;
+	return true;
 }
 
-int OverlayHub::handleDescribeNodeRequest(Message *msg) noexcept {
+bool OverlayHub::handleDescribeNodeRequest(Message *msg) noexcept {
 	/*
 	 * HEADER: SRC=0, DEST=X, ....CMD=0, QLF=127, AQLF=0/1/127
 	 * BODY: 0 bytes in Request; 84+25*Node::TABLESIZE bytes in Response
@@ -794,10 +794,10 @@ int OverlayHub::handleDescribeNodeRequest(Message *msg) noexcept {
 	//-----------------------------------------------------------------
 	buildDirectResponse(msg, Message::HEADER_SIZE + index);
 	msg->putStatus(WH_DHT_AQLF_ACCEPTED);
-	return 0;
+	return true;
 }
 
-int OverlayHub::handleRegistrationRequest(Message *msg) noexcept {
+bool OverlayHub::handleRegistrationRequest(Message *msg) noexcept {
 	/*
 	 * HEADER: SRC=<REQUESTED ID>, DEST=IGN, ....CMD=1, QLF=0, AQLF=0/1/127
 	 * BODY: 64-byte CHALLANGE CODE in Request (optional); nothing in Response
@@ -821,7 +821,7 @@ int OverlayHub::handleRegistrationRequest(Message *msg) noexcept {
 		msg->setDestination(origin);
 		//Set the source to this message's origin (Server performs source check)
 		msg->setSource(origin);
-		return 0;
+		return true;
 	}
 	//-----------------------------------------------------------------
 	/*
@@ -851,10 +851,10 @@ int OverlayHub::handleRegistrationRequest(Message *msg) noexcept {
 		msg->putLength(Message::HEADER_SIZE);
 		msg->putStatus(WH_DHT_AQLF_REJECTED);
 	}
-	return 0;
+	return true;
 }
 
-int OverlayHub::handleGetKeyRequest(Message *msg) noexcept {
+bool OverlayHub::handleGetKeyRequest(Message *msg) noexcept {
 	/*
 	 * HEADER: SRC=0, DEST=X, ....CMD=1, QLF=1, AQLF=0/1/127
 	 * BODY: 512/8=64 Bytes in Request (optional), (512/8)*2=128 Bytes in Response
@@ -889,7 +889,7 @@ int OverlayHub::handleGetKeyRequest(Message *msg) noexcept {
 			msg->sign(getPKI());
 			//We are sending a registration request to the remote Node.
 			msg->setDestination(origin);
-			return 0;
+			return true;
 		}
 	}
 	//-----------------------------------------------------------------
@@ -934,10 +934,10 @@ int OverlayHub::handleGetKeyRequest(Message *msg) noexcept {
 		msg->putLength(Message::HEADER_SIZE);
 		msg->putStatus(WH_DHT_AQLF_REJECTED);
 	}
-	return 0;
+	return true;
 }
 
-int OverlayHub::handleFindRootRequest(Message *msg) noexcept {
+bool OverlayHub::handleFindRootRequest(Message *msg) noexcept {
 	/*
 	 * HEADER: SRC=0, DEST=X, ....CMD=1, QLF=2, AQLF=0/1/127
 	 * BODY: 8 bytes as <id> in Request; 8 bytes as <id> and 8 bytes
@@ -960,7 +960,7 @@ int OverlayHub::handleFindRootRequest(Message *msg) noexcept {
 			} else {
 				msg->writeDestination(0);
 			}
-			return 0;
+			return true;
 		} else {
 			return handleInvalidRequest(msg);
 		}
@@ -980,7 +980,7 @@ int OverlayHub::handleFindRootRequest(Message *msg) noexcept {
 			msg->setDestination(origin);
 			msg->writeSource(0);
 			msg->writeDestination(isController(origin) ? source : 0);
-			return 0;
+			return true;
 		} else {
 			//Request was initiated remotely, route towards the originator
 			msg->putDestination(source);
@@ -1002,11 +1002,11 @@ int OverlayHub::handleFindRootRequest(Message *msg) noexcept {
 		//Forward the ongoing request to the closest predecessor
 		auto precedingNode = closestPredecessor(mapKey(queryId), true);
 		msg->putDestination(precedingNode);
-		return 0;
+		return true;
 	}
 }
 
-int OverlayHub::handleBootstrapRequest(Message *msg) noexcept {
+bool OverlayHub::handleBootstrapRequest(Message *msg) noexcept {
 	/*
 	 * HEADER: SRC=0, DEST=X, ....CMD=1, QLF=3, AQLF=0/1/127
 	 * BODY: 0 in Request; 4 bytes as count + 8*NODECACHE_SIZE bytes
@@ -1037,10 +1037,10 @@ int OverlayHub::handleBootstrapRequest(Message *msg) noexcept {
 		msg->setData64(offset, nodes.cache[i]);
 		offset += sizeof(uint64_t);
 	}
-	return 0;
+	return true;
 }
 
-int OverlayHub::handlePublishRequest(Message *msg) noexcept {
+bool OverlayHub::handlePublishRequest(Message *msg) noexcept {
 	/*
 	 * HEADER: SRC=0, DEST=X, ....CMD=2, QLF=0, AQLF=0/1/127
 	 * BODY: variable in Request; no Response
@@ -1063,10 +1063,10 @@ int OverlayHub::handlePublishRequest(Message *msg) noexcept {
 	msg->writeDestination(0); //There are multiple destinations
 	msg->writeStatus(WH_DHT_AQLF_ACCEPTED); //Prevent rebound
 	msg->addReferenceCount(); //Account for Hub::publish
-	return 0;
+	return true;
 }
 
-int OverlayHub::handleSubscribeRequest(Message *msg) noexcept {
+bool OverlayHub::handleSubscribeRequest(Message *msg) noexcept {
 	/*
 	 * HEADER: SRC=0, DEST=X, ....CMD=2, QLF=1, AQLF=0/1/127
 	 * BODY: 0 in Request; 0 in Response
@@ -1091,10 +1091,10 @@ int OverlayHub::handleSubscribeRequest(Message *msg) noexcept {
 	} else {
 		msg->putStatus(WH_DHT_AQLF_REJECTED);
 	}
-	return 0;
+	return true;
 }
 
-int OverlayHub::handleUnsubscribeRequest(Message *msg) noexcept {
+bool OverlayHub::handleUnsubscribeRequest(Message *msg) noexcept {
 	/*
 	 * HEADER: SRC=0, DEST=X, ....CMD=2, QLF=2, AQLF=0/1/127
 	 * BODY: 0 in Request; 0 in Response
@@ -1115,10 +1115,10 @@ int OverlayHub::handleUnsubscribeRequest(Message *msg) noexcept {
 	buildDirectResponse(msg, Message::HEADER_SIZE);
 	msg->writeSource(0); //Obfuscate the source (this hub)
 	msg->putStatus(WH_DHT_AQLF_ACCEPTED);
-	return 0;
+	return true;
 }
 
-int OverlayHub::handleGetPredecessorRequest(Message *msg) noexcept {
+bool OverlayHub::handleGetPredecessorRequest(Message *msg) noexcept {
 	/*
 	 * HEADER: SRC=0, DEST=X, ....CMD=3, QLF=0, AQLF=0/1/127
 	 * BODY: 0 bytes in Request; 8 bytes as <predecessor> in Response
@@ -1131,10 +1131,10 @@ int OverlayHub::handleGetPredecessorRequest(Message *msg) noexcept {
 	buildDirectResponse(msg, Message::HEADER_SIZE + sizeof(uint64_t));
 	msg->putStatus(WH_DHT_AQLF_ACCEPTED);
 	msg->setData64(0, getPredecessor());
-	return 0;
+	return true;
 }
 
-int OverlayHub::handleSetPredecessorRequest(Message *msg) noexcept {
+bool OverlayHub::handleSetPredecessorRequest(Message *msg) noexcept {
 	/*
 	 * HEADER: SRC=0, DEST=X, ....CMD=3, QLF=1, AQLF=0/1/127
 	 * BODY: 8 bytes as <predecessor> in Request; 8 bytes as <predecessor> in Response
@@ -1155,10 +1155,10 @@ int OverlayHub::handleSetPredecessorRequest(Message *msg) noexcept {
 		msg->putStatus(WH_DHT_AQLF_REJECTED);
 		msg->setData64(0, 0);
 	}
-	return 0;
+	return true;
 }
 
-int OverlayHub::handleGetSuccessorRequest(Message *msg) noexcept {
+bool OverlayHub::handleGetSuccessorRequest(Message *msg) noexcept {
 	/*
 	 * HEADER: SRC=0, DEST=X, ....CMD=3, QLF=2, AQLF=0/1/127
 	 * BODY: 0 bytes in Request; 8 bytes as <successor> in Response
@@ -1171,10 +1171,10 @@ int OverlayHub::handleGetSuccessorRequest(Message *msg) noexcept {
 	buildDirectResponse(msg, Message::HEADER_SIZE + sizeof(uint64_t));
 	msg->putStatus(WH_DHT_AQLF_ACCEPTED);
 	msg->setData64(0, getSuccessor());
-	return 0;
+	return true;
 }
 
-int OverlayHub::handleSetSuccessorRequest(Message *msg) noexcept {
+bool OverlayHub::handleSetSuccessorRequest(Message *msg) noexcept {
 	/*
 	 * HEADER: SRC=0, DEST=X, ....CMD=3, QLF=3, AQLF=0/1/127
 	 * BODY: 8 bytes as <successor> in Request; 8 bytes as <successor> in response
@@ -1195,10 +1195,10 @@ int OverlayHub::handleSetSuccessorRequest(Message *msg) noexcept {
 		msg->putStatus(WH_DHT_AQLF_REJECTED);
 		msg->setData64(0, 0);
 	}
-	return 0;
+	return true;
 }
 
-int OverlayHub::handleGetFingerRequest(Message *msg) noexcept {
+bool OverlayHub::handleGetFingerRequest(Message *msg) noexcept {
 	/*
 	 * HEADER: SRC=0, DEST=X, ....CMD=3, QLF=4, AQLF=0/1/127
 	 * BODY: 4 bytes in Request as <index>; 4 bytes as <index> + 8 bytes
@@ -1214,10 +1214,10 @@ int OverlayHub::handleGetFingerRequest(Message *msg) noexcept {
 	auto index = msg->getData32(0);
 	msg->putStatus(WH_DHT_AQLF_ACCEPTED);
 	msg->setData64(sizeof(uint32_t), get(index));
-	return 0;
+	return true;
 }
 
-int OverlayHub::handleSetFingerRequest(Message *msg) noexcept {
+bool OverlayHub::handleSetFingerRequest(Message *msg) noexcept {
 	/*
 	 * HEADER: SRC=0, DEST=X, ....CMD=3, QLF=5, AQLF=0/1/127
 	 * BODY: 4 bytes as <index> and 8 bytes as <finger> in Request and in Response
@@ -1240,10 +1240,10 @@ int OverlayHub::handleSetFingerRequest(Message *msg) noexcept {
 		msg->putStatus(WH_DHT_AQLF_REJECTED);
 		msg->setData64(sizeof(uint32_t), 0);
 	}
-	return 0;
+	return true;
 }
 
-int OverlayHub::handleGetNeighboursRequest(Message *msg) noexcept {
+bool OverlayHub::handleGetNeighboursRequest(Message *msg) noexcept {
 	/*
 	 * HEADER: SRC=0, DEST=X, ....CMD=3, QLF=6, AQLF=0/1/127
 	 * BODY: 0 bytes in REQ; 8 bytes as <predecessor> + 8 bytes
@@ -1258,10 +1258,10 @@ int OverlayHub::handleGetNeighboursRequest(Message *msg) noexcept {
 	msg->putStatus(WH_DHT_AQLF_ACCEPTED);
 	msg->setData64(0, getPredecessor());
 	msg->setData64(sizeof(uint64_t), getSuccessor());
-	return 0;
+	return true;
 }
 
-int OverlayHub::handleNotifyRequest(Message *msg) noexcept {
+bool OverlayHub::handleNotifyRequest(Message *msg) noexcept {
 	/*
 	 * HEADER: SRC=0, DEST=X, ....CMD=3, QLF=7, AQLF=0/1/127
 	 * BODY: 8 bytes as <predecessor> in Request; 0 bytes in Response
@@ -1274,10 +1274,10 @@ int OverlayHub::handleNotifyRequest(Message *msg) noexcept {
 	msg->putStatus(WH_DHT_AQLF_ACCEPTED);
 	//Notify self about the probable predecessor
 	notify(msg->getData64(0));
-	return 0;
+	return true;
 }
 
-int OverlayHub::handleFindSuccesssorRequest(Message *msg) noexcept {
+bool OverlayHub::handleFindSuccesssorRequest(Message *msg) noexcept {
 	/*
 	 * HEADER: SRC=0, DEST=X, ....CMD=4, QLF=0, AQLF=0/1/127
 	 * BODY: 8 bytes as <id> in Request; 8 bytes as <id> and 8 bytes
@@ -1312,10 +1312,10 @@ int OverlayHub::handleFindSuccesssorRequest(Message *msg) noexcept {
 			return handleInvalidRequest(msg);
 		}
 	}
-	return 0;
+	return true;
 }
 
-int OverlayHub::handlePingNodeRequest(Message *msg) noexcept {
+bool OverlayHub::handlePingNodeRequest(Message *msg) noexcept {
 	/*
 	 * HEADER: SRC=0, DEST=X, ....CMD=4, QLF=1, AQLF=0/1/127
 	 * BODY: 0 bytes in Request and Response
@@ -1328,17 +1328,17 @@ int OverlayHub::handlePingNodeRequest(Message *msg) noexcept {
 		Node::setStable(false);
 		buildDirectResponse(msg);
 		msg->putStatus(WH_DHT_AQLF_ACCEPTED);
-		return 0;
+		return true;
 	} else if (isController(origin) || isController(getUid())) {
 		buildDirectResponse(msg);
 		msg->putStatus(WH_DHT_AQLF_ACCEPTED);
-		return 0;
+		return true;
 	} else {
 		return handleInvalidRequest(msg);
 	}
 }
 
-int OverlayHub::handleMapRequest(Message *msg) noexcept {
+bool OverlayHub::handleMapRequest(Message *msg) noexcept {
 	/*
 	 * HEADER: SRC=0, DEST=X, ....CMD=4, QLF=2, AQLF=0/1/127
 	 * BODY: variable in Request; variable in Response
@@ -1396,7 +1396,7 @@ int OverlayHub::handleMapRequest(Message *msg) noexcept {
 				(result == 0 || result == 1) ?
 						WH_DHT_AQLF_ACCEPTED : WH_DHT_AQLF_REJECTED);
 	}
-	return 0;
+	return true;
 }
 
 int OverlayHub::mapFunction(Message *msg) noexcept {

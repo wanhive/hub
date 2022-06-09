@@ -79,7 +79,7 @@ private:
 	bool interceptMessage(Message *message) noexcept;
 	void applyFlowControl(Message *message) noexcept;
 	//Generates a route for the given message
-	int createRoute(Message *message) noexcept;
+	bool createRoute(Message *message) noexcept;
 	unsigned long long getNextHop(unsigned long long destination) const noexcept;
 	bool allowCommunication(unsigned long long source,
 			unsigned long long destination) const noexcept;
@@ -88,32 +88,32 @@ private:
 			unsigned long long destination) const noexcept;
 	//-----------------------------------------------------------------
 	//Processes a direct request
-	int process(Message *message) noexcept;
+	bool process(Message *message) noexcept;
 
-	int handleInvalidRequest(Message *msg) noexcept;
-	int handleDescribeNodeRequest(Message *msg) noexcept;
+	bool handleInvalidRequest(Message *msg) noexcept;
+	bool handleDescribeNodeRequest(Message *msg) noexcept;
 
-	int handleRegistrationRequest(Message *msg) noexcept;
-	int handleGetKeyRequest(Message *msg) noexcept;
-	int handleFindRootRequest(Message *msg) noexcept;
-	int handleBootstrapRequest(Message *msg) noexcept;
+	bool handleRegistrationRequest(Message *msg) noexcept;
+	bool handleGetKeyRequest(Message *msg) noexcept;
+	bool handleFindRootRequest(Message *msg) noexcept;
+	bool handleBootstrapRequest(Message *msg) noexcept;
 
-	int handlePublishRequest(Message *msg) noexcept;
-	int handleSubscribeRequest(Message *msg) noexcept;
-	int handleUnsubscribeRequest(Message *msg) noexcept;
+	bool handlePublishRequest(Message *msg) noexcept;
+	bool handleSubscribeRequest(Message *msg) noexcept;
+	bool handleUnsubscribeRequest(Message *msg) noexcept;
 
-	int handleGetPredecessorRequest(Message *msg) noexcept;
-	int handleSetPredecessorRequest(Message *msg) noexcept;
-	int handleGetSuccessorRequest(Message *msg) noexcept;
-	int handleSetSuccessorRequest(Message *msg) noexcept;
-	int handleGetFingerRequest(Message *msg) noexcept;
-	int handleSetFingerRequest(Message *msg) noexcept;
-	int handleGetNeighboursRequest(Message *msg) noexcept;
-	int handleNotifyRequest(Message *msg) noexcept;
+	bool handleGetPredecessorRequest(Message *msg) noexcept;
+	bool handleSetPredecessorRequest(Message *msg) noexcept;
+	bool handleGetSuccessorRequest(Message *msg) noexcept;
+	bool handleSetSuccessorRequest(Message *msg) noexcept;
+	bool handleGetFingerRequest(Message *msg) noexcept;
+	bool handleSetFingerRequest(Message *msg) noexcept;
+	bool handleGetNeighboursRequest(Message *msg) noexcept;
+	bool handleNotifyRequest(Message *msg) noexcept;
 
-	int handleFindSuccesssorRequest(Message *msg) noexcept;
-	int handlePingNodeRequest(Message *msg) noexcept;
-	int handleMapRequest(Message *msg) noexcept;
+	bool handleFindSuccesssorRequest(Message *msg) noexcept;
+	bool handlePingNodeRequest(Message *msg) noexcept;
+	bool handleMapRequest(Message *msg) noexcept;
 	//-----------------------------------------------------------------
 	//0: continue; 1: success/discontinue; -1: error/discontinue
 	int mapFunction(Message *msg) noexcept;
