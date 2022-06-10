@@ -21,7 +21,7 @@ namespace wanhive {
 class NetworkAddressException: public BaseException {
 public:
 	NetworkAddressException(int type) noexcept;
-	virtual ~NetworkAddressException() override;
+	~NetworkAddressException();
 	const char* what() const noexcept override;
 	int errorCode() const noexcept override;
 private:

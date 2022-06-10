@@ -21,8 +21,7 @@ namespace wanhive {
 class SecurityException: public BaseException {
 public:
 	SecurityException() noexcept;
-	virtual ~SecurityException() override;
-
+	~SecurityException();
 	const char* what() const noexcept override;
 	int errorCode() const noexcept override;
 private:

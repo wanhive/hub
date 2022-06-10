@@ -46,7 +46,7 @@ public:
 	/**
 	 * Destructor
 	 */
-	virtual ~Exception() override;
+	~Exception();
 	const char* what() const noexcept override;
 	int errorCode() const noexcept override;
 private:

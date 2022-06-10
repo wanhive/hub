@@ -22,7 +22,7 @@ class SystemException: public BaseException {
 public:
 	SystemException() noexcept;
 	SystemException(int type) noexcept;
-	virtual ~SystemException() override;
+	~SystemException();
 	const char* what() const noexcept override;
 	int errorCode() const noexcept override;
 private:
