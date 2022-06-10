@@ -29,7 +29,7 @@ public:
 	/**
 	 * Destructor
 	 */
-	virtual ~MersenneTwister();
+	~MersenneTwister();
 	/**
 	 * Applies a new seed to the generator.
 	 * @param s the new seed's value
