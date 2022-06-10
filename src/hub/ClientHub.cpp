@@ -57,7 +57,7 @@ void ClientHub::stop(Watcher *w) noexcept {
 void ClientHub::configure(void *arg) {
 	try {
 		Hub::configure(arg);
-		decltype(auto) conf = Identity::getConfiguration();
+		auto &conf = Identity::getConfiguration();
 		ctx.password = (const unsigned char*) conf.getString("CLIENT",
 				"password");
 		if (ctx.password) {

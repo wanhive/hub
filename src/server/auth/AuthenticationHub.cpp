@@ -43,7 +43,7 @@ void AuthenticationHub::stop(Watcher *w) noexcept {
 void AuthenticationHub::configure(void *arg) {
 	try {
 		Hub::configure(arg);
-		decltype(auto) conf = Identity::getConfiguration();
+		auto &conf = Identity::getConfiguration();
 		ctx.connInfo = conf.getString("AUTH", "connInfo");
 		ctx.query = conf.getString("AUTH", "query");
 

@@ -260,7 +260,7 @@ void Hub::configure(void *arg) {
 	try {
 		uptime.now();
 		Identity::initialize();
-		decltype(auto) conf = Identity::getConfiguration();
+		auto &conf = Identity::getConfiguration();
 
 		ctx.listen = conf.getBoolean("HUB", "listen");
 		ctx.backlog = conf.getNumber("HUB", "backlog");

@@ -34,7 +34,7 @@ void OverlayHub::stop(Watcher *w) noexcept {
 void OverlayHub::configure(void *arg) {
 	try {
 		Hub::configure(arg);
-		decltype(auto) conf = Identity::getConfiguration();
+		auto &conf = Identity::getConfiguration();
 		ctx.enableRegistration = conf.getBoolean("OVERLAY",
 				"enableRegistration");
 		ctx.authenticateClient = conf.getBoolean("OVERLAY",
