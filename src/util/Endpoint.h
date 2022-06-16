@@ -18,9 +18,9 @@
 
 namespace wanhive {
 /**
- * Request-response pattern implementation
- * Expects blocking connection
- * Thread safe at class level
+ * Request-response pattern implementation. Expects blocking connection hence
+ * the underlying socket file descriptor must be configured for blocking read
+ * and write operations.
  */
 class Endpoint: protected Packet {
 public:

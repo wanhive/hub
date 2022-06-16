@@ -30,8 +30,6 @@ struct Data {
  * during message delivery and forwarding. Frame buffer contains the actual
  * binary data (in network byte order) which is exchanged over the network.
  * Frame buffer's structure: [{MESSAGE HEADER}{VARIABLE LENGTH PAYLOAD}]
- *
- * Thread safe at class level.
  */
 class Frame {
 public:
@@ -59,8 +57,8 @@ public:
 	MessageHeader& header() noexcept;
 	/**
 	 * Returns a constant reference to the routing header. The routing header's
-	 * data may or may not be in agreement with the serialized header data stored
-	 * at the beginning of the frame buffer.
+	 * data may or may not be in sync with the serialized header data stored at
+	 * the beginning of the frame buffer.
 	 * @return constant reference to the routing header
 	 */
 	const MessageHeader& header() const noexcept;
