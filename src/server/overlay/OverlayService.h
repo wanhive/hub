@@ -18,8 +18,7 @@
 
 namespace wanhive {
 /**
- * DHT stabilization service
- * Thread safe at class level
+ * Overlay network stabilization service
  */
 class OverlayService: private OverlayProtocol {
 public:
@@ -44,10 +43,10 @@ public:
 	 */
 	bool execute();
 	/*
-	 * Waits for timeout or notification.
+	 * Waits for timeout (milliseconds) or notification.
 	 * Returns false on timeout, true on receipt of a notification.
 	 */
-	bool wait();
+	bool wait(unsigned int timeout);
 	/*
 	 * Delivers a notification to this object. Returns true on success,
 	 * false otherwise.
@@ -58,6 +57,15 @@ public:
 	 */
 	void cleanup() noexcept;
 private:
+	//-----------------------------------------------------------------
+	//Sets things up
+	void setup();
+	//Cleans up the internal structures
+	void clear() noexcept;
+	//Checks the network connection
+	bool checkNetwork() noexcept;
+	//Joins the network using a list of bootstrap nodes
+	bool bootstrap() noexcept;
 	//-----------------------------------------------------------------
 	/**
 	 * Stabilization routines
@@ -73,20 +81,12 @@ private:
 	//Fix the finger table for the node identified by <id>
 	bool fixFingerTable(uint64_t id) noexcept;
 	//-----------------------------------------------------------------
-	/**
-	 * Following two functions are called by <stabilize>
-	 */
 	//Periodically update the successor list for the node <id>
 	bool fixSuccessorsList(uint64_t id) noexcept;
 	//Successor of the node <id> has failed, repair it using backup mechanism
 	bool repairSuccessor(uint64_t id);
 	//Check the connection with the controller
 	bool checkController(uint64_t id);
-	//-----------------------------------------------------------------
-	//Sets things up
-	void setup();
-	//Cleans up the internal structures
-	void clear() noexcept;
 	//-----------------------------------------------------------------
 	void setConnection(int connection) noexcept;
 	void setBootstrapNodes(const unsigned long long *nodes) noexcept;
@@ -99,8 +99,6 @@ private:
 	unsigned int sIndex;
 	//Next finger to fix
 	unsigned int fIndex;
-	//Wait period
-	unsigned int delay;
 	//Set to true if connection with controller failed
 	bool controllerFailed;
 	//Initialization status

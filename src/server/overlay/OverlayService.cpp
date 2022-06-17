@@ -37,9 +37,12 @@ void OverlayService::configure(int connection, const unsigned long long *nodes,
 
 void OverlayService::periodic() noexcept {
 	try {
-		do {
-			execute();
-		} while (!wait());
+		while (true) {
+			auto delay = execute() ? ctx.updateCycle : ctx.retryInterval;
+			if (wait(delay)) {
+				break;
+			}
+		}
 	} catch (BaseException &e) {
 		WH_LOG_EXCEPTION(e);
 	}
@@ -53,7 +56,6 @@ bool OverlayService::execute() {
 			setup();
 		}
 		//-----------------------------------------------------------------
-		delay = ctx.retryInterval;
 		//STEP 1: Check whether the predecessor has failed
 		if (!checkPredecessor(uid)) {
 			WH_LOG_ERROR("Predecessor check failed");
@@ -76,7 +78,6 @@ bool OverlayService::execute() {
 		}
 
 		//STEP 5: success
-		delay = ctx.updateCycle;
 		return true;
 	} catch (const BaseException &e) {
 		WH_LOG_EXCEPTION(e);
@@ -84,9 +85,9 @@ bool OverlayService::execute() {
 	}
 }
 
-bool OverlayService::wait() {
+bool OverlayService::wait(unsigned int timeout) {
 	try {
-		return condition.timedWait(delay);
+		return condition.timedWait(timeout);
 	} catch (const BaseException &e) {
 		WH_LOG_EXCEPTION(e);
 		throw;
@@ -106,6 +107,89 @@ void OverlayService::cleanup() noexcept {
 	releaseSocket();
 	Network::close(ctx.connection);
 	clear();
+}
+
+void OverlayService::setup() {
+	try {
+		if (!uid || initialized) {
+			throw Exception(EX_INVALIDOPERATION);
+		}
+
+		//Set the flag for book-keeping
+		initialized = true;
+		//This socket will be automatically closed on exit
+		setSocket(ctx.connection);
+		//All the messages will carry this source ID
+		setSource(uid);
+		//-----------------------------------------------------------------
+		//Force the hub to connect to the controller
+		WH_LOG_INFO("Joining the overlay network, this will take a while");
+		if (checkNetwork()) {
+			WH_LOG_INFO("Connection to the controller established");
+		} else {
+			WH_LOG_ERROR("Controller is unreachable");
+			throw Exception(EX_INVALIDSTATE);
+		}
+		//-----------------------------------------------------------------
+		//Bootstrap using a predefined list of external nodes
+		if (bootstrap()) {
+			WH_LOG_INFO("Bootstrap succeeded");
+		} else {
+			WH_LOG_ERROR("Bootstrap failed");
+			throw Exception(EX_INVALIDSTATE);
+		}
+	} catch (const BaseException &e) {
+		WH_LOG_EXCEPTION(e);
+		throw;
+	}
+}
+
+void OverlayService::clear() noexcept {
+	sIndex = 0;
+	fIndex = 0;
+	controllerFailed = false;
+	initialized = false;
+	memset(successors, 0, sizeof(successors));
+	memset(&ctx, 0, sizeof(ctx));
+	ctx.connection = -1;
+}
+
+bool OverlayService::checkNetwork() noexcept {
+	for (unsigned int i = 0; i < 4; ++i) {
+		if (!isReachable(uid)) {
+			return false;
+		} else if (!isReachable(0)) {
+			continue;
+		} else {
+			return true;
+		}
+	}
+
+	return false;
+}
+
+bool OverlayService::bootstrap() noexcept {
+	auto nodes = ctx.nodes;
+	auto joinSelf = false;
+	for (unsigned int i = 0; nodes[i]; ++i) {
+		WH_LOG_DEBUG("Contacting %llu ...", nodes[i]);
+		if (nodes[i] == uid) {
+			joinSelf = true;
+			continue;
+		} else if (join(uid, nodes[i])) {
+			WH_LOG_DEBUG("Join succeeded for %llu using %llu", uid, nodes[i]);
+			return true;
+		} else {
+			continue;
+		}
+	}
+
+	if (joinSelf && join(uid, uid)) {
+		WH_LOG_DEBUG("Join succeeded for %llu using %llu", uid, uid);
+		return true;
+	} else {
+		return false;
+	}
 }
 
 bool OverlayService::isReachable(uint64_t id) noexcept {
@@ -288,86 +372,6 @@ bool OverlayService::checkController(uint64_t id) {
 		pingRequest(id);
 		return false;
 	}
-}
-
-void OverlayService::setup() {
-	try {
-		if (!uid || initialized) {
-			throw Exception(EX_INVALIDOPERATION);
-		}
-
-		//Set the flag for book-keeping
-		initialized = true;
-		//This socket will be automatically closed on exit
-		setSocket(ctx.connection);
-		//All the messages will carry this source ID
-		setSource(uid);
-		//Wait for this long
-		delay = ctx.updateCycle;
-		//-----------------------------------------------------------------
-		/*
-		 * Force the hub to connect with the controller
-		 */
-		WH_LOG_INFO("Joining the overlay network, this will take a while");
-		bool controllerAlive = false;
-		for (unsigned int i = 0; i < 4; i++) {
-			pingRequest(uid);
-			if (!isReachable(0)) {
-				continue;
-			} else {
-				controllerAlive = true;
-				break;
-			}
-		}
-
-		if (!controllerAlive) {
-			WH_LOG_ERROR("Controller is unreachable");
-			throw Exception(EX_INVALIDSTATE);
-		} else {
-			WH_LOG_INFO("Connection to the controller established");
-		}
-		//-----------------------------------------------------------------
-		/*
-		 * Join using a predefined list of bootstrap nodes
-		 */
-		auto joinSelf = false;
-		auto nodes = ctx.nodes;
-
-		for (unsigned int i = 0; nodes[i]; i++) {
-			WH_LOG_DEBUG("Contacting %llu ...", nodes[i]);
-			if (nodes[i] == uid) {
-				joinSelf = true;
-				continue;
-			} else if (join(uid, nodes[i])) {
-				WH_LOG_INFO("Join succeeded for %llu using %llu", uid,
-						nodes[i]);
-				return;
-			} else {
-				continue;
-			}
-		}
-
-		if (joinSelf && join(uid, uid)) {
-			WH_LOG_INFO("Join succeeded for %llu using %llu", uid, uid);
-			return;
-		}
-		WH_LOG_ERROR("Could not join the overlay network");
-		throw Exception(EX_INVALIDSTATE);
-	} catch (const BaseException &e) {
-		WH_LOG_EXCEPTION(e);
-		throw;
-	}
-}
-
-void OverlayService::clear() noexcept {
-	sIndex = 0;
-	fIndex = 0;
-	delay = 0;
-	controllerFailed = false;
-	initialized = false;
-	memset(successors, 0, sizeof(successors));
-	memset(&ctx, 0, sizeof(ctx));
-	ctx.connection = -1;
 }
 
 void OverlayService::setConnection(int connection) noexcept {
