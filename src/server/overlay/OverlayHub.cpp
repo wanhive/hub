@@ -1397,8 +1397,8 @@ bool OverlayHub::handleMapRequest(Message *msg) noexcept {
 	auto source = msg->getSource();
 	//-----------------------------------------------------------------
 	/*
-	 * Message insertion
-	 * At this point we are sure that this node was the intended recipient.
+	 * Message insertion: at this point we are sure that this node is the
+	 * intended recipient.
 	 */
 	if (isExternalNode(origin)) {
 		return handleInvalidRequest(msg);
@@ -1426,9 +1426,9 @@ bool OverlayHub::handleMapRequest(Message *msg) noexcept {
 			&& (isHostId(source) || !isInRange(source, getUid(), successor))
 			&& getUid() != successor) {
 		/*
-		 * Forward the Message around the DHT ring until it reaches
-		 * the predecessor of the node where the message was originally
-		 * inserted (or the hole).
+		 * Forward the Message around the identifier ring until it reaches the
+		 * predecessor of the node where the message was originally inserted (or
+		 * a hole).
 		 */
 		msg->putDestination(successor);
 	} else {
