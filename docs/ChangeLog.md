@@ -9,7 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
-- Clean up the OverlayHub implementation.
+- Clean up the overlay hub implementation.
 
 ### Removed
 
