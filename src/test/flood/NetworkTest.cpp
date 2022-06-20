@@ -31,7 +31,7 @@ namespace wanhive {
 
 NetworkTest::NetworkTest(uint64_t clientId, uint64_t serverId,
 		const char *path) noexcept :
-		Agent(clientId, path) {
+		TestClient(clientId, path) {
 	this->serverId = serverId;
 	destinationId = clientId;
 	iterations = 0;

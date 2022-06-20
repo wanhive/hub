@@ -1,5 +1,5 @@
 /*
- * Agent.h
+ * TestClient.h
  *
  * For building synchronous test clients
  *
@@ -10,22 +10,21 @@
  *
  */
 
-#ifndef WH_TEST_FLOOD_AGENT_H_
-#define WH_TEST_FLOOD_AGENT_H_
+#ifndef WH_TEST_FLOOD_TESTCLIENT_H_
+#define WH_TEST_FLOOD_TESTCLIENT_H_
 #include "../../hub/Identity.h"
 #include "../../hub/Protocol.h"
 
 namespace wanhive {
 /**
- * Agent can connect with an existing overlay network via
- * any participant node including the controller.
- * Extend this class to build network testing tools.
- * Only asymmetric key based authentication supported.
+ * Connects with an existing overlay network via any participant node, including
+ * the controller. Extend this class to build network testing tools. Asymmetric
+ * key based authentication supported.
  */
-class Agent: protected Identity, protected Protocol {
+class TestClient: protected Identity, protected Protocol {
 public:
-	Agent(uint64_t id, const char *path) noexcept;
-	virtual ~Agent();
+	TestClient(uint64_t id, const char *path) noexcept;
+	virtual ~TestClient();
 	//Identifier of the current host
 	uint64_t getHostId() const noexcept;
 	/*
@@ -49,4 +48,4 @@ private:
 
 } /* namespace wanhive */
 
-#endif /* WH_TEST_FLOOD_AGENT_H_ */
+#endif /* WH_TEST_FLOOD_TESTCLIENT_H_ */

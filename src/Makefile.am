@@ -101,10 +101,12 @@ WH_SERVERSOURCES = server/auth/AuthenticationHub.cpp server/overlay/DHT.cpp \
 	server/overlay/OverlayTool.cpp server/overlay/Topics.cpp
 
 ## src/test collection
-WH_TESTHEADERS = test/ds/BufferTest.h test/ds/HashTableTest.h test/flood/Agent.h \
-	test/flood/NetworkTest.h test/multicast/MulticastConsumer.h
-WH_TESTSOURCES = test/ds/BufferTest.cpp test/ds/HashTableTest.cpp test/flood/Agent.cpp \
-	test/flood/NetworkTest.cpp test/multicast/MulticastConsumer.cpp
+WH_TESTHEADERS = test/ds/BufferTest.h test/ds/HashTableTest.h \
+	test/flood/TestClient.h test/flood/NetworkTest.h \
+	test/multicast/MulticastConsumer.h
+WH_TESTSOURCES = test/ds/BufferTest.cpp test/ds/HashTableTest.cpp \
+	test/flood/TestClient.cpp test/flood/NetworkTest.cpp \
+	test/multicast/MulticastConsumer.cpp
 
 ## src/app collection
 WH_APPHEADERS = app/AppManager.h app/ConfigTool.h app/version.h

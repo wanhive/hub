@@ -12,14 +12,14 @@
 
 #ifndef WH_TEST_FLOOD_NETWORKTEST_H_
 #define WH_TEST_FLOOD_NETWORKTEST_H_
-#include "Agent.h"
+#include "TestClient.h"
 #include "../../base/common/Task.h"
 
 namespace wanhive {
 /**
  * Stress test of the overlay network
  */
-class NetworkTest: private Agent, private Task {
+class NetworkTest: private Task, private TestClient {
 public:
 	NetworkTest(uint64_t clientId, uint64_t serverId, const char *path) noexcept;
 	virtual ~NetworkTest();

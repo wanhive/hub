@@ -1,5 +1,5 @@
 /*
- * Agent.cpp
+ * TestClient.cpp
  *
  * For building synchronous test clients
  *
@@ -10,28 +10,28 @@
  *
  */
 
-#include "Agent.h"
+#include "TestClient.h"
 #include "../../base/common/Exception.h"
 #include "../../base/common/Logger.h"
 #include <cinttypes>
 
 namespace wanhive {
 
-Agent::Agent(uint64_t id, const char *path) noexcept :
+TestClient::TestClient(uint64_t id, const char *path) noexcept :
 		Identity(path) {
 	setSource(id);
 	hostId = id;
 }
 
-Agent::~Agent() {
+TestClient::~TestClient() {
 
 }
 
-uint64_t Agent::getHostId() const noexcept {
+uint64_t TestClient::getHostId() const noexcept {
 	return hostId;
 }
 
-void Agent::bootstrap(uint64_t id, int timeout) {
+void TestClient::bootstrap(uint64_t id, int timeout) {
 	try {
 		Identity::initialize();
 		//-----------------------------------------------------------------
@@ -66,7 +66,7 @@ void Agent::bootstrap(uint64_t id, int timeout) {
 	}
 }
 
-bool Agent::authenticate() {
+bool TestClient::authenticate() {
 	try {
 		Digest hc;
 		useKeyPair(getPKI());
@@ -78,7 +78,7 @@ bool Agent::authenticate() {
 	}
 }
 
-void Agent::connect(uint64_t id, int timeout) {
+void TestClient::connect(uint64_t id, int timeout) {
 	try {
 		NameInfo ni;
 		Identity::getAddress(id, ni);
