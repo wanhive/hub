@@ -27,13 +27,9 @@ bool Watchers::contains(unsigned long long key) const noexcept {
 	return watchers.contains(key);
 }
 
-bool Watchers::contains(const Watcher *w) const noexcept {
-	return w && watchers.contains(w->getUid());
-}
-
-Watcher* Watchers::get(unsigned long long uid) const noexcept {
+Watcher* Watchers::get(unsigned long long key) const noexcept {
 	Watcher *w = nullptr;
-	watchers.hmGet(uid, w);
+	watchers.hmGet(key, w);
 	return w;
 }
 
@@ -50,6 +46,17 @@ bool Watchers::put(Watcher *w) noexcept {
 	return w && put(w->getUid(), w);
 }
 
+Watcher* Watchers::replace(unsigned long long key, Watcher *w) noexcept {
+	if (w) {
+		Watcher *old = nullptr;
+		watchers.hmReplace(key, w, old);
+		w->setUid(key);
+		return old;
+	} else {
+		return nullptr;
+	}
+}
+
 Watcher* Watchers::replace(Watcher *w) noexcept {
 	if (w) {
 		Watcher *old = nullptr;
@@ -62,12 +69,6 @@ Watcher* Watchers::replace(Watcher *w) noexcept {
 
 void Watchers::remove(unsigned long long key) noexcept {
 	watchers.removeKey(key);
-}
-
-void Watchers::remove(const Watcher *w) noexcept {
-	if (w) {
-		remove(w->getUid());
-	}
 }
 
 bool Watchers::move(unsigned long long first, unsigned long long second,
