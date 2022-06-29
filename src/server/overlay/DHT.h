@@ -19,14 +19,30 @@ namespace wanhive {
  */
 class DHT {
 public:
+	/**
+	 * Default constructor
+	 */
 	DHT() noexcept;
+	/**
+	 * Destructor
+	 */
 	~DHT();
-	static constexpr unsigned int identifierLength() noexcept {
-		return IDENTIFIER_LENGTH;
+	/**
+	 * Returns the maximum key length in bits. This is an architectural limit
+	 * and the implementations should not use a larger value.
+	 * @return maximum identifier length in bits
+	 */
+	static constexpr unsigned int keyLength() noexcept {
+		return KEY_LENGTH;
 	}
 public:
-	/** The maximum identifier length in bits */
-	static constexpr unsigned int IDENTIFIER_LENGTH = 16;
+#ifndef WH_DHT_KEYLEN
+#define WH_DHT_KEYLEN 10U
+#endif
+	/** The maximum key length in bits */
+	static constexpr unsigned int KEY_LENGTH =
+			(WH_DHT_KEYLEN > 16 || WH_DHT_KEYLEN <= 0) ? 16 : WH_DHT_KEYLEN;
+#undef WH_DHT_KEYLEN
 };
 
 } /* namespace wanhive */

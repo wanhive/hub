@@ -80,7 +80,7 @@ unsigned int OverlayProtocol::processDescribeResponse(
 	info.routes = Serializer::unpacku8(payload(index)); //Routing table size
 	index += sizeof(uint8_t);
 	//-----------------------------------------------------------------
-	if (info.routes > DHT::IDENTIFIER_LENGTH
+	if (info.routes > DHT::KEY_LENGTH
 			|| header().getLength()
 					!= (HEADER_SIZE + 84 + (info.routes * 25))) {
 		return 0;

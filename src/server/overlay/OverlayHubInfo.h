@@ -46,7 +46,7 @@ struct OverlayHubInfo {
 		unsigned long long current;
 		unsigned long long old;
 		bool connected;
-	} route[DHT::IDENTIFIER_LENGTH];
+	} route[DHT::KEY_LENGTH];
 
 	//Minimum size of the serialized structure in bytes
 	static constexpr unsigned int MIN_BYTES = 84;

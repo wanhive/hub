@@ -50,9 +50,9 @@ unsigned int Node::get(unsigned int index) const noexcept {
 	}
 }
 
-bool Node::set(unsigned int index, unsigned int id) noexcept {
+bool Node::set(unsigned int index, unsigned int key) noexcept {
 	if (index < TABLESIZE) {
-		return setFinger(table[index], id);
+		return setFinger(table[index], key);
 	} else {
 		return false;
 	}
@@ -66,13 +66,12 @@ bool Node::isConsistent(unsigned int index) const noexcept {
 	}
 }
 
-unsigned int Node::makeConsistent(unsigned int index) noexcept {
-	unsigned int oldId = 0;
+unsigned int Node::commit(unsigned int index) noexcept {
 	if (index < TABLESIZE) {
-		oldId = table[index].getOldId();
-		table[index].makeConsistent();
+		return table[index].commit();
+	} else {
+		return 0;
 	}
-	return oldId;
 }
 
 bool Node::isConnected(unsigned int index) const noexcept {
@@ -93,24 +92,24 @@ unsigned int Node::getPredecessor() const noexcept {
 	return _predecessor.getId();
 }
 
-bool Node::setPredecessor(unsigned int id) noexcept {
-	return setFinger(_predecessor, id, false, false);
+bool Node::setPredecessor(unsigned int key) noexcept {
+	return setFinger(_predecessor, key, false, false);
 }
 
 bool Node::predessorChanged() const noexcept {
 	return _predecessor.getId() && !_predecessor.isConsistent();
 }
 
-void Node::makePredecessorConsistent() noexcept {
-	_predecessor.makeConsistent();
+unsigned int Node::commitPredecessor() noexcept {
+	return _predecessor.commit();
 }
 
 unsigned int Node::getSuccessor() const noexcept {
 	return get(0);
 }
 
-bool Node::setSuccessor(unsigned int id) noexcept {
-	return set(0, id);
+bool Node::setSuccessor(unsigned int key) noexcept {
+	return set(0, key);
 }
 
 bool Node::isStable() const noexcept {
@@ -121,91 +120,72 @@ void Node::setStable(bool stable) noexcept {
 	this->stable = stable;
 }
 
-bool Node::isBetween(unsigned int key, unsigned int from,
-		unsigned int to) noexcept {
-	return (key <= MAX_ID) && Twiddler::isBetween(key, from, to);
-}
-
-bool Node::isInRange(unsigned int key, unsigned int from,
-		unsigned int to) noexcept {
-	return (key <= MAX_ID) && Twiddler::isInRange(key, from, to);
-}
-
-unsigned int Node::successor(unsigned int uid, unsigned int index) noexcept {
-	return (uid + (1UL << index)) & MAX_ID;
-}
-
-unsigned int Node::predecessor(unsigned int uid, unsigned int index) noexcept {
-	return (uid - (1UL << index)) & MAX_ID;
-}
-
-bool Node::isLocal(unsigned int id) const noexcept {
+bool Node::isLocal(unsigned int key) const noexcept {
 	//(key) E (predecessor, serverId]
-	return (isBetween(id, getPredecessor(), _key) || (id == _key));
+	return (isBetween(key, getPredecessor(), getKey()) || (key == getKey()));
 }
 
-unsigned int Node::nextHop(unsigned int id) const noexcept {
-	auto n = localSuccessor(id);
+unsigned int Node::nextHop(unsigned int key) const noexcept {
+	auto n = localSuccessor(key);
 	if (n == 0) {
-		n = closestPredecessor(id, true);
+		n = closestPredecessor(key, true);
 	}
 	return n;
 }
 
-unsigned int Node::localSuccessor(unsigned int id) const noexcept {
+unsigned int Node::localSuccessor(unsigned int key) const noexcept {
 	auto successor = getSuccessor();
-	if (isBetween(id, _key, successor) || (id == successor)) {
+	if (isBetween(key, getKey(), successor) || (key == successor)) {
 		return successor;
 	} else {
 		return 0;
 	}
 }
 
-unsigned int Node::closestPredecessor(unsigned int id,
+unsigned int Node::closestPredecessor(unsigned int key,
 		bool checkConnected) const noexcept {
 	for (int i = (TABLESIZE - 1); i >= 0; --i) {
 		auto f = table[i].getId();
-		if (isBetween(f, _key, id)
+		if (isBetween(f, getKey(), key)
 				&& (!checkConnected || table[i].isConnected())) {
 			return f;
 		}
 	}
-	return _key;
+	return getKey();
 }
 
-void Node::join(unsigned int id) noexcept {
-	setPredecessor(0);
-	setSuccessor(id);
+bool Node::join(unsigned int key) noexcept {
+	return setPredecessor(0) && setSuccessor(key);
 }
 
-bool Node::stabilize(unsigned int id) noexcept {
-	if (id != 0 && isBetween(id, _key, getSuccessor())) {
-		return setSuccessor(id);
+bool Node::stabilize(unsigned int key) noexcept {
+	if (key != 0 && isBetween(key, getKey(), getSuccessor())) {
+		return setSuccessor(key);
 	} else {
 		return true;
 	}
 }
 
-bool Node::notify(unsigned int id) noexcept {
+bool Node::notify(unsigned int key) noexcept {
 	auto predecessor = getPredecessor();
-	if (predecessor == 0 || isBetween(id, predecessor, _key)) {
-		return setPredecessor(id);
+	if (predecessor == 0 || isBetween(key, predecessor, getKey())) {
+		return setPredecessor(key);
 	} else {
 		return false;
 	}
 }
 
-bool Node::update(unsigned int id, bool joined) noexcept {
+bool Node::update(unsigned int key, bool joined) noexcept {
 	auto found = false;
 	//If the predecessor has failed then invalidate the predecessor
-	if (getPredecessor() == id && !joined) {
+	if (getPredecessor() == key && !joined) {
 		setPredecessor(0);
 		found = true;
 	}
 
 	//Update the finger table
 	for (unsigned int i = 0; i < TABLESIZE; ++i) {
-		if (table[i].getId() == id) {
+		if (table[i].getId() == key) {
 			table[i].setConnected(joined);
 			found = true;
 		}
@@ -213,13 +193,14 @@ bool Node::update(unsigned int id, bool joined) noexcept {
 	return found;
 }
 
-bool Node::isInRoute(unsigned int id) const noexcept {
-	if (id == _key || id == CONTROLLER) {
+bool Node::isInRoute(unsigned int key) const noexcept {
+	if (key == getKey() || key == CONTROLLER) {
 		return true;
 	}
+
+	//Check the finger table
 	for (unsigned int i = 0; i < TABLESIZE; ++i) {
-		//Check whether the finger table contains <id>
-		if (table[i].getId() == id) {
+		if (table[i].getId() == key) {
 			return true;
 		}
 	}
@@ -228,7 +209,7 @@ bool Node::isInRoute(unsigned int id) const noexcept {
 
 void Node::print() noexcept {
 	fprintf(stderr, "\n==========================================\n");
-	fprintf(stderr, "KEY: %u\n", _key);
+	fprintf(stderr, "KEY: %u\n", getKey());
 	fprintf(stderr, "PREDECESSOR: %u, SUCCESSOR: %u\n\n", getPredecessor(),
 			getSuccessor());
 	fprintf(stderr, "FINGER TABLE [STABLE: %s]\n", WH_BOOLF(isStable()));
@@ -242,25 +223,44 @@ void Node::print() noexcept {
 	fprintf(stderr, "\n==========================================\n");
 }
 
+bool Node::isBetween(unsigned int key, unsigned int from,
+		unsigned int to) noexcept {
+	//<key> = Node::successor(<ret-val> , <index>))
+	return (key <= MAX_ID) && Twiddler::isBetween(key, from, to);
+}
+
+bool Node::isInRange(unsigned int key, unsigned int from,
+		unsigned int to) noexcept {
+	return (key <= MAX_ID) && Twiddler::isInRange(key, from, to);
+}
+
+unsigned int Node::successor(unsigned int uid, unsigned int index) noexcept {
+	return (uid + (1UL << index)) & MAX_ID;
+}
+
+unsigned int Node::predecessor(unsigned int key, unsigned int index) noexcept {
+	return (key - (1UL << index)) & MAX_ID;
+}
+
 void Node::initialize() noexcept {
 	//For correct routing on a stand-alone server (don't touch)
-	setPredecessor(_key);
+	setPredecessor(getKey());
 	for (unsigned int i = 0; i < TABLESIZE; ++i) {
-		table[i].setStart(successor(_key, i));
-		table[i].setId(_key);
-		table[i].makeConsistent();
+		table[i].setStart(successor(getKey(), i));
+		table[i].setId(getKey());
+		table[i].commit();
 		table[i].setConnected(false);
 	}
 	setStable(true);
 }
 
-bool Node::setFinger(Finger &f, unsigned int id, bool checkConsistent,
+bool Node::setFinger(Finger &f, unsigned int key, bool checkConsistent,
 		bool checkConnected) noexcept {
-	if ((id <= MAX_ID) && (!checkConsistent || f.isConsistent())) {
+	if ((key <= MAX_ID) && (!checkConsistent || f.isConsistent())) {
 		auto old = f.getId();
-		f.setId(id);
+		f.setId(key);
 
-		if (id && ((checkConnected && !f.isConnected()) || old != f.getId())) {
+		if (key && ((checkConnected && !f.isConnected()) || old != f.getId())) {
 			setStable(false);
 		}
 		return true;

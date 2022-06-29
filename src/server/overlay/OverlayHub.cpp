@@ -336,7 +336,7 @@ bool OverlayHub::fixRoutingTable() noexcept {
 	//Fall through the routing table and fix the errors
 	for (unsigned int i = 0; i < TABLESIZE; i++) {
 		if (!isConsistent(i)) {
-			auto old = makeConsistent(i);
+			auto old = commit(i);
 			if (!isInRoute(old)) {
 				auto conn = getWatcher(old);
 				//Take care of the reference asymmetry
@@ -352,7 +352,7 @@ bool OverlayHub::fixRoutingTable() noexcept {
 
 	//If the predecessor has changed, certain connections need to be removed
 	if (predessorChanged()) {
-		makePredecessorConsistent();
+		commitPredecessor();
 		purgeConnections(1);
 	}
 

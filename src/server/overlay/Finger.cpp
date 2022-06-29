@@ -46,20 +46,22 @@ void Finger::setOldId(unsigned int oldId) noexcept {
 	this->oldId = oldId;
 }
 
-bool Finger::isConsistent() const noexcept {
-	return getId() == getOldId();
-}
-
-void Finger::makeConsistent() noexcept {
-	setOldId(getId());
-}
-
 bool Finger::isConnected() const noexcept {
 	return connected;
 }
 
 void Finger::setConnected(bool connected) noexcept {
 	this->connected = connected;
+}
+
+bool Finger::isConsistent() const noexcept {
+	return getId() == getOldId();
+}
+
+unsigned int Finger::commit() noexcept {
+	auto old = getOldId();
+	setOldId(getId());
+	return old;
 }
 
 } /* namespace wanhive */
