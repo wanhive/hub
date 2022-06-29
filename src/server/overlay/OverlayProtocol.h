@@ -26,62 +26,62 @@ public:
 	OverlayProtocol() noexcept;
 	~OverlayProtocol();
 	//-----------------------------------------------------------------
-	/**
-	 * <id> = identifier of the remote host
-	 */
-	unsigned int createDescribeRequest(uint64_t id) noexcept;
+	unsigned int createDescribeRequest(uint64_t host) noexcept;
 	unsigned int processDescribeResponse(OverlayHubInfo &info) const noexcept;
-	bool describeRequest(uint64_t id, OverlayHubInfo &info);
-
-	unsigned int createGetPredecessorRequest(uint64_t id) noexcept;
+	bool describeRequest(uint64_t host, OverlayHubInfo &info);
+	//-----------------------------------------------------------------
+	unsigned int createGetPredecessorRequest(uint64_t host) noexcept;
 	unsigned int processGetPredecessorResponse(uint64_t &key) const noexcept;
-	bool getPredecessorRequest(uint64_t id, uint64_t &key);
+	bool getPredecessorRequest(uint64_t host, uint64_t &key);
 
-	unsigned int createSetPredecessorRequest(uint64_t id, uint64_t key) noexcept;
+	unsigned int createSetPredecessorRequest(uint64_t host,
+			uint64_t key) noexcept;
 	unsigned int processSetPredecessorResponse(uint64_t key) const noexcept;
-	bool setPredecessorRequest(uint64_t id, uint64_t key);
+	bool setPredecessorRequest(uint64_t host, uint64_t key);
 
-	unsigned int createGetSuccessorRequest(uint64_t id) noexcept;
+	unsigned int createGetSuccessorRequest(uint64_t host) noexcept;
 	unsigned int processGetSuccessorResponse(uint64_t &key) const noexcept;
-	bool getSuccessorRequest(uint64_t id, uint64_t &key);
+	bool getSuccessorRequest(uint64_t host, uint64_t &key);
 
-	unsigned int createSetSuccessorRequest(uint64_t id, uint64_t key) noexcept;
+	unsigned int createSetSuccessorRequest(uint64_t host, uint64_t key) noexcept;
 	unsigned int processSetSuccessorResponse(uint64_t key) const noexcept;
-	bool setSuccessorRequest(uint64_t id, uint64_t key);
+	bool setSuccessorRequest(uint64_t host, uint64_t key);
 
-	unsigned int createGetFingerRequest(uint64_t id, uint32_t index) noexcept;
+	unsigned int createGetFingerRequest(uint64_t host, uint32_t index) noexcept;
 	unsigned int processGetFingerResponse(uint32_t index,
 			uint64_t &key) const noexcept;
-	bool getFingerRequest(uint64_t id, uint32_t index, uint64_t &key);
+	bool getFingerRequest(uint64_t host, uint32_t index, uint64_t &key);
 
-	unsigned int createSetFingerRequest(uint64_t id, uint32_t index,
+	unsigned int createSetFingerRequest(uint64_t host, uint32_t index,
 			uint64_t key) noexcept;
 	unsigned int processSetFingerResponse(uint32_t index,
 			uint64_t key) const noexcept;
-	bool setFingerRequest(uint64_t id, uint32_t index, uint64_t key);
+	bool setFingerRequest(uint64_t host, uint32_t index, uint64_t key);
 
-	unsigned int createGetNeighboursRequest(uint64_t id) noexcept;
+	unsigned int createGetNeighboursRequest(uint64_t host) noexcept;
 	unsigned int processGetNeighboursResponse(uint64_t &predecessor,
 			uint64_t &successor) const noexcept;
-	bool getNeighboursRequest(uint64_t id, uint64_t &predecessor,
+	bool getNeighboursRequest(uint64_t host, uint64_t &predecessor,
 			uint64_t &successor);
 
-	unsigned int createNotifyRequest(uint64_t id, uint64_t predecessor) noexcept;
+	unsigned int createNotifyRequest(uint64_t host,
+			uint64_t predecessor) noexcept;
 	unsigned int processNotifyResponse() const noexcept;
-	bool notifyRequest(uint64_t id, uint64_t predecessor);
-
-	unsigned int createFindSuccessorRequest(uint64_t id, uint64_t uid) noexcept;
+	bool notifyRequest(uint64_t host, uint64_t predecessor);
+	//-----------------------------------------------------------------
+	unsigned int createFindSuccessorRequest(uint64_t host,
+			uint64_t uid) noexcept;
 	unsigned int processFindSuccessorResponse(uint64_t uid,
 			uint64_t &key) const noexcept;
-	bool findSuccessorRequest(uint64_t id, uint64_t uid, uint64_t &key);
+	bool findSuccessorRequest(uint64_t host, uint64_t uid, uint64_t &key);
 
-	unsigned int createPingRequest(uint64_t id) noexcept;
+	unsigned int createPingRequest(uint64_t host) noexcept;
 	unsigned int processPingRequest() const noexcept;
-	bool pingRequest(uint64_t id);
+	bool pingRequest(uint64_t host);
 
-	unsigned int createMapRequest(uint64_t id) noexcept;
+	unsigned int createMapRequest(uint64_t host) noexcept;
 	unsigned int processMapRequest() const noexcept;
-	bool mapRequest(uint64_t id);
+	bool mapRequest(uint64_t host);
 };
 
 } /* namespace wanhive */
