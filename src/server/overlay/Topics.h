@@ -20,25 +20,55 @@
 
 namespace wanhive {
 /**
- * Subscription manager for overlay hubs
- * Trades off memory for time efficiency
- * Thread safe at class level
+ * Subscriptions manager for overlay hub
  */
 class Topics {
 public:
+	/**
+	 * Default constructor: initializes an empty object.
+	 */
 	Topics() noexcept;
-	virtual ~Topics();
-	//Associates the Watcher <w> with the <topic>
+	/**
+	 * Destructor
+	 */
+	~Topics();
+	/**
+	 * Associates a watcher to the given topic.
+	 * @param topic topic's identifier
+	 * @param w watcher's pointer
+	 * @return true on success, false on error (invalid topic or watcher)
+	 */
 	bool put(unsigned int topic, const Watcher *w) noexcept;
-	//Iterates over the list of Watchers associated with the <topic>
+	/**
+	 * Iterates over the list of watchers associated with the given topic.
+	 * @param topic topic's identifier
+	 * @param index list's index
+	 * @return pointer to the watcher at the given index, nullptr on error
+	 * (invalid topic/index).
+	 */
 	Watcher* get(unsigned int topic, unsigned int index) const noexcept;
-	//Unsubscribes the Watcher <w> from the <topic>
+	/**
+	 * Removes a watcher's association with the given topic.
+	 * @param topic topic's identifier
+	 * @param w watcher's pointer
+	 */
 	void remove(unsigned int topic, const Watcher *w) noexcept;
-	//Returns true if Watcher <w> is subscribed to the <topic>, false otherwise
+	/**
+	 * Checks whether a watcher is associated with a topic.
+	 * @param topic topic's identifier
+	 * @param w watcher's pointer
+	 * @return true if an association exists, false otherwise
+	 */
 	bool contains(unsigned int topic, const Watcher *w) const noexcept;
-	//Returns the number of watchers subscribed to the <topic>
+	/**
+	 * Returns the number of watchers associated with the given topic.
+	 * @param topic topic's identifier
+	 * @return subscription count for the given topic
+	 */
 	unsigned int count(unsigned int topic) const noexcept;
-	//Clears subscriptions without deallocating memory
+	/**
+	 * Clears all associations (doesn't deallocate memory).
+	 */
 	void clear() noexcept;
 private:
 	struct Key {
@@ -58,7 +88,7 @@ private:
 		}
 	};
 
-	//List of watchers subscribed to various topics
+	//Lists of watchers organized by topics
 	Array<const Watcher*> topics[Topic::COUNT];
 	//Index lookup table for fast insertion and deletion
 	Khash<Key, unsigned int, true, HFN, EQFN> indexes;

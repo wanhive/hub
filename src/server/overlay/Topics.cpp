@@ -23,90 +23,61 @@ Topics::~Topics() {
 }
 
 bool Topics::put(unsigned int topic, const Watcher *w) noexcept {
-	if ((topic < Topic::COUNT) && w) {
-		int ret = 0;
-		unsigned int i = indexes.put( { w, topic }, ret);
-		if (ret) { //Key was not present
-			//Elements are always added at the end of the array
-			unsigned int index = topics[topic].readSpace();
-			if (indexes.setValue(i, index)) {
-				topics[topic].put(w);
-				return true;
-			} else {
-				indexes.remove(i);
-				return false;
-			}
-		} else { //Key already present
-			return true;
-		}
-	} else {
+	if ((topic >= Topic::COUNT) || !w) {
 		return false;
+	}
+
+	int ret = 0;
+	auto i = indexes.put( { w, topic }, ret);
+	if (ret) { //Key was not present
+		//Elements are always added at the list's end
+		auto index = topics[topic].readSpace();
+		indexes.setValue(i, index);
+		topics[topic].put(w);
+		return true;
+	} else { //Key was already present
+		return true;
 	}
 }
 
 Watcher* Topics::get(unsigned int topic, unsigned int index) const noexcept {
-	if (topic < Topic::COUNT) {
-		const Watcher *w = nullptr;
-		if (topics[topic].get(w, index)) {
-			return const_cast<Watcher*>(w);
-		} else {
-			return nullptr;
-		}
+	const Watcher *w = nullptr;
+	if ((topic < Topic::COUNT) && topics[topic].get(w, index)) {
+		return const_cast<Watcher*>(w);
 	} else {
 		return nullptr;
 	}
 }
 
 void Topics::remove(unsigned int topic, const Watcher *w) noexcept {
-	if ((topic < Topic::COUNT) && w) {
-		//Get the iterator to the key
-		unsigned int i = indexes.get( { w, topic });
-		if (i == indexes.end()) {
-			return;
-		}
+	if ((topic >= Topic::COUNT) || !w) {
+		return;
+	}
 
-		//Get the index of the element to be deleted
-		unsigned int index = 0;
-		if (!indexes.getValue(i, index)) {
-			return;
-		}
+	//Get the index to delete
+	auto i = indexes.get( { w, topic });
+	unsigned int index = 0;
+	if (!indexes.getValue(i, index)) {
+		return;
+	}
 
-		//Remove from the list
-		topics[topic].remove(index);
-		topics[topic].shrink(4096);
-		//Remove from the hash table
-		indexes.remove(i);
+	//Remove from the containers
+	indexes.remove(i);
+	topics[topic].remove(index);
+	topics[topic].shrink(4096);
 
-		//Adjust the index of the replacement
-		const Watcher *s = nullptr;
-		if (!topics[topic].get(s, index)) { //The last entry
-			return;
-		} else {
-			unsigned int tmp;
-			indexes.hmReplace( { s, topic }, index, tmp);
-		}
+	//Adjust replacement's index
+	const Watcher *s = nullptr;
+	if (!topics[topic].get(s, index)) { //The last entry
+		return;
+	} else {
+		unsigned int tmp;
+		indexes.hmReplace( { s, topic }, index, tmp);
 	}
 }
 
 bool Topics::contains(unsigned int topic, const Watcher *w) const noexcept {
-	if ((topic < Topic::COUNT) && w) {
-		unsigned int index = 0;
-		const Watcher *cmp = nullptr;
-
-		//Get the iterator to the key
-		unsigned int i = indexes.get( { w, topic });
-		if (i == indexes.end()) {
-			return false;
-		} else if (!indexes.getValue(i, index)) {
-			return false;
-		} else if (!topics[topic].get(cmp, index)) {
-			return false;
-		} else {
-			return (cmp == w);
-		}
-	} else {
-		return false;
-	}
+	return (topic < Topic::COUNT) && w && indexes.contains( { w, topic });
 }
 
 unsigned int Topics::count(unsigned int topic) const noexcept {
