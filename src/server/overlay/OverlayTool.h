@@ -1,7 +1,7 @@
 /*
  * OverlayTool.h
  *
- * Command line tool for testing of the overlay network
+ * Overlay network test-suite
  *
  *
  * Copyright (C) 2019 Wanhive Systems Private Limited (info@wanhive.com)
@@ -18,42 +18,56 @@
 
 namespace wanhive {
 /**
- * Command line tool for testing of the overlay network protocols
+ * Overlay network test-suite
  * Supports SSL/TLS connection
  */
 class OverlayTool: private OverlayProtocol, private Identity {
 public:
+	/**
+	 * Constructor
+	 * @param path pathname of the configuration file (can be nullptr)
+	 * @param timeout socket connection timeout in milliseconds
+	 */
 	OverlayTool(const char *path, unsigned int timeout = 5000) noexcept;
+	/**
+	 * Destructor
+	 */
 	~OverlayTool();
+	/**
+	 * Executes the tests via command line.
+	 */
 	void run() noexcept;
 private:
-	//=================================================================
+	//-----------------------------------------------------------------
 	void setup();
 	void execute() noexcept;
 	void connect();
 	void disconnect() noexcept;
-	//=================================================================
-	/**
+	//-----------------------------------------------------------------
+	/*
 	 * Authentication commands
 	 */
 	void identifyCmd();
 	void authenticateCmd();
 	void authorizeCmd();
 	void describeCmd();
-	/**
+	//-----------------------------------------------------------------
+	/*
 	 * Registration and bootstrap commands
 	 */
 	void registerCmd();
 	void getKeyCmd();
 	void findRoot();
 	void findBootstrapNode();
-	/**
+	//-----------------------------------------------------------------
+	/*
 	 * Pub-Sub commands
 	 */
 	void publishCmd();
 	void subscribeCmd();
 	void unsubscribeCmd();
-	/**
+	//-----------------------------------------------------------------
+	/*
 	 * Node management commands
 	 */
 	void getPredecessorCmd();
@@ -64,8 +78,9 @@ private:
 	void setFingerCmd();
 	void getNeighboursCmd();
 	void notifyCmd();
-	/**
-	 * Overlay management commands
+	//-----------------------------------------------------------------
+	/*
+	 * Network management commands
 	 */
 	void findSuccessorCmd();
 	void pingCmd();

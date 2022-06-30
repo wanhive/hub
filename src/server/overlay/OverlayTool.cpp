@@ -1,7 +1,7 @@
 /*
  * OverlayTool.cpp
  *
- * Command line tool for testing of the overlay network
+ * Overlay network test-suite
  *
  *
  * Copyright (C) 2019 Wanhive Systems Private Limited (info@wanhive.com)
