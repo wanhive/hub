@@ -327,34 +327,35 @@ void OverlayTool::describeCmd() {
 							/ info.resource.maxMessages));
 
 			fprintf(stdout, "Uptime: ");
-			if ((uint64_t) info.stat.uptime < 60) {
-				fprintf(stdout, "%.2fs", info.stat.uptime);
-			} else if ((uint64_t) info.stat.uptime < 3600) {
-				fprintf(stdout, "%.2fmin", (info.stat.uptime / 60));
+			if ((uint64_t) info.stats.uptime < 60) {
+				fprintf(stdout, "%.2fs", info.stats.uptime);
+			} else if ((uint64_t) info.stats.uptime < 3600) {
+				fprintf(stdout, "%.2fmin", (info.stats.uptime / 60));
 			} else {
-				fprintf(stdout, "%.2fhrs", (info.stat.uptime / 3600));
+				fprintf(stdout, "%.2fhr", (info.stats.uptime / 3600));
 			}
 
 			fprintf(stdout, "\n\nPERFORMANCE DATA\n");
 			fprintf(stdout, "----------------\n");
 			fprintf(stdout, "Incoming (Packets/s): %12llu\n",
-					(unsigned long long) (info.stat.receivedPackets
-							/ info.stat.uptime));
+					(unsigned long long) (info.stats.receivedPackets
+							/ info.stats.uptime));
 			fprintf(stdout, "Incoming (KB/s):      %12llu\n",
-					(unsigned long long) (info.stat.receivedBytes
-							/ info.stat.uptime / 1024));
+					(unsigned long long) (info.stats.receivedBytes
+							/ info.stats.uptime / 1024));
 			fprintf(stdout, "Outgoing (Packets/s): %12llu\n",
-					(unsigned long long) ((info.stat.receivedPackets
-							- info.stat.droppedPackets) / info.stat.uptime));
+					(unsigned long long) ((info.stats.receivedPackets
+							- info.stats.droppedPackets) / info.stats.uptime));
 			fprintf(stdout, "Outgoing (KB/s):      %12llu\n",
-					(unsigned long long) ((info.stat.receivedBytes
-							- info.stat.droppedBytes) / info.stat.uptime / 1024));
+					(unsigned long long) ((info.stats.receivedBytes
+							- info.stats.droppedBytes) / info.stats.uptime
+							/ 1024));
 			fprintf(stdout, "Loss (Packets):       %12.2f%%\n",
-					((((double) (info.stat.droppedPackets))
-							/ info.stat.receivedPackets) * 100));
+					((((double) (info.stats.droppedPackets))
+							/ info.stats.receivedPackets) * 100));
 			fprintf(stdout, "Loss (KB):            %12.2f%%\n",
-					((((double) info.stat.droppedBytes)
-							/ info.stat.receivedBytes) * 100));
+					((((double) info.stats.droppedBytes)
+							/ info.stats.receivedBytes) * 100));
 			fprintf(stdout, "\n==========================================\n");
 		} else {
 			std::cout << "DESCRIBE FAILED" << std::endl;

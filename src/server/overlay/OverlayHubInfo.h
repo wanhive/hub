@@ -33,8 +33,8 @@ struct OverlayHubInfo {
 		unsigned long long receivedBytes;
 		unsigned long long droppedPackets;
 		unsigned long long droppedBytes;
-	} stat;
-	/**
+	} stats;
+	/*
 	 * Routing table information follows
 	 */
 	unsigned long long predecessor;

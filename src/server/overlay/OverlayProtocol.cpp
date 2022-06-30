@@ -57,17 +57,17 @@ unsigned int OverlayProtocol::processDescribeResponse(
 	index += sizeof(uint32_t);
 	info.resource.messages = Serializer::unpacku32(payload(index));
 	index += sizeof(uint32_t);
-	info.stat.uptime = Serializer::unpackf64(payload(index));
+	info.stats.uptime = Serializer::unpackf64(payload(index));
 	index += sizeof(uint64_t);
 	//-----------------------------------------------------------------
 	//IN_PACKETS(8)->IN_BYTES(8)->DROPPED_PACKETS(8)->DROPPED_BYTES(8)
-	info.stat.receivedPackets = Serializer::unpacku64(payload(index));
+	info.stats.receivedPackets = Serializer::unpacku64(payload(index));
 	index += sizeof(uint64_t);
-	info.stat.receivedBytes = Serializer::unpacku64(payload(index));
+	info.stats.receivedBytes = Serializer::unpacku64(payload(index));
 	index += sizeof(uint64_t);
-	info.stat.droppedPackets = Serializer::unpacku64(payload(index));
+	info.stats.droppedPackets = Serializer::unpacku64(payload(index));
 	index += sizeof(uint64_t);
-	info.stat.droppedBytes = Serializer::unpacku64(payload(index));
+	info.stats.droppedBytes = Serializer::unpacku64(payload(index));
 	index += sizeof(uint64_t);
 	//-----------------------------------------------------------------
 	//Predecessor(8)->Successor(8)->STABLE_FLAG(1)->TABLE_SIZE(1)
