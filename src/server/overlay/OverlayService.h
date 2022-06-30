@@ -22,57 +22,70 @@ namespace wanhive {
  */
 class OverlayService: private OverlayProtocol {
 public:
-	OverlayService(unsigned long long uid) noexcept;
-	virtual ~OverlayService();
-	//-----------------------------------------------------------------
 	/**
-	 * Performs cleanup and then loads new settings
+	 * Constructor: sets the hub's identifier.
+	 * @param uid hub's identifier
+	 */
+	OverlayService(unsigned long long uid) noexcept;
+	/**
+	 * Destructor
+	 */
+	virtual ~OverlayService();
+	/**
+	 * Reconfigures the object (cleans up the internal structures before loading
+	 * the fresh settings).
+	 * @param connection socket connection to the local hub (must be configured
+	 * for blocking IO).
+	 * @param nodes a list of bootstrap node identifiers
+	 * @param updateCycle wait period in milliseconds between stabilization
+	 * requests.
+	 * @param retryInterval wait period in milliseconds before recovery after
+	 * a temporary stabilization/network error.
 	 */
 	void configure(int connection, const unsigned long long *nodes,
 			unsigned int updateCycle, unsigned int retryInterval) noexcept;
 	//-----------------------------------------------------------------
-	/*
-	 * Executes the stabilization routines periodically in a loop until
-	 * an exception occurs or a notification is delivered. Calls the
-	 * cleanup routine on exit.
+	/**
+	 * Executes stabilization routines periodically until a notification (see
+	 * OverlayService::notify()) or an exception. Cleans up the object before
+	 * returning to the caller (see OverlayService::cleanup()).
 	 */
 	void periodic() noexcept;
-	/*
-	 * Execute this periodically to maintain network stability.
-	 * Returns true on success, false on non-fatal error.
+	/**
+	 * Executes the stabilization routine.
+	 * @return true on success, false on non-fatal/temporary error
 	 */
 	bool execute();
-	/*
-	 * Waits for timeout (milliseconds) or notification.
-	 * Returns false on timeout, true on receipt of a notification.
+	/**
+	 * Waits for notification (see OverlayService::notify()) or timeout.
+	 * @param timeout timeout in milliseconds
+	 * @return true if the wait was interrupted by a notification, false on
+	 * timeout.
 	 */
 	bool wait(unsigned int timeout);
-	/*
-	 * Delivers a notification to this object. Returns true on success,
-	 * false otherwise.
+	/**
+	 * Delivers a notification to this object (see OverlayService::wait()).
+	 * @return true on success, false on error
 	 */
 	bool notify() noexcept;
-	/*
-	 * Cleans up the resources and closes the existing connection.
+	/**
+	 * Cleans up the internal structures to prevent resource leak.
 	 */
 	void cleanup() noexcept;
 private:
 	//-----------------------------------------------------------------
 	//Sets things up
 	void setup();
-	//Cleans up the internal structures
+	//Resets the internal structures to their default values
 	void clear() noexcept;
 	//Checks the network connection
 	bool checkNetwork() noexcept;
 	//Joins the network using a list of bootstrap nodes
 	bool bootstrap() noexcept;
 	//-----------------------------------------------------------------
-	/**
-	 * Stabilization routines
-	 */
 	//Checks whether the remote node <id> is reachable or not
 	bool isReachable(uint64_t id) noexcept;
-	//Join as node identified by <id> using <startNode>
+	//Join as node identified by <id> using the <startNode>
 	bool join(uint64_t id, uint64_t startNode) noexcept;
 	//Check the predecessor of the node identified by <id>
 	bool checkPredecessor(uint64_t id);
@@ -81,11 +94,11 @@ private:
 	//Fix the finger table for the node identified by <id>
 	bool fixFingerTable(uint64_t id) noexcept;
 	//-----------------------------------------------------------------
-	//Periodically update the successor list for the node <id>
+	//Periodically update the successors list for the node <id>
 	bool fixSuccessorsList(uint64_t id) noexcept;
 	//Successor of the node <id> has failed, repair it using backup mechanism
 	bool repairSuccessor(uint64_t id);
-	//Check the connection with the controller
+	//Check the controller's connection through the node <id>
 	bool checkController(uint64_t id);
 	//-----------------------------------------------------------------
 	void setConnection(int connection) noexcept;
@@ -106,23 +119,22 @@ private:
 	//The condition variable for thread synchronization
 	Condition condition;
 	//-----------------------------------------------------------------
-	/**
-	 * The backup successors
-	 * DHT should have (SUCCESSOR_LIST_LEN + 2) stable members
+	/*
+	 * List of backup successors excluding the immediate successor. The network
+	 * should have (SUCCESSOR_LIST_LEN + 2) stable members.
 	 */
 	static constexpr unsigned int SUCCESSOR_LIST_LEN = (
 			Node::KEYLENGTH > 1 ? Node::KEYLENGTH - 1 : 1);
-	//The backup successors list, excluding the immediate successor
 	uint64_t successors[SUCCESSOR_LIST_LEN];
 	//-----------------------------------------------------------------
-	/**
-	 * Configuration parameters: No shared states with the outside world
-	 * except the socket connection.
+	/*
+	 * Configuration parameters: no shared states with the outside world except
+	 * the socket connection.
 	 */
 	struct {
 		//Bootstrap nodes
 		unsigned long long nodes[16];
-		//The socket connection descriptor
+		//Socket connection to the hub
 		int connection;
 		//Wait period in milliseconds between routing table updates
 		unsigned int updateCycle;

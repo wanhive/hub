@@ -47,7 +47,7 @@ void OverlayService::periodic() noexcept {
 		WH_LOG_EXCEPTION(e);
 	}
 
-	cleanup(); //Close the connection
+	cleanup(); //Prevent resource leak
 }
 
 bool OverlayService::execute() {
