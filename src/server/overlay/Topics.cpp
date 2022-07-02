@@ -64,7 +64,6 @@ void Topics::remove(unsigned int topic, const Watcher *w) noexcept {
 	//Remove from the containers
 	indexes.remove(i);
 	topics[topic].remove(index);
-	topics[topic].shrink(4096);
 
 	//Adjust replacement's index
 	const Watcher *s = nullptr;
