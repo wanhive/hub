@@ -39,11 +39,11 @@ template<typename X = int, typename CMPFN = wh_lt_fn,
 		typename BHFN = wh_bhfn_fn<X> > class BinaryHeap {
 public:
 	/**
-	 * Default constructor: creates a zero-capacity heap.
+	 * Default constructor: creates a zero-capacity binary heap.
 	 */
 	BinaryHeap() noexcept;
 	/**
-	 * Constructor: creates a binary heap with given capacity.
+	 * Constructor: creates an empty binary heap of given capacity.
 	 * @param size binary heap's capacity
 	 */
 	BinaryHeap(unsigned int size);
@@ -53,8 +53,8 @@ public:
 	~BinaryHeap();
 	//-----------------------------------------------------------------
 	/**
-	 * Initializes the binary heap to the given capacity.
-	 * @param size binary heap's capacity
+	 * Clears and resizes the binary heap.
+	 * @param size binary heap's new capacity
 	 */
 	void initialize(unsigned int size);
 	/**
@@ -64,7 +64,7 @@ public:
 	//-----------------------------------------------------------------
 	/**
 	 * Returns the binary heap's capacity.
-	 * @return the capacity
+	 * @return this heap's capacity
 	 */
 	unsigned int capacity() const noexcept;
 	/**

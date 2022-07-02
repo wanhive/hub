@@ -45,8 +45,8 @@
 namespace wanhive {
 /**
  * C++ adaption of khash version 0.2.8 by Attractive Chaos
- * Both KEY and VALUE must be **POD** (Pointers are OK)
- * REF: https://github.com/attractivechaos/klib/blob/master/khash.h
+ * @note Symbol table of POD (plane old data) types
+ * @ref https://github.com/attractivechaos/klib/blob/master/khash.h
  */
 template<typename KEY = int, typename VALUE = char, bool ISMAP = true,
 		typename HFN = wh_hash_fn, typename EQFN = wh_eq_fn> class Khash {

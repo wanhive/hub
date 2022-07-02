@@ -19,8 +19,8 @@
 
 namespace wanhive {
 /**
- * A sequential container for POD types
- * Simulates a single-track magnetic tape storage
+ * A sequential container of POD (plain old data) types that simulates a single
+ * track magnetic tape storage.
  */
 template<typename X, unsigned int SIZE> class StaticBuffer {
 public:

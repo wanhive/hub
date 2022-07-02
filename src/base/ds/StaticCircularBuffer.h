@@ -39,7 +39,7 @@ public:
 	 */
 	void clear() noexcept;
 	/**
-	 * Returns this buffer's capacity (see CircularBuffer::initialize())
+	 * Returns this buffer's capacity.
 	 * @return buffer's capacity
 	 */
 	unsigned int capacity() const noexcept;

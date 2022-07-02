@@ -20,17 +20,17 @@
 
 namespace wanhive {
 /**
- * A sequential container for POD types
- * Simulates a single-track magnetic tape storage
+ * A sequential container of POD (plain old data) types that simulates a single
+ * track magnetic tape storage.
  */
 template<typename X> class Buffer {
 public:
 	/**
-	 * Default constructor: creates a zero-capacity buffer (see Buffer::initialize()).
+	 * Default constructor: creates an empty buffer of zero capacity.
 	 */
 	Buffer() noexcept;
 	/**
-	 * Constructor: creates buffer with the given capacity
+	 * Constructor: creates buffer of given capacity.
 	 * @param size buffer's capacity
 	 */
 	Buffer(unsigned int size);
@@ -40,8 +40,8 @@ public:
 	~Buffer();
 	//-----------------------------------------------------------------
 	/**
-	 * Initializes buffer to the new capacity and clears the buffer.
-	 * @param size buffer's capacity
+	 * Clears and resizes the buffer.
+	 * @param size buffer's new capacity
 	 */
 	void initialize(unsigned int size);
 	/**

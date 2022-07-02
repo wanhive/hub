@@ -27,12 +27,12 @@ namespace wanhive {
 template<typename X, bool ATOMIC = false> class CircularBuffer {
 public:
 	/**
-	 * Default constructor: creates a zero-capacity buffer.
+	 * Default constructor: creates a zero-size empty buffer.
 	 */
 	CircularBuffer() noexcept;
 	/**
-	 * Constructor: creates a buffer with the given capacity.
-	 * @param size buffer's capacity
+	 * Constructor: creates an empty buffer of given size.
+	 * @param size buffer's size
 	 */
 	CircularBuffer(unsigned int size);
 	/**
@@ -41,9 +41,8 @@ public:
 	~CircularBuffer();
 	//-----------------------------------------------------------------
 	/**
-	 * Initializes the buffer with a new capacity and clears the buffer. This
-	 * operation is not thread-safe.
-	 * @param size buffer's new capacity
+	 * Clears and resizes the buffer (not thread safe).
+	 * @param size buffer's new size
 	 */
 	void initialize(unsigned int size);
 	/**
@@ -51,7 +50,7 @@ public:
 	 */
 	void clear() noexcept;
 	/**
-	 * Returns this buffer's capacity (see CircularBuffer::initialize())
+	 * Returns this buffer's capacity.
 	 * @return buffer's capacity
 	 */
 	unsigned int capacity() const noexcept;
