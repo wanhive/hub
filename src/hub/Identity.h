@@ -232,7 +232,7 @@ private:
 
 	struct {
 		//Path to the configuration file supplied from the command line
-		char *path;
+		char *config;
 		//Absolute path to the configuration file
 		char *configurationFileName;
 		//Absolute path to the hosts database file
@@ -245,11 +245,11 @@ private:
 		char *publicKeyFileName;
 
 		//SSL trusted certificate chain
-		char *SSLTrustedCertificateFileName;
+		char *sslTrustedCertificateFileName;
 		//SSL certificate chain
-		char *SSLCertificateFileName;
+		char *sslCertificateFileName;
 		//SSL private key
-		char *SSLHostKeyFileName;
+		char *sslHostKeyFileName;
 	} paths;
 };
 

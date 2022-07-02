@@ -44,20 +44,20 @@ const char *Identity::CONF_SYSTEM_PATH = (const char*) WH_CONF_SYSTEM_PATH;
 Identity::Identity(const char *path) noexcept :
 		instanceId { nullptr } {
 	memset(&paths, 0, sizeof(paths));
-	paths.path = path ? WH_strdup(path) : nullptr;
+	paths.config = path ? WH_strdup(path) : nullptr;
 }
 
 Identity::~Identity() {
 	delete instanceId;
-	WH_free(paths.path);
+	WH_free(paths.config);
 	WH_free(paths.configurationFileName);
 	WH_free(paths.hostsDatabaseName);
 	WH_free(paths.hostsFileName);
 	WH_free(paths.privateKeyFileName);
 	WH_free(paths.publicKeyFileName);
-	WH_free(paths.SSLTrustedCertificateFileName);
-	WH_free(paths.SSLCertificateFileName);
-	WH_free(paths.SSLHostKeyFileName);
+	WH_free(paths.sslTrustedCertificateFileName);
+	WH_free(paths.sslCertificateFileName);
+	WH_free(paths.sslHostKeyFileName);
 }
 
 void Identity::initialize() {
@@ -193,15 +193,15 @@ const char* Identity::getPublicKeyFile() const noexcept {
 }
 
 const char* Identity::getSSLTrustedCertificateFile() const noexcept {
-	return paths.SSLTrustedCertificateFileName;
+	return paths.sslTrustedCertificateFileName;
 }
 
 const char* Identity::getSSLCertificateFile() const noexcept {
-	return paths.SSLCertificateFileName;
+	return paths.sslCertificateFileName;
 }
 
 const char* Identity::getSSLHostKeyFile() const noexcept {
-	return paths.SSLHostKeyFileName;
+	return paths.sslHostKeyFileName;
 }
 
 void Identity::generateInstanceId() {
@@ -321,26 +321,26 @@ void Identity::loadSSL() {
 		return;
 	}
 
-	WH_free(paths.SSLTrustedCertificateFileName);
-	WH_free(paths.SSLCertificateFileName);
-	WH_free(paths.SSLHostKeyFileName);
-	paths.SSLTrustedCertificateFileName = cfg.getPathName("SSL", "trust");
-	paths.SSLCertificateFileName = cfg.getPathName("SSL", "certificate");
-	paths.SSLHostKeyFileName = cfg.getPathName("SSL", "key");
+	WH_free(paths.sslTrustedCertificateFileName);
+	WH_free(paths.sslCertificateFileName);
+	WH_free(paths.sslHostKeyFileName);
+	paths.sslTrustedCertificateFileName = cfg.getPathName("SSL", "trust");
+	paths.sslCertificateFileName = cfg.getPathName("SSL", "certificate");
+	paths.sslHostKeyFileName = cfg.getPathName("SSL", "key");
 	//-----------------------------------------------------------------
 	try {
-		ssl.ctx.initialize(paths.SSLCertificateFileName,
-				paths.SSLHostKeyFileName);
-		ssl.ctx.loadTrustedPaths(paths.SSLTrustedCertificateFileName, nullptr);
+		ssl.ctx.initialize(paths.sslCertificateFileName,
+				paths.sslHostKeyFileName);
+		ssl.ctx.loadTrustedPaths(paths.sslTrustedCertificateFileName, nullptr);
 		WH_LOG_INFO("SSL/TLS enabled");
 	} catch (const BaseException &e) {
 		WH_LOG_EXCEPTION(e);
-		WH_free(paths.SSLTrustedCertificateFileName);
-		paths.SSLTrustedCertificateFileName = nullptr;
-		WH_free(paths.SSLCertificateFileName);
-		paths.SSLCertificateFileName = nullptr;
-		WH_free(paths.SSLHostKeyFileName);
-		paths.SSLHostKeyFileName = nullptr;
+		WH_free(paths.sslTrustedCertificateFileName);
+		paths.sslTrustedCertificateFileName = nullptr;
+		WH_free(paths.sslCertificateFileName);
+		paths.sslCertificateFileName = nullptr;
+		WH_free(paths.sslHostKeyFileName);
+		paths.sslHostKeyFileName = nullptr;
 		throw;
 	}
 }
@@ -413,20 +413,20 @@ void Identity::loadSSLCertificate() {
 	try {
 		if (!ssl.enabled) {
 			throw Exception(EX_INVALIDOPERATION);
-		} else if (!paths.SSLCertificateFileName) {
+		} else if (!paths.sslCertificateFileName) {
 			WH_LOG_WARNING("No SSL certificate file");
 			return;
-		} else if (paths.SSLHostKeyFileName
-				&& strcmp(paths.SSLCertificateFileName,
-						paths.SSLHostKeyFileName) == 0) {
-			ssl.ctx.initialize(paths.SSLCertificateFileName,
-					paths.SSLHostKeyFileName);
+		} else if (paths.sslHostKeyFileName
+				&& strcmp(paths.sslCertificateFileName,
+						paths.sslHostKeyFileName) == 0) {
+			ssl.ctx.initialize(paths.sslCertificateFileName,
+					paths.sslHostKeyFileName);
 			WH_LOG_DEBUG("SSL/TLS certificate and private key loaded from %s",
-					paths.SSLCertificateFileName);
+					paths.sslCertificateFileName);
 		} else {
-			ssl.ctx.initialize(paths.SSLCertificateFileName, nullptr);
+			ssl.ctx.initialize(paths.sslCertificateFileName, nullptr);
 			WH_LOG_DEBUG("SSL/TLS certificate loaded from %s",
-					paths.SSLCertificateFileName);
+					paths.sslCertificateFileName);
 		}
 	} catch (const BaseException &e) {
 		WH_LOG_EXCEPTION(e);
@@ -438,13 +438,13 @@ void Identity::loadSSLHostKey() {
 	try {
 		if (!ssl.enabled) {
 			throw Exception(EX_INVALIDOPERATION);
-		} else if (!paths.SSLHostKeyFileName) {
+		} else if (!paths.sslHostKeyFileName) {
 			WH_LOG_WARNING("No SSL private key file");
 			return;
 		} else {
-			ssl.ctx.initialize(nullptr, paths.SSLHostKeyFileName);
+			ssl.ctx.initialize(nullptr, paths.sslHostKeyFileName);
 			WH_LOG_DEBUG("SSL/TLS private key loaded from %s",
-					paths.SSLHostKeyFileName);
+					paths.sslHostKeyFileName);
 		}
 	} catch (const BaseException &e) {
 		WH_LOG_EXCEPTION(e);
@@ -455,8 +455,8 @@ void Identity::loadSSLHostKey() {
 char* Identity::locateConfigurationFile() noexcept {
 	try {
 		//Path to configuration file supplied from the command line, take it as it is
-		if (paths.path) {
-			return Storage::expandPathName(paths.path);
+		if (paths.config) {
+			return Storage::expandPathName(paths.config);
 		}
 
 		//For resolution of default configuration file paths
