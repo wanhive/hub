@@ -19,12 +19,11 @@
 namespace wanhive {
 /**
  * Poor man's vector for POD types.
- * Capacity is doubled on every overflow.
  */
 template<typename X = unsigned int> class Array {
 public:
 	/**
-	 * Default constructor: creates a zero-size container (see Array::initialize()).
+	 * Default constructor: creates an empty container.
 	 */
 	Array() noexcept {
 		storage = nullptr;
@@ -33,7 +32,7 @@ public:
 		_index = 0;
 	}
 	/**
-	 * Constructor: creates a container of given size.
+	 * Constructor: creates an empty container of the given (initial) size.
 	 * @param size containers size
 	 */
 	Array(unsigned int size) noexcept {
@@ -48,7 +47,7 @@ public:
 	}
 	//-----------------------------------------------------------------
 	/**
-	 * Initializes the container with new size.
+	 * Empties and resizes the container.
 	 * @param size container's new size
 	 */
 	void initialize(unsigned int size = 0) noexcept {
@@ -78,7 +77,8 @@ public:
 		return _limit == 0;
 	}
 	/**
-	 * Checks if the container is full, i.e. it's capacity has been exhausted.
+	 * Checks if the container is full, i.e. it's currently allocated capacity
+	 * has been exhausted.
 	 * @return true if full, false otherwise
 	 */
 	bool isFull() const noexcept {
@@ -86,14 +86,15 @@ public:
 	}
 	/**
 	 * Returns the number of items which can be read from the container.
-	 * @return how many items can be read
+	 * @return number of items present in the container
 	 */
 	unsigned int readSpace() const noexcept {
 		return _limit;
 	}
 	/**
-	 * Returns the number of items which can be added to the container.
-	 * @return how many items can be added without resizing the container
+	 * Returns the number of items which can be added to the container without
+	 * having to resize it.
+	 * @return number of free slots in the container
 	 */
 	unsigned int writeSpace() const noexcept {
 		return _capacity - _limit;
@@ -146,7 +147,8 @@ public:
 	}
 
 	/**
-	 * Inserts a value into the container.
+	 * Inserts a value into the container (automatically expands the container's
+	 * capacity on overflow).
 	 * @param value the value to insert
 	 */
 	void put(const X &value) noexcept {
@@ -159,15 +161,21 @@ public:
 	/**
 	 * Removes element at the given index from the container.
 	 * @param index index/position of the element to remove
+	 * @param shrink true to shrink the container if it is sparsely populated,
+	 * false otherwise.
 	 */
-	void remove(unsigned int index) noexcept {
+	void remove(unsigned int index, bool shrink = true) noexcept {
 		if (index < _limit) {
 			removeAtIndex(index);
 		}
+
+		if (shrink) {
+			this->shrink(4096);
+		}
 	}
 	/**
-	 * Container traversal, the call back function must return 0 to continue
-	 * traversing.
+	 * Container traversal, the call back function must return 0 to continue,
+	 * and any non-zero value to stop the traversal.
 	 * @param f the callback function
 	 * @param data extra argument for the callback function
 	 */
@@ -192,12 +200,12 @@ public:
 	/**
 	 * Inserts a value at the end of the dynamically resizable array.
 	 * @param array pointer to the dynamically resizable array
-	 * @param capacity value-result argument for passing on the array's size and
-	 * receiving the new size (array may get resized).
-	 * @param offset value-result argument for passing on the number of elements
-	 * in the array (occupancy), and for storing the updated occupancy.
+	 * @param capacity value-result argument for passing on the array's current
+	 * size and receiving the updated size (array may get resized).
+	 * @param offset value-result argument for passing on the current number of
+	 * elements in the array and receiving the updated count.
 	 * @param value the value to insert
-	 * @return pointer to the array's slot where the new value was added
+	 * @return pointer to the newly added value inside the array
 	 */
 	static X* insert(X *&array, unsigned int &capacity, unsigned int &offset,
 			const X &value) noexcept {
