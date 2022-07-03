@@ -366,13 +366,14 @@ void Socket::initSSL() {
 		throw Exception(EX_INVALIDSTATE);
 	} else if (!secure.ssl) {
 		secure.ssl = sslCtx->create(getHandle(), !isType(SOCKET_PROXY));
-	} else if (!secure.verified && isType(SOCKET_PROXY)
-			&& SSL_is_init_finished(secure.ssl)) {
-		if (SSLContext::verify(secure.ssl)) {
-			secure.verified = true;
-		} else {
-			throw Exception(EX_SECURITY);
-		}
+	} else if (secure.verified || !isType(SOCKET_PROXY)) {
+		return;
+	} else if (!SSL_is_init_finished(secure.ssl)) {
+		return;
+	} else if (SSLContext::verify(secure.ssl)) {
+		secure.verified = true;
+	} else {
+		throw Exception(EX_SECURITY);
 	}
 }
 
