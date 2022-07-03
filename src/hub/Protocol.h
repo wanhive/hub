@@ -55,7 +55,7 @@ public:
 	/**
 	 * Executes an identification request, doesn't process the response, call
 	 * Protocol::processIdentificationResponse() explicitly to process the
-	 * response and extract the data to continue with the next step).
+	 * response and extract data.
 	 * @param address message's address
 	 * @param nonce the public ephemeral value
 	 * @return true on success, false on error (request denied by the host)
@@ -79,7 +79,7 @@ public:
 	/**
 	 * Executes an authentication request, doesn't process the response, call
 	 * Protocol::processAuthenticationResponse() explicitly to process the
-	 * response and extract data).
+	 * response and extract data.
 	 * @param address message's address
 	 * @param proof caller's proof of identity
 	 * @return true on success, false on error (request denied by the host)
