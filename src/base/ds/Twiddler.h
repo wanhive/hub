@@ -50,10 +50,10 @@ public:
 	 */
 	static unsigned int modPow2(unsigned int n, unsigned int s) noexcept;
 	/**
-	 * Performs modulus arithmetic where the divisor is a value of two raised
+	 * Performs modulus arithmetic where the divisor is the value of two raised
 	 * to the power of the given exponent.
 	 * @param n the value to divide
-	 * @param exp the exponent
+	 * @param exp the exponent (should be less than 32)
 	 * @return the remainder
 	 */
 	static unsigned int modExp2(unsigned int n, unsigned int exp) noexcept;
@@ -108,7 +108,7 @@ public:
 			unsigned int bytes) noexcept;
 	//-----------------------------------------------------------------
 	/**
-	 * Interval function: Checks whether the given value  is inside an open
+	 * Interval function: Checks whether the given value is inside an open
 	 * circular interval.
 	 * @param value the value to check
 	 * @param from lower bound of the open circular interval
@@ -119,7 +119,7 @@ public:
 	static bool isBetween(unsigned int value, unsigned int from,
 			unsigned int to) noexcept;
 	/**
-	 * Interval function: Checks whether the given value  is inside a closed
+	 * Interval function: Checks whether the given value is inside a closed
 	 * circular interval.
 	 * @param value the value to check
 	 * @param from lower bound of the closed circular interval
