@@ -17,6 +17,7 @@ namespace wanhive {
 
 SecurityException::SecurityException() noexcept {
 	error = CryptoUtils::getError();
+	CryptoUtils::clearErrors();
 	CryptoUtils::getErrorMessage(error, buffer, sizeof(buffer));
 }
 
