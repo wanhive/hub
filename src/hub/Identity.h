@@ -212,8 +212,8 @@ public:
 private:
 	//Unique ID of the currently running instance
 	InstanceID *instanceId;
-	//The application configuration
-	Configuration cfg;
+	//Application's properties
+	Configuration properties;
 	//The hosts database
 	Hosts hosts;
 

@@ -74,7 +74,7 @@ void Identity::initialize() {
 }
 
 const Configuration& Identity::getConfiguration() const noexcept {
-	return cfg;
+	return properties;
 }
 
 const PKI* Identity::getPKI() const noexcept {
@@ -143,7 +143,7 @@ unsigned int Identity::getIdentifiers(const char *section, const char *option,
 	}
 	//--------------------------------------------------------------------------
 	memset(nodes, 0, count * sizeof(unsigned long long));
-	auto filename = cfg.getPathName(section, option, nullptr);
+	auto filename = properties.getPathName(section, option, nullptr);
 	if (Storage::testFile(filename) != 1) {
 		WH_free(filename);
 		return 0;
@@ -223,11 +223,11 @@ void Identity::loadConfiguration() {
 	try {
 		WH_free(paths.configurationFileName);
 		paths.configurationFileName = locateConfigurationFile();
-		cfg.clear();
+		properties.clear();
 
 		if (!paths.configurationFileName) {
 			WH_LOG_WARNING("No configuration file");
-		} else if (cfg.load(paths.configurationFileName)) {
+		} else if (properties.load(paths.configurationFileName)) {
 			WH_LOG_INFO("Configuration loaded from %s",
 					paths.configurationFileName);
 		} else {
@@ -246,9 +246,9 @@ void Identity::loadConfiguration() {
 void Identity::loadHosts() {
 	WH_free(paths.hostsDatabaseName);
 	WH_free(paths.hostsFileName);
-	paths.hostsDatabaseName = cfg.getPathName("HOSTS", "hostsDb");
+	paths.hostsDatabaseName = properties.getPathName("HOSTS", "hostsDb");
 	if (!paths.hostsDatabaseName) {
-		paths.hostsFileName = cfg.getPathName("HOSTS", "hostsFile");
+		paths.hostsFileName = properties.getPathName("HOSTS", "hostsFile");
 	} else {
 		paths.hostsFileName = nullptr;
 	}
@@ -275,10 +275,10 @@ void Identity::loadHosts() {
 void Identity::loadKeys() {
 	WH_free(paths.privateKeyFileName);
 	WH_free(paths.publicKeyFileName);
-	paths.privateKeyFileName = cfg.getPathName("KEYS", "privateKey");
-	paths.publicKeyFileName = cfg.getPathName("KEYS", "publicKey");
+	paths.privateKeyFileName = properties.getPathName("KEYS", "privateKey");
+	paths.publicKeyFileName = properties.getPathName("KEYS", "publicKey");
 
-	auth.verify = cfg.getBoolean("KEYS", "verifyHost");
+	auth.verify = properties.getBoolean("KEYS", "verifyHost");
 	if (!auth.verify) {
 		WH_LOG_WARNING("Host verification disabled");
 	} else if (!paths.publicKeyFileName) {
@@ -315,7 +315,7 @@ void Identity::loadKeys() {
 }
 
 void Identity::loadSSL() {
-	ssl.enabled = cfg.getBoolean("SSL", "enable");
+	ssl.enabled = properties.getBoolean("SSL", "enable");
 	if (!ssl.enabled) {
 		WH_LOG_WARNING("SSL/TLS disabled");
 		return;
@@ -324,9 +324,10 @@ void Identity::loadSSL() {
 	WH_free(paths.sslTrustedCertificateFileName);
 	WH_free(paths.sslCertificateFileName);
 	WH_free(paths.sslHostKeyFileName);
-	paths.sslTrustedCertificateFileName = cfg.getPathName("SSL", "trust");
-	paths.sslCertificateFileName = cfg.getPathName("SSL", "certificate");
-	paths.sslHostKeyFileName = cfg.getPathName("SSL", "key");
+	paths.sslTrustedCertificateFileName = properties.getPathName("SSL",
+			"trust");
+	paths.sslCertificateFileName = properties.getPathName("SSL", "certificate");
+	paths.sslHostKeyFileName = properties.getPathName("SSL", "key");
 	//-----------------------------------------------------------------
 	try {
 		ssl.ctx.initialize(paths.sslCertificateFileName,
