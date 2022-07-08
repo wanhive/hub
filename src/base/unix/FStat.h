@@ -69,6 +69,15 @@ public:
 	//Group ID of the file
 	gid_t groupId() const noexcept;
 
+	//The major device number of the file system
+	unsigned int majorId() const noexcept;
+	//The major device ID (if character/block special device)
+	unsigned int majorDeviceId() const noexcept;
+	//The minor device number of the file system
+	unsigned int minorId() const noexcept;
+	//The minor device ID (if character/block special device)
+	unsigned int minorDeviceId() const noexcept;
+
 	//Last file data access time
 	const timespec& accessedOn() const noexcept;
 	//Last file data modification time

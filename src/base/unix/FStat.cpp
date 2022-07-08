@@ -14,6 +14,7 @@
 #include "SystemException.h"
 #include "../common/Exception.h"
 #include <cstring>
+#include <sys/sysmacros.h>
 
 namespace wanhive {
 
@@ -99,6 +100,22 @@ uid_t FStat::ownerId() const noexcept {
 
 gid_t FStat::groupId() const noexcept {
 	return _stat.st_gid;
+}
+
+unsigned int FStat::majorId() const noexcept {
+	return ::major(_stat.st_dev);
+}
+
+unsigned int FStat::majorDeviceId() const noexcept {
+	return ::major(_stat.st_rdev);
+}
+
+unsigned int FStat::minorId() const noexcept {
+	return ::minor(_stat.st_dev);
+}
+
+unsigned int FStat::minorDeviceId() const noexcept {
+	return ::minor(_stat.st_rdev);
 }
 
 const timespec& FStat::accessedOn() const noexcept {
