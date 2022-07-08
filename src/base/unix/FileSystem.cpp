@@ -13,6 +13,7 @@
 #include "FileSystem.h"
 #include "SystemException.h"
 #include "../common/Exception.h"
+#include <cstdlib>
 #include <libgen.h>
 
 namespace wanhive {
@@ -275,6 +276,15 @@ const char* FileSystem::directoryName(char *path) noexcept {
 
 const char* FileSystem::baseName(char *path) noexcept {
 	return ::basename(path);
+}
+
+char* FileSystem::realPath(const char *path, char *resolved) {
+	auto ret = ::realpath(path, resolved);
+	if (ret) {
+		return ret;
+	} else {
+		throw SystemException();
+	}
 }
 
 } /* namespace wanhive */

@@ -89,10 +89,12 @@ public:
 	static void setTimestamp(int dirfd, const char *path,
 			const timespec times[2], int flag);
 
-	//Wrapper for dirname(3)
+	//Wrapper for dirname(3): strips last component from the file name
 	static const char* directoryName(char *path) noexcept;
-	//Wrapper for basename(3)
+	//Wrapper for basename(3): strips directory and suffix from file name
 	static const char* baseName(char *path) noexcept;
+	//Wrapper for realpath(3): returns the canonicalized absolute pathname
+	static char* realPath(const char *path, char *resolved);
 };
 
 } /* namespace wanhive */
