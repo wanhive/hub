@@ -308,11 +308,7 @@ EVP_PKEY* Rsa::createFromFile(const char *filename, bool isPublicKey,
 }
 
 bool Rsa::verifyRSAKey(EVP_PKEY *key) noexcept {
-#if OPENSSL_VERSION_MAJOR == 3
 	return key && EVP_PKEY_is_a(key, "RSA") == 1;
-#else
-	return key && EVP_PKEY_base_id(key) == EVP_PKEY_RSA;
-#endif
 }
 
 void Rsa::destroyKey(EVP_PKEY *key) noexcept {
@@ -320,37 +316,7 @@ void Rsa::destroyKey(EVP_PKEY *key) noexcept {
 }
 
 EVP_PKEY* Rsa::generateRSAKey(int bits) noexcept {
-#if OPENSSL_VERSION_MAJOR == 3
 	return EVP_RSA_gen(bits);
-#else
-	auto bigNumber = BN_new();
-	if (!bigNumber || !BN_set_word(bigNumber, RSA_F4)) {
-		BN_clear_free(bigNumber);
-		return nullptr;
-	}
-
-	auto rsa = RSA_new();
-	if (!rsa || !RSA_generate_key_ex(rsa, bits, bigNumber, nullptr)
-			|| !RSA_check_key(rsa)) {
-		RSA_free(rsa);
-		BN_clear_free(bigNumber);
-		return nullptr;
-	}
-
-	//Clean-up and proceed
-	BN_clear_free(bigNumber);
-
-	//Assign the reference key
-	auto pkey = EVP_PKEY_new();
-	if (!pkey || !EVP_PKEY_assign_RSA(pkey, rsa)) {
-		EVP_PKEY_free(pkey);
-		RSA_free(rsa);
-		return nullptr;
-	}
-
-	//Return the key
-	return pkey;
-#endif
 }
 
 bool Rsa::generatePem(const char *filename, EVP_PKEY *key, bool isPublicKey,
