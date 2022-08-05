@@ -39,29 +39,19 @@ public:
 	~Descriptor();
 	//-----------------------------------------------------------------
 	/**
-	 * Sets an unique identifier.
+	 * Returns the unique identifier.
+	 * @return the current unique identifier
+	 */
+	unsigned long long getUid() const noexcept;
+	/**
+	 * Sets a new unique identifier.
 	 * @param uid the unique identifier
 	 */
 	void setUid(unsigned long long uid) noexcept;
-	/**
-	 * Return the unique identifier.
-	 */
-	unsigned long long getUid() const noexcept;
 	//-----------------------------------------------------------------
 	/**
-	 * Sets the blocking IO mode.
-	 * @param block true for blocking IO, false for non-blocking IO
-	 */
-	void setBlocking(bool block);
-	/**
-	 * Checks the blocking IO mode.
-	 * @return true if the underlying file descriptor has been configured for
-	 * blocking IO, false if the file descriptor has been configured for non-
-	 * blocking IO.
-	 */
-	bool isBlocking();
-	/**
-	 * Returns the associated file descriptor.
+	 * Returns the associated file descriptor (call Descriptor::closeHandle() to
+	 * close the associated file descriptor, don't use the close() system call).
 	 * @return the associated file descriptor (can be invalid)
 	 */
 	int getHandle() const noexcept;
@@ -94,6 +84,18 @@ protected:
 	 */
 	bool isReady(bool outgoing) const noexcept;
 	//-----------------------------------------------------------------
+	/**
+	 * Checks the blocking IO mode.
+	 * @return true if the underlying file descriptor has been configured for
+	 * blocking IO, false if the file descriptor has been configured for non-
+	 * blocking IO.
+	 */
+	bool isBlocking();
+	/**
+	 * Sets the blocking IO mode.
+	 * @param block true for blocking IO, false for non-blocking IO
+	 */
+	void setBlocking(bool block);
 	/**
 	 * Scatter/gather read operation.
 	 * @param vector describes the IO buffers for storing the data read from the

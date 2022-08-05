@@ -61,9 +61,8 @@ public:
 	 * Constructor: initializes the object.
 	 * @param maxEvents the maximum number of events to report in each call to
 	 * Selector::select().
-	 * @param signal true for atomic handling of asynchronous signal delivery i.e.
-	 * Selector::select()can be safely interrupted by signal, false for default
-	 * behavior (signal delivery may not get noticed).
+	 * @param signal true to safely wait (see Selector::select()) until a signal
+	 * is caught, false for the default behavior (no signal safety).
 	 */
 	Selector(unsigned int maxEvents, bool signal);
 	/**
@@ -75,9 +74,8 @@ public:
 	 * initialized).
 	 * @param maxEvents the maximum number of events to report in each call to
 	 * Selector::select().
-	 * @param signal true for atomic handling of asynchronous signal delivery i.e.
-	 * Selector::select()can be safely interrupted by signal, false for default
-	 * behavior (signal delivery may not get noticed).
+	 * @param signal true to safely wait (see Selector::select()) until a signal
+	 * is caught, false for the default behavior (no signal safety).
 	 */
 	void initialize(unsigned int maxEvents, bool signal);
 	//-----------------------------------------------------------------
@@ -103,8 +101,8 @@ public:
 	//-----------------------------------------------------------------
 	/**
 	 * Waits for IO events, timeout or signal.
-	 * @param timeout the wait timeout value in milliseconds, set -1 to block
-	 * indefinitely, set 0 to return immediately even if no events are available.
+	 * @param timeout the wait period in milliseconds (-1 to block indefinitely,
+	 * 0 to return immediately even if no events are available).
 	 * @return number of ready file descriptors (see Selector::next()), possibly
 	 * zero if the call got interrupted due to timeout or signal delivery.
 	 */

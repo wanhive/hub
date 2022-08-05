@@ -32,28 +32,12 @@ Descriptor::~Descriptor() {
 
 }
 
-void Descriptor::setUid(unsigned long long uid) noexcept {
-	this->uid.set(uid);
-}
-
 unsigned long long Descriptor::getUid() const noexcept {
 	return uid.get();
 }
 
-void Descriptor::setBlocking(bool block) {
-	auto flags = Fcntl::getStatusFlag(getHandle());
-	if (block) {
-		flags &= ~O_NONBLOCK;
-	} else {
-		flags |= O_NONBLOCK;
-	}
-
-	Fcntl::setStatusFlag(getHandle(), flags);
-}
-
-bool Descriptor::isBlocking() {
-	auto ret = Fcntl::getStatusFlag(getHandle());
-	return !(ret & O_NONBLOCK);
+void Descriptor::setUid(unsigned long long uid) noexcept {
+	this->uid.set(uid);
 }
 
 int Descriptor::getHandle() const noexcept {
@@ -74,6 +58,22 @@ bool Descriptor::closeHandle() noexcept {
 
 bool Descriptor::isReady(bool outgoing) const noexcept {
 	return (getEvents() && ((getEvents() != IO_WRITE) || outgoing));
+}
+
+bool Descriptor::isBlocking() {
+	auto ret = Fcntl::getStatusFlag(getHandle());
+	return !(ret & O_NONBLOCK);
+}
+
+void Descriptor::setBlocking(bool block) {
+	auto flags = Fcntl::getStatusFlag(getHandle());
+	if (block) {
+		flags &= ~O_NONBLOCK;
+	} else {
+		flags |= O_NONBLOCK;
+	}
+
+	Fcntl::setStatusFlag(getHandle(), flags);
 }
 
 ssize_t Descriptor::readv(const iovec *vectors, unsigned int count) {
