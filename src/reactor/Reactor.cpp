@@ -28,6 +28,7 @@ Reactor::~Reactor() {
 }
 
 void Reactor::initialize(unsigned int maxEvents, bool signal) {
+	timeout = -1;
 	selector.initialize(maxEvents, signal);
 }
 

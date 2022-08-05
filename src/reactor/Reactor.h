@@ -24,12 +24,12 @@ namespace wanhive {
 class Reactor {
 public:
 	/**
-	 * Default constructor: Doesn't initialize the underlying selector, call
-	 * Reactor::initialize() explicitly.
+	 * Default constructor: creates a new reactor (call  Reactor::initialize() to
+	 * completely initialize the reactor).
 	 */
 	Reactor() noexcept;
 	/**
-	 * Constructor: initializes this object.
+	 * Constructor: creates an initialized reactor.
 	 * @param maxEvents the maximum number of IO events to report in each call
 	 * to Reactor::poll().
 	 * @param signal set to true for handling the asynchronous signal delivery
@@ -41,8 +41,8 @@ public:
 	 */
 	virtual ~Reactor();
 	/**
-	 * Initializes the object after performing any necessary clean-up (if the
-	 * object was initialized previously).
+	 * Initializes the reactor after performing any necessary clean-up (if the
+	 * object was previously initialized).
 	 * @param maxEvents the maximum number of IO events to report in each call
 	 * to Reactor::poll().
 	 * @param signal set to true for handling the asynchronous signal delivery
@@ -155,7 +155,7 @@ private:
 	int timeout;
 	//The selector (event demultiplexer)
 	Selector selector;
-	//List of watchers waiting for processing
+	//The ready list of watchers
 	Array<Watcher*> readyList;
 };
 
