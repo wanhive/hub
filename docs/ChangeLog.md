@@ -10,6 +10,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 
 - Clean up the overlay hub implementation.
+- Update **Descriptor**'s public interface.
+
+### Fixed
+
+- Reset **Reactor**'s timeout to the default value on initialization.
 
 ### Removed
 
