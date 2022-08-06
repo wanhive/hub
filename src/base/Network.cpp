@@ -148,7 +148,7 @@ int Network::unixServerSocket(const char *path, SocketAddress &sa,
 	::strncpy(local.sun_path, path, sizeof(local.sun_path) - 1);
 
 	struct stat filestat;
-	if (!::stat(local.sun_path, &filestat) && S_ISSOCK(filestat.st_mode)) {
+	if (::stat(local.sun_path, &filestat) == 0 && S_ISSOCK(filestat.st_mode)) {
 		//Unlink only if the given file is a valid unix domain socket file
 		::unlink(local.sun_path);
 	}
