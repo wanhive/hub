@@ -207,21 +207,21 @@ protected:
 	bool sendMessage(Message *message) noexcept;
 	//-----------------------------------------------------------------
 	/*
-	 * Implementation of the Reactor interface
+	 * Reactor interface implementation
 	 */
 	void adapt(Watcher *w) override;
 	bool react(Watcher *w) noexcept override;
 	void stop(Watcher *w) noexcept override;
 	//-----------------------------------------------------------------
 	/**
-	 * Initialization routine: configures the hub before entering the event loop.
-	 * Always call the base class instance first in the derived classes.
+	 * Configuration: configures the hub before entering the event loop. Invoke
+	 * it as a pre-operation in the derived class' version.
 	 * @param arg additional argument
 	 */
 	virtual void configure(void *arg);
 	/**
-	 * Cleanup routine: cleans up the hub after exiting the event loop. Always
-	 * call the base class instance at last in the derived classes.
+	 * Cleanup: cleans up the hub after exiting the event loop. Invoke it as a
+	 * post-operation in the derived class' version.
 	 */
 	virtual void cleanup() noexcept;
 private:
@@ -286,7 +286,7 @@ private:
 	virtual void stopWork() noexcept;
 	//-----------------------------------------------------------------
 	/*
-	 * Implementations of the Handler interfaces
+	 * Handler interface implementations
 	 */
 	bool handle(Alarm *alarm) noexcept final;
 	bool handle(Event *event) noexcept final;
@@ -295,7 +295,7 @@ private:
 	bool handle(Socket *socket) noexcept final;
 	//-----------------------------------------------------------------
 	/*
-	 * Implementation of the Task interface
+	 * Task interface implementation
 	 */
 	void run(void *arg) noexcept final;
 	int getStatus() const noexcept final;
@@ -303,7 +303,7 @@ private:
 	//-----------------------------------------------------------------
 	//Configure the hub and start the worker thread
 	void setup(void *arg);
-	//The event loop [monitor->publish->dispatch->processMessages->maintain]
+	//The event loop
 	void loop();
 	//-----------------------------------------------------------------
 	/*

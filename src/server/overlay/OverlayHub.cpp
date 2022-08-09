@@ -823,7 +823,7 @@ bool OverlayHub::handleDescribeNodeRequest(Message *msg) noexcept {
 	index += sizeof(uint64_t);
 	msg->setData64(index, getSuccessor()); //Successor
 	index += sizeof(uint64_t);
-	msg->setData8(index, (isStable() ? 1 : 0)); //Routing table atatus
+	msg->setData8(index, (isStable() ? 1 : 0)); //Routing table status
 	index += sizeof(uint8_t);
 	msg->setData8(index, (uint8_t) TABLESIZE); //Size of routing table
 	index += sizeof(uint8_t);
