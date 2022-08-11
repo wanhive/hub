@@ -30,7 +30,7 @@ struct wh_hash_fn {
 
 	unsigned int operator()(unsigned long key) const noexcept {
 		if constexpr (sizeof(unsigned long) > 4) {
-			return static_cast<unsigned int>(key >> 33 ^ key ^ key << 11);
+			return operator()((unsigned long long) key);
 		} else {
 			return key; //Just return the key
 		}
@@ -38,6 +38,10 @@ struct wh_hash_fn {
 
 	unsigned int operator()(unsigned long long key) const noexcept {
 		return static_cast<unsigned int>(key >> 33 ^ key ^ key << 11);
+	}
+
+	unsigned int operator()(void *p) const noexcept {
+		return operator()((unsigned long long) p);
 	}
 
 	unsigned int operator()(const char *s) const noexcept {
@@ -72,6 +76,10 @@ struct wh_eq_fn {
 		return a == b;
 	}
 
+	bool operator()(void *a, void *b) const noexcept {
+		return a == b;
+	}
+
 	bool operator()(const char *a, const char *b) const noexcept {
 		return strcmp(a, b) == 0;
 	}
@@ -97,6 +105,10 @@ struct wh_lt_fn {
 		return a < b;
 	}
 
+	bool operator()(void *a, void *b) const noexcept {
+		return a < b;
+	}
+
 	bool operator()(const char *a, const char *b) const noexcept {
 		return strcmp(a, b) < 0;
 	}
@@ -119,6 +131,10 @@ struct wh_gt_fn {
 	}
 
 	bool operator()(unsigned long long a, unsigned long long b) const noexcept {
+		return a > b;
+	}
+
+	bool operator()(void *a, void *b) const noexcept {
 		return a > b;
 	}
 
