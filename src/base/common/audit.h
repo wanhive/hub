@@ -33,7 +33,7 @@
 #define WH_NONFATAL_ERROR_FLF(msg, file, line, function) \
 	do { fprintf(stderr, "%s: Error at %s:%d in %s.\n", msg, file, line, function); } while(0)
 #else
-#define WH_FATAL_ASSERT_FLF(expr, msg, file, line, function)  abort()
+#define WH_FATAL_ASSERT_FLF(expr, msg, file, line, function)
 #define WH_NONFATAL_ASSERT_FLF(expr, msg, file, line, function)
 #define WH_FATAL_ERROR_FLF(msg, file, line, function) abort()
 #define WH_NONFATAL_ERROR_FLF(msg, file, line, function)
