@@ -82,9 +82,9 @@ public:
 	 */
 	virtual void clearTopic(unsigned int index) noexcept;
 	/**
-	 * Tests whether the given topic is subscribed to or not.
+	 * Multicasting: tests subscription to a topic.
 	 * @param index the topic identifier
-	 * @return true if the topic is subscribed to, false otherwise
+	 * @return true if the topic is subscribed, false otherwise
 	 */
 	virtual bool testTopic(unsigned int index) const noexcept;
 	//-----------------------------------------------------------------
