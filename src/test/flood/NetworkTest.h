@@ -22,7 +22,7 @@ namespace wanhive {
 class NetworkTest: private Task, private TestClient {
 public:
 	NetworkTest(uint64_t clientId, uint64_t serverId, const char *path) noexcept;
-	virtual ~NetworkTest();
+	~NetworkTest();
 	//Run one of the available tests, <path> is the path to the configuration file
 	static void test(const char *path) noexcept;
 private:
@@ -34,11 +34,11 @@ private:
 	void consume() noexcept;
 	void pong();
 	//-----------------------------------------------------------------
-	void run(void *arg) noexcept override final;
-	void setStatus(int status) noexcept override final {
+	void run(void *arg) noexcept final;
+	void setStatus(int status) noexcept final {
 
 	}
-	int getStatus() const noexcept override final {
+	int getStatus() const noexcept final {
 		return 0;
 	}
 private:

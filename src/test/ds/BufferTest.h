@@ -26,11 +26,11 @@ public:
 	void test() noexcept;
 private:
 	void vectorTest() noexcept;
-	void run(void *arg) noexcept override final;
-	void setStatus(int status) noexcept override final {
+	void run(void *arg) noexcept final;
+	void setStatus(int status) noexcept final {
 
 	}
-	int getStatus() const noexcept override final {
+	int getStatus() const noexcept final {
 		return 0;
 	}
 private:

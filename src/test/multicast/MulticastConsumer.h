@@ -24,7 +24,7 @@ class MulticastConsumer final: public ClientHub {
 public:
 	MulticastConsumer(unsigned long long uid, unsigned int topic,
 			const char *path = nullptr) noexcept;
-	virtual ~MulticastConsumer();
+	~MulticastConsumer();
 private:
 	void stop(Watcher *w) noexcept override;
 	void configure(void *arg) override;
