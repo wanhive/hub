@@ -221,18 +221,20 @@ bool Hub::sendMessage(Message *message) noexcept {
 }
 
 void Hub::adapt(Watcher *w) {
-	w->start();
-	/*
-	 * Always cast to the base type before converting to (void *). That will
-	 * allow safe conversion of void * back to the base or the derived type
-	 * For example, in a derived class the following line should look like:
-	 * w->setReference(static_cast<Hub*>(this));
-	 */
-	w->setReference(this);
+	if (w->getReference() == nullptr) {
+		w->start();
+		w->setReference(static_cast<Hub*>(this)); //:-)
+	} else {
+		throw Exception(EX_INVALIDPARAM);
+	}
 }
 
 bool Hub::react(Watcher *w) noexcept {
-	return w->callback(nullptr);
+	if (w->getReference() == this) {
+		return w->callback(nullptr);
+	} else {
+		return false;
+	}
 }
 
 void Hub::stop(Watcher *w) noexcept {
