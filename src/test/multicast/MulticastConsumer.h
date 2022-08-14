@@ -20,16 +20,17 @@ namespace wanhive {
  * (For testing purpose only)
  * Thread safe at class level
  */
-class MulticastConsumer: public ClientHub {
+class MulticastConsumer final: public ClientHub {
 public:
 	MulticastConsumer(unsigned long long uid, unsigned int topic,
 			const char *path = nullptr) noexcept;
 	virtual ~MulticastConsumer();
 private:
-	void stop(Watcher *w) noexcept override final;
-	void cleanup() noexcept override final;
-	void route(Message *message) noexcept override final;
-	void maintain() noexcept override final;
+	void stop(Watcher *w) noexcept override;
+	void configure(void *arg) override;
+	void cleanup() noexcept override;
+	void route(Message *message) noexcept override;
+	void maintain() noexcept override;
 	//-----------------------------------------------------------------
 	//Process message published to a subscribed topic
 	void processMulticastMessage(const Message *msg) noexcept;

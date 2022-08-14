@@ -20,7 +20,7 @@ namespace wanhive {
 MulticastConsumer::MulticastConsumer(unsigned long long uid, unsigned int topic,
 		const char *path) noexcept :
 		ClientHub(uid, path), topic(topic), subscribed(false) {
-	Reactor::setTimeout(2000);
+
 }
 
 MulticastConsumer::~MulticastConsumer() {
@@ -39,6 +39,16 @@ void MulticastConsumer::stop(Watcher *w) noexcept {
 	}
 
 	ClientHub::stop(w);
+}
+
+void MulticastConsumer::configure(void *arg) {
+	try {
+		ClientHub::configure(arg);
+		Reactor::setTimeout(2000);
+	} catch (BaseException &e) {
+		WH_LOG_EXCEPTION(e);
+		throw;
+	}
 }
 
 void MulticastConsumer::route(Message *message) noexcept {
