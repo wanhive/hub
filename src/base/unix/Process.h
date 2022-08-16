@@ -51,12 +51,12 @@ public:
 
 	//Wrapper for getrlimit(2): returns resource limits
 	static void getLimit(int resource, rlimit *limit);
-	//Wrapper for setrlimit(2): returns resource limit
+	//Wrapper for setrlimit(2): sets resource limit
 	static void setLimit(int resource, const rlimit *limit);
 
 	//Wrapper for getpriority(2): returns the scheduling priority
 	static int getPriority(int which, id_t id);
-	//Wrapper for setpriority(2): returns the scheduling priority
+	//Wrapper for setpriority(2): sets the scheduling priority
 	static void setPriority(int which, id_t id, int value);
 };
 
