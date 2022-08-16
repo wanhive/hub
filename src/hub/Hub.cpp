@@ -425,6 +425,10 @@ void Hub::processInterrupt(unsigned long long uid, int signum) noexcept {
 
 }
 
+void Hub::processLogic(unsigned long long uid, const LogicEvent &event) noexcept {
+
+}
+
 bool Hub::enableWorker() const noexcept {
 	return false;
 }
@@ -525,6 +529,27 @@ bool Hub::handle(Interrupt *interrupt) noexcept {
 	} catch (const BaseException &e) {
 		WH_LOG_EXCEPTION(e);
 		return disable(interrupt);
+	}
+}
+
+bool Hub::handle(Logic *logic) noexcept {
+	try {
+		LogicEvent event;
+		if (logic == nullptr) {
+			return false;
+		} else if (logic->testEvents(IO_CLOSE)) {
+			return disable(logic);
+		} else if (logic->testEvents(IO_READ) && logic->update(event) == -1) {
+			return disable(logic);
+		}
+		//-----------------------------------------------------------------
+		if (event.type != LogicEdge::NONE) {
+			processLogic(logic->getUid(), event);
+		}
+		return logic->isReady();
+	} catch (const BaseException &e) {
+		WH_LOG_EXCEPTION(e);
+		return disable(logic);
 	}
 }
 

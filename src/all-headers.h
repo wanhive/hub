@@ -91,6 +91,7 @@
 #include "hub/Identity.h"
 #include "hub/Inotifier.h"
 #include "hub/Interrupt.h"
+#include "hub/Logic.h"
 #include "hub/Protocol.h"
 #include "hub/Socket.h"
 #include "hub/Topic.h"

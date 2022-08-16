@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- Digital logic watcher (adapter class for GPIO line monitoring).
+
 ### Changed
 
 - Clean up the overlay hub implementation.

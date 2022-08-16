@@ -17,6 +17,7 @@
 #include "Identity.h"
 #include "Inotifier.h"
 #include "Interrupt.h"
+#include "Logic.h"
 #include "Socket.h"
 #include "../base/Timer.h"
 #include "../base/Thread.h"
@@ -34,6 +35,7 @@ class Hub: public Handler<Alarm>,
 		public Handler<Event>,
 		public Handler<Inotifier>,
 		public Handler<Interrupt>,
+		public Handler<Logic>,
 		public Handler<Socket>,
 		protected Identity,
 		protected Reactor,
@@ -263,11 +265,18 @@ private:
 	virtual void processInotification(unsigned long long uid,
 			const InotifyEvent *event) noexcept;
 	/**
-	 * Adapter: callback for interrupt (signal delivery).
+	 * Adapter: callback for software interrupt.
 	 * @param uid the source identifier
 	 * @param signum signal's number
 	 */
 	virtual void processInterrupt(unsigned long long uid, int signum) noexcept;
+	/**
+	 * Adapter: callback for digital logic.
+	 * @param uid the source identifier
+	 * @param event the edge transition
+	 */
+	virtual void processLogic(unsigned long long uid,
+			const LogicEvent &event) noexcept;
 	//-----------------------------------------------------------------
 	/**
 	 * Adapter: allow worker thread creation.
@@ -291,6 +300,7 @@ private:
 	bool handle(Event *event) noexcept final;
 	bool handle(Inotifier *inotifier) noexcept final;
 	bool handle(Interrupt *interrupt) noexcept final;
+	bool handle(Logic *logic) noexcept final;
 	bool handle(Socket *socket) noexcept final;
 	//-----------------------------------------------------------------
 	/*
