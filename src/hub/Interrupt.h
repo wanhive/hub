@@ -13,10 +13,8 @@
 #ifndef WH_HUB_INTERRUPT_H_
 #define WH_HUB_INTERRUPT_H_
 #include "../reactor/Watcher.h"
-#include <sys/signalfd.h>
 
 namespace wanhive {
-using SignalInfo=signalfd_siginfo;
 /**
  * Signal watcher
  * Abstraction of Linux's signalfd(2) mechanism
@@ -43,23 +41,15 @@ public:
 	 * @return number of bytes read on success, 0 if non-blocking mode is on and
 	 * the call would block, -1 if the underlying file descriptor was closed.
 	 */
-	ssize_t read();
 	/**
-	 * Returns the information about the most recently caught signal. (Each new
-	 * Interrupt::read() call overwrites the old value).
-	 * @return pointer to object containing the signal information
+	 * Reads a pending signal.
+	 * @param signum pending signal's number
+	 * @return number of bytes read on success, 0 if non-blocking mode is on and
+	 * the call would block, -1 if the underlying file descriptor was closed.
 	 */
-	const SignalInfo* getInfo() const noexcept;
-	/**
-	 * Returns the signal number associated with the given notification.
-	 * @param si the notification
-	 * @return the signal number
-	 */
-	static int getSignalNumber(const SignalInfo *si) noexcept;
+	ssize_t read(int &signum);
 private:
 	void create(bool blocking);
-private:
-	SignalInfo info;
 };
 
 } /* namespace wanhive */

@@ -40,24 +40,19 @@ public:
 	bool publish(void *arg) noexcept override;
 	//-----------------------------------------------------------------
 	/**
-	 * Reads the timer expiration count. Call Alarm::getCount() to get the result.
+	 * Reads the timer expiration count.
+	 * @param count object for storing the expiration count
 	 * @return the number of bytes read (8 bytes) on success, 0 if non-blocking
 	 * mode is on and the call would block, -1 if the underlying file descriptor
 	 * was closed.
 	 */
-	ssize_t read();
+	ssize_t read(unsigned long long &count);
 	/**
 	 * Updates the settings and restarts the timer.
 	 * @param expiration initial expiration in miliseconds (set 0 to disarm)
 	 * @param interval interval for periodic timer in milliseconds
 	 */
 	void reset(unsigned int expiration, unsigned int interval);
-	/**
-	 * Returns the number of times the periodic timer expired (each new
-	 * Alarm::read() call overwrites the old value).
-	 * @return the expiration count
-	 */
-	unsigned long long getCount() const noexcept;
 	/**
 	 * Returns the initial expiration in milliseconds.
 	 * @return initial expiration in miliseconds
@@ -79,7 +74,6 @@ private:
 private:
 	unsigned int expiration;	//Initial expiration in miliseconds
 	unsigned int interval;	//Interval for periodic timer in miliseconds
-	unsigned long long count; //Timer expirations count
 };
 
 } /* namespace wanhive */

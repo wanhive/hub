@@ -41,28 +41,20 @@ public:
 	/**
 	 * Reads the events count. If semaphore-like behavior was enabled then each
 	 * call decrements the counter by 1 (reads one single event), otherwise the
-	 * counter is reset (reads all events). Call EventNotifier::getCount() to get
-	 * the result.
+	 * counter is reset (reads all events).
+	 * @param count object for storing the events count
 	 * @return the number of bytes read (8 bytes) on success, 0 if non-blocking
 	 * mode is on and the call would block, -1 if the underlying file descriptor
 	 * was closed.
 	 */
-	ssize_t read();
+	ssize_t read(unsigned long long &count);
 	/**
 	 * Adds the given value to the events counter.
-	 * @param events the value to add to the events counter
+	 * @param count the value to add to the events counter
 	 * @return the number of bytes written (8 bytes) on success, 0 if non-blocking
 	 * mode is on and the call would block.
 	 */
-	ssize_t write(unsigned long long events);
-	/**
-	 * Returns the events count (Each new EventNotifier::read() call overwrites
-	 * the old value).
-	 * @return the events count
-	 */
-	unsigned long long getCount() const noexcept;
-private:
-	unsigned long long count;	//Events count
+	ssize_t write(unsigned long long count);
 };
 
 } /* namespace wanhive */

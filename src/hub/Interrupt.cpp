@@ -13,12 +13,12 @@
 #include "Interrupt.h"
 #include "Hub.h"
 #include "../base/unix/SystemException.h"
+#include <sys/signalfd.h>
 
 namespace wanhive {
 
 Interrupt::Interrupt(bool blocking) {
 	create(blocking);
-	memset(&info, 0, sizeof(info));
 }
 
 Interrupt::~Interrupt() {
@@ -46,10 +46,13 @@ bool Interrupt::publish(void *arg) noexcept {
 	return false;
 }
 
-ssize_t Interrupt::read() {
+ssize_t Interrupt::read(int &signum) {
+	signum = 0;
+	signalfd_siginfo info;
 	memset(&info, 0, sizeof(info)); //Clear out the data
 	auto nRead = Descriptor::read(&info, sizeof(info));
 	if (nRead == sizeof(info)) {
+		signum = info.ssi_signo;
 		return nRead;
 	} else if (nRead == 0 || nRead == -1) {
 		return nRead;
@@ -57,10 +60,6 @@ ssize_t Interrupt::read() {
 		//Something broke
 		throw Exception(EX_INVALIDSTATE);
 	}
-}
-
-const SignalInfo* Interrupt::getInfo() const noexcept {
-	return &info;
 }
 
 void Interrupt::create(bool blocking) {
@@ -73,10 +72,6 @@ void Interrupt::create(bool blocking) {
 	} else {
 		setHandle(fd);
 	}
-}
-
-int Interrupt::getSignalNumber(const SignalInfo *si) noexcept {
-	return si->ssi_signo;
 }
 
 } /* namespace wanhive */

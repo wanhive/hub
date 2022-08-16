@@ -335,9 +335,9 @@ void Hub::configure(void *arg) {
 		initReactor();
 		initListener();
 		initAlarm();
-		initEventNotifier();
+		initEvent();
 		initInotifier();
-		initSignalWatcher();
+		initInterrupt();
 	} catch (const BaseException &e) {
 		WH_LOG_EXCEPTION(e);
 		throw;
@@ -421,8 +421,7 @@ void Hub::processInotification(unsigned long long uid,
 
 }
 
-void Hub::processInterrupt(unsigned long long uid,
-		const SignalInfo *info) noexcept {
+void Hub::processInterrupt(unsigned long long uid, int signum) noexcept {
 
 }
 
@@ -440,17 +439,18 @@ void Hub::stopWork() noexcept {
 
 bool Hub::handle(Alarm *alarm) noexcept {
 	try {
+		unsigned long long count = 0;
 		if (alarm == nullptr) {
 			return false;
 		} else if (alarm->testEvents(IO_CLOSE)) {
 			return disable(alarm);
-		} else if (alarm->testEvents(IO_READ) && alarm->read() == -1) {
+		} else if (alarm->testEvents(IO_READ) && alarm->read(count) == -1) {
 			return disable(alarm);
 		}
 		//-----------------------------------------------------------------
-		if (alarm->getCount()) {
+		if (count) {
 			auto uid = (alarm == notifiers.alarm ? 0 : alarm->getUid());
-			processAlarm(uid, alarm->getCount());
+			processAlarm(uid, count);
 		}
 		return alarm->isReady();
 	} catch (const BaseException &e) {
@@ -461,17 +461,18 @@ bool Hub::handle(Alarm *alarm) noexcept {
 
 bool Hub::handle(Event *event) noexcept {
 	try {
+		unsigned long long count = 0;
 		if (event == nullptr) {
 			return false;
 		} else if (event->testEvents(IO_CLOSE)) {
 			return disable(event);
-		} else if (event->testEvents(IO_READ) && event->read() == -1) {
+		} else if (event->testEvents(IO_READ) && event->read(count) == -1) {
 			return disable(event);
 		}
 		//-----------------------------------------------------------------
-		if (event->getCount()) {
+		if (count) {
 			auto uid = (event == notifiers.event ? 0 : event->getUid());
-			processEvent(uid, event->getCount());
+			processEvent(uid, count);
 		}
 		return event->isReady();
 	} catch (const BaseException &e) {
@@ -505,20 +506,20 @@ bool Hub::handle(Inotifier *inotifier) noexcept {
 
 bool Hub::handle(Interrupt *interrupt) noexcept {
 	try {
-		ssize_t nRead = 0;
+		int signum = 0;
 		if (interrupt == nullptr) {
 			return false;
 		} else if (interrupt->testEvents(IO_CLOSE)) {
 			return disable(interrupt);
 		} else if (interrupt->testEvents(IO_READ)
-				&& (nRead = interrupt->read()) == -1) {
+				&& interrupt->read(signum) == -1) {
 			return disable(interrupt);
 		}
 		//-----------------------------------------------------------------
-		if (nRead > 0) {
+		if (signum > 0) {
 			auto uid = (
 					interrupt == notifiers.interrupt ? 0 : interrupt->getUid());
-			processInterrupt(uid, interrupt->getInfo());
+			processInterrupt(uid, signum);
 		}
 		return interrupt->isReady();
 	} catch (const BaseException &e) {
@@ -669,7 +670,7 @@ void Hub::initAlarm() {
 	}
 }
 
-void Hub::initEventNotifier() {
+void Hub::initEvent() {
 	Event *event = nullptr;
 	try {
 		event = new Event(ctx.semaphore);
@@ -703,7 +704,7 @@ void Hub::initInotifier() {
 	}
 }
 
-void Hub::initSignalWatcher() {
+void Hub::initInterrupt() {
 	Interrupt *interrupt = nullptr;
 	try {
 		if (ctx.signal) {

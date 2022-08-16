@@ -17,8 +17,7 @@
 
 namespace wanhive {
 
-Event::Event(bool semaphore, bool blocking) :
-		count(0) {
+Event::Event(bool semaphore, bool blocking) {
 	auto flags = (semaphore ? EFD_SEMAPHORE : 0)
 			| (blocking ? 0 : EFD_NONBLOCK);
 	auto fd = eventfd(0, flags);
@@ -54,7 +53,7 @@ bool Event::publish(void *arg) noexcept {
 	return false;
 }
 
-ssize_t Event::read() {
+ssize_t Event::read(unsigned long long &count) {
 	count = 0; //Reset the count
 	uint64_t eventCount;
 	auto nRead = Descriptor::read(&eventCount, sizeof(eventCount));
@@ -69,13 +68,9 @@ ssize_t Event::read() {
 	}
 }
 
-ssize_t Event::write(unsigned long long events) {
-	uint64_t eventCount = events;
+ssize_t Event::write(unsigned long long count) {
+	uint64_t eventCount = count;
 	return Descriptor::write(&eventCount, sizeof(eventCount));
-}
-
-unsigned long long Event::getCount() const noexcept {
-	return count;
 }
 
 } /* namespace wanhive */

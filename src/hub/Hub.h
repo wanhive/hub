@@ -263,12 +263,11 @@ private:
 	virtual void processInotification(unsigned long long uid,
 			const InotifyEvent *event) noexcept;
 	/**
-	 * Adapter: callback for interrupt.
+	 * Adapter: callback for interrupt (signal delivery).
 	 * @param uid the source identifier
-	 * @param info information about the delivered signal
+	 * @param signum signal's number
 	 */
-	virtual void processInterrupt(unsigned long long uid,
-			const SignalInfo *info) noexcept;
+	virtual void processInterrupt(unsigned long long uid, int signum) noexcept;
 	//-----------------------------------------------------------------
 	/**
 	 * Adapter: allow worker thread creation.
@@ -313,9 +312,9 @@ private:
 	void initReactor();
 	void initListener();
 	void initAlarm();
-	void initEventNotifier();
+	void initEvent();
 	void initInotifier();
-	void initSignalWatcher();
+	void initInterrupt();
 	//-----------------------------------------------------------------
 	/*
 	 * Worker thread management

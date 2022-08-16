@@ -33,7 +33,7 @@ long long specToMils(timespec &ts) {
 namespace wanhive {
 
 Alarm::Alarm(unsigned int expiration, unsigned int interval, bool blocking) :
-		expiration(expiration), interval(interval), count(0) {
+		expiration(expiration), interval(interval) {
 	create(blocking);
 }
 
@@ -65,7 +65,7 @@ bool Alarm::publish(void *arg) noexcept {
 	return false;
 }
 
-ssize_t Alarm::read() {
+ssize_t Alarm::read(unsigned long long &count) {
 	count = 0; //Reset the count
 	uint64_t expiryCount;
 	auto nRead = Descriptor::read(&expiryCount, sizeof(expiryCount));
@@ -85,10 +85,6 @@ void Alarm::reset(unsigned int expiration, unsigned int interval) {
 	//Update the settings only if the system call succeeded
 	this->expiration = expiration;
 	this->interval = interval;
-}
-
-unsigned long long Alarm::getCount() const noexcept {
-	return count;
 }
 
 unsigned int Alarm::getExpiration() const noexcept {
