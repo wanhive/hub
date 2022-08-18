@@ -75,7 +75,8 @@ public:
 	 * @param section section/group name, can be empty string
 	 * @param option key's name
 	 * @param defaultValue default value to return if the key not found
-	 * @return value associated with the given key
+	 * @return pointer to the value (valid until a configuration update, caller
+	 * must copy the string).
 	 */
 	const char* getString(const char *section, const char *option,
 			const char *defaultValue = nullptr) const noexcept;
