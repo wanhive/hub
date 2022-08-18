@@ -99,6 +99,12 @@
 #define WH_BOOLF(expr) ((expr) ? "YES" : "NO")
 //=================================================================
 /**
+ * For probing the fields inside a structure
+ */
+#define WH_FIELD_SIZEOF(type, field) sizeof(((type *)0)->field)
+#define WH_FIELD_TYPEOF(type, field) decltype(((type *)0)->field)
+//=================================================================
+/**
  * For evaluation of an array's length
  */
 #define WH_ARRAYLEN(x) (sizeof(x) / sizeof(x[0]))
