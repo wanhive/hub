@@ -37,18 +37,18 @@ private:
 	int handleAuthenticationRequest(Message *message) noexcept;
 	int handleAuthorizationRequest(Message *message) noexcept;
 	int handleInvalidRequest(Message *message) noexcept;
-	//Load the identity from a database
-	bool loadIdentity(Authenticator *authenticator, unsigned long long identity,
-			const unsigned char *nonce, unsigned int nonceLength) noexcept;
+	//-----------------------------------------------------------------
 	//Returns true if the given identity is banned
 	bool isBanned(unsigned long long identity) const noexcept;
+	//Load the identity from a database
+	bool loadIdentity(Authenticator *authenticator, unsigned long long identity,
+			const Data &nonce) noexcept;
+	//Generates an identification response message
+	int generateIdentificationResponse(Message *message, const Data &salt,
+			const Data &nonce) noexcept;
 	//-----------------------------------------------------------------
-	//Helper function for <handleIdentificationRequest>
-	int generateIdentificationResponse(Message *message,
-			unsigned int saltLength, unsigned int nonceLength,
-			const unsigned char *salt, const unsigned char *nonce) noexcept;
 	//Iterator for cleaning up the lookup table during shut down
-	static int _deleteAuthenticators(unsigned int index, void *arg) noexcept;
+	static int deleteAuthenticators(unsigned int index, void *arg) noexcept;
 private:
 	//Hash table of pending authentication requests
 	Khash<unsigned long long, Authenticator*> waitlist;

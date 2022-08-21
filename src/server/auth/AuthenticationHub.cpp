@@ -67,7 +67,7 @@ void AuthenticationHub::configure(void *arg) {
 }
 
 void AuthenticationHub::cleanup() noexcept {
-	waitlist.iterate(_deleteAuthenticators, this);
+	waitlist.iterate(deleteAuthenticators, this);
 	memset(&ctx, 0, sizeof(ctx));
 	//Clean up the base class object
 	Hub::cleanup();
@@ -99,32 +99,28 @@ int AuthenticationHub::handleIdentificationRequest(Message *message) noexcept {
 	 * TOTAL: at least 32 bytes in Request and Response
 	 */
 	auto origin = message->getOrigin();
-	auto nonceLength = message->getPayloadLength();
+	auto identity = message->getSource();
+	Data nonce { message->getBytes(0), message->getPayloadLength() };
 	//-----------------------------------------------------------------
-	if (!nonceLength || waitlist.contains(origin)) {
+	if (!nonce.length || waitlist.contains(origin)) {
 		return handleInvalidRequest(message);
 	}
-	//-----------------------------------------------------------------
-	auto nonce = message->getBytes(0);
-	auto identity = message->getSource();
+
 	Authenticator *authenticator = nullptr;
 	bool success = !isBanned(identity) && (authenticator =
 			new (std::nothrow) Authenticator(true))
-			&& loadIdentity(authenticator, identity, nonce, nonceLength)
+			&& loadIdentity(authenticator, identity, nonce)
 			&& waitlist.hmPut(origin, authenticator);
 	//-----------------------------------------------------------------
 	if (success) {
-		unsigned int saltLength = 0;
-		unsigned int hostNonceLength = 0;
-		const unsigned char *salt = nullptr;
-		const unsigned char *hostNonce = nullptr;
+		Data salt { nullptr, 0 };
+		Data hostNonce { nullptr, 0 };
 
-		authenticator->getSalt(salt, saltLength);
-		authenticator->generateNonce(hostNonce, hostNonceLength);
-		return generateIdentificationResponse(message, saltLength,
-				hostNonceLength, salt, hostNonce);
+		authenticator->getSalt(salt.base, salt.length);
+		authenticator->generateNonce(hostNonce.base, hostNonce.length);
+		return generateIdentificationResponse(message, salt, hostNonce);
 	} else {
-		//Free up the memory and stop the <source> from making further requests
+		//Free up the memory and stop the <origin> from making further requests
 		delete authenticator;
 		waitlist.hmPut(origin, nullptr);
 
@@ -134,16 +130,13 @@ int AuthenticationHub::handleIdentificationRequest(Message *message) noexcept {
 			 * with an identity should not tend to change on new request.
 			 * Nonce should look like it was randomly generated.
 			 */
-			unsigned int saltLength = ctx.saltLength;
-			unsigned int hostNonceLength = 0;
-			const unsigned char *salt = ctx.salt;
-			const unsigned char *hostNonce = nullptr;
+			Data salt { ctx.salt, ctx.saltLength };
+			Data hostNonce { nullptr, 0 };
 
-			fake.generateFakeSalt(identity, salt, saltLength);
-			fake.generateFakeNonce(hostNonce, hostNonceLength);
-			saltLength = Twiddler::min(saltLength, 16);
-			return generateIdentificationResponse(message, saltLength,
-					hostNonceLength, salt, hostNonce);
+			fake.generateFakeSalt(identity, salt.base, salt.length);
+			fake.generateFakeNonce(hostNonce.base, hostNonce.length);
+			salt.length = Twiddler::min(salt.length, 16);
+			return generateIdentificationResponse(message, salt, hostNonce);
 		} else {
 			return handleInvalidRequest(message);
 		}
@@ -156,22 +149,20 @@ int AuthenticationHub::handleAuthenticationRequest(Message *message) noexcept {
 	 * BODY: variable in Request and Response
 	 * TOTAL: at least 32 bytes in Request and Response
 	 */
-	auto origin = message->getOrigin();
 	Authenticator *authenticator = nullptr;
-	//-----------------------------------------------------------------
-	if (!waitlist.hmGet(origin, authenticator) || !authenticator) {
+	if (!waitlist.hmGet(message->getOrigin(), authenticator)
+			|| !authenticator) {
 		return handleInvalidRequest(message);
 	}
-	//-----------------------------------------------------------------
-	auto proofLength = message->getPayloadLength();
-	const unsigned char *binary = nullptr;
-	unsigned int bytes = 0;
+
+	Data proof { nullptr, 0 };
 	bool success = authenticator->authenticateUser(message->getBytes(0),
-			proofLength) && authenticator->generateHostProof(binary, bytes)
-			&& (bytes && (bytes < Message::PAYLOAD_SIZE));
+			message->getPayloadLength())
+			&& authenticator->generateHostProof(proof.base, proof.length)
+			&& (proof.length && (proof.length < Message::PAYLOAD_SIZE));
 	if (success) {
-		message->setBytes(0, binary, bytes);
-		message->putLength(Message::HEADER_SIZE + bytes);
+		message->setBytes(0, proof.base, proof.length);
+		message->putLength(Message::HEADER_SIZE + proof.length);
 		message->putStatus(WH_AQLF_ACCEPTED);
 		message->writeSource(0);
 		message->writeDestination(0);
@@ -180,7 +171,7 @@ int AuthenticationHub::handleAuthenticationRequest(Message *message) noexcept {
 	} else {
 		//Free up the memory and stop the <source> from making further requests
 		delete authenticator;
-		waitlist.hmReplace(origin, nullptr, authenticator);
+		waitlist.hmReplace(message->getOrigin(), nullptr, authenticator);
 		return handleInvalidRequest(message);
 	}
 }
@@ -214,10 +205,13 @@ int AuthenticationHub::handleInvalidRequest(Message *message) noexcept {
 	return 0;
 }
 
+bool AuthenticationHub::isBanned(unsigned long long identity) const noexcept {
+	return false;
+}
+
 bool AuthenticationHub::loadIdentity(Authenticator *authenticator,
-		unsigned long long identity, const unsigned char *nonce,
-		unsigned int nonceLength) noexcept {
-	if (!authenticator || !nonce || !nonceLength || !ctx.connInfo
+		unsigned long long identity, const Data &nonce) noexcept {
+	if (!authenticator || !nonce.base || !nonce.length || !ctx.connInfo
 			|| !ctx.query) {
 		return false;
 	}
@@ -229,7 +223,7 @@ bool AuthenticationHub::loadIdentity(Authenticator *authenticator,
 		return false;
 	}
 
-	char identityString[128];
+	char identityString[64];
 	memset(identityString, 0, sizeof(identityString));
 	snprintf(identityString, sizeof(identityString), "%llu", identity);
 
@@ -245,40 +239,38 @@ bool AuthenticationHub::loadIdentity(Authenticator *authenticator,
 		return false;
 	}
 	//-----------------------------------------------------------------
+	auto salt = PQgetvalue(res, 0, 1);
+	auto verifier = PQgetvalue(res, 0, 2);
 	auto group = PQgetvalue(res, 0, 3);
+
 	authenticator->setGroup(
 			group == nullptr ? 0xff : ntohl(*((uint32_t*) group)));
-	auto status = authenticator->identify(identity, nonce, nonceLength,
-			PQgetvalue(res, 0, 1), PQgetvalue(res, 0, 2));
+	auto status = authenticator->identify(identity, nonce.base, nonce.length,
+			salt, verifier);
 	//-----------------------------------------------------------------
 	PQclear(res);
 	PQfinish(conn);
 	return status;
 }
 
-bool AuthenticationHub::isBanned(unsigned long long identity) const noexcept {
-	return false;
-}
-
 int AuthenticationHub::generateIdentificationResponse(Message *message,
-		unsigned int saltLength, unsigned int nonceLength,
-		const unsigned char *salt, const unsigned char *nonce) noexcept {
+		const Data &salt, const Data &nonce) noexcept {
 	if (message) {
-		if (!saltLength || !nonceLength || !salt || !nonce
-				|| (saltLength + nonceLength + 2 * sizeof(uint16_t)
+		if (!salt.length || !nonce.length || !salt.base || !nonce.base
+				|| (salt.length + nonce.length + 2 * sizeof(uint16_t)
 						> Message::PAYLOAD_SIZE)) {
 			return handleInvalidRequest(message);
 		}
 
-		message->setData16(0, saltLength);
-		message->setBytes(2 * sizeof(uint16_t), salt, saltLength);
+		message->setData16(0, salt.length);
+		message->setBytes(2 * sizeof(uint16_t), salt.base, salt.length);
 
-		message->setData16(sizeof(uint16_t), nonceLength);
-		message->setBytes(2 * sizeof(uint16_t) + saltLength, nonce,
-				nonceLength);
+		message->setData16(sizeof(uint16_t), nonce.length);
+		message->setBytes(2 * sizeof(uint16_t) + salt.length, nonce.base,
+				nonce.length);
 		message->putLength(
-				Message::HEADER_SIZE + 2 * sizeof(uint64_t) + saltLength
-						+ nonceLength);
+				Message::HEADER_SIZE + 2 * sizeof(uint64_t) + salt.length
+						+ nonce.length);
 		message->putStatus(WH_AQLF_ACCEPTED);
 		message->writeSource(0);
 		message->writeDestination(0);
@@ -287,7 +279,7 @@ int AuthenticationHub::generateIdentificationResponse(Message *message,
 	return 0;
 }
 
-int AuthenticationHub::_deleteAuthenticators(unsigned int index,
+int AuthenticationHub::deleteAuthenticators(unsigned int index,
 		void *arg) noexcept {
 	Authenticator *authenticator = nullptr;
 	((AuthenticationHub*) arg)->waitlist.getValue(index, authenticator);
