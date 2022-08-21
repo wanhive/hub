@@ -19,6 +19,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 
 - Reset **Reactor**'s timeout to the default value on initialization.
+- Resolve the default service-type (configuration value) correctly in **Hub**.
 
 ### Removed
 
