@@ -57,11 +57,12 @@ void OverlayHub::configure(void *arg) {
 		ctx.bootstrapNodes[n] = 0;
 
 		WH_LOG_DEBUG(
-				"Overlay hub settings: \n" "ENABLE_REGISTRATION=%s, AUTHENTICATE_CLIENTS=%s, CONNECT_TO_OVERLAY=%s,\n" "TABLE_UPDATE_CYCLE=%ums, BLOCKING_IO_TIMEOUT=%ums, RETRY_INTERVAL=%ums,\n" "NETMASK=%s, GROUP_ID=%u\n",
+				"Overlay hub settings: \n" "ENABLE_REGISTRATION=%s, AUTHENTICATE_CLIENTS=%s, CONNECT_TO_OVERLAY=%s,\n" "TABLE_UPDATE_CYCLE=%ums, BLOCKING_IO_TIMEOUT=%ums, RETRY_INTERVAL=%ums,\n" "NETMASK=%#llx, GROUP_ID=%u\n",
 				WH_BOOLF(ctx.enableRegistration),
 				WH_BOOLF(ctx.authenticateClient),
 				WH_BOOLF(ctx.connectToOverlay), ctx.updateCycle,
-				ctx.requestTimeout, ctx.retryInterval, netmaskStr, ctx.groupId);
+				ctx.requestTimeout, ctx.retryInterval, ctx.netMask,
+				ctx.groupId);
 		installService();
 		installSettingsMonitor();
 	} catch (const BaseException &e) {
