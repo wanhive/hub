@@ -37,7 +37,13 @@ struct LogicEvent {
  */
 class Logic: public Watcher {
 public:
+	/**
+	 * Default constructor
+	 */
 	Logic();
+	/**
+	 * Destructor
+	 */
 	~Logic();
 	//-----------------------------------------------------------------
 	void start() override;
