@@ -45,11 +45,10 @@ protected:
 	 */
 	bool isConnected() const noexcept;
 	/**
-	 * Allows derived classes to override the secure password loaded from the
-	 * configuration file.
+	 * Sets a secure password for authentication.
 	 * @param password the secure password
-	 * @param length passowrd length in bytes
-	 * @param rounds number of hash rounds
+	 * @param length password length in bytes
+	 * @param rounds password hash rounds
 	 */
 	void setPassword(const unsigned char *password, unsigned int length,
 			unsigned int rounds) noexcept;
@@ -88,14 +87,12 @@ private:
 	void clearIdentifiers() noexcept;
 	void clear() noexcept;
 private:
-	bool connected;
-
 	/*
-	 * The configuration data
+	 * Configuration data
 	 */
 	struct {
-		//Usually, clear text password
-		const unsigned char *password;
+		//Password for authentication
+		unsigned char password[64];
 		//Password length
 		unsigned int passwordLength;
 		//Password hash rounds
@@ -107,11 +104,10 @@ private:
 	} ctx;
 
 	/*
-	 * For bootstrapping and connection management
+	 * Bootstrapping and connection management
 	 */
-	static constexpr unsigned int NODES = 16;
 	struct {
-		StaticBuffer<unsigned long long, NODES> identifiers;
+		StaticBuffer<unsigned long long, 16> identifiers;
 		unsigned long long root;
 
 		Socket *auth;
@@ -123,6 +119,7 @@ private:
 
 		Timer timer;
 		int stage;
+		bool connected;
 	} bs;
 };
 

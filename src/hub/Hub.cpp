@@ -266,10 +266,15 @@ void Hub::configure(void *arg) {
 
 		ctx.listen = conf.getBoolean("HUB", "listen");
 		ctx.backlog = conf.getNumber("HUB", "backlog");
-		ctx.serviceName = conf.getString("HUB", "serviceName");
-		ctx.serviceType = conf.getString("HUB", "serviceType");
-		ctx.maxIOEvents = conf.getNumber("HUB", "maxIOEvents");
 
+		::memset(ctx.serviceName, 0, sizeof(ctx.serviceName));
+		::strncpy(ctx.serviceName, conf.getString("HUB", "serviceName", ""),
+				sizeof(ctx.serviceName) - 1);
+		::memset(ctx.serviceType, 0, sizeof(ctx.serviceType));
+		::strncpy(ctx.serviceType, conf.getString("HUB", "serviceType", ""),
+				sizeof(ctx.serviceType) - 1);
+
+		ctx.maxIOEvents = conf.getNumber("HUB", "maxIOEvents");
 		ctx.timerExpiration = conf.getNumber("HUB", "timerExpiration");
 		ctx.timerInterval = conf.getNumber("HUB", "timerInterval");
 		ctx.semaphore = conf.getBoolean("HUB", "semaphore");
@@ -316,7 +321,7 @@ void Hub::configure(void *arg) {
 		ctx.verbosity = Logger::getDefault().getLevel();
 		//-----------------------------------------------------------------
 		WH_LOG_DEBUG(
-				"Hub setings:\n" "LISTEN=%s, BACKLOG=%d, SERVICENAME=%s, SERVICETYPE=%s,\n" "MAX_IO_EVENTS=%u, TIMER_EXPIRATION=%ums, TIMER_INTERVAL=%ums, SEMAPHORE=%s,\n" "SYNCHRONOUS_SIGNAL=%s, CONNECTION_POOL_SIZE=%u, MESSAGE_POOL_SIZE=%u,\n" "MAX_NEW_CONNECTIONS=%u, TMP_CONNECTION_TIMEOUT=%ums, CYCLEINLIMIT=%u,\n" "OUTQUEUELIMIT=%u THROTTLE=%s, RESERVED_MESSAGES=%u, ALLOW_PACKET_DROP=%s,\n" "MESSAGE_TTL=%u, ANSWER_RATIO=%f, FORWARD_RATIO=%f, LOG_LEVEL=%s\n",
+				"Hub setings:\n" "LISTEN=%s, BACKLOG=%d, SERVICE_NAME='%s', SERVICE_TYPE='%s',\n" "MAX_IO_EVENTS=%u, TIMER_EXPIRATION=%ums, TIMER_INTERVAL=%ums, SEMAPHORE=%s,\n" "SYNCHRONOUS_SIGNAL=%s, CONNECTION_POOL_SIZE=%u, MESSAGE_POOL_SIZE=%u,\n" "MAX_NEW_CONNECTIONS=%u, TMP_CONNECTION_TIMEOUT=%ums, CYCLE_IN_LIMIT=%u,\n" "OUT_QUEUE_LIMIT=%u, THROTTLE=%s, RESERVED_MESSAGES=%u, ALLOW_PACKET_DROP=%s,\n" "MESSAGE_TTL=%u, ANSWER_RATIO=%f, FORWARD_RATIO=%f, LOG_LEVEL=%s\n",
 				WH_BOOLF(ctx.listen), ctx.backlog, ctx.serviceName,
 				ctx.serviceType, ctx.maxIOEvents, ctx.timerExpiration,
 				ctx.timerInterval, WH_BOOLF(ctx.semaphore),
@@ -641,19 +646,13 @@ void Hub::initListener() {
 		//-----------------------------------------------------------------
 		auto serviceName = ctx.serviceName;
 		auto isUnixSocket = false;
-		NameInfo nodeAddress;
-		if (!serviceName) {
-			Identity::getAddress(getUid(), nodeAddress);
-			if (!strcasecmp(nodeAddress.service, "unix")) {
-				isUnixSocket = true;
-				serviceName = nodeAddress.host;
-			} else {
-				serviceName = nodeAddress.service;
-				isUnixSocket = false;
-			}
+		NameInfo ni; //keep in scope
+		if (!serviceName[0]) {
+			Identity::getAddress(getUid(), ni);
+			isUnixSocket = (::strcasecmp(ni.service, "unix") == 0);
+			serviceName = isUnixSocket ? ni.host : ni.service;
 		} else {
-			isUnixSocket = ctx.serviceType
-					&& !strcasecmp(ctx.serviceType, "unix");
+			isUnixSocket = (::strcasecmp(ctx.serviceType, "unix") == 0);
 		}
 		//-----------------------------------------------------------------
 		listener = new Socket(serviceName, ctx.backlog, isUnixSocket);

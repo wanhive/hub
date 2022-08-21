@@ -407,15 +407,15 @@ private:
 	 * Hub configuration
 	 */
 	struct {
-		//If set then the hub will create a listening socket
+		//Accept incoming connections
 		bool listen;
-		//Listener Backlog
+		//Listening backlog
 		int backlog;
-		//Listener binds to this address if provided
-		const char *serviceName;
-		//Type of the service (unix/tcp)
-		const char *serviceType;
-		//Maximum number of IO events the selector must return
+		//Default binding address (for listening socket)
+		char serviceName[128];
+		//Default binding address' type (unix/inet)
+		char serviceType[8];
+		//Maximum number of IO events to process in each event loop
 		unsigned int maxIOEvents;
 		//Timer settings: initial expiration in miliseconds
 		unsigned int timerExpiration;
@@ -454,7 +454,7 @@ private:
 	} ctx;
 	//-----------------------------------------------------------------
 	/*
-	 * The worker thread
+	 * Worker thread
 	 */
 	class Worker final: public Task {
 	public:

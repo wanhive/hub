@@ -48,7 +48,7 @@ void ClientHub::stop(Watcher *w) noexcept {
 		bs.auth = nullptr;
 	} else if (w == bs.node) {
 		bs.node = nullptr;
-		connected = false;
+		bs.connected = false;
 	}
 
 	Hub::stop(w);
@@ -58,21 +58,18 @@ void ClientHub::configure(void *arg) {
 	try {
 		Hub::configure(arg);
 		auto &conf = Identity::getConfiguration();
-		ctx.password = (const unsigned char*) conf.getString("CLIENT",
-				"password");
-		if (ctx.password) {
-			ctx.passwordLength = strlen((const char*) ctx.password);
-		} else {
-			ctx.passwordLength = 0;
-		}
-		ctx.passwordHashRounds = conf.getNumber("CLIENT", "passwordHashRounds");
+
+		auto password = conf.getString("CLIENT", "password", "");
+		auto rounds = conf.getNumber("CLIENT", "passwordHashRounds");
+		setPassword((const unsigned char*) password, strlen(password), rounds);
+
 		ctx.timeOut = conf.getNumber("CLIENT", "timeOut", 5000);
 		ctx.retryInterval = conf.getNumber("CLIENT", "retryInterval", 10000);
 
 		auto mask = conf.getBoolean("OPT", "secureLog", true); //default: true
 
 		WH_LOG_DEBUG(
-				"Client hub settings:\nPASSWORD=\"%s\", HASHROUNDS=%u, TIMEOUT=%ums, RETRYINTERVAL=%ums\n",
+				"Client hub settings:\nPASSWORD='%s', HASH_ROUNDS=%u,\n" "IO_TIMEOUT=%ums, RETRY_INTERVAL=%ums\n",
 				WH_MASK_STR(mask, (const char *)ctx.password),
 				WH_MASK_VAL(mask, ctx.passwordHashRounds), ctx.timeOut,
 				ctx.retryInterval);
@@ -114,7 +111,7 @@ void ClientHub::route(Message *message) noexcept {
 		break;
 	case WH_CMD_BASIC:
 		if (isStage(WHC_ERROR) || isStage(WHC_REGISTERED) || isStage(WHC_FATAL)
-				|| !bs.node || (ctx.password && !bs.auth)) {
+				|| !bs.node || (ctx.passwordLength && !bs.auth)) {
 			//Bad message
 		} else if (!(origin == bs.node->getUid()
 				|| (bs.auth && origin == bs.auth->getUid()))) {
@@ -174,14 +171,21 @@ void ClientHub::maintain() noexcept {
 }
 
 bool ClientHub::isConnected() const noexcept {
-	return connected;
+	return bs.connected;
 }
 
 void ClientHub::setPassword(const unsigned char *password, unsigned int length,
 		unsigned int rounds) noexcept {
-	ctx.password = password;
-	ctx.passwordLength = length;
-	ctx.passwordHashRounds = rounds;
+	if (password && length) {
+		length = Twiddler::min(length, sizeof(ctx.password)); //trim
+		::memcpy(ctx.password, password, length);
+		ctx.passwordLength = length;
+		ctx.passwordHashRounds = rounds;
+	} else {
+		::memset(ctx.password, 0, sizeof(password));
+		ctx.passwordLength = 0;
+		ctx.passwordHashRounds = 0;
+	}
 }
 
 void ClientHub::connectToAuthenticator() noexcept {
@@ -193,7 +197,7 @@ void ClientHub::connectToAuthenticator() noexcept {
 			throw Exception(EX_INVALIDSTATE);
 		}
 
-		if (!ctx.password) {
+		if (!ctx.passwordLength) {
 			WH_LOG_DEBUG("Using PKI for authentication");
 			setStage(WHC_BOOTSTRAP);
 			return;
@@ -350,7 +354,8 @@ void ClientHub::findRoot() noexcept {
 
 void ClientHub::initAuthorization() noexcept {
 	try {
-		if (!isStage(WHC_AUTHORIZE) || !bs.node || (ctx.password && !bs.auth)) {
+		if (!isStage(WHC_AUTHORIZE) || !bs.node
+				|| (ctx.passwordLength && !bs.auth)) {
 			throw Exception(EX_INVALIDSTATE);
 		} else if (bs.auth) {
 			auto msg = createRegistrationRequest(false);
@@ -515,7 +520,7 @@ void ClientHub::processRegistrationResponse(Message *msg) noexcept {
 	auto status = msg->getStatus();
 	if (!isStage(WHC_AUTHORIZE)) {
 		setStage(WHC_ERROR);
-	} else if (!bs.node || (ctx.password && !bs.auth)
+	} else if (!bs.node || (ctx.passwordLength && !bs.auth)
 			|| status == WH_AQLF_REJECTED) {
 		setStage(WHC_ERROR);
 	} else if (origin == bs.node->getUid() && status == WH_AQLF_ACCEPTED) {
@@ -535,9 +540,9 @@ void ClientHub::processRegistrationResponse(Message *msg) noexcept {
 
 void ClientHub::setStage(int stage) noexcept {
 	if (stage != bs.stage) {
-		connected = (stage == WHC_REGISTERED);
-		bs.stage = stage;
 		bs.timer.now();
+		bs.stage = stage;
+		bs.connected = (stage == WHC_REGISTERED);
 
 		if (stage == WHC_IDENTIFY || stage == WHC_BOOTSTRAP) {
 			clearIdentifiers();
@@ -599,7 +604,6 @@ void ClientHub::clearIdentifiers() noexcept {
 }
 
 void ClientHub::clear() noexcept {
-	connected = false;
 	memset(&ctx, 0, sizeof(ctx));
 
 	clearIdentifiers();
@@ -607,6 +611,7 @@ void ClientHub::clear() noexcept {
 	bs.node = nullptr;
 	memset(&bs.nonce, 0, sizeof(bs.nonce));
 	bs.stage = WHC_IDENTIFY;
+	bs.connected = false;
 }
 
 } /* namespace wanhive */
