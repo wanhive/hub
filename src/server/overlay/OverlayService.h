@@ -30,7 +30,7 @@ public:
 	/**
 	 * Destructor
 	 */
-	virtual ~OverlayService();
+	~OverlayService();
 	/**
 	 * Reconfigures the object (cleans up the internal structures before loading
 	 * the fresh settings).
