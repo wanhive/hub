@@ -29,7 +29,7 @@ enum DigestType {
 class Sha {
 public:
 	Sha(DigestType type) noexcept;
-	virtual ~Sha();
+	~Sha();
 
 	bool init() noexcept;
 	bool update(const void *data, size_t dataLength) noexcept;

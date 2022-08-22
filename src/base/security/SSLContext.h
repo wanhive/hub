@@ -25,7 +25,7 @@ class SSLContext {
 public:
 	SSLContext() noexcept;
 	SSLContext(const char *certificate, const char *privateKey);
-	virtual ~SSLContext();
+	~SSLContext();
 
 	//The current context (possibly nullptr if not initialized)
 	SSL_CTX* getContext() const noexcept;
