@@ -160,7 +160,7 @@ public:
 	 * @param option key's name
 	 * @return true if the property exists, false otherwise
 	 */
-	bool haveValue(const char *section, const char *option) noexcept;
+	bool exists(const char *section, const char *option) noexcept;
 	/**
 	 * Returns a status code describing the configuration data's state.
 	 * @return 0 if the object is empty or doesn't contain any uncommitted

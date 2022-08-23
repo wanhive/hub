@@ -269,9 +269,9 @@ char* Configuration::getPathName(const char *section, const char *option,
 	return expandPath(getString(section, option, defaultValue));
 }
 
-bool Configuration::haveValue(const char *section, const char *option) noexcept {
+bool Configuration::exists(const char *section, const char *option) noexcept {
 	if (section && option) {
-		return findEntry(section, option);
+		return (findEntry(section, option) != nullptr);
 	} else {
 		return false;
 	}
