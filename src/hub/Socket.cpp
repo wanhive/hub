@@ -104,7 +104,7 @@ void Socket::start() {
 }
 
 void Socket::stop() noexcept {
-	Network::shutdown(this->getHandle());
+	Network::shutdown(getHandle());
 }
 
 bool Socket::callback(void *arg) noexcept {
@@ -149,7 +149,7 @@ Socket* Socket::accept(bool blocking) {
 	auto sfd = -1;
 	try {
 		SocketAddress sa;
-		sfd = Network::accept(this->getHandle(), sa, blocking);
+		sfd = Network::accept(getHandle(), sa, blocking);
 		if (sfd == -1) {
 			clearEvents(IO_READ); //Would block
 			return nullptr;
