@@ -70,7 +70,7 @@ void Interrupt::create(bool blocking) {
 	} else if ((fd = signalfd(-1, &mask, blocking ? 0 : SFD_NONBLOCK)) == -1) {
 		throw SystemException();
 	} else {
-		setHandle(fd);
+		Descriptor::setHandle(fd);
 	}
 }
 

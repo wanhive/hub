@@ -98,7 +98,7 @@ unsigned int Alarm::getInterval() const noexcept {
 void Alarm::create(bool blocking) {
 	auto fd = timerfd_create(CLOCK_MONOTONIC, blocking ? 0 : TFD_NONBLOCK);
 	if (fd != -1) {
-		setHandle(fd);
+		Descriptor::setHandle(fd);
 	} else {
 		throw SystemException();
 	}
@@ -108,14 +108,14 @@ void Alarm::update(unsigned int expiration, unsigned int interval) {
 	struct itimerspec time;
 	milsToSpec(expiration, time.it_value);
 	milsToSpec(interval, time.it_interval);
-	if (timerfd_settime(getHandle(), 0, &time, nullptr)) {
+	if (timerfd_settime(Descriptor::getHandle(), 0, &time, nullptr)) {
 		throw SystemException();
 	}
 }
 
 void Alarm::settings(unsigned int &expiration, unsigned int &interval) {
 	struct itimerspec time;
-	if (timerfd_gettime(getHandle(), &time) == 0) {
+	if (timerfd_gettime(Descriptor::getHandle(), &time) == 0) {
 		expiration = specToMils(time.it_value);
 		interval = specToMils(time.it_interval);
 	} else {

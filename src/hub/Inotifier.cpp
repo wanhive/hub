@@ -21,7 +21,7 @@ Inotifier::Inotifier(bool blocking) :
 		offset(0), limit(0) {
 	auto fd = inotify_init1(!blocking ? IN_NONBLOCK : 0);
 	if (fd != -1) {
-		setHandle(fd);
+		Descriptor::setHandle(fd);
 		memset(buffer, 0, sizeof(buffer));
 	} else {
 		throw SystemException();
@@ -54,7 +54,7 @@ bool Inotifier::publish(void *arg) noexcept {
 }
 
 int Inotifier::add(const char *pathname, uint32_t mask) {
-	auto wd = inotify_add_watch(getHandle(), pathname, mask);
+	auto wd = inotify_add_watch(Descriptor::getHandle(), pathname, mask);
 	if (wd != -1) {
 		return wd;
 	} else {
@@ -63,7 +63,7 @@ int Inotifier::add(const char *pathname, uint32_t mask) {
 }
 
 void Inotifier::remove(int identifier) {
-	if (inotify_rm_watch(getHandle(), identifier)) {
+	if (inotify_rm_watch(Descriptor::getHandle(), identifier)) {
 		throw SystemException();
 	}
 }

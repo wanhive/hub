@@ -22,7 +22,7 @@ Event::Event(bool semaphore, bool blocking) {
 			| (blocking ? 0 : EFD_NONBLOCK);
 	auto fd = eventfd(0, flags);
 	if (fd != -1) {
-		setHandle(fd);
+		Descriptor::setHandle(fd);
 	} else {
 		throw SystemException();
 	}
