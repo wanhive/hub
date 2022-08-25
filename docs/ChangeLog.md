@@ -13,8 +13,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
-- Clean up the overlay hub implementation.
-- Update **Descriptor**'s public interface.
+- Clean up overlay and authentication hub implementations.
+- Update the reactor pattern implementation.
 
 ### Fixed
 
