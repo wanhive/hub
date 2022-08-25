@@ -98,7 +98,7 @@ public:
 	 * Returns a file handle to the reactor.
 	 * @return the file handle
 	 */
-	ReactorHandle getHandle() const noexcept;
+	WatcherHandle getHandle() const noexcept;
 };
 
 } /* namespace wanhive */

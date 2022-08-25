@@ -45,7 +45,7 @@ private:
 };
 
 class Reactor;
-using ReactorHandle=Handle<Reactor>;
+using WatcherHandle=Handle<Reactor>;
 
 } /* namespace wanhive */
 
