@@ -42,4 +42,8 @@ bool Watcher::isReady() const noexcept {
 	return Descriptor::isReady(testFlags(WATCHER_OUT));
 }
 
+ReactorHandle Watcher::getHandle() const noexcept {
+	return ReactorHandle { Descriptor::getHandle() };
+}
+
 } /* namespace wanhive */

@@ -65,10 +65,10 @@ WH_BASESOURCES =  $(WH_BASE_COMMONSOURCES) $(WH_BASE_DSSOURCES) $(WH_BASE_IPCSOU
 	$(WH_BASE_SECURITYSOURCES) $(WH_BASEUNIXSOURCES) $(WH_BASE_TOPSOURCES)
 
 ## src/reactor collection
-WH_REACTORHEADERS = reactor/Descriptor.h reactor/Handler.h reactor/Reactor.h \
-	reactor/Watcher.h reactor/Watchers.h
-WH_REACTORSOURCES = reactor/Descriptor.cpp reactor/Reactor.cpp reactor/Watcher.cpp \
-	reactor/Watchers.cpp
+WH_REACTORHEADERS = reactor/Descriptor.h reactor/Handle.h reactor/Handler.h \
+	reactor/Reactor.h reactor/Watcher.h reactor/Watchers.h
+WH_REACTORSOURCES = reactor/Descriptor.cpp reactor/Reactor.cpp \
+	reactor/Watcher.cpp reactor/Watchers.cpp
 
 ## src/util collection
 WH_UTILHEADERS = util/Authenticator.h util/Endpoint.h util/FlowControl.h \

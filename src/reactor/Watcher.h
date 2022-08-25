@@ -13,6 +13,7 @@
 #ifndef WH_REACTOR_WATCHER_H_
 #define WH_REACTOR_WATCHER_H_
 #include "Descriptor.h"
+#include "Handle.h"
 
 namespace wanhive {
 /**
@@ -90,9 +91,14 @@ public:
 	//-----------------------------------------------------------------
 	/**
 	 * Checks whether the watcher has pending jobs (see Descriptor::isReady()).
-	 * @return true if the watcher has pending jobs, false otherwise.
+	 * @return true if the watcher has pending jobs, false otherwise
 	 */
 	bool isReady() const noexcept;
+	/**
+	 * Returns a file handle to the reactor.
+	 * @return the file handle
+	 */
+	ReactorHandle getHandle() const noexcept;
 };
 
 } /* namespace wanhive */

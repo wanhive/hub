@@ -20,12 +20,11 @@
 namespace wanhive {
 /**
  * Abstraction of file descriptors
- * Thread safe at class level
  */
 class Descriptor: public State, private File {
 public:
 	/**
-	 * Default constructor: doesn't assign a valid file descriptor.
+	 * Default constructor: assigns an invalid file descriptor.
 	 */
 	Descriptor() noexcept;
 	/**
@@ -48,14 +47,13 @@ public:
 	 * @param uid the unique identifier
 	 */
 	void setUid(unsigned long long uid) noexcept;
-	//-----------------------------------------------------------------
+protected:
 	/**
 	 * Returns the associated file descriptor (call Descriptor::closeHandle() to
 	 * close the associated file descriptor, don't use the close() system call).
 	 * @return the associated file descriptor (can be invalid)
 	 */
 	int getHandle() const noexcept;
-protected:
 	/**
 	 * Sets a new file descriptor after closing the existing one.
 	 * @param fd the new file descriptor

@@ -96,6 +96,7 @@
 #include "hub/Socket.h"
 #include "hub/Topic.h"
 #include "reactor/Descriptor.h"
+#include "reactor/Handle.h"
 #include "reactor/Handler.h"
 #include "reactor/Reactor.h"
 #include "reactor/Watcher.h"
