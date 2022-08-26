@@ -28,7 +28,11 @@ enum WatcherFlag : uint32_t {
 	WATCHER_OUT = 32, /**< Holds outgoing data */
 	WATCHER_MULTICAST = 64/**< Multicasting enabled */
 };
-
+//-----------------------------------------------------------------
+//Reactor-specific file handle
+class Reactor;
+using WatcherHandle=Handle<Reactor>;
+//-----------------------------------------------------------------
 /**
  * Reactor pattern implementation (resource descriptor and request handler)
  * @ref http://www.dre.vanderbilt.edu/~schmidt/PDF/reactor-siemens.pdf

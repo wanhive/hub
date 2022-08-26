@@ -44,9 +44,6 @@ private:
 	friend T;
 };
 
-class Reactor;
-using WatcherHandle=Handle<Reactor>;
-
 } /* namespace wanhive */
 
 #endif /* WH_REACTOR_HANDLE_H_ */
