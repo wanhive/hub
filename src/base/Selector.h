@@ -121,11 +121,10 @@ public:
 	bool timedOut() const noexcept;
 	//-----------------------------------------------------------------
 	/**
-	 * Returns information about the next ready file descriptor that has some
-	 * events available.
-	 * @return object describing a ready file descriptor
+	 * Returns the next event.
+	 * @return pointer to object describing the next event
 	 */
-	SelectionEvent* next() noexcept;
+	const SelectionEvent* next() noexcept;
 	/**
 	 * Returns pointer to the user data associated with a ready file descriptor.
 	 * @param se object describing a ready file descriptor (see Selector::next())

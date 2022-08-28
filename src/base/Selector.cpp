@@ -103,7 +103,7 @@ bool Selector::timedOut() const noexcept {
 	return _timedOut;
 }
 
-SelectionEvent* Selector::next() noexcept {
+const SelectionEvent* Selector::next() noexcept {
 	return selected.get();
 }
 

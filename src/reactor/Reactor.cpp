@@ -72,7 +72,7 @@ void Reactor::poll(bool block) {
 	auto to = (readyList.isEmpty() && block) ? timeout : 0;
 	selector.select(to);
 
-	SelectionEvent *se;
+	const SelectionEvent *se;
 	while ((se = selector.next())) {
 		Watcher *watcher = (Watcher*) Selector::attachment(se);
 		watcher->setEvents(Selector::events(se));
