@@ -67,7 +67,7 @@ public:
 	 * Returns the next notification (see Inotifier::read()).
 	 * @return the next notification, nullptr if no notification is pending
 	 */
-	const InotifyEvent* next();
+	const InotifyEvent* next() noexcept;
 	/**
 	 * Returns the watch descriptor associated with the given notification.
 	 * @param e the notification

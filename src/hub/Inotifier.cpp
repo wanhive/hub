@@ -81,7 +81,7 @@ ssize_t Inotifier::read() {
 	return nRead;
 }
 
-const InotifyEvent* Inotifier::next() {
+const InotifyEvent* Inotifier::next() noexcept {
 	if (limit && offset < limit) {
 		auto event = (InotifyEvent*) (buffer + offset);
 		offset += sizeof(InotifyEvent) + event->len;
