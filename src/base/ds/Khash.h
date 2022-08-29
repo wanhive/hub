@@ -229,46 +229,11 @@ public:
 	 */
 	unsigned int end() const noexcept;
 	/**
-	 * Clear all elements from the hash table without deallocating it's memory.
+	 * Clears out the hash table (doesn't deallocate the memory).
 	 */
 	void clear() noexcept;
 private:
-	//Initialize a hash table.
-	void init() noexcept;
-	//Destroy a hash table.
-	void destroy() noexcept;
-	//Update <capacity>
-	void capacity(unsigned int capacity) noexcept {
-		bucket.capacity = capacity;
-	}
-	//Update <size>
-	void size(unsigned int size) noexcept {
-		bucket.size = size;
-	}
-	//Update <occupied>
-	void occupied(unsigned int occupied) noexcept {
-		bucket.occupied = occupied;
-	}
-	//Update the upper bound
-	void upperBound(unsigned int upperBound) noexcept {
-		bucket.upperBound = upperBound;
-	}
-	uint32_t* getFlags() const noexcept {
-		return (bucket.flags);
-	}
-	void setFlags(uint32_t *flags) noexcept {
-		WH_free(bucket.flags);
-		bucket.flags = flags;
-	}
-
-	void resetFlags() noexcept {
-		if (bucket.flags) {
-			memset(bucket.flags, 0xaa,
-					fSize(bucket.capacity) * sizeof(uint32_t));
-		}
-	}
-
-	//Delete the storage
+	//Delete the key-value buffer
 	void deleteContainer() noexcept {
 		if (ISMAP) {
 			WH_free(bucket.entry);
@@ -278,7 +243,7 @@ private:
 			bucket.keys = nullptr;
 		}
 	}
-	//Resize the internal storage
+	//Resize the  key-value buffer
 	void resizeContainer(unsigned int size) noexcept {
 		if (ISMAP) {
 			WH_resize(bucket.entry, size);
@@ -287,18 +252,29 @@ private:
 		}
 	}
 
-	//Delete the flags container
-	void deleteFlags() noexcept {
-		WH_free(bucket.flags);
-		bucket.flags = nullptr;
+	//Update the capacity
+	void capacity(unsigned int capacity) noexcept {
+		bucket.capacity = capacity;
+	}
+	//Update the size (number of items in the hash table)
+	void size(unsigned int size) noexcept {
+		bucket.size = size;
+	}
+	//Update the occupied slots count (size + deleted)
+	void occupied(unsigned int occupied) noexcept {
+		bucket.occupied = occupied;
+	}
+	//Update the upper bound
+	void upperBound(unsigned int upperBound) noexcept {
+		bucket.upperBound = upperBound;
 	}
 
-	//Get key at given an iterator
+	//Get the iterator's key
 	const KEY& getKey(unsigned int x) const noexcept {
 		return (ISMAP ? bucket.entry[x].key : bucket.keys[x]);
 	}
 
-	//Set the key at given iterator
+	//Set the iterator's key
 	void setKey(unsigned int x, KEY const &key) noexcept {
 		if (ISMAP) {
 			bucket.entry[x].key = key;
@@ -307,22 +283,51 @@ private:
 		}
 	}
 
-	//Get value given an iterator
+	//Get the iterator's value
 	const VALUE& getValue(unsigned int x) const noexcept {
 		return (bucket.entry[x].value);
 	}
 
-	//Get value as lvalue given an iterator
+	//Get the iterator's value as lvalue
 	VALUE& valueAt(unsigned int x) noexcept {
 		return (bucket.entry[x].value);
 	}
 
-	//Create flags container for bucket size of <size>
+	//Get the flags buffer
+	uint32_t* getFlags() const noexcept {
+		return (bucket.flags);
+	}
+
+	//Set a new flags buffer (frees the existing one)
+	void setFlags(uint32_t *flags) noexcept {
+		WH_free(bucket.flags);
+		bucket.flags = flags;
+	}
+
+	//Reset the flags (set default value)
+	void resetFlags() noexcept {
+		resetFlags(bucket.flags, bucket.capacity);
+	}
+
+	//Delete the flags buffer
+	void deleteFlags() noexcept {
+		WH_free(bucket.flags);
+		bucket.flags = nullptr;
+	}
+
+	//Create new flags buffer for the given bucket size
 	static uint32_t* createFlags(unsigned int size) noexcept {
 		uint32_t *new_flags = (uint32_t*) WH_malloc(
 				fSize(size) * sizeof(uint32_t));
-		memset(new_flags, 0xaa, fSize(size) * sizeof(uint32_t));
+		resetFlags(new_flags, size);
 		return new_flags;
+	}
+
+	//Reset the flags (set default value)
+	static void resetFlags(uint32_t *flags, unsigned int size) noexcept {
+		if (flags) {
+			memset(flags, 0xaa, fSize(size) * sizeof(uint32_t));
+		}
 	}
 
 	//Check whether the bucket at <i> is empty
@@ -337,7 +342,7 @@ private:
 	static bool isEither(const uint32_t *flag, unsigned int i) noexcept {
 		return ((flag[i >> 4] >> ((i & 0xfU) << 1)) & 3);
 	}
-	//Set delete bit=false for bucket at <i>
+	//Set deleted bit=false for bucket at <i>
 	static void setIsdeletedFalse(uint32_t *flag, unsigned int i) noexcept {
 		(flag[i >> 4] &= ~(1ul << ((i & 0xfU) << 1)));
 	}
@@ -345,18 +350,19 @@ private:
 	static void setIsemptyFalse(uint32_t *flag, unsigned int i) noexcept {
 		(flag[i >> 4] &= ~(2ul << ((i & 0xfU) << 1)));
 	}
-	//Set both delete and empty bits=false for the bucket at <i>
+	//Set both deleted and empty bits=false for the bucket at <i>
 	static void setIsbothFalse(uint32_t *flag, unsigned int i) noexcept {
 		(flag[i >> 4] &= ~(3ul << ((i & 0xfU) << 1)));
 	}
-	//Set delete bit=true for the bucket at <i>
+	//Set deleted bit=true for the bucket at <i>
 	static void setIsdeletedTrue(uint32_t *flag, unsigned int i) noexcept {
 		(flag[i >> 4] |= 1ul << ((i & 0xfU) << 1));
 	}
-	//Size of flags container (@2 bits per slot)
-	static unsigned int fSize(unsigned int slots) noexcept {
-		return ((slots) < 16 ? 1 : (slots) >> 4);
+	//Calculate the number of 32-bit slots (@2 bits per entry)
+	static unsigned int fSize(unsigned int entries) noexcept {
+		return ((entries + 15) >> 4);
 	}
+
 	//Linear probe
 	static unsigned int linearProbe(const unsigned int index,
 			const unsigned int step, const unsigned int mask) noexcept {
@@ -367,7 +373,7 @@ private:
 		return (unsigned int) ((capacity * LOAD_FACTOR) + 0.5);
 	}
 private:
-	//Hashtable container
+	//Hash table's container
 	struct {
 		unsigned int capacity;	//Total number of slots, always power of two
 		unsigned int size;			//Total number of filled up slots
@@ -398,12 +404,13 @@ private:
 
 template<typename KEY, typename VALUE, bool ISMAP, typename HFN, typename EQFN> wanhive::Khash<
 		KEY, VALUE, ISMAP, HFN, EQFN>::Khash() noexcept {
-	init();
+	memset(&bucket, 0, sizeof(bucket));
 }
 
 template<typename KEY, typename VALUE, bool ISMAP, typename HFN, typename EQFN> wanhive::Khash<
 		KEY, VALUE, ISMAP, HFN, EQFN>::~Khash() {
-	destroy();
+	deleteContainer();
+	deleteFlags();
 }
 
 template<typename KEY, typename VALUE, bool ISMAP, typename HFN, typename EQFN> bool wanhive::Khash<
@@ -820,17 +827,6 @@ template<typename KEY, typename VALUE, bool ISMAP, typename HFN, typename EQFN> 
 	resetFlags();
 	size(0);		//No elements in the hash table
 	occupied(0);	//No deleted slots in the hash table
-}
-
-template<typename KEY, typename VALUE, bool ISMAP, typename HFN, typename EQFN> void wanhive::Khash<
-		KEY, VALUE, ISMAP, HFN, EQFN>::init() noexcept {
-	memset(&bucket, 0, sizeof(bucket));
-}
-
-template<typename KEY, typename VALUE, bool ISMAP, typename HFN, typename EQFN> void wanhive::Khash<
-		KEY, VALUE, ISMAP, HFN, EQFN>::destroy() noexcept {
-	deleteContainer();
-	deleteFlags();
 }
 
 #endif /* WH_BASE_DS_KHASH_H_ */
