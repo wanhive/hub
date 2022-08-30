@@ -315,18 +315,18 @@ private:
 		bucket.flags = nullptr;
 	}
 
-	//Create new flags buffer for the given bucket size
-	static uint32_t* createFlags(unsigned int size) noexcept {
+	//Create a new flags buffer for the given capacity
+	static uint32_t* createFlags(unsigned int entries) noexcept {
 		uint32_t *new_flags = (uint32_t*) WH_malloc(
-				fSize(size) * sizeof(uint32_t));
-		resetFlags(new_flags, size);
+				fSize(entries) * sizeof(uint32_t));
+		resetFlags(new_flags, entries);
 		return new_flags;
 	}
 
 	//Reset the flags (set default value)
-	static void resetFlags(uint32_t *flags, unsigned int size) noexcept {
+	static void resetFlags(uint32_t *flags, unsigned int entries) noexcept {
 		if (flags) {
-			memset(flags, 0xaa, fSize(size) * sizeof(uint32_t));
+			memset(flags, 0xaa, fSize(entries) * sizeof(uint32_t));
 		}
 	}
 
