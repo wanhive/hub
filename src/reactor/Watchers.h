@@ -80,13 +80,13 @@ public:
 	 */
 	void remove(unsigned long long key) noexcept;
 	/**
-	 * Swaps watchers associated with the given key-pair. If only one of the two
-	 * keys exists then the extant key will be removed from the hash table and
-	 * its associated watcher will be reassigned to the missing key after adding
-	 * the missing key to the hash table, and the watcher's UID will be updated
-	 * to match it's new key. If both the keys exist and swapping is allowed then
-	 * watchers associated with the two keys will be swapped and their UIDs will
-	 * be updated to match their new keys.
+	 * Swaps watchers associated with the given pair of keys. If only one of the
+	 * two keys exists then the existing key will be removed from the hash table,
+	 * the watcher associated with it will be reassigned to the missing key after
+	 * adding the missing key to the hash table, and the watcher's UID will be
+	 * updated to match it's new key. If both the keys exist and swapping is
+	 * allowed then watchers associated with the two keys will be swapped and
+	 * their UIDs will be updated to match their new keys.
 	 * @param first the first key in the key pair
 	 * @param second the second key in the key pair
 	 * @param w if not nullptr, then the watchers associated with the first and
