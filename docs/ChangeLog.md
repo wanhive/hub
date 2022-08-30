@@ -13,17 +13,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
-- Clean up overlay and authentication hub implementations.
-- Update the reactor pattern implementation.
+- Codebase update to improve quality and performance.
 
 ### Fixed
 
-- Reset **Reactor**'s timeout to the default value on initialization.
-- Resolve the default service-type (configuration value) correctly in **Hub**.
-
-### Removed
-
-- Unnecessary keywords and modifiers from class and method declarations.
+- Reset **Reactor**'s timeout value to default on initialization.
+- Resolve the default service type (configuration value) correctly in **Hub**.
 
 ## [8.0.0] - 2022-06-06
 
