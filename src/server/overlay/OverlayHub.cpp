@@ -789,61 +789,13 @@ bool OverlayHub::handleDescribeNodeRequest(Message *msg) noexcept {
 	if (msg->getLength() != Message::HEADER_SIZE) {
 		return handleInvalidRequest(msg);
 	}
-	//-----------------------------------------------------------------
-	//This function can be extended to include more data
-	//-----------------------------------------------------------------
-	//ID(8)->MTU(2)->MAX_CONN(4)->CONN(4)->MAX_MSGS(4)->MSGS(4)->UPTIME(8)
-	unsigned int index = 0;
-	msg->setData64(index, getUid()); //KEY
-	index += sizeof(uint64_t);
-	msg->setData16(index, Message::MTU);
-	index += sizeof(uint16_t);
-	msg->setData32(index, Socket::poolSize());
-	index += sizeof(uint32_t);
-	msg->setData32(index, Socket::allocated());
-	index += sizeof(uint32_t);
-	msg->setData32(index, Message::poolSize());
-	index += sizeof(uint32_t);
-	msg->setData32(index, Message::allocated());
-	index += sizeof(uint32_t);
-	msg->setDouble(index, getUptime());
-	index += sizeof(uint64_t);
-	//-----------------------------------------------------------------
-	//IN_PACKETS(8)->IN_BYTES(8)->DROPPED_PACKETS(8)->DROPPED_BYTES(8)
-	msg->setData64(index, messagesReceived());
-	index += sizeof(uint64_t);
-	msg->setData64(index, bytesReceived());
-	index += sizeof(uint64_t);
-	msg->setData64(index, messagesDropped());
-	index += sizeof(uint64_t);
-	msg->setData64(index, bytesDropped());
-	index += sizeof(uint64_t);
-	//-----------------------------------------------------------------
-	//Predecessor(8)->Successor(8)->STABLE_FLAG(1)->TABLE_SIZE(1)
-	msg->setData64(index, getPredecessor()); //Predecessor
-	index += sizeof(uint64_t);
-	msg->setData64(index, getSuccessor()); //Successor
-	index += sizeof(uint64_t);
-	msg->setData8(index, (isStable() ? 1 : 0)); //Routing table status
-	index += sizeof(uint8_t);
-	msg->setData8(index, (uint8_t) TABLESIZE); //Size of routing table
-	index += sizeof(uint8_t);
-	//-----------------------------------------------------------------
-	for (unsigned int i = 0; i < TABLESIZE; i++) {
-		//START(8)->ID(8)->OLD_ID(8)->CONNECTED(1)
-		auto f = getFinger(i);
-		msg->setData64(index, f->getStart());
-		index += sizeof(uint64_t);
-		msg->setData64(index, f->getId());
-		index += sizeof(uint64_t);
-		msg->setData64(index, f->getOldId());
-		index += sizeof(uint64_t);
-		msg->setData8(index, (f->isConnected() ? 1 : 0));
-		index += sizeof(uint8_t);
-	}
+
+	OverlayHubInfo info;
+	metrics(info);
+	auto index = info.pack(msg->payload(), Message::PAYLOAD_SIZE);
 	//-----------------------------------------------------------------
 	buildDirectResponse(msg, Message::HEADER_SIZE + index);
-	msg->putStatus(WH_DHT_AQLF_ACCEPTED);
+	msg->putStatus(index ? WH_DHT_AQLF_ACCEPTED : WH_DHT_AQLF_REJECTED);
 	return true;
 }
 
@@ -1662,6 +1614,20 @@ void OverlayHub::clear() noexcept {
 	}
 
 	topics.clear();
+}
+
+void OverlayHub::metrics(OverlayHubInfo &info) const noexcept {
+	Hub::metrics(info);
+	info.setPredecessor(getPredecessor());
+	info.setSuccessor(getSuccessor());
+	info.setRoutes(TABLESIZE);
+	info.setStable(isStable());
+	for (unsigned int i = 0; i < TABLESIZE; i++) {
+		auto f = getFinger(i);
+		info.setRoute(
+				{ f->getStart(), f->getId(), f->getOldId(), f->isConnected() },
+				i);
+	}
 }
 
 } /* namespace wanhive */

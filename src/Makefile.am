@@ -83,11 +83,11 @@ WH_UTILSOURCES = util/Authenticator.cpp util/Endpoint.cpp util/FlowControl.cpp \
 
 ## src/hub collection
 WH_HUBHEADERS = hub/Alarm.h hub/ClientHub.h hub/Event.h hub/Hub.h \
-	hub/Identity.h hub/Inotifier.h hub/Interrupt.h hub/Logic.h \
+	hub/HubInfo.h hub/Identity.h hub/Inotifier.h hub/Interrupt.h hub/Logic.h \
 	hub/Protocol.h hub/Socket.h hub/Topic.h
 WH_HUBSOURCES = hub/Alarm.cpp hub/ClientHub.cpp hub/Event.cpp hub/Hub.cpp \
-	hub/Identity.cpp hub/Inotifier.cpp hub/Interrupt.cpp hub/Logic.cpp \
-	hub/Protocol.cpp hub/Socket.cpp hub/Topic.cpp
+	hub/HubInfo.cpp hub/Identity.cpp hub/Inotifier.cpp hub/Interrupt.cpp \
+	hub/Logic.cpp hub/Protocol.cpp hub/Socket.cpp hub/Topic.cpp
 
 ## src/server collection
 WH_SERVERHEADERS = server/auth/AuthenticationHub.h server/overlay/commands.h \
@@ -97,8 +97,9 @@ WH_SERVERHEADERS = server/auth/AuthenticationHub.h server/overlay/commands.h \
 	server/overlay/OverlayTool.h server/overlay/Topics.h
 WH_SERVERSOURCES = server/auth/AuthenticationHub.cpp server/overlay/DHT.cpp \
 	server/overlay/Finger.cpp server/overlay/Node.cpp server/overlay/OverlayHub.cpp \
-	server/overlay/OverlayProtocol.cpp server/overlay/OverlayService.cpp \
-	server/overlay/OverlayTool.cpp server/overlay/Topics.cpp
+	server/overlay/OverlayHubInfo.cpp server/overlay/OverlayProtocol.cpp \
+	server/overlay/OverlayService.cpp server/overlay/OverlayTool.cpp \
+	server/overlay/Topics.cpp
 
 ## src/test collection
 WH_TESTHEADERS = test/ds/BufferTest.h test/ds/HashTableTest.h \

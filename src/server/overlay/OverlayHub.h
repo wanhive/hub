@@ -179,6 +179,8 @@ private:
 	//-----------------------------------------------------------------
 	//Reset the internal state
 	void clear() noexcept;
+	//Returns the runtime metrics
+	void metrics(OverlayHubInfo &info) const noexcept;
 private:
 	/**
 	 * For worker thread management

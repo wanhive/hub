@@ -39,65 +39,11 @@ unsigned int OverlayProtocol::processDescribeResponse(
 		OverlayHubInfo &info) const noexcept {
 	if (!checkContext(WH_DHT_CMD_NULL, WH_DHT_QLF_DESCRIBE)) {
 		return 0;
-	} else if (getPayloadLength() < OverlayHubInfo::MIN_BYTES) {
+	} else if (!info.unpack(payload(), getPayloadLength())) {
 		return 0;
+	} else {
+		return header().getLength();;
 	}
-	//-----------------------------------------------------------------
-	//ID(8)->MTU(2)->MAX_CONN(4)->CONN(4)->MAX_MSGS(4)->MSGS(4)->UPTIME(8)
-	unsigned int index = 0;
-	info.uid = Serializer::unpacku64(payload(index)); //KEY
-	index += sizeof(uint64_t);
-	info.mtu = Serializer::unpacku16(payload(index));
-	index += sizeof(uint16_t);
-	info.resource.maxConnections = Serializer::unpacku32(payload(index));
-	index += sizeof(uint32_t);
-	info.resource.connections = Serializer::unpacku32(payload(index));
-	index += sizeof(uint32_t);
-	info.resource.maxMessages = Serializer::unpacku32(payload(index));
-	index += sizeof(uint32_t);
-	info.resource.messages = Serializer::unpacku32(payload(index));
-	index += sizeof(uint32_t);
-	info.stats.uptime = Serializer::unpackf64(payload(index));
-	index += sizeof(uint64_t);
-	//-----------------------------------------------------------------
-	//IN_PACKETS(8)->IN_BYTES(8)->DROPPED_PACKETS(8)->DROPPED_BYTES(8)
-	info.stats.receivedPackets = Serializer::unpacku64(payload(index));
-	index += sizeof(uint64_t);
-	info.stats.receivedBytes = Serializer::unpacku64(payload(index));
-	index += sizeof(uint64_t);
-	info.stats.droppedPackets = Serializer::unpacku64(payload(index));
-	index += sizeof(uint64_t);
-	info.stats.droppedBytes = Serializer::unpacku64(payload(index));
-	index += sizeof(uint64_t);
-	//-----------------------------------------------------------------
-	//Predecessor(8)->Successor(8)->STABLE_FLAG(1)->TABLE_SIZE(1)
-	info.predecessor = Serializer::unpacku64(payload(index)); //Predecessor
-	index += sizeof(uint64_t);
-	info.successor = Serializer::unpacku64(payload(index)); //Successor
-	index += sizeof(uint64_t);
-	info.stable = Serializer::unpacku8(payload(index)); //Routing table status
-	index += sizeof(uint8_t);
-	info.routes = Serializer::unpacku8(payload(index)); //Routing table size
-	index += sizeof(uint8_t);
-	//-----------------------------------------------------------------
-	if (info.routes > DHT::KEY_LENGTH
-			|| header().getLength()
-					!= (HEADER_SIZE + 84 + (info.routes * 25))) {
-		return 0;
-	}
-	for (unsigned int i = 0; i < info.routes; i++) {
-		//START(8)->ID(8)->OLD_ID(8)->CONNECTED(1)
-		info.route[i].start = Serializer::unpacku64(payload(index));
-		index += sizeof(uint64_t);
-		info.route[i].current = Serializer::unpacku64(payload(index));
-		index += sizeof(uint64_t);
-		info.route[i].old = Serializer::unpacku64(payload(index));
-		index += sizeof(uint64_t);
-		info.route[i].connected = Serializer::unpacku8(payload(index));
-		index += sizeof(uint8_t);
-	}
-	//-----------------------------------------------------------------
-	return header().getLength();
 }
 
 bool OverlayProtocol::describeRequest(uint64_t host, OverlayHubInfo &info) {

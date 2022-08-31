@@ -88,6 +88,7 @@
 #include "hub/ClientHub.h"
 #include "hub/Event.h"
 #include "hub/Hub.h"
+#include "hub/HubInfo.h"
 #include "hub/Identity.h"
 #include "hub/Inotifier.h"
 #include "hub/Interrupt.h"

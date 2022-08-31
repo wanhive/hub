@@ -101,24 +101,14 @@ void Hub::removeFromInotifier(int identifier) noexcept {
 	}
 }
 
-double Hub::getUptime() const noexcept {
-	return uptime.elapsed();
-}
-
-unsigned long long Hub::messagesReceived() const noexcept {
-	return stats.msgReceived;
-}
-
-unsigned long long Hub::bytesReceived() const noexcept {
-	return stats.bytesReceived;
-}
-
-unsigned long long Hub::messagesDropped() const noexcept {
-	return stats.msgDropped;
-}
-
-unsigned long long Hub::bytesDropped() const noexcept {
-	return stats.bytesDropped;
+void Hub::metrics(HubInfo &info) const noexcept {
+	info.setUid(getUid());
+	info.setUptime(uptime.elapsed());
+	info.setReceived(traffic.received);
+	info.setDropped(traffic.dropped);
+	info.setConnections( { Socket::poolSize(), Socket::allocated() });
+	info.setMessages( { Message::poolSize(), Message::allocated() });
+	info.setMTU(Message::MTU);
 }
 
 bool Hub::containsWatcher(unsigned long long id) const noexcept {
@@ -978,18 +968,18 @@ unsigned int Hub::throttle(const Socket *connection) const noexcept {
 }
 
 void Hub::countReceived(unsigned int bytes) noexcept {
-	stats.msgReceived += 1;
-	stats.bytesReceived += bytes;
+	traffic.received.units += 1;
+	traffic.received.bytes += bytes;
 }
 
 void Hub::countDropped(unsigned int bytes) noexcept {
-	stats.msgDropped += 1;
-	stats.bytesDropped += bytes;
+	traffic.dropped.units += 1;
+	traffic.dropped.bytes += bytes;
 }
 
 void Hub::clear() noexcept {
 	running = 0;
-	memset(&stats, 0, sizeof(stats));
+	memset(&traffic, 0, sizeof(traffic));
 	memset(&notifiers, 0, sizeof(notifiers));
 	memset(&ctx, 0, sizeof(ctx));
 	workerThread = nullptr;

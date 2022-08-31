@@ -14,6 +14,7 @@
 #define WH_HUB_HUB_H_
 #include "Alarm.h"
 #include "Event.h"
+#include "HubInfo.h"
 #include "Identity.h"
 #include "Inotifier.h"
 #include "Interrupt.h"
@@ -102,32 +103,10 @@ protected:
 	void removeFromInotifier(int identifier) noexcept;
 	//-----------------------------------------------------------------
 	/**
-	 * Hub statistics: returns this hub's uptime.
-	 * @return the uptime in seconds
+	 * Returns the runtime metrics.
+	 * @param info object for storing the runtime metrics
 	 */
-	double getUptime() const noexcept;
-	/**
-	 * Hub statistics: returns the number of incoming messages.
-	 * @return the received messages count
-	 */
-	unsigned long long messagesReceived() const noexcept;
-	/**
-	 * Hub statistics: returns the number of bytes received from the network.
-	 * @return the total number of bytes received
-	 */
-	unsigned long long bytesReceived() const noexcept;
-	/**
-	 * Hub statistics: returns the number of incoming messages dropped during
-	 * routing/forwarding due to network traffic congestion.
-	 * @return the dropped messages count
-	 */
-	unsigned long long messagesDropped() const noexcept;
-	/**
-	 * Hub statistics: returns the number of bytes dropped during the message
-	 * routing/forwarding due to network traffic congestion.
-	 * @return the dropped bytes count
-	 */
-	unsigned long long bytesDropped() const noexcept;
+	void metrics(HubInfo &info) const noexcept;
 	//-----------------------------------------------------------------
 	/**
 	 * Watcher management: checks whether a watcher is associated with the given
@@ -385,12 +364,10 @@ private:
 	 * Hub statistics
 	 */
 	Timer uptime;	//Hub uptime
-	struct {
-		unsigned long long msgReceived;
-		unsigned long long msgDropped;
-		unsigned long long bytesReceived;
-		unsigned long long bytesDropped;
-	} stats;
+	struct { //Traffic metrics
+		TrafficInfo received;
+		TrafficInfo dropped;
+	} traffic;
 	//-----------------------------------------------------------------
 	/*
 	 * Special watchers, single instance of each type for each hub

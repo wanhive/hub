@@ -297,66 +297,8 @@ void OverlayTool::describeCmd() {
 	OverlayHubInfo info;
 	try {
 		if (describeRequest(id, info)) {
-			fprintf(stdout, "DESCRIBE SUCCEEDED\n");
-			fprintf(stdout, "\n==========================================\n");
-			fprintf(stdout, "KEY: %llu\n"
-					"PREDECESSOR: %llu, SUCCESSOR: %llu\n\n"
-					"FINGER TABLE [STABLE: %s]\n", info.uid, info.predecessor,
-					info.successor, WH_BOOLF(info.stable));
-			fprintf(stdout, "------------------------------------------\n");
-			fprintf(stdout, " SN    START  CURRENT  HISTORY   CONNECTED\n");
-			for (unsigned int i = 0; i < info.routes; i++) {
-				fprintf(stdout, "%3u%9llu%9llu%9llu%12s\n", (i + 1),
-						info.route[i].start, info.route[i].current,
-						info.route[i].old, WH_BOOLF(info.route[i].connected));
-			}
-
-			fprintf(stdout, "\n------------------------------------------\n");
-			fprintf(stdout, "Maximum Message Size (MTU): %u bytes\n\n",
-					info.mtu);
-
-			fprintf(stdout, "RESOURCE USAGE\n");
-			fprintf(stdout, "--------------\n");
-			fprintf(stdout, "Connections (%%): [%u/%u] %.2f\n",
-					info.resource.connections, info.resource.maxConnections,
-					(((double) info.resource.connections) * 100
-							/ info.resource.maxConnections));
-			fprintf(stdout, "Messages (%%):    [%u/%u] %.2f\n",
-					info.resource.messages, info.resource.maxMessages,
-					(((double) info.resource.messages) * 100
-							/ info.resource.maxMessages));
-
-			fprintf(stdout, "Uptime: ");
-			if ((uint64_t) info.stats.uptime < 60) {
-				fprintf(stdout, "%.2fs", info.stats.uptime);
-			} else if ((uint64_t) info.stats.uptime < 3600) {
-				fprintf(stdout, "%.2fmin", (info.stats.uptime / 60));
-			} else {
-				fprintf(stdout, "%.2fhr", (info.stats.uptime / 3600));
-			}
-
-			fprintf(stdout, "\n\nPERFORMANCE DATA\n");
-			fprintf(stdout, "----------------\n");
-			fprintf(stdout, "Incoming (Packets/s): %12llu\n",
-					(unsigned long long) (info.stats.receivedPackets
-							/ info.stats.uptime));
-			fprintf(stdout, "Incoming (KB/s):      %12llu\n",
-					(unsigned long long) (info.stats.receivedBytes
-							/ info.stats.uptime / 1024));
-			fprintf(stdout, "Outgoing (Packets/s): %12llu\n",
-					(unsigned long long) ((info.stats.receivedPackets
-							- info.stats.droppedPackets) / info.stats.uptime));
-			fprintf(stdout, "Outgoing (KB/s):      %12llu\n",
-					(unsigned long long) ((info.stats.receivedBytes
-							- info.stats.droppedBytes) / info.stats.uptime
-							/ 1024));
-			fprintf(stdout, "Loss (Packets):       %12.2f%%\n",
-					((((double) (info.stats.droppedPackets))
-							/ info.stats.receivedPackets) * 100));
-			fprintf(stdout, "Loss (KB):            %12.2f%%\n",
-					((((double) info.stats.droppedBytes)
-							/ info.stats.receivedBytes) * 100));
-			fprintf(stdout, "\n==========================================\n");
+			std::cout << "DESCRIBE SUCCEEDED" << std::endl;
+			info.print();
 		} else {
 			std::cout << "DESCRIBE FAILED" << std::endl;
 		}
