@@ -12,7 +12,7 @@ WH_BASE_COMMONSOURCES = base/common/CommandLine.cpp base/common/Exception.cpp \
 WH_BASE_DSHEADERS = base/ds/Array.h base/ds/BinaryHeap.h base/ds/Buffer.h \
 	base/ds/BufferVector.h base/ds/CircularBuffer.h base/ds/CircularBufferVector.h \
 	base/ds/Counter.h base/ds/Encoding.h base/ds/Khash.h base/ds/MemoryPool.h \
-	base/ds/MersenneTwister.h base/ds/Serializer.h base/ds/State.h \
+	base/ds/MersenneTwister.h base/ds/Pooled.h base/ds/Serializer.h base/ds/State.h \
 	base/ds/StaticBuffer.h base/ds/StaticCircularBuffer.h base/ds/Twiddler.h \
 	base/ds/UID.h base/ds/functors.h
 WH_BASE_DSSOURCES = base/ds/Counter.cpp base/ds/Encoding.cpp base/ds/MemoryPool.cpp \

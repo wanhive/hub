@@ -15,9 +15,9 @@
 #include "../base/ds/Serializer.h"
 
 namespace wanhive {
-MemoryPool Message::pool;
+
 Message::Message(uint64_t origin) noexcept :
-		Packet { origin } {
+		Pooled { 0 }, Packet { origin } {
 
 }
 
@@ -26,11 +26,11 @@ Message::~Message() {
 }
 
 void* Message::operator new(size_t size) noexcept {
-	return pool.allocate();
+	return Pooled::operator new(size);
 }
 
 void Message::operator delete(void *p) noexcept {
-	pool.deallocate(p);
+	Pooled::operator delete(p);
 }
 
 Message* Message::create(uint64_t origin) noexcept {
@@ -574,29 +574,6 @@ unsigned int Message::addReferenceCount() noexcept {
 unsigned int Message::addHopCount() noexcept {
 	setHopCount(getHopCount() + 1);
 	return getHopCount();
-}
-
-void Message::initPool(unsigned int size) {
-	pool.initialize(sizeof(Message), size);
-}
-
-void Message::destroyPool() {
-	if (pool.destroy()) {
-		throw Exception(EX_INVALIDSTATE);
-	}
-}
-
-unsigned int Message::poolSize() noexcept {
-	return pool.capacity();
-}
-
-unsigned int Message::allocated() noexcept {
-	return pool.allocated();
-}
-
-unsigned int Message::unallocated() noexcept {
-	//How many more messages can we create
-	return poolSize() - allocated();
 }
 
 } /* namespace wanhive */

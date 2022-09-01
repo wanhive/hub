@@ -16,7 +16,7 @@
 #include "../base/Network.h"
 #include "../base/Timer.h"
 #include "../base/common/Source.h"
-#include "../base/ds/MemoryPool.h"
+#include "../base/ds/Pooled.h"
 #include "../base/ds/StaticBuffer.h"
 #include "../base/ds/StaticCircularBuffer.h"
 #include "../base/security/SSLContext.h"
@@ -46,7 +46,9 @@ enum SocketType {
  * Message stream watcher
  * Not thread safe
  */
-class Socket final: public Source<unsigned char>, public Watcher {
+class Socket final: public Pooled<Socket>,
+		public Source<unsigned char>,
+		public Watcher {
 public:
 	/**
 	 * Constructor: associates the given file descriptor to the object
@@ -131,12 +133,6 @@ public:
 	Message* getMessage();
 	//-----------------------------------------------------------------
 	/**
-	 * Checks if this object has outlived the given timeout value (old age).
-	 * @param timeOut the timeout value in milliseconds
-	 * @return true on timeout, false otherwise
-	 */
-	bool hasTimedOut(unsigned int timeOut) const noexcept;
-	/**
 	 * Sets the maximum number of outgoing messages this object can hold in it's
 	 * internal queue (see Watcher::publish()).
 	 * @param limit the maximum number of messages which can be queued up, (set
@@ -150,19 +146,17 @@ public:
 	 */
 	unsigned int getOutputQueueLimit() const noexcept;
 	/**
-	 * Checks whether the given value is a temporary socket connection identifier.
-	 * Identifiers outside the range [Socket::MIN_ACTIVE_ID, Socket::MAX_ACTIVE_ID]
-	 * are used as the temporary socket identifier.
-	 * @param id the value to check
-	 * @return true if the given value is a temporary id, false otherwise.
-	 */
-	static bool isEphemeralId(unsigned long long id) noexcept;
-	/**
 	 * Returns the underlying secure connection object
 	 * @return the SSL/TLS connection object, nullptr if the underlying connection
 	 * is not secure.
 	 */
 	SSL* getSecureSocket() const noexcept;
+	/**
+	 * Checks if this object has outlived the given timeout value (old age).
+	 * @param timeOut the timeout value in milliseconds
+	 * @return true on timeout, false otherwise
+	 */
+	bool hasTimedOut(unsigned int timeOut) const noexcept;
 	//-----------------------------------------------------------------
 	/**
 	 * Creates a socket pair.
@@ -177,31 +171,14 @@ public:
 	 * @param ctx object containing the SSL/TLS context
 	 */
 	static void setSSLContext(SSLContext *ctx) noexcept;
-	//=================================================================
 	/**
-	 * Initializes the object pool
-	 * @param size object pool's size
+	 * Checks whether the given value is a temporary socket connection identifier.
+	 * Identifiers outside the range [Socket::MIN_ACTIVE_ID, Socket::MAX_ACTIVE_ID]
+	 * are used as the temporary socket identifier.
+	 * @param id the value to check
+	 * @return true if the given value is a temporary id, false otherwise.
 	 */
-	static void initPool(unsigned int size);
-	/**
-	 * Destroys the object pool
-	 */
-	static void destroyPool();
-	/**
-	 * Returns the object pool's capacity
-	 * @return object pool's capacity
-	 */
-	static unsigned int poolSize() noexcept;
-	/**
-	 * Returns the number of object currently allocated from the object pool.
-	 * @return the allocated objects count
-	 */
-	static unsigned int allocated() noexcept;
-	/**
-	 * Returns the number of objects which can be allocated from the object pool.
-	 * @return the unallocated objects count
-	 */
-	static unsigned int unallocated() noexcept;
+	static bool isEphemeralId(unsigned long long id) noexcept;
 private:
 	//Read from a raw socket connection
 	ssize_t socketRead();
@@ -273,7 +250,6 @@ private:
 	//Container for scatter-gather O/P
 	StaticBuffer<iovec, OUT_QUEUE_SIZE> outgoingMessages;
 	//-----------------------------------------------------------------
-	static MemoryPool pool; //Object pool
 	static SSLContext *sslCtx; //SSL/TLS context
 };
 

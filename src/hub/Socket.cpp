@@ -19,15 +19,15 @@
 
 namespace wanhive {
 
-MemoryPool Socket::pool;
 SSLContext *Socket::sslCtx = nullptr;
 
 Socket::Socket(int fd) noexcept :
-		Watcher(fd) {
+		Pooled(0), Watcher(fd) {
 	clear();
 }
 
-Socket::Socket(SSL *ssl) {
+Socket::Socket(SSL *ssl) :
+		Pooled(0) {
 	clear();
 	if (ssl && sslCtx && sslCtx->inContext(ssl)) {
 		secure.ssl = ssl;
@@ -37,7 +37,8 @@ Socket::Socket(SSL *ssl) {
 	}
 }
 
-Socket::Socket(const NameInfo &ni, bool blocking, int timeoutMils) {
+Socket::Socket(const NameInfo &ni, bool blocking, int timeoutMils) :
+		Pooled(0) {
 	try {
 		clear();
 		SocketAddress sa;
@@ -59,7 +60,8 @@ Socket::Socket(const NameInfo &ni, bool blocking, int timeoutMils) {
 	}
 }
 
-Socket::Socket(const char *service, int backlog, bool isUnix, bool blocking) {
+Socket::Socket(const char *service, int backlog, bool isUnix, bool blocking) :
+		Pooled(0) {
 	try {
 		clear();
 		SocketAddress sa;
@@ -83,15 +85,16 @@ Socket::~Socket() {
 }
 
 void* Socket::operator new(size_t size) {
-	if (allocated() != poolSize()) {
-		return pool.allocate();
+	auto p = Pooled::operator new(size);
+	if (p) {
+		return p;
 	} else {
 		throw Exception(EX_ALLOCFAILED);
 	}
 }
 
 void Socket::operator delete(void *p) noexcept {
-	pool.deallocate(p);
+	Pooled::operator delete(p);
 }
 
 size_t Socket::take(unsigned char *buffer, size_t count) {
@@ -214,10 +217,6 @@ Message* Socket::getMessage() {
 	}
 }
 
-bool Socket::hasTimedOut(unsigned int timeOut) const noexcept {
-	return timer.hasTimedOut(timeOut);
-}
-
 void Socket::setOutputQueueLimit(unsigned int limit) noexcept {
 	outQueueLimit = Twiddler::min(limit, (OUT_QUEUE_SIZE - 1));
 }
@@ -226,12 +225,12 @@ unsigned int Socket::getOutputQueueLimit() const noexcept {
 	return outQueueLimit;
 }
 
-bool Socket::isEphemeralId(unsigned long long id) noexcept {
-	return id > MAX_ACTIVE_ID;
-}
-
 SSL* Socket::getSecureSocket() const noexcept {
 	return secure.ssl;
+}
+
+bool Socket::hasTimedOut(unsigned int timeOut) const noexcept {
+	return timer.hasTimedOut(timeOut);
 }
 
 Socket* Socket::createSocketPair(int &sfd, bool blocking) {
@@ -258,27 +257,8 @@ void Socket::setSSLContext(SSLContext *ctx) noexcept {
 	sslCtx = ctx;
 }
 
-void Socket::initPool(unsigned int size) {
-	pool.initialize(sizeof(Socket), size);
-}
-
-void Socket::destroyPool() {
-	if (pool.destroy()) {
-		throw Exception(EX_INVALIDSTATE);
-	}
-}
-
-unsigned int Socket::poolSize() noexcept {
-	return pool.capacity();
-}
-
-unsigned int Socket::allocated() noexcept {
-	return pool.allocated();
-}
-
-unsigned int Socket::unallocated() noexcept {
-	//How many more connections can we create
-	return poolSize() - allocated();
+bool Socket::isEphemeralId(unsigned long long id) noexcept {
+	return id > MAX_ACTIVE_ID;
 }
 
 ssize_t Socket::socketRead() {

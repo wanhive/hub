@@ -14,7 +14,7 @@
 #define WH_UTIL_MESSAGE_H_
 #include "Packet.h"
 #include "../base/common/Source.h"
-#include "../base/ds/MemoryPool.h"
+#include "../base/ds/Pooled.h"
 #include "../base/ds/State.h"
 #include <cstdarg>
 
@@ -38,7 +38,7 @@ enum MessageFlag : uint32_t {
  * Message implementation
  * Not thread safe
  */
-class Message final: public State, public Packet {
+class Message final: public Pooled<Message>, public State, public Packet {
 private:
 	Message(uint64_t origin) noexcept;
 	~Message();
@@ -584,33 +584,6 @@ public:
 	 * @return the new hop count
 	 */
 	unsigned int addHopCount() noexcept;
-	//-----------------------------------------------------------------
-	/**
-	 * Initializes the object pool.
-	 * @param size object pool's size
-	 */
-	static void initPool(unsigned int size);
-	/**
-	 * Destroys the object pool.
-	 */
-	static void destroyPool();
-	/**
-	 * Returns the object pool's capacity.
-	 * @return object pool's capacity
-	 */
-	static unsigned int poolSize() noexcept;
-	/**
-	 * Returns the number of allocated objects.
-	 * @return number of allocated objects
-	 */
-	static unsigned int allocated() noexcept;
-	/**
-	 * Returns the unallocated objects count.
-	 * @return number of unallocated objects
-	 */
-	static unsigned int unallocated() noexcept;
-private:
-	static MemoryPool pool;
 };
 
 } /* namespace wanhive */

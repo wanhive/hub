@@ -36,6 +36,7 @@
 #include "base/ds/Khash.h"
 #include "base/ds/MemoryPool.h"
 #include "base/ds/MersenneTwister.h"
+#include "base/ds/Pooled.h"
 #include "base/ds/Serializer.h"
 #include "base/ds/State.h"
 #include "base/ds/StaticBuffer.h"
