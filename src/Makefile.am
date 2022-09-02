@@ -118,7 +118,6 @@ WH_TOPHEADERS = wanhive-base.h wanhive-reactor.h wanhive-util.h wanhive-hub.h wa
 
 # --- SOURCE FILES DECLARATIONS END ---
 
-# ACLOCAL_AMFLAGS = $(ACLOCAL_FLAGS)
 AM_CXXFLAGS = -Wall
 
 if WH_WITH_EXECUTABLES
