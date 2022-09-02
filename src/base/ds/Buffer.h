@@ -22,6 +22,7 @@ namespace wanhive {
 /**
  * A sequential container of POD (plain old data) types that simulates a single
  * track magnetic tape storage.
+ * @tparam X storage type
  */
 template<typename X> class Buffer {
 public:

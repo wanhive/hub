@@ -19,9 +19,12 @@
 
 namespace wanhive {
 /**
- * Lock free circular buffer (single-producer-single-consumer) for POD types
- * Read/write real-time safe for single-producer-single-consumer
+ * Lock free circular buffer for POD types, read/write operations are real-time
+ * safe in single-producer-single-consumer context.
  * @ref Dennis Lang's Ring Buffer (http://landenlabs.com/code/ring/ring.html)
+ * @tparam X storage type
+ * @tparam SIZE buffer's size
+ * @tparam ATOMIC true for thread safety, false otherwise
  */
 template<typename X, unsigned int SIZE, bool ATOMIC = false> class StaticCircularBuffer {
 public:

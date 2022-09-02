@@ -20,7 +20,8 @@
 namespace wanhive {
 //-----------------------------------------------------------------
 /**
- * The sample functor for BHFN
+ * Sample functor for BHFN
+ * @tparam X object type
  */
 template<typename X> struct wh_bhfn_fn {
 	void operator()(X const &e, unsigned int index) const noexcept {
@@ -30,10 +31,11 @@ template<typename X> struct wh_bhfn_fn {
 //-----------------------------------------------------------------
 /**
  * Binary heap implementation
- * CMPFN compares two objects. To create a minheap CMPFN must return true if
- * it's first argument is less than the second one. BHFN is called whenever
- * the heap is updated. The first argument of BHFN must be a reference to the
- * updated slot, while the second argument is that slot's index.
+ * @tparam X storage type
+ * @tparam CMPFN compares two values. For a minheap, return true if the first
+ * argument is less than the second one.
+ * @tparam BHFN called whenever the heap is updated. The first argument is a
+ * reference to the updated slot, the second argument is that slot's index.
  */
 template<typename X = int, typename CMPFN = wh_lt_fn,
 		typename BHFN = wh_bhfn_fn<X> > class BinaryHeap {

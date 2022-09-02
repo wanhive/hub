@@ -18,6 +18,7 @@ namespace wanhive {
 /**
  * Data structure for vectored read/write operations on
  * linear (array-based) buffers.
+ * @tparam X storage type
  */
 template<typename X> struct BufferVector {
 	X *base;

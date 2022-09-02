@@ -15,8 +15,12 @@
 
 namespace wanhive {
 /**
- * File handle
- * Selectively exposes file descriptor to a module
+ *
+ *
+ */
+/**
+ * File handle that selectively exposes file descriptor to a module
+ * @tparam T friend class' name
  */
 template<typename T> class Handle {
 public:

@@ -16,7 +16,8 @@
 
 namespace wanhive {
 /**
- * The sink interface
+ * Sink interface
+ * @tparam X working data type
  */
 template<typename X> class Sink {
 public:

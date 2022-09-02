@@ -18,7 +18,8 @@
 
 namespace wanhive {
 /**
- * Poor man's vector for POD types.
+ * Light weight vector for POD (plain old data) types.
+ * @tparam X object type
  */
 template<typename X = unsigned int> class Array {
 public:

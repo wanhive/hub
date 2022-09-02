@@ -44,9 +44,14 @@
 
 namespace wanhive {
 /**
- * C++ adaption of khash version 0.2.8 by Attractive Chaos
- * @note Symbol table of POD (plane old data) types
+ * Symbol table of POD (plain old data) types.
+ * @note C++ adaption of khash version 0.2.8 by Attractive Chaos
  * @ref https://github.com/attractivechaos/klib/blob/master/khash.h
+ * @tparam KEY key's type
+ * @tparam VALUE value's type
+ * @tparam ISMAP true for hash map, false for hash set
+ * @tparam HFN hash functor (returns unsigned int hash value of a key)
+ * @tparam EQFN equality functor (returns true if two keys are equal, else false)
  */
 template<typename KEY = int, typename VALUE = char, bool ISMAP = true,
 		typename HFN = wh_hash_fn, typename EQFN = wh_eq_fn> class Khash {

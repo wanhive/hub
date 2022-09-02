@@ -38,8 +38,8 @@ enum MemoryOrder {
  * Following operations can be used with any integral scalar or pointer type
  * that is 1, 2, 4, or 8 bytes in length. If ‘__int128’ (see __int128) is
  * supported by the architecture then 16-byte integral types are also allowed.
- * @tparam X the 1, 2, 4, 8, or 16 byte integral data type.
  * @ref https://gcc.gnu.org/onlinedocs/gcc/_005f_005fatomic-Builtins.html
+ * @tparam X integral or pointer data type
  */
 template<typename X = unsigned int> class Atomic {
 public:

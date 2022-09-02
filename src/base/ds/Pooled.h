@@ -18,7 +18,7 @@
 namespace wanhive {
 /**
  * Object pool.
- * @tparam X object's type (class name)
+ * @tparam X storage type
  */
 template<typename X> class Pooled {
 public:

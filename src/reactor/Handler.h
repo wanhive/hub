@@ -15,7 +15,8 @@
 
 namespace wanhive {
 /**
- * The generic data handler/processor interface.
+ * Data handler/processor interface
+ * @tparam T working data type
  */
 template<typename T> class Handler {
 public:
@@ -23,10 +24,9 @@ public:
 	 * The virtual destructor.
 	 */
 	virtual ~Handler() = default;
-
 	/**
-	 * Handles (processes) the given object.
-	 * @param t describes the object to handle/process
+	 * Handles (processes) an object.
+	 * @param t object to process
 	 * @return true on success, false otherwise
 	 */
 	virtual bool handle(T *t) noexcept = 0;

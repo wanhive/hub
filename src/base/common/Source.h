@@ -16,7 +16,8 @@
 
 namespace wanhive {
 /**
- * The source interface
+ * Source interface
+ * @tparam X working data type
  */
 template<typename X> class Source {
 public:

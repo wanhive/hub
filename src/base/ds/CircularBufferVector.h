@@ -16,8 +16,9 @@
 
 namespace wanhive {
 /**
- * Data structure for vectored read/write operations on
- * the segments of array-based circular buffers.
+ * Data structure for vectored read/write operations on the circular buffer
+ * segments.
+ * @tparam X storage type
  */
 template<typename X> struct CircularBufferVector {
 	BufferVector<X> part[2]; //Two segments
