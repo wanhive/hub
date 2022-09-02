@@ -17,6 +17,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- Allow atomic operations only on scalar data types.
 - Reset **Reactor**'s timeout value to default on initialization.
 - Resolve the default service type (configuration value) correctly in **Hub**.
 
