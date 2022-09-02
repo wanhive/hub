@@ -293,7 +293,7 @@ public:
 		return __atomic_is_lock_free(sizeof(X), P);
 	}
 private:
-	WH_POD_ASSERT(X);
+	WH_SCALAR_ASSERT(X);
 	WH_STATIC_ASSERT(sizeof(X) <= 16, "Invalid object size");
 };
 
