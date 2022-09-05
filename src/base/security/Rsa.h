@@ -24,7 +24,7 @@ public:
 	Rsa() noexcept;
 	~Rsa();
 	//=================================================================
-	/**
+	/*
 	 * Initialization Routines
 	 * Following methods can be called multiple times on the same object
 	 * keys and password can be nullptr
@@ -41,7 +41,7 @@ public:
 	bool hasPrivateKey() const noexcept;
 	bool hasPublicKey() const noexcept;
 	//=================================================================
-	/**
+	/*
 	 * Rsa Encryptor and Decryptor
 	 * The following two methods return true on success, false on error
 	 * Use RSA_PKCS1_OAEP_PADDING (EME-OAEP as defined in PKCS #1 v2.0)
@@ -54,7 +54,7 @@ public:
 			unsigned char *decrypted,
 			unsigned int *decryptedLength) const noexcept;
 	//=================================================================
-	/**
+	/*
 	 * Rsa signer and verifier
 	 * The following two methods return true on success, false on error
 	 * PKCS #1 v2.0 SHA-1 signer and verifier

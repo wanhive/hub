@@ -27,15 +27,14 @@ public:
 	virtual ~Source() = default;
 	/**
 	 * Transfers data into the given buffer.
-	 * @param buffer the buffer for storing data
+	 * @param buffer pointer to the data buffer
 	 * @param count buffer's capacity
-	 * @return number of data units transferred into the buffer
+	 * @return number of elements transferred to the buffer
 	 */
 	virtual size_t take(X *buffer, size_t count) = 0;
 	/**
-	 * Returns the maximum number of data units which can be read from
-	 * this source.
-	 * @return the number available elements
+	 * Returns the available elements count.
+	 * @return maximum number of elements which can be read
 	 */
 	virtual size_t available() const noexcept = 0;
 };

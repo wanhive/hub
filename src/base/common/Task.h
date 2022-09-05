@@ -24,13 +24,13 @@ public:
 	 */
 	virtual ~Task() = default;
 	/**
-	 * Runs this task.
-	 * @param arg the additional argument
+	 * Executes a task.
+	 * @param arg additional argument
 	 */
 	virtual void run(void *arg) noexcept = 0;
 	/**
-	 * Returns the status code.
-	 * @return the status
+	 * Returns status code.
+	 * @return the status code
 	 */
 	virtual int getStatus() const noexcept = 0;
 	/**

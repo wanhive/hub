@@ -93,13 +93,13 @@ public:
 	//Load S and K
 	bool loadSessionKey(bool isHost = true) noexcept;
 	//=================================================================
-	/**
+	/*
 	 * For full mutual authentication
 	 */
 	bool generateUserProof(const char *I) noexcept;
 	bool generateHostProof() noexcept;
 	//-----------------------------------------------------------------
-	/**
+	/*
 	 * For password-only proof
 	 * REF: T. Wu, SRP-6: Improvements and Refinements to the Secure Remote Password Protocol,
 	 * Submission to the IEEE P1363 Working Group, Oct 2002.
@@ -107,7 +107,7 @@ public:
 	bool generateUserEvidence() noexcept;
 	bool generateHostEvidence() noexcept;
 	//-----------------------------------------------------------------
-	/**
+	/*
 	 * For verification of the proofs
 	 */
 	bool verifyUserProof(const unsigned char *proof,
@@ -115,7 +115,7 @@ public:
 	bool verifyHostProof(const unsigned char *proof,
 			unsigned int length) noexcept;
 	//-----------------------------------------------------------------
-	/**
+	/*
 	 * For generating fake nonce and salt during handshaking
 	 * Allows the host to fake successful identification
 	 * Not suitable for cryptographic purposes
@@ -124,7 +124,7 @@ public:
 	bool generateFakeSalt(const char *I, const unsigned char *s,
 			unsigned int sLen) noexcept;
 	//=================================================================
-	/**
+	/*
 	 * For retrieving the outputs
 	 */
 	void getSalt(const unsigned char *&binary,
@@ -157,7 +157,7 @@ public:
 	int getStatus() const noexcept;
 	void setStatus(int status) noexcept;
 	//=================================================================
-	/**
+	/*
 	 * For testing and debugging
 	 */
 	//For debugging purposes
@@ -169,7 +169,7 @@ public:
 			unsigned int iterations, SrpGroup type = SRP_1024,
 			DigestType dType = WH_SHA1) noexcept;
 private:
-	/**
+	/*
 	 * Following three functions are called by <initialize>
 	 */
 	bool loadPrime() noexcept;

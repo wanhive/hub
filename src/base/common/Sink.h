@@ -27,15 +27,14 @@ public:
 	virtual ~Sink() = default;
 	/**
 	 * Consumes data from the given buffer.
-	 * @param buffer memory location containing the data
-	 * @param count number of data units to consume
-	 * @return number of data units actually consumed
+	 * @param buffer pointer to the data buffer
+	 * @param count number of elements to consume
+	 * @return number of elements actually consumed
 	 */
 	virtual size_t put(X *buffer, size_t count) = 0;
 	/**
-	 * Returns the maximum number of data units which can be consumed by
-	 * this sink.
-	 * @return the remaining capacity
+	 * Returns the remaining capacity.
+	 * @return maximum number of elements which can be consumed
 	 */
 	virtual size_t space() const noexcept = 0;
 };
