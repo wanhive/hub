@@ -101,7 +101,7 @@ public:
 	 * @return the actual number of identifiers stored in the array
 	 */
 	unsigned int getIdentifiers(unsigned long long nodes[], unsigned int count,
-			int type);
+			int type) noexcept;
 	/**
 	 * Hosts management: reads a list of host identifiers from a text file. Input
 	 * file's pathname is resolved using the configuration data.

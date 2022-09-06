@@ -125,12 +125,12 @@ void Identity::getAddress(uint64_t uid, NameInfo &ni) {
 }
 
 unsigned int Identity::getIdentifiers(unsigned long long nodes[],
-		unsigned int count, int type) {
+		unsigned int count, int type) noexcept {
 	auto n = count;
 	if (hosts.list(nodes, n, type) == 0) {
 		return n;
 	} else {
-		throw Exception(EX_INVALIDOPERATION);
+		return 0;
 	}
 }
 
