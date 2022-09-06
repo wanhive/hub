@@ -264,7 +264,7 @@ void Hub::configure(void *arg) {
 		::strncpy(ctx.serviceType, conf.getString("HUB", "serviceType", ""),
 				sizeof(ctx.serviceType) - 1);
 
-		ctx.maxIOEvents = conf.getNumber("HUB", "maxIOEvents");
+		ctx.maxIOEvents = conf.getNumber("HUB", "maxIOEvents", 4);
 		ctx.timerExpiration = conf.getNumber("HUB", "timerExpiration");
 		ctx.timerInterval = conf.getNumber("HUB", "timerInterval");
 		ctx.semaphore = conf.getBoolean("HUB", "semaphore");
