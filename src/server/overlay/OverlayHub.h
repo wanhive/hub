@@ -237,14 +237,6 @@ private:
 	Hash hash;
 	//-----------------------------------------------------------------
 	/**
-	 * For cleaning up the connections
-	 */
-	struct {
-		unsigned int target;
-		unsigned int count;
-	} purge;
-	//-----------------------------------------------------------------
-	/**
 	 * Files being monitored
 	 * [0]: Configuration file
 	 * [1]: Hosts database

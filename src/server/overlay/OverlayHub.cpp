@@ -24,6 +24,14 @@ enum PurgeType {
 	PURGE_INVALID, /**< Invalid/misplaced connections */
 	PURGE_CLIENT /**< Client connections */
 };
+/**
+ * Control structure (for connections removal)
+ */
+struct PurgeControl {
+	unsigned int target { };
+	unsigned int count { };
+	wanhive::OverlayHub *hub { };
+};
 
 }  // namespace
 
@@ -1559,30 +1567,31 @@ Watcher* OverlayHub::createProxyConnection(unsigned long long id, Digest *hc) {
 	}
 }
 
-unsigned int OverlayHub::purgeConnections(int mode, unsigned target) noexcept {
-	purge.target = target;
-	purge.count = 0;
+unsigned int OverlayHub::purgeConnections(int mode,
+		unsigned int target) noexcept {
+	PurgeControl pc { target, 0, this };
 	switch (mode) {
 	case PURGE_TEMPORARY:
 		return purgeTemporaryConnections(target);
 	case PURGE_INVALID:
-		iterate(removeIfInvalid, this);
-		return purge.count;
+		iterate(removeIfInvalid, &pc);
+		return pc.count;
 	default:
-		iterate(removeIfClient, this);
-		return purge.count;
+		iterate(removeIfClient, &pc);
+		return pc.count;
 	}
 }
 
 int OverlayHub::removeIfInvalid(Watcher *w, void *arg) noexcept {
 	auto uid = w->getUid();
-	auto hub = static_cast<OverlayHub*>(arg);
-	if (hub->purge.target && hub->purge.count >= hub->purge.target) {
+	auto pc = static_cast<PurgeControl*>(arg);
+	auto hub = pc->hub;
+	if (pc->target && pc->count >= pc->target) {
 		return -1;
 	} else if (!(Socket::isEphemeralId(uid) || hub->isLocal(mapKey(uid))
 			|| hub->isInternalNode(uid) || hub->isWorkerId(uid))) {
 		hub->disable(w);
-		hub->purge.count++;
+		pc->count++;
 		//No need to remove from the lookup table
 		return 0;
 	} else {
@@ -1592,13 +1601,14 @@ int OverlayHub::removeIfInvalid(Watcher *w, void *arg) noexcept {
 
 int OverlayHub::removeIfClient(Watcher *w, void *arg) noexcept {
 	auto uid = w->getUid();
-	auto hub = static_cast<OverlayHub*>(arg);
-	if (hub->purge.target && hub->purge.count >= hub->purge.target) {
+	auto pc = static_cast<PurgeControl*>(arg);
+	auto hub = pc->hub;
+	if (pc->target && pc->count >= pc->target) {
 		return -1;
 	} else if (isExternalNode(uid) && !hub->isWorkerId(uid)
 			&& !(Socket::isEphemeralId(uid) && w->testFlags(WATCHER_ACTIVE))) {
 		hub->disable(w);
-		hub->purge.count++;
+		pc->count++;
 		//No need to remove from the lookup table
 		return 0;
 	} else {
@@ -1613,7 +1623,6 @@ void OverlayHub::clear() noexcept {
 	memset(&ctx, 0, sizeof(ctx));
 	memset(&nodes, 0, sizeof(nodes));
 	memset(sessions, 0, sizeof(sessions));
-	memset(&purge, 0, sizeof(purge));
 
 	for (unsigned int i = 0; i < WATCHLIST_SIZE; ++i) {
 		watchlist[i].identifier = -1;
