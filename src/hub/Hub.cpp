@@ -111,15 +111,15 @@ void Hub::metrics(HubInfo &info) const noexcept {
 	info.setMTU(Message::MTU);
 }
 
-bool Hub::containsWatcher(unsigned long long id) const noexcept {
+bool Hub::attached(unsigned long long id) const noexcept {
 	return watchers.contains(id);
 }
 
-Watcher* Hub::getWatcher(unsigned long long id) const noexcept {
+Watcher* Hub::fetch(unsigned long long id) const noexcept {
 	return watchers.get(id);
 }
 
-void Hub::putWatcher(Watcher *w, uint32_t events, uint32_t flags) {
+void Hub::attach(Watcher *w, uint32_t events, uint32_t flags) {
 	if (w && !watchers.contains(w->getUid())) {
 		add(w, events);
 		watchers.put(w);
@@ -129,16 +129,16 @@ void Hub::putWatcher(Watcher *w, uint32_t events, uint32_t flags) {
 	}
 }
 
-bool Hub::removeWatcher(unsigned long long id) noexcept {
-	return disable(getWatcher(id));
+void Hub::detach(unsigned long long id) noexcept {
+	watchers.remove(id);
 }
 
-Watcher* Hub::registerWatcher(unsigned long long id, unsigned long long newId,
+Watcher* Hub::shift(unsigned long long from, unsigned long long to,
 		bool replace) noexcept {
 	Watcher *w[2] = { nullptr, nullptr };
-	if (!watchers.contains(id)) {
+	if (!watchers.contains(from)) {
 		return nullptr;
-	} else if (watchers.move(id, newId, w, replace)) {
+	} else if (watchers.move(from, to, w, replace)) {
 		if (w[0] && (w[0] != w[1])) {
 			//Disable the old watcher which originally owned newId
 			disable(w[0]);
@@ -151,7 +151,7 @@ Watcher* Hub::registerWatcher(unsigned long long id, unsigned long long newId,
 	}
 }
 
-void Hub::iterateWatchers(int (*fn)(Watcher *w, void *arg), void *arg) {
+void Hub::iterate(int (*fn)(Watcher *w, void *arg), void *arg) {
 	watchers.iterate(fn, arg);
 }
 
@@ -165,7 +165,7 @@ unsigned int Hub::purgeTemporaryConnections(unsigned int target,
 	unsigned long long id;
 	while (temporaryConnections.get(id)) {
 		//This conversion is always safe
-		auto conn = static_cast<Socket*>(getWatcher(id));
+		auto conn = static_cast<Socket*>(fetch(id));
 		if (!conn) {
 			continue;
 		} else if (conn->hasTimedOut(timeout)) {
@@ -241,7 +241,7 @@ void Hub::stop(Watcher *w) noexcept {
 		exit(EXIT_FAILURE);
 	} else {
 		auto id = w->getUid();
-		watchers.remove(id);
+		detach(id);
 		w->stop();
 		delete w;
 		WH_LOG_DEBUG("Watcher %llu recycled", id);
@@ -351,7 +351,7 @@ void Hub::cleanup() noexcept {
 		stopWorker();
 		//-----------------------------------------------------------------
 		//2. Disconnect: recycle all watchers
-		iterateWatchers(deleteWatchers, nullptr);
+		iterate(deleteWatchers, nullptr);
 		//-----------------------------------------------------------------
 		//3. Clean up all the containers
 		temporaryConnections.clear();
@@ -647,7 +647,7 @@ void Hub::initListener() {
 		//-----------------------------------------------------------------
 		listener = new Socket(serviceName, ctx.backlog, isUnixSocket);
 		listener->setUid(getUid());
-		putWatcher(listener, IO_READ, WATCHER_ACTIVE);
+		attach(listener, IO_READ, WATCHER_ACTIVE);
 		notifiers.listener = listener;
 		WH_LOG_INFO("Hub %llu listening on port: %s", getUid(), serviceName);
 	} catch (const BaseException &e) {
@@ -666,7 +666,7 @@ void Hub::initAlarm() {
 	try {
 		if (ctx.timerExpiration) {
 			alarm = new Alarm(ctx.timerExpiration, ctx.timerInterval);
-			putWatcher(alarm, IO_READ, WATCHER_ACTIVE);
+			attach(alarm, IO_READ, WATCHER_ACTIVE);
 			notifiers.alarm = alarm;
 		} else {
 			WH_LOG_DEBUG("Internal alarm disabled");
@@ -688,7 +688,7 @@ void Hub::initEvent() {
 	Event *event = nullptr;
 	try {
 		event = new Event(ctx.semaphore);
-		putWatcher(event, IO_READ, WATCHER_ACTIVE);
+		attach(event, IO_READ, WATCHER_ACTIVE);
 		notifiers.event = event;
 	} catch (const BaseException &e) {
 		WH_LOG_EXCEPTION(e);
@@ -705,7 +705,7 @@ void Hub::initInotifier() {
 	Inotifier *inotifier = nullptr;
 	try {
 		inotifier = new Inotifier();
-		putWatcher(inotifier, IO_READ, WATCHER_ACTIVE);
+		attach(inotifier, IO_READ, WATCHER_ACTIVE);
 		notifiers.inotifier = inotifier;
 	} catch (const BaseException &e) {
 		WH_LOG_EXCEPTION(e);
@@ -723,7 +723,7 @@ void Hub::initInterrupt() {
 	try {
 		if (ctx.signal) {
 			interrupt = new Interrupt();
-			putWatcher(interrupt, IO_READ, WATCHER_ACTIVE);
+			attach(interrupt, IO_READ, WATCHER_ACTIVE);
 			notifiers.interrupt = interrupt;
 		} else {
 			WH_LOG_DEBUG("Synchronous signal disabled");
@@ -804,7 +804,7 @@ void Hub::publish() noexcept {
 
 		//Verify the destination
 		if (msg->getDestination() == getUid()
-				|| !(w = getWatcher(msg->getDestination()))
+				|| !(w = fetch(msg->getDestination()))
 				|| w->testGroup(msg->getGroup())) {
 			//Destination is sink or not found or group conflict
 			Message::recycle(msg);
@@ -869,7 +869,7 @@ bool Hub::acceptConnection(Socket *listener) noexcept {
 		 */
 		//Activate the Connection
 		if (temporaryConnections.put(newConn->getUid())) {
-			putWatcher(newConn, IO_WR, 0);
+			attach(newConn, IO_WR, 0);
 			newConn->setOutputQueueLimit(ctx.outputQueueLimit);
 		} else {
 			throw Exception(EX_OVERFLOW);

@@ -73,7 +73,7 @@ void OverlayHub::configure(void *arg) {
 
 void OverlayHub::cleanup() noexcept {
 	Watcher *w = nullptr;
-	if (!isHostId(getWorkerId()) && (w = getWatcher(getWorkerId()))) {
+	if (!isHostId(getWorkerId()) && (w = fetch(getWorkerId()))) {
 		//Shut down hub's end of the socket pair
 		w->stop();
 		stabilizer.notify();
@@ -339,7 +339,7 @@ bool OverlayHub::fixRoutingTable() noexcept {
 		if (!isConsistent(i)) {
 			auto old = commit(i);
 			if (!isInRoute(old)) {
-				auto conn = getWatcher(old);
+				auto conn = fetch(old);
 				//Take care of the reference asymmetry
 				if (conn && conn->isType(SOCKET_PROXY)) {
 					disable(conn);
@@ -478,11 +478,11 @@ int OverlayHub::processRegistrationRequest(Message *message) noexcept {
 	}
 
 	if (mode == -1) {
-		removeWatcher(oldUid);
+		detach(oldUid);
 		return -1;
 	}
 
-	auto conn = registerWatcher(oldUid, newUid, (mode == 2) ? true : false);
+	auto conn = shift(oldUid, newUid, (mode == 2) ? true : false);
 	if (!conn) {
 		return -1;
 	} else {
@@ -1079,7 +1079,7 @@ bool OverlayHub::handleSubscribeRequest(Message *msg) noexcept {
 	}
 
 	auto topic = msg->getSession();
-	Socket *conn = (Socket*) getWatcher(msg->getOrigin());
+	Socket *conn = (Socket*) fetch(msg->getOrigin());
 	buildDirectResponse(msg, Message::HEADER_SIZE);
 	msg->writeSource(0); //Obfuscate the source (this hub)
 
@@ -1107,7 +1107,7 @@ bool OverlayHub::handleUnsubscribeRequest(Message *msg) noexcept {
 	}
 
 	auto topic = msg->getSession();
-	Socket *conn = (Socket*) getWatcher(msg->getOrigin());
+	Socket *conn = (Socket*) fetch(msg->getOrigin());
 
 	if (conn && conn->testTopic(topic)) {
 		conn->clearTopic(topic);
@@ -1487,7 +1487,7 @@ Watcher* OverlayHub::connect(int &sfd, bool blocking, int timeout) {
 			Network::setBlocking(socket, true);
 			Network::setSocketTimeout(socket, timeout, timeout);
 		}
-		putWatcher(local, IO_WR, WATCHER_ACTIVE);
+		attach(local, IO_WR, WATCHER_ACTIVE);
 		sfd = socket;
 		return local;
 	} catch (const BaseException &e) {
@@ -1500,7 +1500,7 @@ Watcher* OverlayHub::connect(int &sfd, bool blocking, int timeout) {
 
 Watcher* OverlayHub::connect(unsigned long long id, Digest *hc) {
 	Watcher *conn = nullptr;
-	if (!(conn = getWatcher(id))) {
+	if (!(conn = fetch(id))) {
 		WH_LOG_DEBUG("Connecting to %llu", id);
 		createProxyConnection(id, hc);
 		//Not registered yet
@@ -1537,7 +1537,7 @@ Watcher* OverlayHub::createProxyConnection(unsigned long long id, Digest *hc) {
 		}
 		conn->publish(msg);
 		conn->setUid(id);
-		putWatcher(conn, IO_WR, 0);
+		attach(conn, IO_WR, 0);
 		return conn;
 	} catch (const BaseException &e) {
 		WH_LOG_EXCEPTION(e);
@@ -1553,15 +1553,15 @@ unsigned int OverlayHub::purgeConnections(int mode, unsigned target) noexcept {
 	case 0:
 		return purgeTemporaryConnections(target);
 	case 1:
-		iterateWatchers(removeIfInvalid, this);
+		iterate(removeIfInvalid, this);
 		return purge.count;
 	case 2:
-		iterateWatchers(removeIfClient, this);
+		iterate(removeIfClient, this);
 		return purge.count;
 	default:
 		purge.count = purgeTemporaryConnections(target, true);
 		if (!target || purge.count < target) {
-			iterateWatchers(removeIfClient, this);
+			iterate(removeIfClient, this);
 		}
 		return purge.count;
 	}

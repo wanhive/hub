@@ -111,50 +111,48 @@ protected:
 	/**
 	 * Watcher management: checks whether a watcher is associated with the given
 	 * key.
-	 * @param id the key (identifier) to search for
+	 * @param id key's value
 	 * @return true if a watcher is associated with the given key, false otherwise
 	 */
-	bool containsWatcher(unsigned long long id) const noexcept;
+	bool attached(unsigned long long id) const noexcept;
 	/**
-	 * Watcher management: returns the watcher associated with the given key.
-	 * @param id the key (identifier) to search for
-	 * @return the watcher on successful match, nullptr if the key doesn't exist
+	 * Watcher management: returns watcher associated with the given key.
+	 * @param id key's value
+	 * @return the associated watcher on match, nullptr if the key doesn't exist
 	 */
-	Watcher* getWatcher(unsigned long long id) const noexcept;
+	Watcher* fetch(unsigned long long id) const noexcept;
 	/**
-	 * Watcher management: adds a watcher to this hub's records, the watcher's
-	 * unique identifier will be used as the key.
-	 * @param w the watcher to register
-	 * @param events the IO events of interest
-	 * @param flags the flags to set in the watcher on successful registration
+	 * Watcher management: registers a watcher, the watcher's unique identifier
+	 * is used as the key.
+	 * @param w watcher to register
+	 * @param events IO events of interest
+	 * @param flags watcher's flags to set on successful registration
 	 */
-	void putWatcher(Watcher *w, uint32_t events, uint32_t flags);
+	void attach(Watcher *w, uint32_t events, uint32_t flags);
 	/**
-	 * Watcher management: removes the key and the associated watcher from this
-	 * hub's internal records.
-	 * @param id the key (identifier) to remove
+	 * Watcher management: removes a key and the associated watcher (doesn't
+	 * disable the associated watcher).
+	 * @param id key's value
 	 * @return true if the operation could not be completed immediately (the
 	 * operation scheduled for silent completion), false otherwise.
 	 */
-	bool removeWatcher(unsigned long long id) noexcept;
+	void detach(unsigned long long id) noexcept;
 	/**
-	 * Watcher management: associates the watcher assigned to the given (old) key
-	 * with a new key. If another watcher is already associated with the new key
-	 * and replacement is allowed then the existing watcher will be removed. On
-	 * success, the effected watcher has it's WATCHER_ACTIVE flag set and it's
-	 * UID is updated to match the new key.
-	 * @param id the old key
-	 * @param newId the new (desired) key
-	 * @param replace true to allow replacement on conflict, false to fail on
-	 * conflict.
-	 * @return the watcher assigned to the new key (originally associated with
-	 * the old key) on success, nullptr on failure.
+	 * Watcher management: moves a watcher from old key to a new key. If another
+	 * watcher is associated to the new key and replacement is allowed then the
+	 * other watcher will be removed and disabled. On success, the moved watcher
+	 * has it's WATCHER_ACTIVE flag set and it's UID is updated to match its new
+	 * key. On failure, the watcher associated with the old key will be disabled.
+	 * @param from old key's value
+	 * @param to new key's value
+	 * @param replace true to replace on conflict, false to fail on conflict
+	 * @return watcher assigned to the new key on success, nullptr on failure
 	 */
-	Watcher* registerWatcher(unsigned long long id, unsigned long long newId,
+	Watcher* shift(unsigned long long from, unsigned long long to,
 			bool replace = false) noexcept;
 	/**
-	 * Watcher management: iterates through the list of registered watchers. The
-	 * return value of callback function controls the behavior:
+	 * Watcher management: iterates through the registered watchers' list. The
+	 * callback function controls iteration's behavior:
 	 * [0]: continue iteration
 	 * [1]: dissociate the watcher from it's key and continue iteration (call
 	 * Reactor::disable() explicitly inside the callback function to remove the
@@ -163,9 +161,9 @@ protected:
 	 * @param fn the callback function
 	 * @param arg additional argument for the callback function
 	 */
-	void iterateWatchers(int (*fn)(Watcher *w, void *arg), void *arg);
+	void iterate(int (*fn)(Watcher *w, void *arg), void *arg);
 	/**
-	 * Watcher management: Purge (remove) the timed-out temporary connections.
+	 * Watcher management: purge (remove) the timed-out temporary connections.
 	 * @param target the maximum number of connections to purge (0 for no limit)
 	 * @param force true to treat all the temporary connection as timed-out
 	 * connections, false otherwise.

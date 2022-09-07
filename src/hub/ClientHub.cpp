@@ -230,7 +230,7 @@ void ClientHub::connectToAuthenticator() noexcept {
 		s = new Socket(ni);
 		s->setUid(id);
 		s->publish(createIdentificationRequest());
-		putWatcher(s, IO_WR, WATCHER_ACTIVE);
+		attach(s, IO_WR, WATCHER_ACTIVE);
 		bs.auth = s;
 		WH_LOG_DEBUG("Contacting authentication node %llu", bs.auth->getUid());
 	} catch (const BaseException &e) {
@@ -275,7 +275,7 @@ void ClientHub::connectToOverlay() noexcept {
 		s = new Socket(ni);
 		s->setUid(id);
 		s->publish(createFindRootRequest());
-		putWatcher(s, IO_WR, WATCHER_ACTIVE);
+		attach(s, IO_WR, WATCHER_ACTIVE);
 		bs.node = s;
 		WH_LOG_DEBUG("Contacting bootstrap node %llu", bs.node->getUid());
 	} catch (const BaseException &e) {
@@ -333,7 +333,7 @@ void ClientHub::findRoot() noexcept {
 			throw Exception(EX_ALLOCFAILED);
 		} else if (fresh) {
 			s->publish(msg);
-			putWatcher(s, IO_WR, WATCHER_ACTIVE);
+			attach(s, IO_WR, WATCHER_ACTIVE);
 			//Swap and disable
 			auto w = bs.node;
 			bs.node = s;
@@ -524,7 +524,7 @@ void ClientHub::processRegistrationResponse(Message *msg) noexcept {
 			|| status == WH_AQLF_REJECTED) {
 		setStage(WHC_ERROR);
 	} else if (origin == bs.node->getUid() && status == WH_AQLF_ACCEPTED) {
-		if (Hub::registerWatcher(bs.node->getUid(), 0, true)) {
+		if (shift(bs.node->getUid(), 0, true)) {
 			WH_LOG_INFO("Registration succeeded");
 			setStage(WHC_REGISTERED);
 		} else {
