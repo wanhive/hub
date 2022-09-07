@@ -29,9 +29,9 @@ namespace wanhive {
  * Enumeration of socket flags, should not conflict with the watcher flags
  */
 enum SocketFlag : uint32_t {
-	SOCKET_PRIORITY = 128,/**< Priority connection */
-	SOCKET_OVERLAY = 256, /**< Overlay connection */
-	SOCKET_LOCAL = 512 /**< Unix domain socket connection */
+	SOCKET_PRIORITY = 256, /**< Priority connection */
+	SOCKET_OVERLAY = 512, /**< Overlay connection */
+	SOCKET_LOCAL = 1024 /**< Unix domain socket connection */
 };
 
 /**

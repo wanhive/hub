@@ -17,16 +17,17 @@
 
 namespace wanhive {
 /**
- * The watcher flags
+ * Watcher flags
  */
 enum WatcherFlag : uint32_t {
-	WATCHER_RUNNING = 1, /**< Used by the reactor */
-	WATCHER_INVALID = 2, /**< Used by the reactor */
-	WATCHER_READY = 4, /**< Used by the reactor */
+	WATCHER_RUNNING = 1, /**< Used by reactor */
+	WATCHER_INVALID = 2, /**< Used by reactor */
+	WATCHER_READY = 4, /**< Used by reactor */
 	WATCHER_ACTIVE = 8, /**< Authorization status */
 	WATCHER_IN = 16, /**< Holds incoming data */
 	WATCHER_OUT = 32, /**< Holds outgoing data */
-	WATCHER_MULTICAST = 64/**< Multicasting enabled */
+	WATCHER_MULTICAST = 64,/**< Multicasting enabled */
+	WATCHER_SPECIAL = 128 /**< Specially qualified */
 };
 //-----------------------------------------------------------------
 //Reactor-specific file handle
