@@ -1078,10 +1078,11 @@ bool OverlayHub::handleSubscribeRequest(Message *msg) noexcept {
 		return handleInvalidRequest(msg);
 	}
 
-	auto topic = msg->getSession();
-	Socket *conn = (Socket*) fetch(msg->getOrigin());
 	buildDirectResponse(msg, Message::HEADER_SIZE);
 	msg->writeSource(0); //Obfuscate the source (this hub)
+
+	auto topic = msg->getSession();
+	auto conn = fetch(msg->getOrigin());
 
 	if (!conn) {
 		return handleInvalidRequest(msg);
@@ -1107,7 +1108,7 @@ bool OverlayHub::handleUnsubscribeRequest(Message *msg) noexcept {
 	}
 
 	auto topic = msg->getSession();
-	Socket *conn = (Socket*) fetch(msg->getOrigin());
+	auto conn = fetch(msg->getOrigin());
 
 	if (conn && conn->testTopic(topic)) {
 		conn->clearTopic(topic);
