@@ -167,11 +167,11 @@ private:
 	 */
 	Watcher* createProxyConnection(unsigned long long id, Digest *hc);
 	/*
-	 * <mode>: 0[TEMPORARY]; 1[INVALID]; 2[CLIENT];DEF[TEMPORARY|CLIENT]
+	 * Purges connections of particular type.
+	 * <mode>: 0[TEMPORARY]; 1[INVALID]; DEFAULT[TEMPORARY|CLIENT]
 	 * <target>: If non-zero then at most <target> connections will be purged.
 	 */
-	unsigned int purgeConnections(int mode = 0,
-			unsigned int target = 0) noexcept;
+	unsigned int purgeConnections(int mode, unsigned int target = 0) noexcept;
 	//Remove the active connections which no longer belong to this hub
 	static int removeIfInvalid(Watcher *w, void *arg) noexcept;
 	//Remove client connections

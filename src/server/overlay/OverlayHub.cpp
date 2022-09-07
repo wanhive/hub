@@ -15,6 +15,18 @@
 #include "../../base/common/Logger.h"
 #include <cinttypes>
 
+namespace {
+/**
+ * Connection types (for connections removal)
+ */
+enum PurgeType {
+	PURGE_TEMPORARY,/**< Temporary connections */
+	PURGE_INVALID, /**< Invalid/misplaced connections */
+	PURGE_CLIENT /**< Client connections */
+};
+
+}  // namespace
+
 namespace wanhive {
 
 OverlayHub::OverlayHub(unsigned long long uid, const char *path) :
@@ -354,7 +366,7 @@ bool OverlayHub::fixRoutingTable() noexcept {
 	//If the predecessor has changed, certain connections need to be removed
 	if (predessorChanged()) {
 		commitPredecessor();
-		purgeConnections(1);
+		purgeConnections(PURGE_INVALID);
 	}
 
 	return true;
@@ -365,7 +377,7 @@ bool OverlayHub::connectToRoute(unsigned long long id, Digest *hc) noexcept {
 		return connect(id, hc);
 	} catch (const BaseException &e) {
 		if (!Socket::unallocated() || !Message::unallocated()) {
-			purgeConnections(3, 2);
+			purgeConnections(PURGE_CLIENT, 2);
 			setStable(false);
 		}
 		return false;
@@ -1551,19 +1563,13 @@ unsigned int OverlayHub::purgeConnections(int mode, unsigned target) noexcept {
 	purge.target = target;
 	purge.count = 0;
 	switch (mode) {
-	case 0:
+	case PURGE_TEMPORARY:
 		return purgeTemporaryConnections(target);
-	case 1:
+	case PURGE_INVALID:
 		iterate(removeIfInvalid, this);
 		return purge.count;
-	case 2:
-		iterate(removeIfClient, this);
-		return purge.count;
 	default:
-		purge.count = purgeTemporaryConnections(target, true);
-		if (!target || purge.count < target) {
-			iterate(removeIfClient, this);
-		}
+		iterate(removeIfClient, this);
 		return purge.count;
 	}
 }
