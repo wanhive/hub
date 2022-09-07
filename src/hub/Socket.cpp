@@ -229,10 +229,6 @@ SSL* Socket::getSecureSocket() const noexcept {
 	return secure.ssl;
 }
 
-bool Socket::hasTimedOut(unsigned int timeOut) const noexcept {
-	return timer.hasTimedOut(timeOut);
-}
-
 Socket* Socket::createSocketPair(int &sfd, bool blocking) {
 	int sv[2] = { -1, -1 };
 	try {

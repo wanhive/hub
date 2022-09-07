@@ -164,8 +164,7 @@ unsigned int Hub::purgeTemporaryConnections(unsigned int target,
 	unsigned int count = 0;
 	unsigned long long id;
 	while (temporaryConnections.get(id)) {
-		//This conversion is always safe
-		auto conn = static_cast<Socket*>(fetch(id));
+		auto conn = fetch(id);
 		if (!conn) {
 			continue;
 		} else if (conn->hasTimedOut(timeout)) {

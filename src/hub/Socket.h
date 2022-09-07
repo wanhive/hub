@@ -14,7 +14,6 @@
 #define WH_HUB_SOCKET_H_
 #include "Topic.h"
 #include "../base/Network.h"
-#include "../base/Timer.h"
 #include "../base/common/Source.h"
 #include "../base/ds/Pooled.h"
 #include "../base/ds/StaticBuffer.h"
@@ -151,12 +150,6 @@ public:
 	 * is not secure.
 	 */
 	SSL* getSecureSocket() const noexcept;
-	/**
-	 * Checks if this object has outlived the given timeout value (old age).
-	 * @param timeOut the timeout value in milliseconds
-	 * @return true on timeout, false otherwise
-	 */
-	bool hasTimedOut(unsigned int timeOut) const noexcept;
 	//-----------------------------------------------------------------
 	/**
 	 * Creates a socket pair.
@@ -222,8 +215,6 @@ public:
 	static constexpr unsigned int OUT_QUEUE_SIZE = 1024;
 private:
 	//-----------------------------------------------------------------
-	//When was this connection created
-	Timer timer;
 	//Subscriptions
 	Topic subscriptions;
 	//-----------------------------------------------------------------

@@ -46,4 +46,8 @@ WatcherHandle Watcher::getHandle() const noexcept {
 	return WatcherHandle { Descriptor::getHandle() };
 }
 
+bool Watcher::hasTimedOut(unsigned int timeOut) const noexcept {
+	return timer.hasTimedOut(timeOut);
+}
+
 } /* namespace wanhive */
