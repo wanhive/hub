@@ -100,9 +100,9 @@ public:
 	/**
 	 * Iterates over the hash table, callback function's return value determines
 	 * the actual behavior:
-	 * [0]: continue iteration
-	 * [1]: remove the current entry from the hash table and continue iteration
-	 * [Any other value]: stop iteration
+	 * [0]: continue iteration,
+	 * [1]: remove the current entry from the hash table and continue iteration,
+	 * [Any other value]: stop iteration.
 	 * @param fn the callback function
 	 * @param arg additional argument (for passing on to the callback function)
 	 */

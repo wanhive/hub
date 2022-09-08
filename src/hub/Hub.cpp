@@ -140,7 +140,7 @@ Watcher* Hub::shift(unsigned long long from, unsigned long long to,
 		return nullptr;
 	} else if (watchers.move(from, to, w, replace)) {
 		if (w[0] && (w[0] != w[1])) {
-			//Disable the old watcher which originally owned newId
+			//Disable the conflicting watcher
 			disable(w[0]);
 		}
 		w[1]->setFlags(WATCHER_ACTIVE);

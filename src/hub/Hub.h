@@ -112,18 +112,18 @@ protected:
 	 * Watcher management: checks whether a watcher is associated with the given
 	 * key.
 	 * @param id key's value
-	 * @return true if a watcher is associated with the given key, false otherwise
+	 * @return true if the key exists, false otherwise
 	 */
 	bool attached(unsigned long long id) const noexcept;
 	/**
-	 * Watcher management: returns watcher associated with the given key.
+	 * Watcher management: returns the watcher associated with the given key.
 	 * @param id key's value
 	 * @return the associated watcher on match, nullptr if the key doesn't exist
 	 */
 	Watcher* fetch(unsigned long long id) const noexcept;
 	/**
-	 * Watcher management: registers a watcher, the watcher's unique identifier
-	 * is used as the key.
+	 * Watcher management: registers a watcher, watcher's unique identifier is
+	 * used as the key.
 	 * @param w watcher to register
 	 * @param events IO events of interest
 	 * @param flags watcher's flags to set on successful registration
@@ -138,11 +138,11 @@ protected:
 	 */
 	void detach(unsigned long long id) noexcept;
 	/**
-	 * Watcher management: moves a watcher from old key to a new key. If another
-	 * watcher is associated to the new key and replacement is allowed then the
-	 * other watcher will be removed and disabled. On success, the moved watcher
-	 * has it's WATCHER_ACTIVE flag set and it's UID is updated to match its new
-	 * key. On failure, the watcher associated with the old key will be disabled.
+	 * Watcher management: shifts a watcher from it's old key to a new key. If
+	 * a watcher is associated with the new key and replacement is allowed then
+	 * the conflicting watcher is disabled. On success, the watcher being moved
+	 * has it's WATCHER_ACTIVE flag set and it's UID is updated to match the new
+	 * key. On failure, the watcher associated with the old key is disabled.
 	 * @param from old key's value
 	 * @param to new key's value
 	 * @param replace true to replace on conflict, false to fail on conflict
@@ -151,13 +151,13 @@ protected:
 	Watcher* shift(unsigned long long from, unsigned long long to,
 			bool replace = false) noexcept;
 	/**
-	 * Watcher management: iterates through the registered watchers' list. The
-	 * callback function controls iteration's behavior:
-	 * [0]: continue iteration
+	 * Watcher management: iterates through the registered watchers. Callback
+	 * function's returned value controls the iteration's behavior:
+	 * [0]: continue iteration,
 	 * [1]: dissociate the watcher from it's key and continue iteration (call
 	 * Reactor::disable() explicitly inside the callback function to remove the
-	 * watcher from the event loop).
-	 * [Any other value]: stop iteration
+	 * watcher from event loop),
+	 * [Any other value]: stop iteration.
 	 * @param fn the callback function
 	 * @param arg additional argument for the callback function
 	 */
