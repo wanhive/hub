@@ -192,10 +192,9 @@ void OverlayHub::stopWork() noexcept {
 void OverlayHub::installService() {
 	if (enableWorker()) {
 		int fd = -1;
-		Watcher *w = connect(fd, true, ctx.requestTimeout);
+		auto w = connect(fd, true, ctx.requestTimeout);
+		worker.id = w->getUid(); //set here
 		onRegistration(w);
-
-		worker.id = w->getUid();
 		stabilizer.configure(fd, ctx.bootstrapNodes, ctx.updateCycle,
 				ctx.retryInterval);
 	} else {
@@ -1520,8 +1519,8 @@ Watcher* OverlayHub::connect(int &sfd, bool blocking, int timeout) {
 }
 
 Watcher* OverlayHub::connect(unsigned long long id, Digest *hc) {
-	Watcher *conn = nullptr;
-	if (!(conn = fetch(id))) {
+	auto conn = fetch(id);
+	if (!conn) {
 		WH_LOG_DEBUG("Connecting to %llu", id);
 		createProxyConnection(id, hc);
 		//Not registered yet
@@ -1529,7 +1528,7 @@ Watcher* OverlayHub::connect(unsigned long long id, Digest *hc) {
 	} else if (conn->testFlags(WATCHER_ACTIVE)) {
 		//Registration completed
 		return conn;
-	} else if (((Socket*) conn)->hasTimedOut(ctx.requestTimeout)) {
+	} else if (conn->hasTimedOut(ctx.requestTimeout)) {
 		disable(conn);
 		return nullptr;
 	} else {
