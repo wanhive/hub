@@ -190,16 +190,16 @@ void OverlayHub::stopWork() noexcept {
 }
 
 void OverlayHub::installService() {
-	if (enableWorker()) {
-		int fd = -1;
-		auto w = connect(fd, true, ctx.requestTimeout);
-		worker.id = w->getUid(); //set here
-		onRegistration(w);
-		stabilizer.configure(fd, ctx.bootstrapNodes, ctx.updateCycle,
-				ctx.retryInterval);
-	} else {
-		//Worker thread not required
+	if (!enableWorker()) {
+		return;
 	}
+
+	int fd = -1;
+	auto w = connect(fd, true, ctx.requestTimeout);
+	worker.id = w->getUid(); //set here
+	onRegistration(w);
+	stabilizer.configure(fd, ctx.bootstrapNodes, ctx.updateCycle,
+			ctx.retryInterval);
 }
 
 void OverlayHub::installSettingsMonitor() {
@@ -1587,13 +1587,13 @@ int OverlayHub::removeIfInvalid(Watcher *w, void *arg) noexcept {
 	auto hub = pc->hub;
 	if (pc->target && pc->count >= pc->target) {
 		return -1;
-	} else if (!(Socket::isEphemeralId(uid) || hub->isLocal(mapKey(uid))
-			|| hub->isInternalNode(uid) || hub->isWorkerId(uid))) {
-		hub->disable(w);
-		pc->count++;
-		//No need to remove from the lookup table
+	} else if (hub->isInternalNode(uid) || hub->isWorkerId(uid)) {
+		return 0;
+	} else if (Socket::isEphemeralId(uid) || hub->isLocal(mapKey(uid))) {
 		return 0;
 	} else {
+		hub->disable(w);
+		pc->count++;
 		return 0;
 	}
 }
@@ -1604,13 +1604,13 @@ int OverlayHub::removeIfClient(Watcher *w, void *arg) noexcept {
 	auto hub = pc->hub;
 	if (pc->target && pc->count >= pc->target) {
 		return -1;
-	} else if (isExternalNode(uid) && !hub->isWorkerId(uid)
-			&& !(Socket::isEphemeralId(uid) && w->testFlags(WATCHER_ACTIVE))) {
-		hub->disable(w);
-		pc->count++;
-		//No need to remove from the lookup table
+	} else if (hub->isInternalNode(uid) || hub->isWorkerId(uid)) {
+		return 0;
+	} else if (Socket::isEphemeralId(uid) && w->testFlags(WATCHER_ACTIVE)) {
 		return 0;
 	} else {
+		hub->disable(w);
+		pc->count++;
 		return 0;
 	}
 }
@@ -1637,11 +1637,11 @@ void OverlayHub::metrics(OverlayHubInfo &info) const noexcept {
 	info.setSuccessor(getSuccessor());
 	info.setRoutes(TABLESIZE);
 	info.setStable(isStable());
-	for (unsigned int i = 0; i < TABLESIZE; i++) {
+	for (unsigned int i = 0; i < TABLESIZE; ++i) {
 		auto f = getFinger(i);
-		info.setRoute(
-				{ f->getStart(), f->getId(), f->getOldId(), f->isConnected() },
-				i);
+		RouteInfo ri = { f->getStart(), f->getId(), f->getOldId(),
+				f->isConnected() };
+		info.setRoute(ri, i);
 	}
 }
 
