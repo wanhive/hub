@@ -28,8 +28,7 @@ enum WatcherFlag : uint32_t {
 	WATCHER_ACTIVE = 8, /**< Authorization status */
 	WATCHER_IN = 16, /**< Holds incoming data */
 	WATCHER_OUT = 32, /**< Holds outgoing data */
-	WATCHER_MULTICAST = 64,/**< Multicasting enabled */
-	WATCHER_SPECIAL = 128 /**< Specially qualified */
+	WATCHER_MULTICAST = 64 /**< Multicasting enabled */
 };
 /**
  * Watcher configuration options
