@@ -13,11 +13,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
-- Codebase update to improve quality and performance.
+- Codebase updates (backward incompatible) to improve quality and performance.
 
 ### Fixed
 
-- Allow atomic operations only on scalar data types.
+- Allow atomic operations only on integral scalar and pointer data types.
 - Reset **Reactor**'s timeout value to default on initialization.
 - Resolve the default service type (configuration value) correctly in **Hub**.
 
