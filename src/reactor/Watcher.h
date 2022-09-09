@@ -17,6 +17,7 @@
 #include "../base/Timer.h"
 
 namespace wanhive {
+//-----------------------------------------------------------------
 /**
  * Watcher flags
  */
@@ -29,6 +30,13 @@ enum WatcherFlag : uint32_t {
 	WATCHER_OUT = 32, /**< Holds outgoing data */
 	WATCHER_MULTICAST = 64,/**< Multicasting enabled */
 	WATCHER_SPECIAL = 128 /**< Specially qualified */
+};
+/**
+ * Watcher configuration options
+ */
+enum WatcherOption {
+	WATCHER_READ_BUFFER_MAX, /**< Read buffer's maximum size */
+	WATCHER_WRITE_BUFFER_MAX /**< Write buffer's maximum size */
 };
 //-----------------------------------------------------------------
 //Reactor-specific file handle
@@ -94,6 +102,19 @@ public:
 	 * @return true if the topic is subscribed, false otherwise
 	 */
 	virtual bool testTopic(unsigned int index) const noexcept;
+	//-----------------------------------------------------------------
+	/**
+	 * Runtime configuration: returns a configurable value or limit.
+	 * @param name option's name
+	 * @return option's value
+	 */
+	virtual unsigned long long getOption(int name) const noexcept;
+	/**
+	 * Runtime configuration: sets a configurable value or limit.
+	 * @param name option's name
+	 * @param value option's value
+	 */
+	virtual void setOption(int name, unsigned long long value) noexcept;
 	//-----------------------------------------------------------------
 	/**
 	 * Checks whether the watcher has pending jobs (see Descriptor::isReady()).
