@@ -132,12 +132,6 @@ public:
 	 * @return the next incoming message
 	 */
 	Message* getMessage();
-	/**
-	 * Returns the underlying secure connection object
-	 * @return the SSL/TLS connection object, nullptr if the underlying connection
-	 * is not secure.
-	 */
-	SSL* getSecureSocket() const noexcept;
 	//-----------------------------------------------------------------
 	/**
 	 * Creates a socket pair.

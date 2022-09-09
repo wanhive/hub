@@ -238,10 +238,6 @@ Message* Socket::getMessage() {
 	}
 }
 
-SSL* Socket::getSecureSocket() const noexcept {
-	return secure.ssl;
-}
-
 Socket* Socket::createSocketPair(int &sfd, bool blocking) {
 	int sv[2] = { -1, -1 };
 	try {
