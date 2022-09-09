@@ -397,10 +397,10 @@ void OverlayHub::onRegistration(Watcher *w) noexcept {
 		return;
 	} else if (isController(id) || isWorkerId(id)) {
 		w->setFlags(SOCKET_PRIORITY);
-		((Socket*) w)->setOutputQueueLimit(0);
+		w->setOption(WATCHER_WRITE_BUFFER_MAX, 0); //default
 	} else if (isInternalNode(id)) {
 		w->setFlags(SOCKET_OVERLAY);
-		((Socket*) w)->setOutputQueueLimit(0);
+		w->setOption(WATCHER_WRITE_BUFFER_MAX, 0); //default
 		Node::update(id, true);
 	} else {
 		return;

@@ -104,6 +104,8 @@ public:
 	void setTopic(unsigned int index) noexcept override;
 	void clearTopic(unsigned int index) noexcept override;
 	bool testTopic(unsigned int index) const noexcept override;
+	unsigned long long getOption(int name) const noexcept override;
+	void setOption(int name, unsigned long long value) noexcept override;
 	//-----------------------------------------------------------------
 	/**
 	 * Accepts an incoming connection request.
@@ -130,20 +132,6 @@ public:
 	 * @return the next incoming message
 	 */
 	Message* getMessage();
-	//-----------------------------------------------------------------
-	/**
-	 * Sets the maximum number of outgoing messages this object can hold in it's
-	 * internal queue (see Watcher::publish()).
-	 * @param limit the maximum number of messages which can be queued up, (set
-	 * 0 for no limit).
-	 */
-	void setOutputQueueLimit(unsigned int limit) noexcept;
-	/**
-	 * Returns the maximum number of outgoing messages this object can hold in it's
-	 * internal queue (see Watcher::publish()).
-	 * @return the outgoing message queue limit
-	 */
-	unsigned int getOutputQueueLimit() const noexcept;
 	/**
 	 * Returns the underlying secure connection object
 	 * @return the SSL/TLS connection object, nullptr if the underlying connection

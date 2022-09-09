@@ -869,7 +869,7 @@ bool Hub::acceptConnection(Socket *listener) noexcept {
 		//Activate the Connection
 		if (temporaryConnections.put(newConn->getUid())) {
 			attach(newConn, IO_WR, 0);
-			newConn->setOutputQueueLimit(ctx.outputQueueLimit);
+			newConn->setOption(WATCHER_WRITE_BUFFER_MAX, ctx.outputQueueLimit);
 		} else {
 			throw Exception(EX_OVERFLOW);
 		}

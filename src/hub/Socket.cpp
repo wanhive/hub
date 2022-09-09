@@ -151,6 +151,27 @@ bool Socket::testTopic(unsigned int index) const noexcept {
 	return subscriptions.test(index);
 }
 
+unsigned long long Socket::getOption(int name) const noexcept {
+	switch (name) {
+	case WATCHER_READ_BUFFER_MAX:
+		return READ_BUFFER_SIZE;
+	case WATCHER_WRITE_BUFFER_MAX:
+		return outQueueLimit;
+	default:
+		return 0;
+	}
+}
+
+void Socket::setOption(int name, unsigned long long value) noexcept {
+	switch (name) {
+	case WATCHER_WRITE_BUFFER_MAX:
+		outQueueLimit = Twiddler::min(value, (OUT_QUEUE_SIZE - 1));
+		break;
+	default:
+		break;
+	}
+}
+
 Socket* Socket::accept(bool blocking) {
 	auto sfd = -1;
 	try {
@@ -215,14 +236,6 @@ Message* Socket::getMessage() {
 		incomingMessage = nullptr;
 		throw;
 	}
-}
-
-void Socket::setOutputQueueLimit(unsigned int limit) noexcept {
-	outQueueLimit = Twiddler::min(limit, (OUT_QUEUE_SIZE - 1));
-}
-
-unsigned int Socket::getOutputQueueLimit() const noexcept {
-	return outQueueLimit;
 }
 
 SSL* Socket::getSecureSocket() const noexcept {
