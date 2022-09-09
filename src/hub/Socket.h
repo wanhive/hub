@@ -50,12 +50,12 @@ class Socket final: public Pooled<Socket>,
 		public Watcher {
 public:
 	/**
-	 * Constructor: associates the given file descriptor to the object
+	 * Constructor: assigns a file descriptor.
 	 * @param fd the file descriptor to use with this object
 	 */
 	Socket(int fd) noexcept;
 	/**
-	 * Constructor: associates a secure connection to this object
+	 * Constructor: assigns a secure connection object.
 	 * @param ssl the SSL/TLS connection object
 	 */
 	Socket(SSL *ssl);
@@ -71,7 +71,7 @@ public:
 	/**
 	 * Constructor: creates a host which can accept incoming connections.
 	 * @param service the service name (usually the listening port number for
-	 * TCP/IP socket, and the pathname for a unix domain socket).
+	 * a TCP/IP socket, or the pathname for a unix domain socket).
 	 * @param backlog the listening backlog
 	 * @param isUnix true for creating a unix domain socket, false for creating
 	 * a TCP/IP socket (default).
@@ -109,49 +109,46 @@ public:
 	//-----------------------------------------------------------------
 	/**
 	 * Accepts an incoming connection request.
-	 * @param blocking true for configuring the incoming connection for blocking
-	 * IO, false for non-blocking IO.
+	 * @param blocking true for setting blocking IO on the new connection, false
+	 * for non-blocking IO.
 	 * @return a new incoming connection, nullptr if the call would block
 	 */
 	Socket* accept(bool blocking = false);
 	/**
 	 * Reads incoming messages (see Socket::getMessage()).
 	 * @return the number of bytes read on success (possible zero(0) if the
-	 * internal buffer is full), zero(0) if the non-blocking mode is on and the
-	 * read operation would block, -1 if the connection was closed cleanly.
+	 * internal buffer is full), zero(0) if the connection is non-blocking and
+	 * the read operation would block, -1 if the connection was closed cleanly.
 	 */
 	ssize_t read();
 	/**
 	 * Writes outgoing messages to the underlying connection.
-	 * @return the number of bytes written, possibly zero (0) if no outgoing
-	 * message queued up.
+	 * @return the number of bytes written, possibly zero (0) if the outgoing
+	 * messages queue is empty.
 	 */
 	ssize_t write();
 	/**
-	 * Returns the incoming messages read from the connection (see Socket::read()).
-	 * @return the next incoming message
+	 * Returns an incoming message (see Socket::read()).
+	 * @return incoming message
 	 */
 	Message* getMessage();
 	//-----------------------------------------------------------------
 	/**
-	 * Creates a socket pair.
-	 * @param sfd object for storing the other end of the socket pair
-	 * @param blocking true for configuring the socket pair for blocking IO,
-	 * false for non-blocking IO.
-	 * @return object containing one end of the socket pair
+	 * Creates an unnamed socket pair.
+	 * @param sfd stores the remote end's file descriptor
+	 * @param blocking true for for blocking IO, false for non-blocking IO
+	 * @return socket connection object
 	 */
 	static Socket* createSocketPair(int &sfd, bool blocking = false);
 	/**
-	 * Sets the context for secure connections
+	 * Sets secure connections' context.
 	 * @param ctx object containing the SSL/TLS context
 	 */
 	static void setSSLContext(SSLContext *ctx) noexcept;
 	/**
-	 * Checks whether the given value is a temporary socket connection identifier.
-	 * Identifiers outside the range [Socket::MIN_ACTIVE_ID, Socket::MAX_ACTIVE_ID]
-	 * are used as the temporary socket identifier.
-	 * @param id the value to check
-	 * @return true if the given value is a temporary id, false otherwise.
+	 * Checks whether the given value is a temporary socket identifier.
+	 * @param id identifier's value
+	 * @return true for temporary identifier, false otherwise.
 	 */
 	static bool isEphemeralId(unsigned long long id) noexcept;
 private:
