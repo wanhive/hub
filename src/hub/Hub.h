@@ -130,13 +130,12 @@ protected:
 	 */
 	void attach(Watcher *w, uint32_t events, uint32_t flags);
 	/**
-	 * Watcher management: removes a key and the associated watcher (doesn't
-	 * disable the associated watcher).
+	 * Watcher management: removes a key and the associated watcher.
 	 * @param id key's value
 	 * @return true if the operation could not be completed immediately (the
 	 * operation scheduled for silent completion), false otherwise.
 	 */
-	void detach(unsigned long long id) noexcept;
+	bool detach(unsigned long long id) noexcept;
 	/**
 	 * Watcher management: shifts a watcher from it's old key to a new key. If
 	 * a watcher is associated with the new key and replacement is allowed then

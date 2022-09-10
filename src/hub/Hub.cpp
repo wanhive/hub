@@ -129,8 +129,8 @@ void Hub::attach(Watcher *w, uint32_t events, uint32_t flags) {
 	}
 }
 
-void Hub::detach(unsigned long long id) noexcept {
-	watchers.remove(id);
+bool Hub::detach(unsigned long long id) noexcept {
+	return disable(fetch(id));
 }
 
 Watcher* Hub::shift(unsigned long long from, unsigned long long to,
@@ -240,7 +240,7 @@ void Hub::stop(Watcher *w) noexcept {
 		exit(EXIT_FAILURE);
 	} else {
 		auto id = w->getUid();
-		detach(id);
+		watchers.remove(id);
 		w->stop();
 		delete w;
 		WH_LOG_DEBUG("Watcher %llu recycled", id);
