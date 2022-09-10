@@ -486,7 +486,7 @@ int OverlayHub::processRegistrationRequest(Message *message) noexcept {
 	}
 
 	if (mode == -1) {
-		disable(fetch(current));
+		detach(current);
 		return -1;
 	}
 
