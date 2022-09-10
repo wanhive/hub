@@ -67,14 +67,14 @@ private:
 	bool allowRegistration(unsigned long long source,
 			unsigned long long requestedId) const noexcept;
 	/*
-	 * Determines how a registration request should proceed. Return values:
+	 * Determines how a registration response should proceed. Return values:
 	 * 0: Just activate the connection
 	 * 1: Try to register with the new ID (fail on conflict)
 	 * 2: Try to register with the new ID (replace on conflict)
 	 * [Any other value]: deactivate the connection
 	 */
-	int getModeOfRegistration(unsigned long long oldUid,
-			unsigned long long newUid) noexcept;
+	int getModeOfRegistration(unsigned long long current,
+			unsigned long long requested) noexcept;
 	//-----------------------------------------------------------------
 	bool interceptMessage(Message *message) noexcept;
 	void applyFlowControl(Message *message) noexcept;

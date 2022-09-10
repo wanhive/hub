@@ -473,35 +473,24 @@ bool OverlayHub::isValidRegistrationRequest(const Message *msg) noexcept {
 }
 
 int OverlayHub::processRegistrationRequest(Message *message) noexcept {
-	auto origin = message->getOrigin();
-	auto oldUid = message->getSource();
-	auto newUid = message->getDestination();
-	auto aqlf = message->getStatus();
-	//-----------------------------------------------------------------
-	/*
-	 * VALIDATE THE REGISTRATION REQUEST
-	 * Origin must match the oldUid in all cases (only direct requests).
-	 */
-	if (origin != oldUid) {
-		//If we are here then there is a bug in the request handler's logic
+	if (message->getOrigin() != message->getSource()) {
+		//Origin must match the source identifier (only direct requests)
 		return -1;
 	}
-	//-----------------------------------------------------------------
-	/*
-	 * REGISTRATION PROCEEDS
-	 * Get the connection which is to be Activated/Deactivated
-	 */
-	int mode = -1;
-	if (ctx.enableRegistration && aqlf == WH_DHT_AQLF_ACCEPTED) {
-		mode = getModeOfRegistration(oldUid, newUid);
+
+	auto current = message->getSource();
+	auto requested = message->getDestination();
+	int mode = -1; //default: reject
+	if (message->getStatus() == WH_DHT_AQLF_ACCEPTED) {
+		mode = getModeOfRegistration(current, requested);
 	}
 
 	if (mode == -1) {
-		detach(oldUid);
+		disable(fetch(current));
 		return -1;
 	}
 
-	auto conn = shift(oldUid, newUid, (mode == 2) ? true : false);
+	auto conn = shift(current, requested, (mode == 2) ? true : false);
 	if (!conn) {
 		return -1;
 	} else {
@@ -538,24 +527,23 @@ bool OverlayHub::allowRegistration(unsigned long long source,
 	}
 }
 
-int OverlayHub::getModeOfRegistration(unsigned long long oldUid,
-		unsigned long long newUid) noexcept {
-	if (isHostId(newUid) || isWorkerId(newUid)) {
+int OverlayHub::getModeOfRegistration(unsigned long long current,
+		unsigned long long requested) noexcept {
+	if (!ctx.enableRegistration) {
 		return -1;
-	} else if (oldUid == newUid) {
+	} else if (isHostId(requested) || isWorkerId(requested)) {
+		return -1;
+	} else if (current == requested) {
 		//Just activate
 		return 0;
-	} else if (isInternalNode(newUid)) {
-		//Precedence Rule in case both sides are trying to connect (race condition)
-		return ((newUid < getUid()) ? 1 : 2);
+	} else if (isInternalNode(requested)) {
+		//Precedence rule if both sides are trying to connect
+		return ((requested < getUid()) ? 1 : 2);
+	} else if (isLocal(mapKey(requested))) {
+		//Replace existing connection on conflict
+		return !(isSupernode() && (Socket::unallocated() <= TABLESIZE)) ? 2 : -1;
 	} else {
-		/*
-		 * Default case: Reserve a few connections in the pool for internal usage.
-		 * Replace the existing one on conflict.
-		 */
-		return isLocal(mapKey(newUid))
-				&& !(isSupernode() && (Socket::unallocated() <= TABLESIZE)) ?
-				2 : -1;
+		return -1;
 	}
 }
 
@@ -840,7 +828,7 @@ bool OverlayHub::handleRegistrationRequest(Message *msg) noexcept {
 	 */
 	if (msg->isType(SOCKET_PROXY) && msg->getStatus() != WH_DHT_AQLF_REQUEST) {
 		msg->setDestination(origin);
-		//Set the source to this message's origin (Server performs source check)
+		//Set correct source identifier
 		msg->setSource(origin);
 		return true;
 	}
@@ -850,7 +838,7 @@ bool OverlayHub::handleRegistrationRequest(Message *msg) noexcept {
 	 */
 	//Do this before the message is modified
 	auto success = isValidRegistrationRequest(msg);
-	//Set the source to this message's origin (Server performs source check)
+	//Set correct source identifier
 	msg->setSource(origin);
 	//-----------------------------------------------------------------
 	if (success) {
