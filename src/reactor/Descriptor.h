@@ -12,6 +12,7 @@
 
 #ifndef WH_REACTOR_DESCRIPTOR_H_
 #define WH_REACTOR_DESCRIPTOR_H_
+#include "../base/Timer.h"
 #include "../base/ds/State.h"
 #include "../base/ds/UID.h"
 #include "../base/unix/File.h"
@@ -47,6 +48,12 @@ public:
 	 * @param uid the unique identifier
 	 */
 	void setUid(unsigned long long uid) noexcept;
+	/**
+	 * Checks if this object has outlived the given timeout value.
+	 * @param timeOut the timeout value in milliseconds
+	 * @return true on timeout, false otherwise
+	 */
+	bool hasTimedOut(unsigned int timeOut) const noexcept;
 protected:
 	/**
 	 * Returns the associated file descriptor (call Descriptor::closeHandle() to
@@ -131,6 +138,7 @@ protected:
 	ssize_t write(const void *buf, size_t count);
 private:
 	UID uid;
+	Timer timer;
 };
 
 } /* namespace wanhive */

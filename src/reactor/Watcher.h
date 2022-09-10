@@ -14,7 +14,6 @@
 #define WH_REACTOR_WATCHER_H_
 #include "Descriptor.h"
 #include "Handle.h"
-#include "../base/Timer.h"
 
 namespace wanhive {
 //-----------------------------------------------------------------
@@ -125,14 +124,6 @@ public:
 	 * @return the file handle
 	 */
 	WatcherHandle getHandle() const noexcept;
-	/**
-	 * Checks if this object has outlived the given timeout value.
-	 * @param timeOut the timeout value in milliseconds
-	 * @return true on timeout, false otherwise
-	 */
-	bool hasTimedOut(unsigned int timeOut) const noexcept;
-private:
-	Timer timer;
 };
 
 } /* namespace wanhive */
