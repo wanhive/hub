@@ -33,7 +33,6 @@ private:
 	static void runCommandTest() noexcept;
 	static void runNetworkTest() noexcept;
 	static void runComponentsTest() noexcept;
-	static void f() noexcept;
 	//-----------------------------------------------------------------
 	static void installSignals();
 	static void shutdown(int signum) noexcept;

@@ -75,7 +75,7 @@ int AppManager::parseOptions(int argc, char *argv[]) noexcept {
 			configPath = optarg;
 			break;
 		case 'h':
-			printHelp(stderr);
+			printHelp(stdout);
 			return 1;
 		case 'm':
 			menu = true;
@@ -90,7 +90,7 @@ int AppManager::parseOptions(int argc, char *argv[]) noexcept {
 			sscanf(optarg, "%c", &hubType);
 			break;
 		case 'v':
-			printVersion(stderr);
+			printVersion(stdout);
 			return 1;
 		case -1:	//We are done
 			break;
@@ -138,7 +138,7 @@ void AppManager::processOptions() noexcept {
 		runComponentsTest();
 		break;
 	case 6:
-		f();
+		printHelp(stdout);
 		break;
 	default:
 		std::cerr << "Invalid option" << std::endl;
@@ -203,7 +203,7 @@ void AppManager::executeHub() noexcept {
 
 		/*
 		 * No race condition because signals have been blocked before
-		 * calling Hub::execute
+		 * calling Hub::execute()
 		 */
 		installSignals();
 		if (hub->execute(nullptr)) {
@@ -283,10 +283,6 @@ void AppManager::runComponentsTest() noexcept {
 	}
 }
 
-void AppManager::f() noexcept {
-	printHelp(stderr);
-}
-
 void AppManager::installSignals() {
 	//Block all signals
 	Signal::blockAll();
@@ -316,8 +312,7 @@ void AppManager::printVersion(FILE *stream) noexcept {
 	fprintf(stream, "\n%s %s version %s\nCopyright \u00A9 %s %s.\n",
 	WH_PRODUCT_NAME, WH_RELEASE_NAME, WH_RELEASE_VERSION,
 	WH_RELEASE_YEAR, WH_RELEASE_AUTHOR);
-
-	fprintf(stderr, "LICENSE %s\n\n", WH_LICENSE_TEXT);
+	fprintf(stream, "LICENSE %s\n\n", WH_LICENSE_TEXT);
 }
 
 void AppManager::printUsage(FILE *stream) noexcept {
