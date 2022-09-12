@@ -54,11 +54,11 @@ void ConfigTool::execute() noexcept {
 			generateVerifier();
 			break;
 		default:
-			std::cout << "Invalid option" << std::endl;
+			std::cerr << "Invalid option" << std::endl;
 			break;
 		}
 	} catch (const BaseException &e) {
-		std::cout << "Request denied" << std::endl;
+		std::cerr << "Request denied" << std::endl;
 		WH_LOG_EXCEPTION(e);
 	}
 }
@@ -173,17 +173,17 @@ void ConfigTool::generateVerifier() {
 		char buffer[4096];
 		const unsigned char *binary;
 		unsigned int bytes;
-		std::cerr << "{\n";
-		std::cerr << " \"id\": \"" << name << "\",\n";
+		std::cout << "{\n";
+		std::cout << " \"id\": \"" << name << "\",\n";
 		authenticator->getSalt(binary, bytes);
 		buffer[0] = '\0';
 		Encoding::base16Encode(buffer, binary, bytes, sizeof(buffer));
-		std::cerr << " \"salt\": \"" << buffer << "\",\n";
+		std::cout << " \"salt\": \"" << buffer << "\",\n";
 		authenticator->getPasswordVerifier(binary, bytes);
 		buffer[0] = '\0';
 		Encoding::base16Encode(buffer, binary, bytes, sizeof(buffer));
-		std::cerr << " \"verifier\": \"" << buffer << "\"\n";
-		std::cerr << "}" << std::endl;
+		std::cout << " \"verifier\": \"" << buffer << "\"\n";
+		std::cout << "}" << std::endl;
 		delete authenticator;
 	} catch (const BaseException &e) {
 		delete authenticator;
