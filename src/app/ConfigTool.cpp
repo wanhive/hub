@@ -64,8 +64,8 @@ void ConfigTool::execute() noexcept {
 }
 
 void ConfigTool::generateKeyPair() {
-	char pkf[1024];
-	char skf[1024];
+	char pkf[1024] = { '\0' };
+	char skf[1024] = { '\0' };
 	try {
 		std::cout << "Pathname of the public key file: ";
 		std::cin.ignore();
@@ -88,8 +88,8 @@ void ConfigTool::generateKeyPair() {
 }
 
 void ConfigTool::manageHosts() {
-	char hf[1024];
-	char sf[1024];
+	char hf[1024] = { '\0' };
+	char sf[1024] = { '\0' };
 	unsigned int mode; //unsigned
 
 	std::cout << "Select operation\n"
@@ -136,9 +136,9 @@ void ConfigTool::manageHosts() {
 }
 
 void ConfigTool::generateVerifier() {
-	char name[64];
-	char password[64];
-	unsigned int rounds;
+	char name[64] = { '\0' };
+	char password[64] = { '\0' };
+	unsigned int rounds { 0 };
 
 	std::cout << "Identity: ";
 	std::cin.ignore();
@@ -159,34 +159,29 @@ void ConfigTool::generateVerifier() {
 		return;
 	}
 
-	Authenticator *authenticator = nullptr;
 	try {
-		auto success = (authenticator = new (std::nothrow) Authenticator(true))
-				&& authenticator->generateVerifier(name,
-						(const unsigned char*) password, strlen(password),
-						rounds);
-
-		if (!success) {
+		Authenticator auth(true);
+		if (!auth.generateVerifier(name, (const unsigned char*) password,
+				strlen(password), rounds)) {
 			throw Exception(EX_INVALIDOPERATION);
 		}
 
 		char buffer[4096];
-		const unsigned char *binary;
+		const unsigned char *data;
 		unsigned int bytes;
+
 		std::cout << "{\n";
 		std::cout << " \"id\": \"" << name << "\",\n";
-		authenticator->getSalt(binary, bytes);
+		auth.getSalt(data, bytes);
 		buffer[0] = '\0';
-		Encoding::base16Encode(buffer, binary, bytes, sizeof(buffer));
+		Encoding::base16Encode(buffer, data, bytes, sizeof(buffer));
 		std::cout << " \"salt\": \"" << buffer << "\",\n";
-		authenticator->getPasswordVerifier(binary, bytes);
+		auth.getPasswordVerifier(data, bytes);
 		buffer[0] = '\0';
-		Encoding::base16Encode(buffer, binary, bytes, sizeof(buffer));
+		Encoding::base16Encode(buffer, data, bytes, sizeof(buffer));
 		std::cout << " \"verifier\": \"" << buffer << "\"\n";
 		std::cout << "}" << std::endl;
-		delete authenticator;
 	} catch (const BaseException &e) {
-		delete authenticator;
 		throw;
 	}
 }
