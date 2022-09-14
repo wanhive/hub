@@ -15,10 +15,6 @@
 
 namespace wanhive {
 /**
- *
- *
- */
-/**
  * File handle that selectively exposes file descriptor to a module
  * @tparam T friend class' name
  */

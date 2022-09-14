@@ -33,7 +33,8 @@ struct LogicEvent {
 };
 //-----------------------------------------------------------------
 /**
- * Digital logic watcher (base class for concrete implementation)
+ * Digital logic watcher abstraction
+ * @note Doesn't provide a concrete implementation
  */
 class Logic: public Watcher {
 public:

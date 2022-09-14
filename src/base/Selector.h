@@ -19,7 +19,7 @@
 namespace wanhive {
 //-----------------------------------------------------------------
 /**
- * Treat this as an opaque object, use the methods provided by the Selector to
+ * Treat this as an opaque object, use methods provided by the Selector to
  * fetch additional information.
  */
 using SelectionEvent=epoll_event;
@@ -28,22 +28,23 @@ using SelectionEvent=epoll_event;
  * Supported IO events
  */
 enum SelectorEvent : uint32_t {
-	IO_READ = EPOLLIN, IO_WRITE = EPOLLOUT, IO_WR = (EPOLLIN | EPOLLOUT),
-	//Hang-up happened, can't write to the descriptor
-	IO_HUP = EPOLLHUP,
-	//Remote peer closed the socket or shut down the writing half of the socket
-	IO_RDHUP = EPOLLRDHUP,
-	IO_CLOSE = (EPOLLHUP | EPOLLRDHUP),
-	IO_PRIORITY = EPOLLPRI,
-	IO_ERROR = EPOLLERR,
-	IO_ALL = (IO_WR | IO_CLOSE | IO_PRIORITY | IO_ERROR)
+	IO_READ = EPOLLIN, /**< Read event */
+	IO_WRITE = EPOLLOUT, /**< Write event */
+	IO_WR = (EPOLLIN | EPOLLOUT), /**< Read/Write event */
+	IO_HUP = EPOLLHUP, /**< Hang-up happened, can't write to descriptor */
+	IO_RDHUP = EPOLLRDHUP, /**< Remote closed or shutdown the writing half */
+	IO_CLOSE = (EPOLLHUP | EPOLLRDHUP), /**< Close event */
+	IO_PRIORITY = EPOLLPRI, /**< Exceptional condition */
+	IO_ERROR = EPOLLERR, /**< Error condition */
+	IO_ALL = (IO_WR | IO_CLOSE | IO_PRIORITY | IO_ERROR)/**< All events */
 };
 
 /**
  * Supported trigger mechanisms
  */
 enum SelectorFlag : uint32_t {
-	TRIGGER_EDGE = EPOLLET, TRIGGER_ONCE = EPOLLONESHOT
+	TRIGGER_EDGE = EPOLLET, /**< Edge trigger */
+	TRIGGER_ONCE = EPOLLONESHOT/**< One-shot notification */
 };
 //-----------------------------------------------------------------
 /**

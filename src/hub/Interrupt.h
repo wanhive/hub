@@ -17,7 +17,7 @@
 namespace wanhive {
 /**
  * Signal watcher
- * Abstraction of Linux's signalfd(2) mechanism
+ * @note Abstraction of Linux's signalfd(2) mechanism
  */
 class Interrupt final: public Watcher {
 public:

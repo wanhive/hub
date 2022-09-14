@@ -22,7 +22,7 @@ namespace wanhive {
 class Condition {
 public:
 	/**
-	 * Default constructor
+	 * Default constructor: initializes mutex and condition variable.
 	 */
 	Condition() noexcept;
 	/**

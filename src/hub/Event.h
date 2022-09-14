@@ -17,7 +17,7 @@
 namespace wanhive {
 /**
  * Events counter
- * Abstraction of linux's event wait/notify mechanism (see eventfd(2))
+ * @note Abstraction of linux's event wait/notify mechanism (see eventfd(2))
  */
 class Event final: public Watcher {
 public:

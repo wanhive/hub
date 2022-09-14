@@ -16,7 +16,7 @@
 
 namespace wanhive {
 /**
- * Stream socket routines
+ * Stream (TCP/IP) socket routines
  */
 class Network {
 public:

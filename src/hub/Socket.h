@@ -43,7 +43,7 @@ enum SocketType {
 //-----------------------------------------------------------------
 /**
  * Message stream watcher
- * Not thread safe
+ * @note Not thread safe
  */
 class Socket final: public Pooled<Socket>,
 		public Source<unsigned char>,
