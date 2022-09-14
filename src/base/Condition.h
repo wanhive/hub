@@ -21,7 +21,13 @@ namespace wanhive {
  */
 class Condition {
 public:
+	/**
+	 * Default constructor
+	 */
 	Condition() noexcept;
+	/**
+	 * Destructor
+	 */
 	~Condition();
 	/**
 	 * Waits for a notification. If a notification become pending then exactly
