@@ -337,12 +337,6 @@ public:
 	static unsigned int processFindRootResponse(const Message *msg,
 			uint64_t identity, uint64_t &root) noexcept;
 private:
-	//-----------------------------------------------------------------
-	/*
-	 * Helper functions
-	 * <host> = identifier of the remote host
-	 * <uid> = the local identifier
-	 */
 	//Returns message length on success, 0 on failure
 	static unsigned int createIdentificationRequest(
 			const MessageAddress &address, uint16_t sequenceNumber,

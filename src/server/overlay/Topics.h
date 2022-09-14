@@ -48,7 +48,7 @@ public:
 	 */
 	Watcher* get(unsigned int topic, unsigned int index) const noexcept;
 	/**
-	 * Removes a watcher's association with the given topic.
+	 * Dissociates a watcher from the given topic.
 	 * @param topic topic's identifier
 	 * @param w watcher's pointer
 	 */
@@ -63,7 +63,7 @@ public:
 	/**
 	 * Returns the number of watchers associated with the given topic.
 	 * @param topic topic's identifier
-	 * @return subscription count for the given topic
+	 * @return subscriptions count for the given topic
 	 */
 	unsigned int count(unsigned int topic) const noexcept;
 	/**

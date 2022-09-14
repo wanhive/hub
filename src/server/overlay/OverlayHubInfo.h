@@ -120,13 +120,9 @@ public:
 	 */
 	void print() const noexcept;
 public:
-	/**
-	 * Minimum serialized data size in bytes
-	 */
+	/** The minimum serialized data size in bytes */
 	static constexpr unsigned int MIN_BYTES = (HubInfo::BYTES + 21);
-	/**
-	 * Maximum serialized data size in bytes
-	 */
+	/** The maximum serialized data size in bytes */
 	static constexpr unsigned int MAX_BYTES = MIN_BYTES
 			+ (25 * DHT::KEY_LENGTH);
 private:

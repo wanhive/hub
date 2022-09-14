@@ -148,7 +148,7 @@ unsigned int OverlayHubInfo::unpack(const unsigned char *buffer,
 }
 
 void OverlayHubInfo::print() const noexcept {
-	printf("\n==========================================\n");
+	printf("\n------------------------------------------\n");
 	HubInfo::print();
 	printf("\n------------------------------------------\n");
 	printf("PREDECESSOR: %llu, SUCCESSOR: %llu\n\n"
@@ -162,7 +162,6 @@ void OverlayHubInfo::print() const noexcept {
 				r->old, WH_BOOLF(r->connected));
 	}
 	printf("\n------------------------------------------\n");
-	printf("\n==========================================\n");
 }
 
 } /* namespace wanhive */

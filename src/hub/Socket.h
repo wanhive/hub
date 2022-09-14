@@ -100,7 +100,6 @@ public:
 	void stop() noexcept override;
 	bool callback(void *arg) noexcept override;
 	bool publish(void *arg) noexcept override;
-
 	void setTopic(unsigned int index) noexcept override;
 	void clearTopic(unsigned int index) noexcept override;
 	bool testTopic(unsigned int index) const noexcept override;

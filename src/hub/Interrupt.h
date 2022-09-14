@@ -37,11 +37,6 @@ public:
 	bool publish(void *arg) noexcept override;
 	//-----------------------------------------------------------------
 	/**
-	 * Reads a pending signal. Call Interrupt::getInfo() to get the result.
-	 * @return number of bytes read on success, 0 if non-blocking mode is on and
-	 * the call would block, -1 if the underlying file descriptor was closed.
-	 */
-	/**
 	 * Reads a pending signal.
 	 * @param signum pending signal's number
 	 * @return number of bytes read on success, 0 if non-blocking mode is on and
