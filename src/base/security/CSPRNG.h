@@ -16,27 +16,33 @@
 namespace wanhive {
 /**
  * Cryptographically secure PRNG
- * (Thread safe)
  */
 class CSPRNG {
 public:
-	/*
-	 * Uses libcrypto's CSPRNG to fill <block> with <count> bytes of randomness
-	 * Returns true on success, false otherwise
+	/**
+	 * Uses libcrypto's CSPRNG to fill the given buffer with the given bytes
+	 * of randomness.
+	 * @param buffer output buffer
+	 * @param count random bytes count
+	 * @return true on success, false on failure
 	 */
-	static bool bytes(void *block, unsigned int count) noexcept;
-	/*
-	 * Seeds libcrypto's CSPRNG with <count> bytes of random data from <buf>
-	 * Returns true if the PRNG has been seeded with enough data, falsew otherwise
+	static bool bytes(void *buffer, unsigned int count) noexcept;
+	/**
+	 * Seeds libcrypto's CSPRNG with the given bytes of random data.
+	 * @param data data for seeding the generator
+	 * @param count number of bytes of random data
+	 * @return true if PRNG has been seeded with enough data, false otherwise
 	 */
-	static bool seed(const void *buf, int count) noexcept;
-	/*
-	 * Fills <block> with <count> bytes of randomness. If <strong> is true then
-	 * reads from /dev/random, otherwise /dev/urandom is used.
+	static bool seed(const void *data, int count) noexcept;
+	/**
+	 * Reads the given bytes of randomness from operating systems's CSPRNG.
+	 * @param buffer output buffer
+	 * @param count random bytes count
+	 * @param strong true for extra robustness, false otherwise
 	 */
-	static void random(void *block, unsigned int count, bool strong = false);
+	static void random(void *buffer, unsigned int count, bool strong = false);
 private:
-	class RandomDevice;  //Forward declaration
+	class RandomDevice;
 	static const RandomDevice device;
 };
 

@@ -20,7 +20,13 @@ namespace wanhive {
  */
 class SecurityException: public BaseException {
 public:
+	/**
+	 * Constructor
+	 */
 	SecurityException() noexcept;
+	/**
+	 * Destructor
+	 */
 	~SecurityException();
 	const char* what() const noexcept override;
 	int errorCode() const noexcept override;

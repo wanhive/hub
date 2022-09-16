@@ -48,17 +48,17 @@ private:
 
 const CSPRNG::RandomDevice CSPRNG::device;
 
-bool CSPRNG::bytes(void *block, unsigned int count) noexcept {
-	return (RAND_bytes((unsigned char*) block, count) == 1);
+bool CSPRNG::bytes(void *buffer, unsigned int count) noexcept {
+	return (RAND_bytes((unsigned char*) buffer, count) == 1);
 }
 
-void CSPRNG::random(void *block, unsigned int count, bool strong) {
-	device.readData(block, count, strong);
-}
-
-bool CSPRNG::seed(const void *buf, int count) noexcept {
-	RAND_seed(buf, count);
+bool CSPRNG::seed(const void *data, int count) noexcept {
+	RAND_seed(data, count);
 	return (RAND_status() == 1);
+}
+
+void CSPRNG::random(void *buffer, unsigned int count, bool strong) {
+	device.readData(buffer, count, strong);
 }
 
 } /* namespace wanhive */

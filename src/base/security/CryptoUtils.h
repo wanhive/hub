@@ -19,14 +19,29 @@ namespace wanhive {
  */
 class CryptoUtils {
 public:
-	//Consume the most recent error and return it
+	/**
+	 * Consumes the most recent error and returns it.
+	 * @return error code
+	 */
 	static unsigned long getError() noexcept;
-	//Clear and report the most recent error
+	/**
+	 * Consumes and reports the most recent error. This call is equivalent to
+	 * CryptoUtils::getErrorMessage(Cryptoutils::getError(), buffer, length).
+	 * @param buffer stores error's description
+	 * @param length buffer's size in bytes
+	 */
 	static void getErrorMessage(char *buffer, unsigned int length) noexcept;
-	//Write the <error> message into the <buffer> of size <length>
+	/**
+	 * Describes the given error code.
+	 * @param error error code
+	 * @param buffer stores error's description
+	 * @param length buffer's size in bytes
+	 */
 	static void getErrorMessage(unsigned long error, char *buffer,
 			unsigned int length) noexcept;
-	//Clear the error queue
+	/**
+	 * Clears the error queue.
+	 */
 	static void clearErrors() noexcept;
 private:
 	class initializer;  //Forward declaration

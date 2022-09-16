@@ -1,7 +1,7 @@
 /*
  * SSLContext.cpp
  *
- * SSL/TLS context and settings
+ * Secure connection's context
  *
  *
  * Copyright (C) 2018 Amit Kumar (amitkriit@gmail.com)
