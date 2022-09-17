@@ -41,7 +41,7 @@ dirent* Directory::read() {
 	if (dir) {
 		errno = 0;
 		auto info = ::readdir(dir);
-		if (info) {
+		if (info || !errno) {
 			return info;
 		} else {
 			throw SystemException();
@@ -79,7 +79,7 @@ void Directory::seek(long loc) {
 }
 
 int Directory::getDescriptor() {
-	int fd = 0;
+	int fd = -1;
 	if (!dir) {
 		throw Exception(EX_INVALIDOPERATION);
 	} else if ((fd = ::dirfd(dir)) == -1) {
