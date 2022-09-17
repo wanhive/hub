@@ -56,13 +56,13 @@ FILE* FileStream::release() noexcept {
 }
 
 bool FileStream::close() noexcept {
-	int status = 0;
 	if (fp) {
-		status = ::fclose(fp);
+		auto status = ::fclose(fp);
+		fp = nullptr;
+		return (status == 0);
+	} else {
+		return true;
 	}
-
-	fp = nullptr;
-	return (status == 0);
 }
 
 void FileStream::open(const char *path, const char *mode) {

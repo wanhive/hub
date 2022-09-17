@@ -71,13 +71,13 @@ int File::release() noexcept {
 }
 
 bool File::close() noexcept {
-	int status = 0;
 	if (fd >= 0) {
-		status = ::close(fd);
+		auto status = ::close(fd);
+		fd = -1;
+		return (status == 0);
+	} else {
+		return true;
 	}
-
-	fd = -1;
-	return (status == 0);
 }
 
 void File::open(const char *path, int flags) {

@@ -112,13 +112,13 @@ void Directory::open(int fd) {
 }
 
 bool Directory::close() noexcept {
-	int status = 0;
 	if (dir) {
-		status = ::closedir(dir);
+		auto status = ::closedir(dir);
+		dir = nullptr;
+		return (status == 0);
+	} else {
+		return true;
 	}
-
-	dir = nullptr;
-	return (status == 0);
 }
 
 dirent** Directory::scan(const char *name, int (*filter)(const dirent*),
