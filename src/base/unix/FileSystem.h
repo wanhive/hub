@@ -69,7 +69,7 @@ public:
 
 	//Wrapper for rename(2): changes the name or location of a file
 	static void rename(const char *oldPath, const char *newPath);
-	//Wrapper for renameat2(3) [fallback: renameat(2)]: renames a file
+	//Wrapper for renameat2(2) [fallback: renameat(2)]: renames a file
 	static void rename(int oldDirfd, const char *oldPath, int newDirfd,
 			const char *newPath, unsigned int flag = 0);
 
