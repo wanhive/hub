@@ -17,8 +17,12 @@
 namespace wanhive {
 
 int Fcntl::duplicate(int fd, bool closeOnExec) {
+	return duplicate(fd, 0, closeOnExec);
+}
+
+int Fcntl::duplicate(int fd, int newFd, bool closeOnExec) {
 	int cmd = closeOnExec ? F_DUPFD_CLOEXEC : F_DUPFD;
-	auto ret = ::fcntl(fd, cmd);
+	auto ret = ::fcntl(fd, cmd, newFd);
 	if (ret == -1) {
 		throw SystemException();
 	} else {

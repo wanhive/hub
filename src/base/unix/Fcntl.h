@@ -24,6 +24,8 @@ class Fcntl {
 public:
 	//Duplicates a file descriptor
 	static int duplicate(int fd, bool closeOnExec = false);
+	//Duplicates a file descriptor
+	static int duplicate(int fd, int newFd, bool closeOnExec = false);
 
 	//Returns the file descriptor flag
 	static int getDescriptorFlag(int fd);
