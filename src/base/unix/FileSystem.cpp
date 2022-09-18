@@ -12,9 +12,19 @@
 
 #include "FileSystem.h"
 #include "SystemException.h"
+#include "../common/defines.h"
 #include "../common/Exception.h"
 #include <cstdlib>
 #include <libgen.h>
+
+#undef WH_RENAMEAT
+#if defined(WH_LINUX)
+#define WH_RENAMEAT(oldDirfd, oldPath, newDirfd, newPath, flags) \
+	::renameat2(oldDirfd, oldPath, newDirfd, newPath, flags)
+#else
+#define WH_RENAMEAT(oldDirfd, oldPath, newDirfd, newPath, flags) \
+	::renameat(oldDirfd, oldPath, newDirfd, newPath)
+#endif
 
 namespace wanhive {
 
@@ -180,11 +190,7 @@ void FileSystem::rename(const char *oldPath, const char *newPath) {
 
 void FileSystem::rename(int oldDirfd, const char *oldPath, int newDirfd,
 		const char *newPath, unsigned int flag) {
-#ifdef WH_LINUX
-	auto ret = ::renameat2(oldDirfd, oldPath, newDirfd, newPath, flag);
-#else
-	auto ret = ::renameat(oldDirfd, oldPath, newDirfd, newPath);
-#endif
+	auto ret = WH_RENAMEAT(oldDirfd, oldPath, newDirfd, newPath, flag);
 	if (ret == -1) {
 		throw SystemException();
 	} else {

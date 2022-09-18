@@ -12,10 +12,18 @@
 
 #include "File.h"
 #include "SystemException.h"
+#include "../common/defines.h"
 #include "../common/Exception.h"
 #include <cerrno>
 #include <unistd.h>
 #include <sys/file.h>
+
+#undef WH_DUP2
+#if defined(WH_LINUX)
+#define WH_DUP2(oldfd, newfd, flags) ::dup3(oldfd, newfd, flags)
+#else
+#define WH_DUP2(oldfd, newfd, flags) ::dup2(oldfd, newfd)
+#endif
 
 namespace wanhive {
 
@@ -162,11 +170,7 @@ int File::duplicate() {
 }
 
 int File::duplicate(int newfd, int flag) {
-#if defined(WH_LINUX)
-	auto ret = ::dup3(get(), newfd, flag);
-#else
-	auto ret = ::dup2(get(), newfd);
-#endif
+	auto ret = WH_DUP2(get(), newfd, flag);
 	if (ret == -1) {
 		throw SystemException();
 	} else {
