@@ -309,7 +309,7 @@ void AppManager::printHelp(FILE *stream) noexcept {
 }
 
 void AppManager::printVersion(FILE *stream) noexcept {
-	fprintf(stream, "\n%s %s version %s\nCopyright \u00A9 %s %s.\n",
+	fprintf(stream, "\n%s %s version %s\nCopyright (C) %s %s.\n",
 	WH_PRODUCT_NAME, WH_RELEASE_NAME, WH_RELEASE_VERSION,
 	WH_RELEASE_YEAR, WH_RELEASE_AUTHOR);
 	fprintf(stream, "LICENSE %s\n\n", WH_LICENSE_TEXT);
