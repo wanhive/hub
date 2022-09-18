@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 
 - **Directory::read()** method should throw exception only on system error.
+- Pass on the third parameter to the system call in **Fcntl::duplicate()** method.
 
 ## [9.0.0] - 2022-09-14
 
