@@ -125,14 +125,13 @@ bin_PROGRAMS = wanhive
 wanhive_SOURCES = $(WH_SERVERHEADERS) $(WH_SERVERSOURCES) $(WH_TESTHEADERS) \
 	$(WH_TESTSOURCES) $(WH_APPHEADERS) $(WH_APPSOURCES)
 wahhive_CXXFLAGS = -Wall
-wanhive_LDFLAGS = -lpq
 wanhive_LDADD = libwanhive.la
 endif
 
 lib_LTLIBRARIES = libwanhive.la
 libwanhive_la_CXXFLAGS = -Wall -DWH_CONF_SYSTEM_BASE='"@sysconfdir@"'
 # https://www.gnu.org/software/libtool/manual/html_node/Updating-version-info.html
-libwanhive_la_LDFLAGS = -version-info @WH_LIB_VERSION@ -lpthread -lsqlite3 -lssl -lcrypto
+libwanhive_la_LDFLAGS = -version-info @WH_LIB_VERSION@
 libwanhive_la_SOURCES = $(WH_BASEHEADERS) $(WH_BASESOURCES) $(WH_REACTORHEADERS) \
 	$(WH_REACTORSOURCES) $(WH_UTILHEADERS) $(WH_UTILSOURCES) $(WH_HUBHEADERS) \
 	$(WH_HUBSOURCES) $(WH_TOPHEADERS)
