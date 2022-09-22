@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+- Add and update API documentation (work in progress).
+
 ### Fixed
 
 - **Directory::read()** method should throw exception only on system error.
