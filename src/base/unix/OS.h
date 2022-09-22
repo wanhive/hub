@@ -1,7 +1,7 @@
 /*
  * OS.h
  *
- * Operating system's information
+ * System information
  *
  *
  * Copyright (C) 2021 Amit Kumar (amitkriit@gmail.com)
@@ -17,27 +17,50 @@
 
 namespace wanhive {
 /**
- * Operating system's information
+ * System information
  */
 class OS {
 public:
+	/**
+	 * Default constructor: reads the system information.
+	 */
 	OS();
+	/**
+	 * Destructor
+	 */
 	~OS();
 
-	//Name of the operating system
+	/**
+	 * Returns operating system's name.
+	 * @return name of the operating system
+	 */
 	const char* name() const noexcept;
-	//Name of this node
+	/**
+	 * Returns node's network name.
+	 * @return name of this node
+	 */
 	const char* node() const noexcept;
-	//Current release of the operating system
+	/**
+	 * Returns the release information.
+	 * @return current release level
+	 */
 	const char* release() const noexcept;
-	//Current version of this release
+	/**
+	 * Returns the version information.
+	 * @return current version of this release
+	 */
 	const char* version() const noexcept;
-	//Hardware's name
+	/**
+	 * Returns hardware's information.
+	 * @return hardware's name
+	 */
 	const char* machine() const noexcept;
-	//Hostname of this system
+	/**
+	 * Returns system's host name (same as OS::node()).
+	 * @return host name of this system
+	 */
 	const char* host() const noexcept;
 private:
-	//Wrapper for uname(2) and gethostname(2)
 	void init();
 private:
 	utsname _name;

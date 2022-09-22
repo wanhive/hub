@@ -1,7 +1,7 @@
 /*
  * OS.cpp
  *
- * Operating system's information
+ * System information
  *
  *
  * Copyright (C) 2021 Amit Kumar (amitkriit@gmail.com)
