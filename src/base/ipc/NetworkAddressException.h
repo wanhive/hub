@@ -20,7 +20,14 @@ namespace wanhive {
  */
 class NetworkAddressException: public BaseException {
 public:
+	/**
+	 * Constructor: assigns an error code.
+	 * @param type error code
+	 */
 	NetworkAddressException(int type) noexcept;
+	/**
+	 * Destructor
+	 */
 	~NetworkAddressException();
 	const char* what() const noexcept override;
 	int errorCode() const noexcept override;

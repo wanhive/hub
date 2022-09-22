@@ -20,8 +20,18 @@ namespace wanhive {
  */
 class SystemException: public BaseException {
 public:
+	/**
+	 * Default constructor: reads the current errno.
+	 */
 	SystemException() noexcept;
+	/**
+	 * Constructor: assigns an error code.
+	 * @param type error code
+	 */
 	SystemException(int type) noexcept;
+	/**
+	 * Destructor
+	 */
 	~SystemException();
 	const char* what() const noexcept override;
 	int errorCode() const noexcept override;

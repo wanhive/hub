@@ -15,7 +15,7 @@
 #include <netdb.h>
 
 namespace wanhive {
-/*
+/**
  * Resource name
  */
 struct NameInfo {
@@ -24,7 +24,7 @@ struct NameInfo {
 	int type;
 };
 
-/*
+/**
  * Socket address
  */
 struct SocketAddress {
@@ -32,7 +32,7 @@ struct SocketAddress {
 	socklen_t length;
 };
 
-/*
+/**
  * Socket connection properties
  */
 struct SocketTraits {

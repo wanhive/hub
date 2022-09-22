@@ -20,26 +20,62 @@ namespace wanhive {
  */
 class DNS {
 public:
+	/**
+	 * Default constructor: does nothing.
+	 */
 	DNS() noexcept;
+	/**
+	 * Constructor: performs network address translation.
+	 * @param node host name
+	 * @param service service name
+	 * @param traits connection properties
+	 */
 	DNS(const char *node, const char *service, const SocketTraits *traits);
+	/**
+	 * Destructor
+	 */
 	~DNS();
-
-	//Wrapper for getaddrinfo(3): performs network address translation
+	//-----------------------------------------------------------------
+	/**
+	 * Wrapper for getaddrinfo(3): performs network address translation.
+	 * @param node host name
+	 * @param service service name
+	 * @param traits connection properties
+	 */
 	void lookup(const char *node, const char *service,
 			const SocketTraits *traits);
-	//Returns the next address (or nullptr)
+	/**
+	 * Reads an address from the network address list.
+	 * @return the next entry
+	 */
 	const addrinfo* next() noexcept;
-	//Rewinds the address pointer
+	/**
+	 * Rewinds the network address list.
+	 */
 	void rewind() noexcept;
-	//Clears out the address list
+	/**
+	 * Wrapper for freeaddrinfo(3): frees the network address list.
+	 */
 	void clear() noexcept;
-
-	//Helper method: reads the socket traits from the addrinfo structure
+	//-----------------------------------------------------------------
+	/**
+	 * Helper method: reads connection properties from an addrinfo structure.
+	 * @param info connection data
+	 * @param traits stores the connection properties
+	 */
 	static void getTraits(const addrinfo *info, SocketTraits &traits) noexcept;
-	//Helper method: reads the socket address from the addrinfo structure
+	/**
+	 * Helper method: reads socket address from an addrinfo structure.
+	 * @param info connection data
+	 * @param sa stores the socket address
+	 */
 	static void getAddress(const addrinfo *info, SocketAddress &sa) noexcept;
-
-	//Wrapper for getnameinfo(3): performs address-to-name translation
+	/**
+	 * Wrapper for getnameinfo(3): performs address-to-name translation.
+	 * @param sa network address for translation
+	 * @param ni stores the resource name
+	 * @param flags operation flags
+	 */
 	static void reverse(const SocketAddress &sa, NameInfo &ni,
 			int flags = (NI_NUMERICHOST | NI_NUMERICSERV));
 private:
