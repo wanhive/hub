@@ -1,7 +1,7 @@
 /*
  * PThread.h
  *
- * Posix thread abstraction
+ * Posix thread
  *
  *
  * Copyright (C) 2021 Amit Kumar (amitkriit@gmail.com)
@@ -18,34 +18,66 @@
 namespace wanhive {
 /**
  * Posix thread abstraction
- * REF: pthreads(7)
+ * @ref pthreads(7)
  */
 class PThread {
 public:
-	//Creates a new thread
+	/**
+	 * Constructor: creates a new thread of execution.
+	 * @param task reference to task
+	 * @param arg additional arguments for task
+	 * @param detached true for detached thread, false otherwise
+	 */
 	PThread(Task &task, void *arg, bool detached);
+	/**
+	 * Destructor
+	 */
 	~PThread();
-
-	//Wrapper for pthread_join(3): waits for the thread to terminate
+	//-----------------------------------------------------------------
+	/**
+	 * Wrapper for pthread_join(3): waits for the thread to terminate.
+	 * @return terminated thread's status
+	 */
 	void* join();
-	//Wrapper for pthread_exit(3): terminates the calling thread
+	/**
+	 * Wrapper for pthread_exit(3): terminates the calling thread
+	 * @param arg terminated thread's status
+	 */
 	static void exit(void *arg);
-	//Returns thread ID associated with this object
+	/**
+	 * Returns the running thread's identifier.
+	 * @return thread identifier
+	 */
 	pthread_t getId() const noexcept;
-	//Returns task's status
+	/**
+	 * Returns task's status (see Task::getStatus()).
+	 * @return task's status
+	 */
 	int getStatus() const noexcept;
-	//Sets task's status
+	/**
+	 * Sets task's status (see Task::setStatus()).
+	 * @param status new status
+	 */
 	void setStatus(int status) noexcept;
-	//Wrapper for pthread_self(3): returns calling thread's ID
+	//-----------------------------------------------------------------
+	/**
+	 * Wrapper for pthread_self(3): returns calling thread's identifier.
+	 * @return calling thread's identifier
+	 */
 	static pthread_t self() noexcept;
-	//Wrapper for pthread_equal(3): compares thread IDs
+	/**
+	 * Wrapper for pthread_equal(3): compares thread identifiers.
+	 * @param t1 first value for comparison
+	 * @param t2 second value for comparison
+	 * @return true if the two identifiers are equal, false otherwise
+	 */
 	static bool equal(pthread_t t1, pthread_t t2) noexcept;
 private:
 	void start();
 	void run(void *arg) noexcept;
 	static void* routine(void *arg);
 private:
-	pthread_t tid; //Thread ID
+	pthread_t tid;
 	Task &task;
 	void *arg;
 	const bool detached;

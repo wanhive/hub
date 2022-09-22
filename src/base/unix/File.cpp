@@ -169,8 +169,8 @@ int File::duplicate() {
 	}
 }
 
-int File::duplicate(int newfd, int flag) {
-	auto ret = WH_DUP2(get(), newfd, flag);
+int File::duplicate(int newfd, int flags) {
+	auto ret = WH_DUP2(get(), newfd, flags);
 	if (ret == -1) {
 		throw SystemException();
 	} else {

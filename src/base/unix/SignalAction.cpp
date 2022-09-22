@@ -102,12 +102,13 @@ void SignalAction::dummy(int signum) noexcept {
 
 }
 
-void SignalAction::dummy(int, siginfo_t *si, void *arg) noexcept {
+void SignalAction::dummy(int signum, siginfo_t *si, void *arg) noexcept {
 
 }
 
 void SignalAction::fixFlags() noexcept {
 	_action.sa_flags |= (_restart ? SA_RESTART : 0);
+	_action.sa_flags &= ~(SA_NODEFER | SA_RESETHAND);
 	if (_info) {
 		_action.sa_flags |= SA_SIGINFO;
 	} else {

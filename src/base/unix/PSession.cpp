@@ -1,7 +1,7 @@
 /*
  * PSession.cpp
  *
- * Process session management
+ * Job control: session management
  *
  *
  * Copyright (C) 2021 Amit Kumar (amitkriit@gmail.com)
@@ -12,6 +12,7 @@
 
 #include "PSession.h"
 #include "SystemException.h"
+#include <termios.h>
 #include <unistd.h>
 
 namespace wanhive {
@@ -55,6 +56,15 @@ void PSession::setForegroundGroup(int fd, pid_t groupId) {
 		throw SystemException();
 	} else {
 		return;
+	}
+}
+
+pid_t PSession::getLeader(int fd) {
+	auto ret = tcgetsid(fd);
+	if (ret == -1) {
+		throw SystemException();
+	} else {
+		return ret;
 	}
 }
 

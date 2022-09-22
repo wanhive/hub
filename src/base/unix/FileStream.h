@@ -1,7 +1,7 @@
 /*
  * FileStream.h
  *
- * File stream management
+ * File stream
  *
  *
  * Copyright (C) 2021 Amit Kumar (amitkriit@gmail.com)
@@ -16,30 +16,74 @@
 
 namespace wanhive {
 /**
- * File stream management
+ * File stream
  */
 class FileStream {
 public:
+	/**
+	 * Default constructor: creates an empty object.
+	 */
 	FileStream() noexcept;
+	/**
+	 * Constructor: assigns a stream.
+	 * @param fp stream pointer
+	 */
 	FileStream(FILE *fp) noexcept;
+	/**
+	 * Constructor: opens a file.
+	 * @param path file's pathname
+	 * @param mode mode string
+	 */
 	FileStream(const char *path, const char *mode);
+	/**
+	 * Associates the given file descriptor.
+	 * @param fd file descriptor
+	 * @param mode mode string
+	 */
 	FileStream(int fd, const char *mode);
+	/**
+	 * Destructor: closes the associated stream.
+	 */
 	~FileStream();
-
-	//Returns the stream associated with this object
+	//-----------------------------------------------------------------
+	/**
+	 * Returns the associated stream.
+	 * @return stream pointer
+	 */
 	FILE* get() const noexcept;
-	//Sets a stream after closing the existing one
+	/**
+	 * Sets a stream after closing the existing one.
+	 * @param fp new stream pointer
+	 */
 	void set(FILE *fp) noexcept;
-	//Releases the stream associated with this object
+	/**
+	 * Releases and returns the associated stream
+	 * @return stream pointer
+	 */
 	FILE* release() noexcept;
-	//Wrapper for fclose(3): flushes and closes the stream
+	//-----------------------------------------------------------------
+	/**
+	 * Wrapper for fclose(3): flushes and closes the stream.
+	 * @return true on success, false on error
+	 */
 	bool close() noexcept;
-
-	//Wrapper for fopen(3): opens a file stream
+	/**
+	 * Wrapper for fopen(3): opens a file stream.
+	 * @param path file's pathname
+	 * @param mode mode string
+	 */
 	void open(const char *path, const char *mode);
-	//Wrapper for fdopen(3): associates the stream with the given descriptor
+	/**
+	 * Wrapper for fdopen(3): associates the stream with the given descriptor.
+	 * @param fd file descriptor
+	 * @param mode mode string
+	 */
 	void open(int fd, const char *mode);
-	//Wrapper for freopen(3): reopens the underlying file stream
+	/**
+	 * Wrapper for freopen(3): reopens the associated stream.
+	 * @param path file's pathname
+	 * @param mode mode string
+	 */
 	void reopen(const char *path, const char *mode);
 private:
 	FILE *fp;

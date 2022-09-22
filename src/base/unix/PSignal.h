@@ -21,35 +21,82 @@ namespace wanhive {
  */
 class PSignal {
 public:
-	//Sends signal to the calling process
+	/**
+	 * Sends signal to the calling process.
+	 * @param signum signal number
+	 */
 	static void raise(int signum);
-	//Wrapper for kill(2): sends signal to a process
+	/**
+	 * Wrapper for kill(2): sends signal to a process
+	 * @param pid process identifier
+	 * @param signum signal number
+	 */
 	static void raise(pid_t pid, int signum);
-	//Wrapper for alarm(2): sets an alarm clock
+	/**
+	 * Wrapper for alarm(2): schedules an alarm.
+	 * @param seconds alarm's expiration in seconds
+	 * @return number of seconds remaining in the previously scheduled alarm
+	 */
 	static unsigned int alarm(unsigned int seconds) noexcept;
-	//Wrapper for pause(2): waits for signal
+	/**
+	 * Wrapper for pause(2): waits for a signal.
+	 */
 	static void pause() noexcept;
-
-	//Sets signal mask
+	//-----------------------------------------------------------------
+	/**
+	 * Sets signal mask.
+	 * @param how operation type
+	 * @param ss new mask
+	 */
 	static void setMask(int how, const SignalSet &ss);
-	//Sets signal mask and returns the old mask
+	/**
+	 * Sets new signal mask and returns the old mask.
+	 * @param how operation type
+	 * @param ss new mask
+	 * @param old stores the old mask
+	 */
 	static void setMask(int how, const SignalSet &ss, SignalSet &old);
-	//Returns the current signal mask
+	/**
+	 * Returns the current signal mask.
+	 * @param ss stores the current mask
+	 */
 	static void getMask(SignalSet &ss);
-	//Wrapper for sigprocmask(2): changes/fetches the signal mask
+	/**
+	 * Wrapper for sigprocmask(2): changes/fetches the signal mask.
+	 * @param how operation type
+	 * @param set new mask
+	 * @param old stores the old mask
+	 */
 	static void mask(int how, const sigset_t *set, sigset_t *old);
-
-	//Examines pending signals
+	//-----------------------------------------------------------------
+	/**
+	 * Examines pending signals.
+	 * @param ss stores the pending signals
+	 */
 	static void pending(SignalSet &ss);
-	//Wrapper for sigpending(2): examins pending signals
+	/**
+	 * Wrapper for sigpending(2): examines pending signals.
+	 * @param set stores the pending signals
+	 */
 	static void pending(sigset_t *set);
-
-	//Wrapper for sigsuspend(2): waits for a signal
+	//-----------------------------------------------------------------
+	/**
+	 * Wrapper for sigsuspend(2): waits for a signal.
+	 * @param ss signals to wait for
+	 */
 	static void suspend(const SignalSet &ss);
-	//Wrapper for sigsuspend(2): waits for a signal
+	/**
+	 * Wrapper for sigsuspend(2): waits for a signal.
+	 * @param set signals to wait for
+	 */
 	static void suspend(const sigset_t *set);
-
-	//Wrapper for sigqueue(2): queues up a signal to a process
+	//-----------------------------------------------------------------
+	/**
+	 * Wrapper for sigqueue(2): queues up a signal to a process
+	 * @param pid process' identifier
+	 * @param signum signal number
+	 * @param value additional data
+	 */
 	static void queue(pid_t pid, int signum, const sigval value);
 };
 

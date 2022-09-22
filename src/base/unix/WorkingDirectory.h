@@ -20,11 +20,22 @@ namespace wanhive {
  */
 class WorkingDirectory {
 public:
-	//Wrapper for chdir(2): changes working directory
+	/**
+	 * Wrapper for chdir(2): changes working directory.
+	 * @param path new working directory's pathname
+	 */
 	static void set(const char *path);
-	//Wrapper for fchdir(2): changes working directory
+	/**
+	 * Wrapper for fchdir(2): changes working directory.
+	 * @param fd new working directory's descriptor
+	 */
 	static void set(int fd);
-	//Wrapper for getcwd(3): returns the current working directory
+	/**
+	 * Wrapper for getcwd(3): returns the current working directory.
+	 * @param buf buffer for storing the current working directory's pathname
+	 * @param size buffer's size in bytes
+	 * @return pointer to the output string
+	 */
 	static char* get(char *buf, size_t size);
 };
 

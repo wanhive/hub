@@ -17,58 +17,117 @@
 namespace wanhive {
 /**
  * Signal action/disposition
- * REF: signal(7)
+ * @ref signal(7)
  */
 class SignalAction {
 public:
-	//If <restart> is true then the SA_RESTART flag is automatically set
+	/**
+	 * Constructor: creates a default disposition.
+	 * @param restart true to automatically resume an interrupted system call,
+	 * false otherwise.
+	 */
 	SignalAction(bool restart = true) noexcept;
+	/**
+	 * Destructor
+	 */
 	~SignalAction();
-
-	//Loads the default disposition
+	//-----------------------------------------------------------------
+	/**
+	 * Empties the additional signal mask and loads the default disposition.
+	 */
 	void reset() noexcept;
-	//Configures the signal handler
+	/**
+	 * Assigns a signal handler.
+	 * @param handler callback function
+	 */
 	void setHandler(void (*handler)(int)) noexcept;
-	//Configures the signal handler
+	/**
+	 * Assigns a signal handler for real-time signals.
+	 * @param handler callback function
+	 */
 	void setHandler(void (*handler)(int, siginfo_t*, void*)) noexcept;
-
-	//Default action
+	/**
+	 * Checks whether the given signal invokes it's default action.
+	 * @return true if default action, false otherwise
+	 */
 	bool isDefault() const noexcept;
-	//Ignore signal
+	/**
+	 * Checks whether the given signal is ignored.
+	 * @return true if ignored, false otherwise
+	 */
 	bool isIgnored() const noexcept;
-
-	//Direct reference to the additional signal mask
+	//-----------------------------------------------------------------
+	/**
+	 * Returns direct reference to the additional signal mask.
+	 * @return reference to the additional signal mask
+	 */
 	sigset_t& mask() noexcept;
-	//Const reference to the additional signal mask
+	/**
+	 * Returns constant reference to the additional signal mask.
+	 * @return reference to the additional signal mask
+	 */
 	const sigset_t& mask() const noexcept;
-
-	//Returns the signal handling flags
+	//-----------------------------------------------------------------
+	/**
+	 * Returns the signal handling flags.
+	 * @return signal flags
+	 */
 	int getFlags() const noexcept;
-	//Configures the signal handling flags
+	/**
+	 * Configures the signal handling flags.
+	 * @param flags new signal flags
+	 */
 	void setFlags(int flags) noexcept;
-
-	//Installs this signal action for the signal <signum>
+	//-----------------------------------------------------------------
+	/**
+	 * Changes a signal's disposition.
+	 * @param signum signal number
+	 */
 	void install(int signum);
-	//Installs this action for the signal <signum> and returns the <old> one
+	/**
+	 * Changes a signal's disposition and returns the old one.
+	 * @param signum signal number
+	 * @param old stores the old disposition
+	 */
 	void install(int signum, SignalAction &old);
-	//Fetches the current signal action for <signum>
+	/**
+	 * Fetches a signal's current disposition.
+	 * @param signum signal number
+	 */
 	void fetch(int signum);
-
-	//Direct pointer to the internal structure
+	//-----------------------------------------------------------------
+	/**
+	 * Returns a pointer to the internal sigaction structure.
+	 * @return pointer to sigaction structure
+	 */
 	struct sigaction* action() noexcept;
-	//Const pointer to the internal structure
+	/**
+	 * Returns a constant pointer to the internal sigaction structure.
+	 * @return pointer to sigaction structure
+	 */
 	const struct sigaction* action() const noexcept;
-
-	//Wrapper for sigaction(2): examines or changes a signal action
+	//-----------------------------------------------------------------
+	/**
+	 * Wrapper for sigaction(2): examines or changes a signal action.
+	 * @param signum signal number
+	 * @param act new disposition
+	 * @param old stores the old disposition (can be nullptr)
+	 */
 	static void update(int signum, const struct sigaction *act,
 			struct sigaction *old);
-
-	//Dummy signal handler function which does absolutely nothing
+	/**
+	 * Dummy signal handler which does absolutely nothing.
+	 * @param signum signal number
+	 */
 	static void dummy(int signum) noexcept;
-	//Dummy signal handler function which does absolutely nothing
-	static void dummy(int, siginfo_t *si, void *arg) noexcept;
+	/**
+	 * Dummy signal handler which does absolutely nothing.
+	 * @param signum signal number
+	 * @param si additional information about the caught signal
+	 * @param arg additional argument
+	 */
+	static void dummy(int signum, siginfo_t *si, void *arg) noexcept;
 private:
-	//Fixes the signal action flags to match the additional settings
 	void fixFlags() noexcept;
 private:
 	struct sigaction _action;

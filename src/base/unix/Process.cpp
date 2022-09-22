@@ -92,7 +92,9 @@ clock_t Process::time(tms *buf) {
 }
 
 void Process::getLimit(int resource, rlimit *limit) {
-	if (::getrlimit(resource, limit) != 0) {
+	if (!limit) {
+		throw Exception(EX_INVALIDPARAM);
+	} else if (::getrlimit(resource, limit) != 0) {
 		throw SystemException();
 	} else {
 		return;
@@ -100,7 +102,9 @@ void Process::getLimit(int resource, rlimit *limit) {
 }
 
 void Process::setLimit(int resource, const rlimit *limit) {
-	if (::setrlimit(resource, limit) != 0) {
+	if (!limit) {
+		throw Exception(EX_INVALIDPARAM);
+	} else if (::setrlimit(resource, limit) != 0) {
 		throw SystemException();
 	} else {
 		return;

@@ -1,7 +1,7 @@
 /*
  * PThread.cpp
  *
- * Posix thread abstraction
+ * Posix thread
  *
  *
  * Copyright (C) 2021 Amit Kumar (amitkriit@gmail.com)

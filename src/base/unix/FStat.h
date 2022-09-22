@@ -23,81 +23,186 @@ namespace wanhive {
  */
 class FStat {
 public:
-	//Creates an empty object (call read later)
+	/**
+	 * Default constructor: creates an empty object.
+	 */
 	FStat() noexcept;
-	//Creates information about a file
+	/**
+	 * Constructor: creates information about a file.
+	 * @param fd file descriptor
+	 */
 	FStat(int fd);
-	//Creates information about a file
+	/**
+	 * Constructor: creates information about a file.
+	 * @param path file's pathname
+	 * @param symLink true to follow a symbolic link, false otherwise
+	 */
 	FStat(const char *path, bool symLink = false);
-	//Creates information about a file
+	/**
+	 * Constructor: creates information about a file.
+	 * @param dirfd base path's descriptor
+	 * @param path relative or absolute pathname
+	 * @param flags operation flags
+	 */
 	FStat(int dirfd, const char *path, int flags);
+	/**
+	 * Destructor
+	 */
 	~FStat();
-
-	//File type is a regular file
+	//-----------------------------------------------------------------
+	/**
+	 * Checks regular file type.
+	 * @return true on match, false otherwise
+	 */
 	bool isRegularFile() const noexcept;
-	//File type is a directory
+	/**
+	 * Checks directory file type.
+	 * @return true on match, false otherwise
+	 */
 	bool isDirectory() const noexcept;
-	//File type is a character device file
+	/**
+	 * Checks character device file type.
+	 * @return true on match, false otherwise
+	 */
 	bool isCharSpecialFile() const noexcept;
-	//File type is a block device file
+	/**
+	 * Checks block device file type.
+	 * @return true on match, false otherwise
+	 */
 	bool isBlockSpecialFile() const noexcept;
-	//File type is a fifo
+	/**
+	 * Checks fifo file type.
+	 * @return true on match, false otherwise
+	 */
 	bool isFifo() const noexcept;
-	//File type is a symbolic link
+	/**
+	 * Checks symbolic link file type.
+	 * @return true on match, false otherwise
+	 */
 	bool isSymbolicLink() const noexcept;
-	//File type is a socket
+	/**
+	 * Checks socket file type.
+	 * @return true on match, false otherwise
+	 */
 	bool isSocket() const noexcept;
-
-	//IPC: file type is message queue
+	/**
+	 * IPC: checks message queue file type.
+	 * @return true on match, false otherwise
+	 */
 	bool isMessageQueue();
-	//IPC: file type is semaphore
+	/**
+	 * IPC: checks semaphore file type.
+	 * @return true on match, false otherwise
+	 */
 	bool isSemaphore();
-	//IPC: file type is shared memory
+	/**
+	 * IPC: checks shared memory file type.
+	 * @return true on match, false otherwise
+	 */
 	bool isSharedMemory();
-
-	//Set-user-id bit is set
+	//-----------------------------------------------------------------
+	/**
+	 * Checks the set-user-id bit.
+	 * @return true on match, false otherwise
+	 */
 	bool isSetUID() const noexcept;
-	//Set-group-id bit is set
+	/**
+	 * Checks the set-group-id bit.
+	 * @return true on match, false otherwise
+	 */
 	bool isSetGID() const noexcept;
-	//Tests the permission bits
+	/**
+	 * Tests (bitwise) the permission bits.
+	 * @param mode permission bits
+	 * @return true on match, false otherwise
+	 */
 	bool access(mode_t mode) const noexcept;
-
-	//File size in bytes
+	//-----------------------------------------------------------------
+	/**
+	 * Returns the file size.
+	 * @return file size in bytes
+	 */
 	off_t size() const noexcept;
-	//Owner ID of the file
+	/**
+	 * Returns owner ID of a file.
+	 * @return owner's identifier
+	 */
 	uid_t ownerId() const noexcept;
-	//Group ID of the file
+	/**
+	 * Returns group ID of the file
+	 * @return group's identifier
+	 */
 	gid_t groupId() const noexcept;
-
-	//The major device number of the file system
+	//-----------------------------------------------------------------
+	/**
+	 * Returns major device number of the file system.
+	 * @return major device identifier
+	 */
 	unsigned int majorId() const noexcept;
-	//The major device ID (if character/block special device)
+	/**
+	 * Returns major device number of a character/block special device.
+	 * @return major device identifier
+	 */
 	unsigned int majorDeviceId() const noexcept;
-	//The minor device number of the file system
+	/**
+	 * Returns minor device number of the file system.
+	 * @return minor device identifier
+	 */
 	unsigned int minorId() const noexcept;
-	//The minor device ID (if character/block special device)
+	/**
+	 * Returns minor device ID of a character/block special device.
+	 * @return minor device identifier
+	 */
 	unsigned int minorDeviceId() const noexcept;
-
-	//Last file data access time
+	//-----------------------------------------------------------------
+	/**
+	 * Returns the last file data access time.
+	 * @return timestamp's value
+	 */
 	const timespec& accessedOn() const noexcept;
-	//Last file data modification time
+	/**
+	 * Returns the last file data modification time
+	 * @return timestamp's value
+	 */
 	const timespec& modifiedOn() const noexcept;
-	//Last inode status change time
+	/**
+	 * Returns the last inode status change time.
+	 * @return timestamp's value
+	 */
 	const timespec& statusChangedOn() const noexcept;
-
-	//Pointer to the internal object
+	//-----------------------------------------------------------------
+	/**
+	 * Returns pointer to the internal object.
+	 * @return pointer to stat structure
+	 */
 	struct stat* get() noexcept;
-	//Constant pointer to the internal object
+	/**
+	 * Constant pointer to the internal object.
+	 * @return pointer to stat structure
+	 */
 	const struct stat* get() const noexcept;
-
-	//Wrapper for fstat(2): gets file status
+	//-----------------------------------------------------------------
+	/**
+	 * Wrapper for fstat(2): gets file status.
+	 * @param fd file descriptor
+	 */
 	void read(int fd);
-	//Wrapper for stat(2) and lstat(2): gets file status
+	/**
+	 * Wrapper for stat(2) and lstat(2): gets file status
+	 * @param path file's pathname
+	 * @param symLink true to follow a symbolic link, false otherwise
+	 */
 	void read(const char *path, bool symLink);
-	//Wrapper for fstatat(2): gets file status
+	/**
+	 * Wrapper for fstatat(2): gets file status.
+	 * @param dirfd base path's descriptor
+	 * @param path relative or absolute pathname
+	 * @param flags operation flags
+	 */
 	void read(int dirfd, const char *path, int flags);
-
-	//Clears (zeroes-out) the file status structure
+	/**
+	 * Clears (zeroes-out) the file status structure.
+	 */
 	void clear() noexcept;
 private:
 	struct stat _stat;

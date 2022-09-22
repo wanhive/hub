@@ -20,21 +20,58 @@ namespace wanhive {
  */
 class Time {
 public:
+	/**
+	 * Default constructor: sets zero timestamp.
+	 */
 	Time() noexcept;
+	/**
+	 * Constructor: assigns a timestamp.
+	 * @param ts timestamp's value
+	 */
 	Time(const timespec &ts) noexcept;
+	/**
+	 * Constructor: reads current time from the given clock.
+	 * @param id clock's identifier
+	 */
 	Time(clockid_t id);
+	/**
+	 * Destructor
+	 */
 	~Time();
-
-	//Wrapper for clock_gettime(2): reads the current time
+	//-----------------------------------------------------------------
+	/**
+	 * Wrapper for clock_gettime(2): updates the timestamp.
+	 * @param id clock's identifier
+	 * @return current time
+	 */
 	const timespec& now(clockid_t id);
-	//Wrapper for strftime(3): formats the most recently refreshed time-stamp
+	//-----------------------------------------------------------------
+	/**
+	 * Wrapper for strftime(3): formats the most recently refreshed timestamp.
+	 * @param s buffer to store the formatted string
+	 * @param size buffer's size in bytes
+	 * @param format output's format
+	 * @param utc true for UTC, false for local time
+	 * @return output string size in bytes
+	 */
 	size_t convert(char *s, size_t size, const char *format = nullptr,
 			bool utc = true) const;
-	//Wrapper for localtime_r(3) and gmtime_r(3): returns the broken down time
+	/**
+	 * Wrapper for localtime_r(3) and gmtime_r(3): returns the broken down time.
+	 * @param calendar stores the broken-down time
+	 * @param utc true for UTC, false for local time
+	 */
 	void convert(tm &calendar, bool utc = true) const;
-	//Returns the most recently refreshed time-stamp
+	//-----------------------------------------------------------------
+	/**
+	 * Returns the most recently refreshed timestamp.
+	 * @return timestamp's value
+	 */
 	const timespec& get() const noexcept;
-	//Sets the time-stamp to the given value
+	/**
+	 * Sets timestamp's value.
+	 * @param ts new timestamp value
+	 */
 	void set(const timespec &ts) noexcept;
 private:
 	timespec ts;

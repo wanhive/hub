@@ -21,11 +21,25 @@ namespace wanhive {
  */
 class Config {
 public:
-	//Wrapper for sysconf(3): returns system configuration at runtime
+	/**
+	 * Wrapper for sysconf(3): returns system configuration at runtime.
+	 * @param name option's value
+	 * @return configuration value
+	 */
 	static long system(int name);
-	//Wrapper for fpathconf(3): returns configuration values for files
+	/**
+	 * Wrapper for fpathconf(3): returns configuration values for files.
+	 * @param fd open file descriptor
+	 * @param name option's value
+	 * @return configuration value
+	 */
 	static long path(int fd, int name);
-	//Wrapper for pathconf(3):  returns configuration values for files
+	/**
+	 * Wrapper for pathconf(3):  returns configuration values for files.
+	 * @param path file's path name
+	 * @param name option's value
+	 * @return configuration value
+	 */
 	static long path(const char *path, int name);
 };
 

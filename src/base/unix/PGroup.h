@@ -1,7 +1,7 @@
 /*
  * PGroup.h
  *
- * Process group management
+ * Job control: process group management
  *
  *
  * Copyright (C) 2021 Amit Kumar (amitkriit@gmail.com)
@@ -17,7 +17,7 @@
 
 namespace wanhive {
 /**
- * Process group management
+ * Job control: process group management
  */
 class PGroup {
 public:

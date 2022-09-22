@@ -1,7 +1,7 @@
 /*
  * FileStream.cpp
  *
- * File stream management
+ * File stream
  *
  *
  * Copyright (C) 2021 Amit Kumar (amitkriit@gmail.com)

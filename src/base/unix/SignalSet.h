@@ -17,39 +17,88 @@
 namespace wanhive {
 /**
  * Signal set operations
- * REF: sigsetops(3)
+ * @ref sigsetops(3)
  */
 class SignalSet {
 public:
+	/**
+	 * Default constructor: zeroes out the signal set.
+	 */
 	SignalSet() noexcept;
+	/**
+	 * Constructor: initializes the signal set.
+	 * @param fill true for full set, false for empty set
+	 */
 	SignalSet(bool fill);
+	/**
+	 * Destructor
+	 */
 	~SignalSet();
-
-	//Empties the set
+	//-----------------------------------------------------------------
+	/**
+	 * Empties the set (includes all signals).
+	 */
 	void empty();
-	//Fills up the set
+	/**
+	 * Fills up the set (excludes all signals).
+	 */
 	void fill();
-	//Adds <signum> to the set
+	/**
+	 * Adds a signal to the set.
+	 * @param signum signal number
+	 */
 	void add(int signum);
-	//Deletes <signum> from the set
+	/**
+	 * Deletes a signal from the set.
+	 * @param signum signal number
+	 */
 	void remove(int signum);
-	//Tests whether <signum> is a member of the set
+	/**
+	 * Tests a signal's membership in the set.
+	 * @param signum signal number
+	 * @return true if member, false otherwise
+	 */
 	bool test(int signum) const;
-
-	//Direct pointer to the internal structure
+	//-----------------------------------------------------------------
+	/**
+	 * Returns pointer to the internal structure.
+	 * @return pointer to internal sigset_t structure
+	 */
 	sigset_t* mask() noexcept;
-	//Const pointer to the internal structure
+	/**
+	 * Returns constant pointer to the internal structure.
+	 * @return pointer to internal sigset_t structure
+	 */
 	const sigset_t* mask() const noexcept;
-
-	//Wrapper for sigemptyset(3): initializes an empty set
+	//-----------------------------------------------------------------
+	/**
+	 * Wrapper for sigemptyset(3): initializes an empty set.
+	 * @param set the signal set
+	 */
 	static void empty(sigset_t &set);
-	//Wrapper for sigfillset(3): initializes a full set
+	/**
+	 * Wrapper for sigfillset(3): initializes a full set.
+	 * @param set the signal set
+	 */
 	static void fill(sigset_t &set);
-	//Wrapper for sigaddset(3): adds <signum> to the set
+	/**
+	 * Wrapper for sigaddset(3): adds a signal to the given set.
+	 * @param set the signal set
+	 * @param signum signal number
+	 */
 	static void add(sigset_t &set, int signum);
-	//Wrapper for sigdelset: deletes <signum> from the set
+	/**
+	 * Wrapper for sigdelset(3): deletes a signal from the given set.
+	 * @param set the signal set
+	 * @param signum signal number
+	 */
 	static void remove(sigset_t &set, int signum);
-	//Wrapper for sigismember(3): tests <signum>'s membership in the set
+	/**
+	 * Wrapper for sigismember(3): tests a signal's membership in the given set.
+	 * @param set the signal set
+	 * @param signum signal number
+	 * @return true if member, false otherwise
+	 */
 	static bool test(const sigset_t &set, int signum);
 private:
 	sigset_t _set;

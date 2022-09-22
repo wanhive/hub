@@ -19,15 +19,33 @@ namespace wanhive {
  */
 class Environment {
 public:
-	//Returns a reference to the environ variable
+	/**
+	 * Returns the global "environ" variable.
+	 * @return environ variable
+	 */
 	static char** get() noexcept;
-	//Wrapper for getenv(3): gets an environment variable
+	/**
+	 * Wrapper for getenv(3): gets an environment variable.
+	 * @param name environment variable's name
+	 * @return environment variable's value
+	 */
 	static const char* get(const char *name) noexcept;
-	//Wrapper for putenv(3): changes or adds an environment variable
+	/**
+	 * Wrapper for putenv(3): changes or adds an environment variable.
+	 * @param string environment variable string
+	 */
 	static void put(char *string);
-	//Wrapper for setenv(3): changes or adds an environment variable
+	/**
+	 * Wrapper for setenv(3): changes or adds an environment variable.
+	 * @param name environment variable's name
+	 * @param value environment variable's value
+	 * @param replace true for replace on conflict, false otherwise
+	 */
 	static void set(const char *name, const char *value, bool replace);
-	//Wrapper for unsetenv(3): deletes an environment variable
+	/**
+	 * Wrapper for unsetenv(3): deletes an environment variable.
+	 * @param name environment variable's name
+	 */
 	static void unset(const char *name);
 };
 
