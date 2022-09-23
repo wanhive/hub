@@ -36,7 +36,7 @@ public:
 	static long path(int fd, int name);
 	/**
 	 * Wrapper for pathconf(3):  returns configuration values for files.
-	 * @param path file's path name
+	 * @param path file's pathname
 	 * @param name option's value
 	 * @return configuration value
 	 */

@@ -30,19 +30,19 @@ public:
 	 */
 	FileStream(FILE *fp) noexcept;
 	/**
-	 * Constructor: opens a file.
+	 * Constructor: opens a stream.
 	 * @param path file's pathname
 	 * @param mode mode string
 	 */
 	FileStream(const char *path, const char *mode);
 	/**
-	 * Associates the given file descriptor.
+	 * Constructor: opens a stream.
 	 * @param fd file descriptor
 	 * @param mode mode string
 	 */
 	FileStream(int fd, const char *mode);
 	/**
-	 * Destructor: closes the associated stream.
+	 * Destructor: closes the stream.
 	 */
 	~FileStream();
 	//-----------------------------------------------------------------
@@ -61,12 +61,12 @@ public:
 	 * @return stream pointer
 	 */
 	FILE* release() noexcept;
-	//-----------------------------------------------------------------
 	/**
 	 * Wrapper for fclose(3): flushes and closes the stream.
 	 * @return true on success, false on error
 	 */
 	bool close() noexcept;
+	//-----------------------------------------------------------------
 	/**
 	 * Wrapper for fopen(3): opens a file stream.
 	 * @param path file's pathname

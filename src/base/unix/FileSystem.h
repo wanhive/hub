@@ -187,7 +187,7 @@ public:
 	/**
 	 * Wrapper for readlinkat(2): reads the value of a symbolic link.
 	 * @param dirfd symbolic link's base path descriptor
-	 * @param path symolic link's pathname
+	 * @param path symbolic link's pathname
 	 * @param buf stores the symbolic link's contents
 	 * @param size buffer's size in bytes
 	 * @return number of bytes placed in the buffer

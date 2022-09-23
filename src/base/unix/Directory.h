@@ -29,12 +29,12 @@ public:
 	 */
 	Directory() noexcept;
 	/**
-	 * Constructor: opens a directory.
+	 * Constructor: opens a directory stream.
 	 * @param name directory's pathname
 	 */
 	Directory(const char *name);
 	/**
-	 * Constructor: Opens directory associated with the given file descriptor.
+	 * Constructor: opens directory stream for the given file descriptor.
 	 * @param fd director's file descriptor
 	 */
 	Directory(int fd);
@@ -69,17 +69,19 @@ public:
 	int getDescriptor();
 	//-----------------------------------------------------------------
 	/**
-	 * Wrapper for opendir(3): opens a directory (replaces the existing one).
+	 * Wrapper for opendir(3): opens new directory stream (existing stream is
+	 * closed).
 	 * @param name directory's pathname
 	 */
 	void open(const char *name);
 	/**
-	 * Wrapper for fopendir(3): opens a directory (replaces the existing one).
+	 * Wrapper for fopendir(3): opens a new directory stream (existing stream is
+	 * closed).
 	 * @param fd directory's file descriptor
 	 */
 	void open(int fd);
 	/**
-	 * Wrapper for closedir(3): closes a directory.
+	 * Wrapper for closedir(3): closes a directory stream.
 	 * @return true on success, false on system error
 	 */
 	bool close() noexcept;

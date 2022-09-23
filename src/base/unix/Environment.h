@@ -21,11 +21,11 @@ class Environment {
 public:
 	/**
 	 * Returns the global "environ" variable.
-	 * @return environ variable
+	 * @return environ variable's value
 	 */
 	static char** get() noexcept;
 	/**
-	 * Wrapper for getenv(3): gets an environment variable.
+	 * Wrapper for getenv(3): reads an environment variable's value.
 	 * @param name environment variable's name
 	 * @return environment variable's value
 	 */

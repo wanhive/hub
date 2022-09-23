@@ -25,8 +25,8 @@ public:
 	/**
 	 * Duplicates a file descriptor.
 	 * @param fd file descriptor to duplicate
-	 * @param closeOnExec true to set the close-on-exec descriptor flag for the
-	 * new descriptor, false otherwise.
+	 * @param closeOnExec true to set the close-on-exec descriptor flag on the
+	 * new file descriptor, false otherwise.
 	 * @return new file descriptor's value
 	 */
 	static int duplicate(int fd, bool closeOnExec = false);
@@ -34,8 +34,8 @@ public:
 	 * Duplicates a file descriptor.
 	 * @param fd file descriptor to duplicate
 	 * @param newFd new file descriptor's recommended value
-	 * @param closeOnExec  true to set the close-on-exec descriptor flag for the
-	 * new descriptor, false otherwise.
+	 * @param closeOnExec true to set the close-on-exec descriptor flag on the
+	 * new file descriptor, false otherwise.
 	 * @return new file descriptor's value
 	 */
 	static int duplicate(int fd, int newFd, bool closeOnExec = false);
@@ -68,8 +68,8 @@ public:
 	/**
 	 * Advisory record locking: acquires or releases record locks.
 	 * @param fd file descriptor
-	 * @param type specifies the parameters
-	 * @param block true for blocking mode, false for non-blocking mode
+	 * @param type record lock parameters
+	 * @param block true for blocking operation, false for non-blocking
 	 * @return true on success, false on temporary error (the operation was
 	 * prohibited or interrupted).
 	 */

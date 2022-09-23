@@ -21,15 +21,31 @@ namespace wanhive {
  */
 class PGroup {
 public:
-	//Returns calling process' group ID
+	/**
+	 * Returns calling process' group ID.
+	 * @return group identifier
+	 */
 	static pid_t get() noexcept;
-	//Wrapper for getpgid(2): Returns a process' group ID
+	/**
+	 * Wrapper for getpgid(2): Returns a process' group ID.
+	 * @param processId process' identifier
+	 * @return group identifier
+	 */
 	static pid_t get(pid_t processId);
-	//Sets calling process' group ID to its process ID
+	/**
+	 * Sets calling process' group ID to its process ID.
+	 */
 	static void set();
-	//Sets calling process' group ID
+	/**
+	 * Sets calling process' group ID.
+	 * @param groupId new group identifier
+	 */
 	static void set(pid_t groupId);
-	//Wrapper for setpgid(2): sets a process' group ID
+	/**
+	 * Wrapper for setpgid(2): sets a process' group ID.
+	 * @param processId process' identifier
+	 * @param groupId new group identifier
+	 */
 	static void set(pid_t processId, pid_t groupId);
 };
 

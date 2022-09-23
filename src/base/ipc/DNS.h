@@ -21,7 +21,7 @@ namespace wanhive {
 class DNS {
 public:
 	/**
-	 * Default constructor: does nothing.
+	 * Default constructor: initializes an empty object.
 	 */
 	DNS() noexcept;
 	/**
