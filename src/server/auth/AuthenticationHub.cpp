@@ -241,13 +241,16 @@ bool AuthenticationHub::loadIdentity(Authenticator *authenticator,
 	//-----------------------------------------------------------------
 	auto salt = PQgetvalue(res, 0, 1);
 	auto verifier = PQgetvalue(res, 0, 2);
-	auto group = PQgetvalue(res, 0, 3);
 
-	authenticator->setGroup(
-			group == nullptr ? 0xff : ntohl(*((uint32_t*) group)));
+	if (PQgetlength(res, 0, 3) == sizeof(uint32_t)) {
+		authenticator->setGroup(ntohl(*((uint32_t*) PQgetvalue(res, 0, 3))));
+	} else {
+		authenticator->setGroup(0xff);
+	}
+
 	auto status = authenticator->identify(identity, nonce.base, nonce.length,
 			salt, verifier);
-	//-----------------------------------------------------------------
+
 	PQclear(res);
 	PQfinish(conn);
 	return status;
