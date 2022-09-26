@@ -5,16 +5,23 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased]
+## [9.1.0] - 2022-09-26
+
+### Added
+
+- **PSession::getLeader()** method to read the controlling terminal's session identifier.
+- **FStat::access()** method to read the file permission bits.
 
 ### Changed
 
+- Update authentication hub.
 - Add and update API documentation (work in progress).
+- **SignalAction** prevents unreliable signal operations.
 
 ### Fixed
 
 - **Directory::read()** method should throw exception only on system error.
-- Pass on the third parameter to the system call in **Fcntl::duplicate()** method.
+- Provide a third argument to the system call in **Fcntl::duplicate()** method.
 
 ## [9.0.0] - 2022-09-14
 
