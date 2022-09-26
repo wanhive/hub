@@ -112,11 +112,16 @@ public:
 	 */
 	bool isSetGID() const noexcept;
 	/**
-	 * Tests (bitwise) the permission bits.
+	 * Tests (bitwise) the file permission bits.
 	 * @param mode permission bits
-	 * @return true on match, false otherwise
+	 * @return true if a bit is set, false otherwise
 	 */
 	bool access(mode_t mode) const noexcept;
+	/**
+	 * Returns the file permission bits.
+	 * @return permission bits
+	 */
+	mode_t access() const noexcept;
 	//-----------------------------------------------------------------
 	/**
 	 * Returns the file size.

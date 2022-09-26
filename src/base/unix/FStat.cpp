@@ -87,7 +87,11 @@ bool FStat::isSetGID() const noexcept {
 }
 
 bool FStat::access(mode_t mode) const noexcept {
-	return (mode & _stat.st_mode & 0777);
+	return (mode & access());
+}
+
+mode_t FStat::access() const noexcept {
+	return (_stat.st_mode & (S_IRWXU | S_IRWXG | S_IRWXO));
 }
 
 off_t FStat::size() const noexcept {
