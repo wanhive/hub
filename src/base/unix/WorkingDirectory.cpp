@@ -35,8 +35,8 @@ void WorkingDirectory::set(int fd) {
 	}
 }
 
-char* WorkingDirectory::get(char *buf, size_t size) {
-	auto cwd = ::getcwd(buf, size);
+char* WorkingDirectory::get(char *buffer, size_t size) {
+	auto cwd = ::getcwd(buffer, size);
 	if (cwd) {
 		return cwd;
 	} else {

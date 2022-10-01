@@ -29,7 +29,6 @@ public:
 	 * Destructor
 	 */
 	~OS();
-
 	/**
 	 * Returns operating system's name.
 	 * @return name of the operating system

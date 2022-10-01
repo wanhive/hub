@@ -124,7 +124,7 @@ public:
 	mode_t access() const noexcept;
 	//-----------------------------------------------------------------
 	/**
-	 * Returns the file size.
+	 * Returns file's size in bytes.
 	 * @return file size in bytes
 	 */
 	off_t size() const noexcept;
@@ -134,8 +134,8 @@ public:
 	 */
 	uid_t ownerId() const noexcept;
 	/**
-	 * Returns group ID of the file
-	 * @return group's identifier
+	 * Returns group ID of a file.
+	 * @return group identifier
 	 */
 	gid_t groupId() const noexcept;
 	//-----------------------------------------------------------------
@@ -166,7 +166,7 @@ public:
 	 */
 	const timespec& accessedOn() const noexcept;
 	/**
-	 * Returns the last file data modification time
+	 * Returns the last file data modification time.
 	 * @return timestamp's value
 	 */
 	const timespec& modifiedOn() const noexcept;
@@ -193,7 +193,7 @@ public:
 	 */
 	void read(int fd);
 	/**
-	 * Wrapper for stat(2) and lstat(2): gets file status
+	 * Wrapper for stat(2) and lstat(2): gets file status.
 	 * @param path file's pathname
 	 * @param symLink true to follow a symbolic link, false otherwise
 	 */

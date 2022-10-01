@@ -32,11 +32,11 @@ public:
 	static void set(int fd);
 	/**
 	 * Wrapper for getcwd(3): returns the current working directory.
-	 * @param buf buffer for storing the current working directory's pathname
+	 * @param buffer stores the current working directory's pathname
 	 * @param size buffer's size in bytes
 	 * @return pointer to the output string
 	 */
-	static char* get(char *buf, size_t size);
+	static char* get(char *buffer, size_t size);
 };
 
 } /* namespace wanhive */
