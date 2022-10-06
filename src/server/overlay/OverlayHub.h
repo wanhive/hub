@@ -1,7 +1,7 @@
 /*
  * OverlayHub.h
  *
- * Overlay hub (server) implementation
+ * Overlay hub
  *
  *
  * Copyright (C) 2019 Wanhive Systems Private Limited (info@wanhive.com)
@@ -18,7 +18,7 @@
 
 namespace wanhive {
 /**
- * Overlay hub implementation
+ * Overlay hub (messaging middleware)
  */
 class OverlayHub final: public Hub, private Node {
 public:

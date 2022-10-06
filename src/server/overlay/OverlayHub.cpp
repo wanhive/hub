@@ -1,7 +1,7 @@
 /*
  * OverlayHub.cpp
  *
- * Overlay hub (server) implementation
+ * Overlay hub
  *
  *
  * Copyright (C) 2019 Wanhive Systems Private Limited (info@wanhive.com)

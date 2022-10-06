@@ -18,9 +18,9 @@
 
 namespace wanhive {
 /**
- * Request-response pattern implementation. Expects blocking connection hence
- * the underlying socket file descriptor must be configured for blocking read
- * and write operations.
+ * Request-response pattern implementation.
+ * @note Supports blocking IO only, the underlying socket file descriptor must
+ * be configured for blocking read and write operations.
  */
 class Endpoint: protected Packet {
 public:
@@ -200,10 +200,10 @@ public:
 	static void receive(SSL *ssl, Packet &packet, unsigned int sequenceNumber =
 			0, const PKI *pki = nullptr);
 private:
-	int sockfd; //The underlying socket
-	SSL *ssl;  //The underlying SSL/TLS connection
-	SSLContext *sslContext; //The SSL/TLS context
-	const PKI *pki; //Keys for message signing and verification
+	int sockfd; //Socket file descriptor
+	SSL *ssl;  //SSL/TLS connection
+	SSLContext *sslContext; //SSL/TLS context
+	const PKI *pki; //Keys for asymmetric cryptography
 };
 
 } /* namespace wanhive */

@@ -1,7 +1,7 @@
 /*
  * OverlayProtocol.cpp
  *
- * Protocol extension for the overlay network clients
+ * Overlay network protocol implementation
  *
  *
  * Copyright (C) 2019 Wanhive Systems Private Limited (info@wanhive.com)
@@ -378,7 +378,7 @@ unsigned int OverlayProtocol::createFindSuccessorRequest(uint64_t host,
 }
 
 unsigned int OverlayProtocol::processFindSuccessorResponse(uint64_t uid,
-		uint64_t &key) const noexcept {
+		uint64_t &successor) const noexcept {
 	if (!checkContext(WH_DHT_CMD_OVERLAY, WH_DHT_QLF_FINDSUCCESSOR)) {
 		return 0;
 	} else if (getPayloadLength() != (2 * sizeof(uint64_t))) {
@@ -387,17 +387,17 @@ unsigned int OverlayProtocol::processFindSuccessorResponse(uint64_t uid,
 		uint64_t v[2] = { uid, 0 };
 		Serializer::unpack(payload(), (char*) "QQ", &v[0], &v[1]);
 		if (v[0] == uid) {
-			key = v[1];
+			successor = v[1];
 			return header().getLength();
 		} else {
-			key = 0;
+			successor = 0;
 			return 0;
 		}
 	}
 }
 
 bool OverlayProtocol::findSuccessorRequest(uint64_t host, uint64_t uid,
-		uint64_t &key) {
+		uint64_t &successor) {
 	/*
 	 * HEADER: SRC=0, DEST=X, ....CMD=4, QLF=0, AQLF=0/1/127
 	 * BODY: 8 bytes as <id> in Request; 8 bytes as <id> and 8 bytes
@@ -405,7 +405,7 @@ bool OverlayProtocol::findSuccessorRequest(uint64_t host, uint64_t uid,
 	 * TOTAL: 32+8=40 bytes in Request; 32+8+8=48 bytes in Response
 	 */
 	return createFindSuccessorRequest(host, uid) && executeRequest()
-			&& processFindSuccessorResponse(uid, key);
+			&& processFindSuccessorResponse(uid, successor);
 }
 
 unsigned int OverlayProtocol::createPingRequest(uint64_t host) noexcept {

@@ -1,7 +1,7 @@
 /*
  * AuthenticationHub.h
  *
- * Wanhive host for distributed authentication
+ * Authentication hub
  *
  *
  * Copyright (C) 2019 Wanhive Systems Private Limited (info@wanhive.com)
@@ -17,8 +17,8 @@
 
 namespace wanhive {
 /**
- * The authentication hub
- * Uses SRP-6a protocol
+ * Authentication hub (distributed authenticator)
+ * @note Uses SRP-6a protocol for authentication
  */
 class AuthenticationHub final: public Hub {
 public:

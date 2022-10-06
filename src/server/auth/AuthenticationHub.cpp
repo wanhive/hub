@@ -1,7 +1,7 @@
 /*
  * AuthenticationHub.cpp
  *
- * Wanhive host for distributed authentication
+ * Authentication hub
  *
  *
  * Copyright (C) 2019 Wanhive Systems Private Limited (info@wanhive.com)

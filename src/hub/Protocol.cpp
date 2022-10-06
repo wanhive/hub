@@ -1,7 +1,7 @@
 /*
  * Protocol.cpp
  *
- * Bare minimum protocol implementation
+ * Wanhive protocol implementation
  *
  *
  * Copyright (C) 2019 Amit Kumar (amitkriit@gmail.com)

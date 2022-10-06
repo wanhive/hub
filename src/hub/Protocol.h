@@ -1,7 +1,7 @@
 /*
  * Protocol.h
  *
- * Bare minimum protocol implementation
+ * Wanhive protocol implementation
  *
  *
  * Copyright (C) 2019 Amit Kumar (amitkriit@gmail.com)
@@ -27,9 +27,8 @@ struct TransactionKey {
 };
 //-----------------------------------------------------------------
 /**
- * Bare minimum protocol implementation
- * Expects blocking connection
- * Thread safe at class level
+ * Wanhive protocol implementation
+ * @note Supports blocking IO only
  */
 class Protocol: protected Endpoint, protected FlowControl {
 public:
@@ -134,7 +133,7 @@ public:
 	//-----------------------------------------------------------------
 	/**
 	 * Creates a find-root request to discover the given client's root host.
-	 * @param host current recipient's identifier (can be set to zero)
+	 * @param host recipient's identifier (can be set to zero)
 	 * @param identity client's identifier
 	 * @return message length on success, 0 on error (invalid request)
 	 */
