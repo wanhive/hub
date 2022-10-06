@@ -29,6 +29,9 @@ public:
 	 */
 	AuthenticationHub(unsigned long long uid,
 			const char *path = nullptr) noexcept;
+	/**
+	 * Destructor
+	 */
 	~AuthenticationHub();
 private:
 	void stop(Watcher *w) noexcept override;
@@ -59,7 +62,7 @@ private:
 	Khash<unsigned long long, Authenticator*> waitlist;
 	//For obfuscation of failed identification requests
 	Authenticator fake;
-
+	//Configuration data
 	struct {
 		const char *connInfo;
 		const char *query;

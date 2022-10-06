@@ -65,7 +65,7 @@ private:
 	//Check the registration request
 	bool isValidRegistrationRequest(const Message *msg) noexcept;
 	/*
-	 * Processes a registration request
+	 * Processes a registration request.
 	 * Returns 0 on success if an ACK must be sent,
 	 * Returns 1 on success if no ACK must be sent,
 	 * Returns -1 on error
@@ -159,39 +159,37 @@ private:
 	static bool isExternalNode(unsigned long long uid) noexcept;
 	//-----------------------------------------------------------------
 	/*
-	 * Create and register a local unix socket, return the other end in <sfd>
-	 * If <blocking> is set to true then <sfd> is configured as a blocking socket
-	 * with the given <timeout>. Setting <timeout> to zero (0) will make <sfd> to
+	 * Create and register a local unix socket, return the other end in <sfd>.
+	 * If <blocking> is true then <sfd> is configured as a blocking socket with
+	 * the given <timeout>. Setting <timeout> to zero (0) will make <sfd> to
 	 * block forever. The returned Watcher is always nonblocking.
 	 */
 	Watcher* connect(int &sfd, bool blocking = false, int timeout = 0);
 	//Establish connection with the remote hub <id> asynchronously
 	Watcher* connect(unsigned long long id, Digest *hc);
 	/*
-	 * Helper function for <connect>
-	 * Creates an outgoing Socket connection from the local node to a remote node
-	 * specified by <id>. Sets CONN_PROXY type in the Socket connection object.
-	 * Returns a unique session ID in <hc>.
+	 * Creates an outgoing Socket connection to a remote node specified by <id>.
+	 * Returns a unique session identifier in <hc>.
 	 */
 	Watcher* createProxyConnection(unsigned long long id, Digest *hc);
 	/*
 	 * Purges connections of particular type.
 	 * <mode>: 0[TEMPORARY]; 1[INVALID]; DEFAULT[TEMPORARY|CLIENT]
-	 * <target>: If non-zero then at most <target> connections will be purged.
+	 * <target>: If not zero then at most these many connections will be purged.
 	 */
 	unsigned int purgeConnections(int mode, unsigned int target = 0) noexcept;
-	//Remove the active connections which no longer belong to this hub
+	//Remove active connections which no longer belong here
 	static int removeIfInvalid(Watcher *w, void *arg) noexcept;
 	//Remove client connections
 	static int removeIfClient(Watcher *w, void *arg) noexcept;
 	//-----------------------------------------------------------------
-	//Reset the internal state
+	//Resets the internal state
 	void clear() noexcept;
 	//Returns the runtime metrics
 	void metrics(OverlayHubInfo &info) const noexcept;
 private:
-	/**
-	 * For worker thread management
+	/*
+	 * Worker thread management
 	 */
 	//The object which runs the stabilization protocol
 	OverlayService stabilizer;
@@ -202,8 +200,8 @@ private:
 		unsigned long long id;
 	} worker;
 	//-----------------------------------------------------------------
-	/**
-	 * Overlay configuration
+	/*
+	 * Configuration data
 	 */
 	struct {
 		//Enable client Registration
@@ -225,18 +223,17 @@ private:
 		//Bootstrap nodes
 		unsigned long long bootstrapNodes[128];
 	} ctx;
-
-	/**
+	//-----------------------------------------------------------------
+	/*
 	 * Cache of recently seen overlay nodes
 	 */
-	//Must be power of 2
-	static constexpr unsigned int NODECACHE_SIZE = 32;
+	static constexpr unsigned int NODECACHE_SIZE = 32; //Must be power of 2
 	struct {
 		unsigned int index;
 		unsigned long long cache[NODECACHE_SIZE];
 	} nodes;
 	//-----------------------------------------------------------------
-	/**
+	/*
 	 * For authentication
 	 */
 	//For authentication of proxy connections, +1 for the controller
@@ -244,8 +241,8 @@ private:
 	//Message digests generator
 	Hash hash;
 	//-----------------------------------------------------------------
-	/**
-	 * Files being monitored
+	/*
+	 * Watch list of files
 	 * [0]: Configuration file
 	 * [1]: Hosts database
 	 * [2]: Hosts file
@@ -261,7 +258,7 @@ private:
 		uint32_t events;
 	} watchlist[WATCHLIST_SIZE];
 	//-----------------------------------------------------------------
-	/**
+	/*
 	 * For multicasting: 256 topics in the range [0-255] are available
 	 */
 	Topics topics;
