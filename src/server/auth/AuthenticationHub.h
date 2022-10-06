@@ -22,6 +22,11 @@ namespace wanhive {
  */
 class AuthenticationHub final: public Hub {
 public:
+	/**
+	 * Constructor: creates a new hub.
+	 * @param uid hub's identifier
+	 * @param path configuration file's pathname (nullptr for default)
+	 */
 	AuthenticationHub(unsigned long long uid,
 			const char *path = nullptr) noexcept;
 	~AuthenticationHub();

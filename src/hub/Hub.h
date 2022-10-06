@@ -44,9 +44,9 @@ class Hub: public Handler<Alarm>,
 public:
 	/**
 	 * Constructor: creates a new hub.
-	 * @param uid the unique identifier of this hub
-	 * @param path pathname of the configuration file, if nullptr then a search
-	 * will be performed at predefined locations to find the configuration file.
+	 * @param uid hub's identifier
+	 * @param path configuration file's pathname, if not provided (pathname is
+	 * nullptr) then configuration data is loaded from the default location(s).
 	 */
 	Hub(unsigned long long uid, const char *path = nullptr) noexcept;
 	/**
@@ -55,21 +55,19 @@ public:
 	~Hub();
 	//-----------------------------------------------------------------
 	/**
-	 * Returns this hub's identity.
-	 * @return the unique identifier of this hub
+	 * Returns hub's unique identifier.
+	 * @return hub's identifier
 	 */
 	unsigned long long getUid() const noexcept;
 	/**
-	 * Executes this hub, this method returns after the termination of this hub's
-	 * event loop.
+	 * Executes this hub, returns only after termination of the event loop.
 	 * @param arg additional argument
-	 * @return true on normal termination, false if the event loop was terminated
-	 * due to error.
+	 * @return true on normal termination, false on error
 	 */
 	bool execute(void *arg) noexcept;
 	/**
-	 * Terminates the event loop (see Hub::execute()). The event loop may still
-	 * block until a signal delivery. This method is reentrant and signal-safe.
+	 * Cancels the event loop. The event loop may still block while waiting for
+	 * an IO event or signal. This method is reentrant and signal-safe.
 	 */
 	void cancel() noexcept;
 protected:
