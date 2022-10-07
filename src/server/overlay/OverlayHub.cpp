@@ -28,9 +28,9 @@ enum PurgeType {
  * Control structure (for connections removal)
  */
 struct PurgeControl {
-	unsigned int target { };
-	unsigned int count { };
-	wanhive::OverlayHub *hub { };
+	unsigned int target { 0 };
+	unsigned int count { 0 };
+	wanhive::OverlayHub *hub { nullptr };
 };
 
 }  // namespace
