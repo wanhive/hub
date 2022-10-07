@@ -21,11 +21,11 @@ namespace wanhive {
 class InstanceID {
 public:
 	/**
-	 * Default constructor: creates a secure instance ID
+	 * Default constructor: creates a secure instance ID.
 	 */
 	InstanceID();
 	/**
-	 * Destructor: cleanly destroys the object
+	 * Destructor
 	 */
 	~InstanceID();
 	//-----------------------------------------------------------------

@@ -21,7 +21,7 @@ namespace wanhive {
 class FlowControl {
 public:
 	/**
-	 * Constructor: initializes all the fields to zero (0)
+	 * Constructor: initializes all the fields to zero (0).
 	 */
 	FlowControl() noexcept;
 	/**

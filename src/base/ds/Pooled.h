@@ -32,12 +32,12 @@ public:
 	 */
 	~Pooled() = default;
 	/**
-	 * Initializes the object pool
-	 * @param size object pool's size
+	 * Initializes the object pool.
+	 * @param count number of objects in the pool
 	 */
-	static void initPool(unsigned int size);
+	static void initPool(unsigned int count);
 	/**
-	 * Destroys the object pool
+	 * Destroys the object pool.
 	 */
 	static void destroyPool();
 	/**
@@ -63,7 +63,7 @@ protected:
 	void* operator new(size_t size) noexcept;
 	/**
 	 * The delete operator that works with the preallocated memory pool.
-	 * @param p pointer to free
+	 * @param p pointer to the object being recycled
 	 */
 	void operator delete(void *p) noexcept;
 private:
@@ -81,8 +81,8 @@ inline wanhive::Pooled<X>::Pooled(char c) noexcept {
 }
 
 template<typename X>
-inline void wanhive::Pooled<X>::initPool(unsigned int size) {
-	pool.initialize(sizeof(X), size);
+inline void wanhive::Pooled<X>::initPool(unsigned int count) {
+	pool.initialize(sizeof(X), count);
 }
 
 template<typename X>
