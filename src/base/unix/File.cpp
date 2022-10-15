@@ -89,54 +89,54 @@ bool File::close() noexcept {
 }
 
 void File::open(const char *path, int flags) {
-	if (!path) {
-		throw Exception(EX_INVALIDPARAM);
-	} else {
+	if (path) {
 		auto newFd = ::open(path, flags);
-		if (newFd == -1) {
-			throw SystemException();
-		} else {
+		if (newFd != -1) {
 			set(newFd);
+		} else {
+			throw SystemException();
 		}
+	} else {
+		throw Exception(EX_INVALIDPARAM);
 	}
 }
 
 void File::open(const char *path, int flags, mode_t mode) {
-	if (!path) {
-		throw Exception(EX_INVALIDPARAM);
-	} else {
+	if (path) {
 		auto newFd = ::open(path, flags, mode);
-		if (newFd == -1) {
-			throw SystemException();
-		} else {
+		if (newFd != -1) {
 			set(newFd);
+		} else {
+			throw SystemException();
 		}
+	} else {
+		throw Exception(EX_INVALIDPARAM);
 	}
 }
 
 void File::open(int dirfd, const char *path, int flags) {
-	if (!path) {
-		throw Exception(EX_INVALIDPARAM);
-	} else {
+	if (path) {
 		auto newFd = ::openat(dirfd, path, flags);
-		if (newFd == -1) {
-			throw SystemException();
-		} else {
+		if (newFd != -1) {
 			set(newFd);
+		} else {
+			throw SystemException();
 		}
+	} else {
+		throw Exception(EX_INVALIDPARAM);
 	}
 }
 
 void File::open(int dirfd, const char *path, int flags, mode_t mode) {
-	if (!path) {
-		throw Exception(EX_INVALIDPARAM);
-	} else {
+	if (path) {
 		auto newFd = ::openat(dirfd, path, flags, mode);
-		if (newFd == -1) {
-			throw SystemException();
-		} else {
+		if (newFd != -1) {
 			set(newFd);
+		} else {
+			throw SystemException();
 		}
+	} else {
+		throw Exception(EX_INVALIDPARAM);
 	}
 }
 
@@ -162,19 +162,23 @@ void File::unlock() {
 
 int File::duplicate() {
 	auto ret = ::dup(get());
-	if (ret == -1) {
-		throw SystemException();
-	} else {
+	if (ret != -1) {
 		return ret;
+	} else {
+		throw SystemException();
 	}
 }
 
 int File::duplicate(int newfd, int flags) {
-	auto ret = WH_DUP2(get(), newfd, flags);
-	if (ret == -1) {
-		throw SystemException();
+	if (get() != newfd) {
+		auto ret = WH_DUP2(get(), newfd, flags);
+		if (ret != -1) {
+			return ret;
+		} else {
+			throw SystemException();
+		}
 	} else {
-		return ret;
+		throw Exception(EX_INVALIDPARAM);
 	}
 }
 
