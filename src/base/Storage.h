@@ -99,7 +99,7 @@ public:
 	 */
 	static off_t seek(int fd, off_t offset, int whence);
 	/**
-	 * Fills up a file with the given character
+	 * Fills up a file with the given character.
 	 * @param fd file descriptor
 	 * @param size number of characters to write
 	 * @param c the character to write

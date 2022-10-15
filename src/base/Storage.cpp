@@ -144,7 +144,7 @@ size_t Storage::write(int fd, const void *buffer, size_t count) {
 }
 
 void Storage::sync(int fd) {
-	if (::fsync(fd) == -1) {
+	if (::fsync(fd) != 0) {
 		throw SystemException();
 	}
 }
