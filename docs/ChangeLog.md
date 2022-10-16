@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 
 - Add and update API documentation (work in progress).
+- **File::duplicate()** method throws exception if old and new descriptors are identical.
 
 ### Fixed
 
