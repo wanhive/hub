@@ -19,9 +19,9 @@
 namespace wanhive {
 /**
  * Light weight vector for POD (plain old data) types.
- * @tparam X object type
+ * @tparam X storage type
  */
-template<typename X = unsigned int> class Array {
+template<typename X = int> class Array {
 public:
 	/**
 	 * Default constructor: creates an empty container.
@@ -180,8 +180,8 @@ public:
 	 * @param f the callback function
 	 * @param data extra argument for the callback function
 	 */
-	void map(int (*f)(const X &entry, void *arg), void *data) {
-		for (unsigned int i = 0; f && i < _limit; ++i) {
+	void map(int (&f)(const X &entry, void *arg), void *data) {
+		for (unsigned int i = 0; i < _limit; ++i) {
 			if (f(storage[i], data)) {
 				break;
 			}
