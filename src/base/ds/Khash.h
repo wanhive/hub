@@ -51,7 +51,7 @@ namespace wanhive {
  * @tparam VALUE value's type
  * @tparam ISMAP true for hash map, false for hash set
  * @tparam HFN hash functor (returns unsigned int hash value of a key)
- * @tparam EQFN equality functor (returns true if two keys are equal, else false)
+ * @tparam EQFN equality functor (returns true on equal keys, false otherwise)
  */
 template<typename KEY = int, typename VALUE = char, bool ISMAP = true,
 		typename HFN = wh_hash_fn, typename EQFN = wh_eq_fn> class Khash {
@@ -104,23 +104,21 @@ public:
 	 */
 	bool hmReplace(KEY const &key, VALUE const &val, VALUE &oldVal) noexcept;
 	/**
-	 * Hash-map operation: swaps the values associated with the given pair of keys.
-	 * If only one of the two keys exists in the hash table then the existing key
-	 * is removed and it's value gets assigned to the non-existing key. If both
-	 * the keys exist and swapping is allowed then the values associated with the
-	 * two keys are swapped/exchanged.
-	 * @param first the first key in the key pair
-	 * @param second the second key in the key pair
-	 * @param iterators object for returning the iterators associated with the
-	 * pair of keys. These iterators will remain valid only as long as the hash
-	 * table is not updated.
-	 * @param swap true to allow swapping, false to disallow swapping in which
-	 * case the operation will fail if both the keys exist.
+	 * Hash-map operation: swaps values associated with the given pair of keys.
+	 * If only one of the two keys exists in the hash table then the existing
+	 * key is removed and it's value gets assigned to the non-existing key. If
+	 * both the keys exist and swapping is allowed then the values associated
+	 * with the given keys are exchanged.
+	 * @param first the first key
+	 * @param second the second key
+	 * @param iterators stores iterators associated with the updated keys in
+	 * their given order. The values remain valid until a hash table update.
+	 * @param swap true to enable swapping, false otherwise
 	 * @return true on success, false on failure (neither of the two keys exists
-	 * or both the keys exist and swapping is not allowed).
+	 * or both the keys exist and swapping is disabled).
 	 */
-	bool hmSwap(KEY const &first, KEY const &second, unsigned int iterators[2],
-			bool swap) noexcept;
+	bool hmSwap(KEY const &first, KEY const &second,
+			unsigned int (&iterators)[2], bool swap) noexcept;
 	//-----------------------------------------------------------------
 	/**
 	 * Hash-set operation: inserts a new key into the hash table.
@@ -158,14 +156,14 @@ public:
 	 */
 	void remove(unsigned int x, bool shrink = true) noexcept;
 	/**
-	 * Iterates the callback function over the hash table. The callback function
-	 * receives the iterator of the next filled bucket and an extra argument. The
-	 * callback function must return zero (0) to continue iterating, 1 to remove
-	 * the key at current position, and any other value to stop the iteration.
-	 * @param fn the callback function
-	 * @param arg extra argument for the callback function
+	 * Iterates a callback function over the hash table. The Callback function
+	 * must return zero (0) to continue iterating, 1 to remove the key at it's
+	 * current position, and any other value to stop the iteration.
+	 * @param fn the callback function. It's first argument is an iterator to
+	 * the next item and the second argument is a generic pointer.
+	 * @param arg second argument of the callback function
 	 */
-	void iterate(int (*fn)(unsigned int index, void *arg), void *arg);
+	void iterate(int (&fn)(unsigned int index, void *arg), void *arg);
 	/**
 	 * Returns hash table's capacity.
 	 * @return number of buckets in the hash table
@@ -481,7 +479,7 @@ bool wanhive::Khash<KEY, VALUE, ISMAP, HFN, EQFN>::hmReplace(const KEY &key,
 
 template<typename KEY, typename VALUE, bool ISMAP, typename HFN, typename EQFN> bool wanhive::Khash<
 		KEY, VALUE, ISMAP, HFN, EQFN>::hmSwap(KEY const &first,
-		KEY const &second, unsigned int iterators[2], bool swap) noexcept {
+		KEY const &second, unsigned int (&iterators)[2], bool swap) noexcept {
 
 	if (!ISMAP) {
 		iterators[0] = end();
@@ -732,8 +730,8 @@ template<typename KEY, typename VALUE, bool ISMAP, typename HFN, typename EQFN> 
 
 template<typename KEY, typename VALUE, bool ISMAP, typename HFN, typename EQFN> void wanhive::Khash<
 		KEY, VALUE, ISMAP, HFN, EQFN>::iterate(
-		int (*fn)(unsigned int index, void *arg), void *arg) {
-	for (auto k = begin(); fn && (k < end()); ++k) {
+		int (&fn)(unsigned int index, void *arg), void *arg) {
+	for (auto k = begin(); k < end(); ++k) {
 		if (!exists(k)) {
 			continue;
 		}
