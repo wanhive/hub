@@ -109,7 +109,7 @@ public:
 	 * @param f the callback function (return 0 to continue, 1 to halt)
 	 * @param data additional argument for the callback function
 	 */
-	void map(int (*f)(const X &e, void *arg), void *data);
+	void map(int (&f)(const X &e, void *arg), void *data);
 	//-----------------------------------------------------------------
 	/**
 	 * Returns a pointer to the backing array.
@@ -262,9 +262,9 @@ bool wanhive::BinaryHeap<X, CMPFN, BHFN>::remove(unsigned int index) noexcept {
 }
 
 template<typename X, typename CMPFN, typename BHFN>
-void wanhive::BinaryHeap<X, CMPFN, BHFN>::map(int (*f)(const X &e, void *arg),
+void wanhive::BinaryHeap<X, CMPFN, BHFN>::map(int (&f)(const X &e, void *arg),
 		void *data) {
-	for (unsigned int i = 0; f && i < _size; ++i) {
+	for (unsigned int i = 0; i < _size; ++i) {
 		if (f(storage[i], data)) {
 			break;
 		}
