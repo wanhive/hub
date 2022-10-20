@@ -81,22 +81,21 @@ public:
 	void remove(unsigned long long key) noexcept;
 	/**
 	 * Swaps watchers associated with the given pair of keys. If only one of the
-	 * two keys exists then the existing key will be removed from the hash table,
-	 * the watcher associated with it will be reassigned to the missing key after
-	 * adding the missing key to the hash table, and the watcher's UID will be
-	 * updated to match it's new key. If both the keys exist and swapping is
-	 * allowed then watchers associated with the two keys will be swapped and
-	 * their UIDs will be updated to match their new keys.
-	 * @param first the first key in the key pair
-	 * @param second the second key in the key pair
-	 * @param w if not nullptr, then the watchers associated with the first and
-	 * the second key after the operation will be returned here (in that order).
+	 * two keys exists then the existing key is removed from the hash table, the
+	 * associated watcher is reassigned to the missing key, and the watcher's
+	 * UID is updated to match it's new key. If both the keys exist and swapping
+	 * is allowed then watchers associated with the two keys will be swapped and
+	 * their UIDs will be updated to match their respective keys.
+	 * @param first the first key
+	 * @param second the second key
+	 * @param w stores watchers associated with the given keys (in order) after
+	 * a successful operation.
 	 * @param swap true to enable swapping, false otherwise
 	 * @return true on success, false on failure (could not swap or neither of
 	 * the two keys exists).
 	 */
 	bool move(unsigned long long first, unsigned long long second,
-			Watcher *w[2], bool swap) noexcept;
+			Watcher *(&w)[2], bool swap) noexcept;
 	/**
 	 * Iterates over the hash table, callback function's return value determines
 	 * the actual behavior:

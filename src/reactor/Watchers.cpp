@@ -72,27 +72,26 @@ void Watchers::remove(unsigned long long key) noexcept {
 }
 
 bool Watchers::move(unsigned long long first, unsigned long long second,
-		Watcher *w[2], bool swap) noexcept {
+		Watcher *(&w)[2], bool swap) noexcept {
 
 	unsigned int iterators[2];
 	auto success = watchers.hmSwap(first, second, iterators, swap);
 
-	if (w) {
-		w[0] = nullptr;
-		w[1] = nullptr;
-		watchers.getValue(iterators[0], w[0]);
-		watchers.getValue(iterators[1], w[1]);
+	w[0] = nullptr;
+	w[1] = nullptr;
+	watchers.getValue(iterators[0], w[0]);
+	watchers.getValue(iterators[1], w[1]);
 
-		if (success) {
-			if (w[0]) {
-				w[0]->setUid(first);
-			}
+	if (success) {
+		if (w[0]) {
+			w[0]->setUid(first);
+		}
 
-			if (w[1]) {
-				w[1]->setUid(second);
-			}
+		if (w[1]) {
+			w[1]->setUid(second);
 		}
 	}
+
 	return success;
 }
 
@@ -103,7 +102,7 @@ void Watchers::iterate(int (*fn)(Watcher *w, void *arg), void *arg) {
 }
 
 int Watchers::_iterator(unsigned int index, void *arg) {
-	auto ws = (Watchers*) arg;
+	auto ws = static_cast<Watchers*>(arg);
 	if (ws->itfn) {
 		Watcher *w = nullptr;
 		ws->watchers.getValue(index, w);
