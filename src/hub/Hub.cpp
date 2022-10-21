@@ -227,23 +227,15 @@ bool Hub::react(Watcher *w) noexcept {
 }
 
 void Hub::stop(Watcher *w) noexcept {
-	/*
-	 * Bail out if any one of these ever fails. This provision allows the
-	 * worker thread to safely interact with these watchers.
-	 */
-	auto error = (w == notifiers.listener) || (w == notifiers.alarm)
-			|| (w == notifiers.event) || (w == notifiers.inotifier)
-			|| (w == notifiers.interrupt);
-
-	if (error) {
-		WH_LOG_ERROR("Fatal component failure, exiting.");
-		exit(EXIT_FAILURE);
-	} else {
+	if (!w->testFlags(WATCHER_CRITICAL)) {
 		auto id = w->getUid();
 		watchers.remove(id);
 		w->stop();
 		delete w;
 		WH_LOG_DEBUG("Watcher %llu recycled", id);
+	} else {
+		WH_LOG_ERROR("Critical component failure, exiting.");
+		exit(EXIT_FAILURE);
 	}
 }
 
@@ -646,7 +638,7 @@ void Hub::initListener() {
 		//-----------------------------------------------------------------
 		listener = new Socket(serviceName, ctx.backlog, isUnixSocket);
 		listener->setUid(getUid());
-		attach(listener, IO_READ, WATCHER_ACTIVE);
+		attach(listener, IO_READ, (WATCHER_ACTIVE | WATCHER_CRITICAL));
 		notifiers.listener = listener;
 		WH_LOG_INFO("Hub %llu listening on port: %s", getUid(), serviceName);
 	} catch (const BaseException &e) {
@@ -665,7 +657,7 @@ void Hub::initAlarm() {
 	try {
 		if (ctx.timerExpiration) {
 			alarm = new Alarm(ctx.timerExpiration, ctx.timerInterval);
-			attach(alarm, IO_READ, WATCHER_ACTIVE);
+			attach(alarm, IO_READ, (WATCHER_ACTIVE | WATCHER_CRITICAL));
 			notifiers.alarm = alarm;
 		} else {
 			WH_LOG_DEBUG("Internal alarm disabled");
@@ -687,7 +679,7 @@ void Hub::initEvent() {
 	Event *event = nullptr;
 	try {
 		event = new Event(ctx.semaphore);
-		attach(event, IO_READ, WATCHER_ACTIVE);
+		attach(event, IO_READ, (WATCHER_ACTIVE | WATCHER_CRITICAL));
 		notifiers.event = event;
 	} catch (const BaseException &e) {
 		WH_LOG_EXCEPTION(e);
@@ -704,7 +696,7 @@ void Hub::initInotifier() {
 	Inotifier *inotifier = nullptr;
 	try {
 		inotifier = new Inotifier();
-		attach(inotifier, IO_READ, WATCHER_ACTIVE);
+		attach(inotifier, IO_READ, (WATCHER_ACTIVE | WATCHER_CRITICAL));
 		notifiers.inotifier = inotifier;
 	} catch (const BaseException &e) {
 		WH_LOG_EXCEPTION(e);
@@ -722,7 +714,7 @@ void Hub::initInterrupt() {
 	try {
 		if (ctx.signal) {
 			interrupt = new Interrupt();
-			attach(interrupt, IO_READ, WATCHER_ACTIVE);
+			attach(interrupt, IO_READ, (WATCHER_ACTIVE | WATCHER_CRITICAL));
 			notifiers.interrupt = interrupt;
 		} else {
 			WH_LOG_DEBUG("Synchronous signal disabled");
