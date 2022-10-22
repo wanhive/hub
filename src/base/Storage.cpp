@@ -16,6 +16,7 @@
 #include "ds/Twiddler.h"
 #include "unix/SystemException.h"
 #include <cerrno>
+#include <climits>
 #include <cstring>
 #include <ftw.h>
 #include <unistd.h>
@@ -174,10 +175,10 @@ void Storage::fill(int fd, size_t size, unsigned char c) {
 
 void Storage::createDirectory(const char *pathname) {
 	if (pathname && pathname[0]) {
-		auto tmp = WH_strdup(pathname);
-		auto ret = _createDirectory(tmp);
-		WH_free(tmp);
-		if (!ret) {
+		char tmp[PATH_MAX];
+		memset(tmp, 0, sizeof(tmp));
+		strncpy(tmp, pathname, (sizeof(tmp) - 1));
+		if (!_createDirectory(tmp)) {
 			throw SystemException();
 		}
 	} else {
@@ -246,11 +247,11 @@ char* Storage::expandPathName(const char *pathname) noexcept {
 
 bool Storage::createDirectoryForFile(const char *pathname) noexcept {
 	if (pathname && pathname[0]) {
-		auto tmp = WH_strdup(pathname);
+		char tmp[PATH_MAX];
+		memset(tmp, 0, sizeof(tmp));
+		strncpy(tmp, pathname, (sizeof(tmp) - 1));
 		Twiddler::stripLast(tmp, DIR_SEPARATOR);
-		auto ret = _createDirectory(tmp);
-		WH_free(tmp);
-		return ret;
+		return _createDirectory(tmp);
 	} else {
 		return false;
 	}
