@@ -34,6 +34,7 @@ public:
 	 * Destructor
 	 */
 	~Configuration();
+	//-----------------------------------------------------------------
 	/**
 	 * Clears the configuration data
 	 */
@@ -80,7 +81,7 @@ public:
 	 */
 	const char* getString(const char *section, const char *option,
 			const char *defaultValue = nullptr) const noexcept;
-
+	//-----------------------------------------------------------------
 	/**
 	 * Writes a property as key-value pair where value is a number.
 	 * @param section section/group name, can be empty string
@@ -99,7 +100,7 @@ public:
 	 */
 	unsigned long long getNumber(const char *section, const char *option,
 			unsigned long long defaultValue = 0) const noexcept;
-
+	//-----------------------------------------------------------------
 	/**
 	 * Writes a property as key-value pair where the value is decimal oriented.
 	 * @param section section/group name, can be empty string
@@ -118,7 +119,7 @@ public:
 	 */
 	double getDouble(const char *section, const char *option,
 			double defaultValue = 0) const noexcept;
-
+	//-----------------------------------------------------------------
 	/**
 	 * Writes a property as key-value pair where the value is of boolean type.
 	 * @param section section/group name, can be empty string
@@ -137,7 +138,7 @@ public:
 	 */
 	bool getBoolean(const char *section, const char *option, bool defaultValue =
 			false) const noexcept;
-
+	//-----------------------------------------------------------------
 	/**
 	 * Reads a property and expands/converts it's value into a pathname. If the
 	 * value string starts with a '$' character then the substring between the
@@ -147,13 +148,13 @@ public:
 	 * finally, a posix shell like expansion of the pathname is performed.
 	 * @param section section/group name, can be empty string
 	 * @param option key's name
-	 * @param defaultValue default value to return if no valid entry found
+	 * @param defaultValue default value to process if no valid entry found
 	 * @return expanded pathname associated with the given key (caller must free
 	 * this string using WH_free() or free(3)).
 	 */
 	char* getPathName(const char *section, const char *option,
 			const char *defaultValue = nullptr) const noexcept;
-	//=================================================================
+	//-----------------------------------------------------------------
 	/**
 	 * Checks if the given property exists.
 	 * @param section section/group name, can be empty string
