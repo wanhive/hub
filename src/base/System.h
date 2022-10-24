@@ -21,25 +21,23 @@ namespace wanhive {
 class System {
 public:
 	/**
-	 * Returns the directory that contains the executable file running in the
-	 * current process.
-	 * @param buffer buffer for storing the pathname
-	 * @param length buffer's size n bytes
-	 * @return the pathname (do not free this pointer)
+	 * Returns the executable file's (running in the current process) directory.
+	 * @param buffer stores directory's pathname
+	 * @param length buffer's size in bytes
+	 * @return buffer's pointer
 	 */
 	static const char* executableDirectory(char *buffer, size_t length);
 	/**
-	 * Returns NUL-terminated absolute pathname that is the current working
-	 * directory of the application.
-	 * @param buffer buffer for storing the pathname
+	 * Returns the current working directory.
+	 * @param buffer stores directory's pathname
 	 * @param length buffer's size in bytes
-	 * @return the pathname
+	 * @return buffer's pointer
 	 */
 	static char* currentWorkingDirectory(char *buffer, size_t length);
 	/**
-	 * Returns the value of an environment variable.
+	 * Returns an environment variable's value.
 	 * @param name environment variable's name
-	 * @return environment variable's value, possibly nullptr.
+	 * @return pointer to the value string (possibly nullptr).
 	 */
 	static const char* getEnvironment(const char *name) noexcept;
 };
