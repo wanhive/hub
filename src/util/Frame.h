@@ -20,16 +20,15 @@ namespace wanhive {
  * An immutable chunk of binary data.
  */
 struct Data {
-	const unsigned char *base; /**< The base pointer */
-	unsigned int length; /**< data size in bytes */
+	const unsigned char *base; /**< Base pointer */
+	unsigned int length; /**< Data size in bytes */
 };
 
 /**
- * The bare-bone data unit implementation. It consists of a routing header and a
- * frame buffer. Purpose of routing header is to provide the route information
- * during message delivery and forwarding. Frame buffer contains the actual
- * binary data (in network byte order) which is exchanged over the network.
- * Frame buffer's structure: [{MESSAGE HEADER}{VARIABLE LENGTH PAYLOAD}]
+ * Bare-bone data unit implementation. It consists of a routing header and a
+ * frame buffer. Routing header provides the route information during message
+ * delivery and forwarding. Frame buffer stores the serialized binary data.
+ * @note Frame buffer's structure: [(MESSAGE HEADER)(VARIABLE LENGTH PAYLOAD)]
  */
 class Frame {
 public:
@@ -67,8 +66,8 @@ public:
 	 * Returns a pointer to the given offset within the frame buffer's backing
 	 * array (serialized data). Any changes made through this pointer are not
 	 * reflected inside the routing header.
-	 * @param offset the desired offset in bytes, this value should be less than
-	 * the Frame::MTU.
+	 * @param offset desired offset in bytes, this value should be less than
+	 * Frame::MTU.
 	 * @return a pointer to the given offset inside the backing array if the
 	 * offset is valid, nullptr otherwise.
 	 */
@@ -76,8 +75,8 @@ public:
 	/**
 	 * Returns a constant pointer to the given offset within the frame buffer's
 	 * backing array which stores the serialized data as a sequence of bytes.
-	 * @param offset the desired offset in bytes, this value should be less than
-	 * the Frame::MTU.
+	 * @param offset desired offset in bytes, this value should be less than
+	 * Frame::MTU.
 	 * @return a constant pointer to the given offset inside the backing array
 	 * if the offset is valid, nullptr otherwise.
 	 */
@@ -86,7 +85,7 @@ public:
 	/**
 	 * Returns a pointer to the given offset within the frame buffer's payload
 	 * area. This call is equivalent to buffer(offset + Frame::HEADER_SIZE).
-	 * @param offset the desired offset within the payload section, this value
+	 * @param offset desired offset within the payload section, this value
 	 * should be less than Frame::PAYLOAD_SIZE.
 	 * @return a pointer to the given offset inside the payload section if the
 	 * offset is valid, nullptr otherwise.
@@ -95,7 +94,7 @@ public:
 	/**
 	 * Returns a constant pointer to the given offset within the frame buffer's
 	 * payload area. This call is the same as buffer(offset + Frame::HEADER_SIZE).
-	 * @param offset the desired offset within the payload section, this value
+	 * @param offset desired offset within the payload section, this value
 	 * should be less than Frame::PAYLOAD_SIZE.
 	 * @return a constant pointer to the given offset inside the payload section
 	 * if the offset is valid, nullptr otherwise.
@@ -146,7 +145,7 @@ protected:
 		return _frame;
 	}
 public:
-	/** Header size in bytes */
+	/** Serialized header size in bytes */
 	static constexpr unsigned int HEADER_SIZE = MessageHeader::SIZE;
 	/** The maximum frame buffer size in bytes */
 	static constexpr unsigned int MTU = 1024;

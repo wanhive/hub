@@ -15,13 +15,12 @@
 
 namespace wanhive {
 /**
- * Cryptographically secure PRNG.
- * Thread safe at class level.
+ * Cryptographically secure PRNG
  */
 class Random {
 public:
 	/**
-	 * Default constructor: initializes the PRNG
+	 * Default constructor: initializes the PRNG.
 	 */
 	Random() noexcept;
 	/**
@@ -30,8 +29,8 @@ public:
 	~Random();
 
 	/**
-	 * Generates pseudo random bytes
-	 * @param buffer pointer to the buffer for storing the output
+	 * Generates pseudo random bytes.
+	 * @param buffer pointer to the output buffer
 	 * @param count number of bytes to generate
 	 */
 	void bytes(void *buffer, unsigned int count);

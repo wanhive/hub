@@ -17,8 +17,7 @@
 
 namespace wanhive {
 /**
- * Enhanced data-unit implementation. Extends the bare-bone implementation to
- * add error checking functions.
+ * Enhanced data-unit implementation. Adds error checking to the message Frame.
  */
 class Packet: public Frame {
 public:
@@ -33,80 +32,77 @@ public:
 	~Packet();
 	//-----------------------------------------------------------------
 	/**
-	 * Serializes and stores the given header data into the frame buffer. This
-	 * function doesn't modify the routing header. This call will fail if the
-	 * header's length field has invalid value (see Packet::testLength()).
-	 * @param header the header to write into the frame buffer.
+	 * Serializes and stores header data into the frame buffer (doesn't modify
+	 * the routing header). This call will fail if header's length field has an
+	 * invalid value (see Packet::testLength()).
+	 * @param header message header
 	 * @return true on success, false on error (invalid length)
 	 */
 	bool packHeader(const MessageHeader &header) noexcept;
 	/**
-	 * Serializes and stores the routing header data into the frame buffer. This
-	 * call is equivalent to (equivalent to packHeader(Frame::header())). This
-	 * call will fail if the routing header's length field contains an invalid
-	 * value (see Packet::testLength()).
+	 * Serializes and stores the routing header into the frame buffer. This call
+	 * is equivalent to Packet::packHeader(Frame::header()). This call will fail
+	 * if routing header's length field is invalid (see Packet::testLength()).
 	 * @return true on success, false on error (invalid length)
 	 */
 	bool packHeader() noexcept;
 	/**
-	 * Unpacks header data from the frame buffer.
-	 * @param header object for storing the header data
+	 * Unpacks the frame buffer's header data.
+	 * @param header stores the header data
 	 * @return always true
 	 */
 	bool unpackHeader(MessageHeader &header) const noexcept;
 	/**
-	 * Unpacks header data from frame buffer into the routing header. This call
-	 * is equivalent to Packet::unpackHeader(Frame::header()). This call will
-	 * fail if the serialized header data contains invalid value(s).
+	 * Unpacks frame buffer's header data into the routing header. This call is
+	 * similar to Packet::unpackHeader(Frame::header()). This call will fail if
+	 * the serialized header data contains invalid value(s).
 	 * @return true on success, false on error (invalid data)
 	 */
 	bool unpackHeader() noexcept;
 	//-----------------------------------------------------------------
 	/**
-	 * Sets the frame buffer's length (doesn't modify the routing header).
+	 * Sets frame buffer's length (doesn't modify the routing header).
 	 * @param length frame buffer's length in bytes
 	 * @return true on success, false on error (invalid length)
 	 */
 	bool bind(unsigned int length) noexcept;
 	/**
-	 * Sets the frame buffer's length using the routing header's data. This call
-	 * is equivalent to Packet::bind(Frame::header().getLength()).
+	 * Sets frame buffer's length using the routing header's length field. This
+	 * call is equivalent to Packet::bind(Frame::header().getLength()).
 	 * @return true on success, false on error (invalid length)
 	 */
 	bool bind() noexcept;
 	/**
 	 * Validates this packet. A packet is considered valid if and only if:
-	 * [1]: The frame buffer has a valid length (see Packet::bind()).
-	 * [2]: Frame buffer's length equals the value in the routing header's
-	 * length field.
-	 * @return true if the packet is valid, false otherwise.
+	 * [1]: Frame buffer has a valid length (see Packet::bind()).
+	 * [2]: Frame buffer's length equals the routing header's length field.
+	 * @return true if the packet is valid, false otherwise
 	 */
 	bool validate() const noexcept;
 	//-----------------------------------------------------------------
 	/**
-	 * Returns the payload length. This call will fail if the packet is
-	 * invalid (see Packet::validate()).
-	 * @return payload length on success, 0 on error (invalid packet)
+	 * Returns the payload size.
+	 * @return payload size in bytes on success, 0 on error (invalid packet)
 	 */
 	unsigned int getPayloadLength() const noexcept;
 	/**
-	 * Checks whether the routing header's length field has a valid value in the
-	 * range [Frame::HEADER_SIZE, Frame::MTU].
+	 * Checks whether the routing header's length field contains a valid value
+	 * in the range [Frame::HEADER_SIZE, Frame::MTU].
 	 * @return true if the length is valid, false otherwise
 	 */
 	bool testLength() const noexcept;
 	/**
-	 * Checks if the given packet length is valid. The minimum packet length
-	 * is Frame::HEADER_SIZE while the maximum packet length is Frame::MTU.
-	 * @param length the packet length to check
+	 * Checks whether the given value is a valid packet length. The minimum
+	 * value is Frame::HEADER_SIZE while the maximum value is Frame::MTU.
+	 * @param length packet length's value
 	 * @return true if the given packet length is valid, false otherwise
 	 */
 	static bool testLength(unsigned int length) noexcept;
 	/**
-	 * Calculates the number of packets required to carry the given bytes of
-	 * data in payload.
-	 * @param bytes data size in bytes
-	 * @return the packets count
+	 * Calculates the number of packets required for carrying payload data of
+	 * the given size.
+	 * @param bytes payload's size in bytes
+	 * @return packets count
 	 */
 	static unsigned int packets(unsigned int bytes) noexcept;
 	//-----------------------------------------------------------------
@@ -155,21 +151,21 @@ public:
 	//-----------------------------------------------------------------
 	/**
 	 * Signs this packet.
-	 * @param pki the signing key
-	 * @return true on success (or pki is nullptr), false otherwise
+	 * @param pki signing key
+	 * @return true on success (or key is nullptr), false otherwise
 	 */
 	bool sign(const PKI *pki) noexcept;
 	/**
 	 * Verifies this packet's signature.
-	 * @param pki the verification key
-	 * @return true on success (or pki is nullptr), false otherwise
+	 * @param pki verifying key
+	 * @return true on success (or key is nullptr), false otherwise
 	 */
 	bool verify(const PKI *pki) const noexcept;
 	//-----------------------------------------------------------------
 	/**
-	 * For debugging purposes, prints the header data to stderr.
-	 * @param deep if true then the frame buffer's serialized header will be
-	 * printed, otherwise the routing header will printed.
+	 * For debugging: prints the header data to stderr.
+	 * @param deep true to print the frame buffer's serialized header, false to
+	 * print the routing header.
 	 */
 	void printHeader(bool deep = false) const noexcept;
 };
