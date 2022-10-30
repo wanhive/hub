@@ -30,58 +30,56 @@ public:
 	 */
 	~Watchers();
 	/**
-	 * Checks if a key is present in the hash table.
+	 * Checks whether a key is present.
 	 * @param key key's value
-	 * @return true if the key exists in the hash table, false otherwise
+	 * @return true if the key exists, false otherwise
 	 */
 	bool contains(unsigned long long key) const noexcept;
 	/**
-	 * Returns the watcher associated with the given key in the hash table.
+	 * Returns watcher associated with a key.
 	 * @param key key's value
-	 * @return watcher associated with the key, nullptr if key doesn't exist
+	 * @return associated watcher, nullptr if the key doesn't exist
 	 */
 	Watcher* get(unsigned long long key) const noexcept;
 	/**
-	 * Inserts a (key, watcher) pair into the hash table.
+	 * Inserts a new (key, watcher) pair.
 	 * @param key key's value
-	 * @param w the watcher to associate with the given key, it's UID will be
-	 * updated to match the given key.
+	 * @param w watcher's pointer, its UID is updated to match the key
 	 * @return true on success, false otherwise
 	 */
 	bool put(unsigned long long key, Watcher *w) noexcept;
 	/**
-	 * Inserts a watcher into the hash table.
-	 * @param w the watcher to insert into the hash table, it's UID will be used
-	 * as the key.
+	 * Inserts a new watcher. Watcher's UID is used as the key.
+	 * @param w watcher's pointer
 	 * @return true on success, false otherwise
 	 */
 	bool put(Watcher *w) noexcept;
 	/**
-	 * Inserts a (key, watcher) pair into the hash table. If the given key exists
-	 * then the associated watcher will be replaced and returned.
+	 * Inserts a (key, watcher) pair. If the given key already exists then the
+	 * associated watcher is replaced and returned.
 	 * @param key key's value
-	 * @param w the watcher to associate with the given key, it's UID will be
-	 * updated to match the given key.
-	 * @return the old watcher in case of a conflict, nullptr otherwise
+	 * @param w watcher to associate with the given key, its UID is updated to
+	 * match the key.
+	 * @return replaced watcher (nullptr on a new insertion)
 	 */
 	Watcher* replace(unsigned long long key, Watcher *w) noexcept;
 	/**
-	 * Inserts a watcher into the hash table after resolving any conflict. if a
-	 * watcher is already associated with a key equal in value to the UID of the
-	 * given watcher then the existing watcher will be replaced and returned.
-	 * @param w the watcher to insert into the hash table. It's UID will be used
-	 * as the key.
-	 * @return the old watcher in case of a conflict, nullptr otherwise
+	 * Inserts a watcher after resolving any conflict. if another watcher is
+	 * associated with the key equal in value to the given watcher's UID then
+	 * the existing watcher will be replaced and returned.
+	 * @param w watcher to insert into the hash table, its UID will be used as
+	 * the key.
+	 * @return replaced watcher (nullptr on a new insertion)
 	 */
 	Watcher* replace(Watcher *w) noexcept;
 	/**
-	 * Removes a key from the hash table.
+	 * Removes a key.
 	 * @param key key's value
 	 */
 	void remove(unsigned long long key) noexcept;
 	/**
 	 * Swaps watchers associated with the given pair of keys. If only one of the
-	 * two keys exists then the existing key is removed from the hash table, the
+	 * two keys exists then the existing key is removed from the hash table, its
 	 * associated watcher is reassigned to the missing key, and the watcher's
 	 * UID is updated to match it's new key. If both the keys exist and swapping
 	 * is allowed then watchers associated with the two keys will be swapped and
@@ -98,20 +96,21 @@ public:
 			Watcher *(&w)[2], bool swap) noexcept;
 	/**
 	 * Iterates over the hash table, callback function's return value determines
-	 * the actual behavior:
+	 * the iteration's behavior:
 	 * [0]: continue iteration,
-	 * [1]: remove the current entry from the hash table and continue iteration,
+	 * [1]: remove the current entry and continue iteration,
 	 * [Any other value]: stop iteration.
-	 * @param fn the callback function
-	 * @param arg additional argument (for passing on to the callback function)
+	 * @param fn the callback function, receives the next watcher as it's first
+	 * argument, and a generic pointer as it's second argument.
+	 * @param arg callback function's second argument
 	 */
-	void iterate(int (*fn)(Watcher *w, void *arg), void *arg);
+	void iterate(int (*fn)(Watcher*, void*), void *arg);
 private:
-	//Insertion point for the iterator
+	//Iteration's entry point
 	static int _iterator(unsigned int index, void *arg);
 private:
-	Khash<unsigned long long, Watcher*> watchers; //The hash table
-	int (*itfn)(Watcher *w, void *arg); //The actual iterator
+	Khash<unsigned long long, Watcher*> watchers; //Hash table
+	int (*itfn)(Watcher*, void*); //Actual iterator
 	void *itfnarg; //Iterator's argument
 };
 

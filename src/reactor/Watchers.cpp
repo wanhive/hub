@@ -95,7 +95,7 @@ bool Watchers::move(unsigned long long first, unsigned long long second,
 	return success;
 }
 
-void Watchers::iterate(int (*fn)(Watcher *w, void *arg), void *arg) {
+void Watchers::iterate(int (*fn)(Watcher*, void*), void *arg) {
 	itfn = fn;
 	itfnarg = arg;
 	watchers.iterate(Watchers::_iterator, this);
