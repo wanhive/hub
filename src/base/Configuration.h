@@ -36,7 +36,7 @@ public:
 	~Configuration();
 	//-----------------------------------------------------------------
 	/**
-	 * Clears the configuration data
+	 * Clears out the configuration data.
 	 */
 	void clear() noexcept;
 	/**

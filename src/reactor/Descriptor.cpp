@@ -96,8 +96,8 @@ ssize_t Descriptor::readv(const iovec *vectors, unsigned int count) {
 	}
 }
 
-ssize_t Descriptor::read(void *buf, size_t count) {
-	auto nRead = ::read(getHandle(), buf, count);
+ssize_t Descriptor::read(void *buffer, size_t count) {
+	auto nRead = ::read(getHandle(), buffer, count);
 	if (nRead > 0) {
 		return nRead;
 	} else if (nRead == 0) {
@@ -125,8 +125,8 @@ ssize_t Descriptor::writev(const iovec *vectors, unsigned int count) {
 	}
 }
 
-ssize_t Descriptor::write(const void *buf, size_t count) {
-	auto nWrite = ::write(getHandle(), buf, count);
+ssize_t Descriptor::write(const void *buffer, size_t count) {
+	auto nWrite = ::write(getHandle(), buffer, count);
 	if (nWrite != -1) {
 		return nWrite;
 	} else if (errno == EAGAIN || errno == EWOULDBLOCK) {
