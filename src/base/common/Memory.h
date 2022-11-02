@@ -59,7 +59,7 @@ public:
 	static char* strdup(const char *s, const char *filename, int linenumber,
 			const char *function) noexcept;
 };
-//=================================================================
+//-----------------------------------------------------------------
 /*
  * Useful macros
  */
@@ -69,7 +69,7 @@ public:
 	Memory::realloc((void**)&ptr, blockSize, length, WH_FILE, WH_LINE, WH_FUNCTION)
 #define WH_resize(ptr, length) WH_realloc(ptr, sizeof(ptr[0]), length)
 #define WH_strdup(s) Memory::strdup((s), WH_FILE, WH_LINE, WH_FUNCTION)
-//=================================================================
+//-----------------------------------------------------------------
 } /* namespace wanhive */
 
 #endif /* WH_BASE_COMMON_MEMORY_H_ */

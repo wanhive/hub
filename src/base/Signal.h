@@ -54,7 +54,7 @@ public:
 	/**
 	 * Installs a callback (handler) for the given signal.
 	 * @param signum the signal number
-	 * @param handler the signal handler, if nullptr then a dummy handler is used
+	 * @param handler the signal handler, if nullptr then uses a dummy handler
 	 * @param restart true to set the SA_RESTART flag, false otherwise
 	 */
 	static void handle(int signum, void (*handler)(int)=nullptr, bool restart =

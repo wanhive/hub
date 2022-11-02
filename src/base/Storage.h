@@ -148,15 +148,15 @@ private:
 	static bool createDirectoryForFile(const char *pathname) noexcept;
 	static bool _createDirectory(char *pathname) noexcept;
 public:
-	/** The directory separator character */
+	/** Directory separator character */
 	static const char DIR_SEPARATOR;
-	/** The directory separator string */
+	/** Directory separator string */
 	static const char *DIR_SEPARATOR_STR;
-	/** The path separator character */
+	/** Path separator character */
 	static const char PATH_SEPARATOR;
-	/** The path separator string */
+	/** Path separator string */
 	static const char *PATH_SEPARATOR_STR;
-	/** The newline string */
+	/** Newline string */
 	static const char *NEWLINE;
 };
 

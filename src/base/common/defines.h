@@ -12,7 +12,7 @@
 
 #ifndef WH_BASE_COMMON_DEFINES_H_
 #define WH_BASE_COMMON_DEFINES_H_
-//=================================================================
+//-----------------------------------------------------------------
 /**
  * Detect Linux
  */
@@ -20,7 +20,7 @@
 #define WH_LINUX
 #endif
 
-//=================================================================
+//-----------------------------------------------------------------
 /**
  * Detect GCC
  */
@@ -29,7 +29,7 @@
 #define WH_GCC_VERSION (__GNUC__ * 10000 + __GNUC_MINOR__ * 100 + __GNUC_PATCHLEVEL__)
 #endif
 
-//=================================================================
+//-----------------------------------------------------------------
 /**
  * Detect CPU (X86, X86-64 and Arm-32/64 are supported)
  */
@@ -52,7 +52,7 @@
 #if defined(__aarch64__)  && !defined(__ILP32__)
 #define WH_ARCH_ARM_64
 #endif
-//=================================================================
+//-----------------------------------------------------------------
 /**
  * Macros for error handling and reporting
  */
@@ -85,30 +85,30 @@
 #else
 #define WH_FUNCTION __func__
 #endif
-//=================================================================
+//-----------------------------------------------------------------
 /**
  * Macro to string
  * REF: https://gcc.gnu.org/onlinedocs/cpp/Stringizing.html
  */
 #define WH_STRINGIFY(x) #x
 #define WH_TOSTRING(x) WH_STRINGIFY(x)
-//=================================================================
+//-----------------------------------------------------------------
 /**
  * Boolean value to string literal
  */
 #define WH_BOOLF(expr) ((expr) ? "YES" : "NO")
-//=================================================================
+//-----------------------------------------------------------------
 /**
- * For probing the fields inside a structure
+ * For probing the fields of a C-style structure
  */
 #define WH_FIELD_SIZEOF(type, field) sizeof(((type *)0)->field)
 #define WH_FIELD_TYPEOF(type, field) decltype(((type *)0)->field)
-//=================================================================
+//-----------------------------------------------------------------
 /**
  * For evaluation of an array's length
  */
 #define WH_ARRAYLEN(x) (sizeof(x) / sizeof(x[0]))
-//=================================================================
+//-----------------------------------------------------------------
 /**
  * For secure logging
  */
@@ -127,6 +127,6 @@
 #define WH_MASK_VAL(p, x) (x)
 #define WH_MASK_STR(p, x) (x)
 #endif
-//=================================================================
+//-----------------------------------------------------------------
 
 #endif /* WH_BASE_COMMON_DEFINES_H_ */

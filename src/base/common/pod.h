@@ -25,4 +25,5 @@
 #define WH_INTEGRAL_ASSERT(X) WH_STATIC_ASSERT(WH_IS_INTEGRAL(X), #X" should be integral type.")
 #define WH_POINTER_ASSERT(X) WH_STATIC_ASSERT(WH_IS_POINTER(X), #X" should be pointer type.")
 #define WH_SCALAR_ASSERT(X) WH_STATIC_ASSERT(WH_IS_SCALAR(X), #X" should be integral scalar or pointer type.")
+
 #endif /* WH_BASE_COMMON_POD_H_ */
