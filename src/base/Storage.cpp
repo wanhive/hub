@@ -32,14 +32,6 @@ int rmHelper(const char *path, const struct stat *s, int flag,
 }  // namespace
 
 namespace wanhive {
-/*
- * Linux-specific settings
- */
-const char Storage::DIR_SEPARATOR = '/';
-const char *Storage::DIR_SEPARATOR_STR = "/";
-const char Storage::PATH_SEPARATOR = ':';
-const char *Storage::PATH_SEPARATOR_STR = ":";
-const char *Storage::NEWLINE = "\n";
 
 FILE* Storage::openStream(const char *path, const char *modes,
 		bool createPath) noexcept {
@@ -52,7 +44,7 @@ FILE* Storage::openStream(const char *path, const char *modes,
 		}
 	}
 
-	createPath &= cf; //Adjust
+	createPath = (createPath && cf); //Adjust
 	FILE *f = nullptr;
 	while ((f = fopen(path, modes)) == nullptr) {
 		if (errno == ENOENT && createPath && createDirectoryForFile(path)) {
@@ -80,7 +72,7 @@ int Storage::getDescriptor(FILE *stream) {
 int Storage::open(const char *path, int flags, mode_t mode, bool createPath) {
 	if (path && path[0]) {
 		int fd = -1;
-		createPath &= (flags & O_CREAT); //Adjust
+		createPath = createPath && (flags & O_CREAT); //Adjust
 		while ((fd = ::open(path, flags, mode)) == -1) {
 			if (errno == ENOENT && createPath && createDirectoryForFile(path)) {
 				continue;
@@ -276,7 +268,8 @@ bool Storage::_createDirectory(char *pathname) noexcept {
 		//-----------------------------------------------------------------
 		if (access(pathname, F_OK) == -1) {
 			//Directory doesn't exist, try to create one
-			mode_t mode = S_IRWXU | S_IRGRP | S_IXGRP | S_IROTH | S_IXOTH; // 755
+			constexpr mode_t mode = S_IRWXU | S_IRGRP | S_IXGRP | S_IROTH
+					| S_IXOTH;
 			if (mkdir(pathname, mode) == -1) {
 				return false;
 			}

@@ -149,15 +149,15 @@ private:
 	static bool _createDirectory(char *pathname) noexcept;
 public:
 	/** Directory separator character */
-	static const char DIR_SEPARATOR;
+	static constexpr char DIR_SEPARATOR = '/';
 	/** Directory separator string */
-	static const char *DIR_SEPARATOR_STR;
+	static inline const char *DIR_SEPARATOR_STR = "/";
 	/** Path separator character */
-	static const char PATH_SEPARATOR;
+	static constexpr char PATH_SEPARATOR = ':';
 	/** Path separator string */
-	static const char *PATH_SEPARATOR_STR;
+	static inline const char *PATH_SEPARATOR_STR = ":";
 	/** Newline string */
-	static const char *NEWLINE;
+	static inline const char *NEWLINE = "\n";
 };
 
 } /* namespace wanhive */
