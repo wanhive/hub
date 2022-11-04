@@ -152,7 +152,7 @@ private:
 	void remove(Watcher *w) noexcept;
 private:
 	//Selector timeout in milliseconds (default value: -1)
-	int timeout;
+	int timeout { -1 };
 	//The selector (event demultiplexer)
 	Selector selector;
 	//The ready list of watchers

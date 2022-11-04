@@ -17,8 +17,6 @@
 
 namespace wanhive {
 
-const char *PSession::TERMINAL = "/dev/tty";
-
 pid_t PSession::create() {
 	auto ret = ::setsid();
 	if (ret == -1) {

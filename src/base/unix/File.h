@@ -60,28 +60,29 @@ public:
 	 */
 	File(int dirfd, const char *path, int flags, mode_t mode);
 	/**
-	 * Destructor: automatically closes the associated file descriptor.
+	 * Destructor: automatically closes the managed file descriptor.
 	 */
 	~File();
 	//-----------------------------------------------------------------
 	/**
-	 * Returns the associated file descriptor.
+	 * Returns the managed file descriptor.
 	 * @return file descriptor's value
 	 */
 	int get() const noexcept;
 	/**
-	 * Sets a file descriptor after closing the existing one.
+	 * Replaces the managed file descriptor (closes the previously managed
+	 * file descriptor).
 	 * @param fd new file descriptor's value
 	 */
 	void set(int fd) noexcept;
 	/**
-	 * Releases and returns the associated file descriptor.
+	 * Returns the managed file descriptor and releases its ownership.
 	 * @return file descriptor's value
 	 */
 	int release() noexcept;
 	//-----------------------------------------------------------------
 	/**
-	 * Wrapper for close(2): closes the file descriptor.
+	 * Wrapper for close(2): closes and invalidates the managed file descriptor.
 	 * @return true on success, false on system error
 	 */
 	bool close() noexcept;
@@ -128,12 +129,12 @@ public:
 	void unlock();
 	//-----------------------------------------------------------------
 	/**
-	 * Wrapper for dup(2): duplicates the associated file descriptor.
+	 * Wrapper for dup(2): duplicates the managed file descriptor.
 	 * @return new file descriptor
 	 */
 	int duplicate();
 	/**
-	 * Wrapper for dup3(2) [fallback: dup2(2)]: duplicates the associated file
+	 * Wrapper for dup3(2) [fallback: dup2(2)]: duplicates the managed file
 	 * descriptor.
 	 * @param newfd suggested value for the new file descriptor
 	 * @param flags operation flags for dup3(2)
@@ -141,7 +142,7 @@ public:
 	 */
 	int duplicate(int newfd, int flags = 0);
 private:
-	int fd;
+	int fd { -1 };
 };
 
 } /* namespace wanhive */

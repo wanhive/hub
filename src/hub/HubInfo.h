@@ -144,13 +144,13 @@ public:
 	/** Serialized data size in bytes */
 	static constexpr unsigned int BYTES = 68;
 private:
-	unsigned long long uid;
-	double uptime;
-	TrafficInfo received;
-	TrafficInfo dropped;
-	ResourceInfo connections;
-	ResourceInfo messages;
-	unsigned int mtu;
+	unsigned long long uid { };
+	double uptime { };
+	TrafficInfo received { };
+	TrafficInfo dropped { };
+	ResourceInfo connections { };
+	ResourceInfo messages { };
+	unsigned int mtu { };
 };
 
 } /* namespace wanhive */

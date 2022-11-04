@@ -121,7 +121,7 @@ private:
 	//Clear the context
 	void clear() noexcept;
 private:
-	SSL_CTX *ctx;
+	SSL_CTX *ctx { nullptr };
 };
 
 } /* namespace wanhive */

@@ -162,8 +162,8 @@ private:
 			bool isPublicKey, char *password = nullptr,
 			const EVP_CIPHER *cipher = nullptr) noexcept;
 private:
-	EVP_PKEY *_public;
-	EVP_PKEY *_private;
+	EVP_PKEY *_public { nullptr };
+	EVP_PKEY *_private { nullptr };
 };
 
 } /* namespace wanhive */

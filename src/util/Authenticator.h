@@ -24,8 +24,7 @@ class Authenticator: public State, private Srp {
 public:
 	/**
 	 * Constructor: creates a new authenticator object
-	 * @param isHost true for use at the host's end, false for use at the
-	 * user's end.
+	 * @param isHost true for host, false for user
 	 */
 	Authenticator(bool isHost = false) noexcept;
 	/**
@@ -211,9 +210,9 @@ public:
 	void generateFakeSalt(unsigned long long identity,
 			const unsigned char *&salt, unsigned int &length) noexcept;
 private:
-	unsigned long long id;
+	unsigned long long id { 0 };
+	bool authenticated { false };
 	bool isHost;
-	bool authenticated;
 };
 
 } /* namespace wanhive */

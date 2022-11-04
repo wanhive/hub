@@ -205,19 +205,18 @@ public:
 	bool isEmpty() const noexcept;
 private:
 	WH_POD_ASSERT(X);
-	const unsigned int _capacity;
-	unsigned int _limit;
-	unsigned int _index;
-	int status;
+	WH_STATIC_ASSERT((SIZE > 0), "Bad buffer size");
+	const unsigned int _capacity { SIZE };
+	unsigned int _limit { _capacity };
+	unsigned int _index { 0 };
+	int status { 0 };
 	X storage[SIZE];
 };
 
 } /* namespace wanhive */
 
-template<typename X, unsigned int SIZE> wanhive::StaticBuffer<X, SIZE>::StaticBuffer() noexcept :
-		_capacity(SIZE) {
-	WH_STATIC_ASSERT((SIZE > 0), "Bad buffer size");
-	clear();
+template<typename X, unsigned int SIZE> wanhive::StaticBuffer<X, SIZE>::StaticBuffer() noexcept {
+
 }
 
 template<typename X, unsigned int SIZE> wanhive::StaticBuffer<X, SIZE>::~StaticBuffer() {

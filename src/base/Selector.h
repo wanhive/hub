@@ -143,11 +143,11 @@ private:
 	int close() noexcept;
 private:
 	sigset_t signals;
-	sigset_t *mask;
-	int epfd;
+	sigset_t *mask { nullptr };
+	int epfd { -1 };
 	Buffer<SelectionEvent> selected;
-	bool _interrupted;
-	bool _timedOut;
+	bool _interrupted { false };
+	bool _timedOut { false };
 };
 
 } /* namespace wanhive */

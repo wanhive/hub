@@ -21,7 +21,7 @@ constexpr unsigned int DEFAULT_ROUNDS = 1;
 namespace wanhive {
 
 Authenticator::Authenticator(bool isHost) noexcept :
-		Srp(SRP_3072, WH_SHA512), id(0), isHost(isHost), authenticated(false) {
+		Srp(SRP_3072, WH_SHA512), isHost(isHost) {
 }
 
 Authenticator::~Authenticator() {

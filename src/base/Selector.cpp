@@ -17,13 +17,11 @@
 
 namespace wanhive {
 
-Selector::Selector() noexcept :
-		mask(nullptr), epfd(-1), _interrupted(false), _timedOut(false) {
+Selector::Selector() noexcept {
 
 }
 
-Selector::Selector(unsigned int maxEvents, bool signal) :
-		mask(nullptr), epfd(-1) {
+Selector::Selector(unsigned int maxEvents, bool signal) {
 	initialize(maxEvents, signal);
 }
 
@@ -131,9 +129,10 @@ int Selector::close() noexcept {
 	if (epfd != -1) {
 		ret = ::close(epfd);
 	}
-	epfd = -1;
 	mask = nullptr;
+	epfd = -1;
 	_interrupted = false;
+	_timedOut = false;
 	return ret;
 }
 

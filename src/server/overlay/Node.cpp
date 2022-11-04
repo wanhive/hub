@@ -11,6 +11,7 @@
  */
 
 #include "Node.h"
+#include "../../base/common/defines.h"
 #include "../../base/common/Exception.h"
 #include "../../base/ds/Twiddler.h"
 #include <cstdio>

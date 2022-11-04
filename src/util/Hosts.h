@@ -122,11 +122,11 @@ public:
 	};
 private:
 	struct {
-		sqlite3 *conn; //The database connection
-		sqlite3_stmt *iStmt; //Insert
-		sqlite3_stmt *qStmt; //Get
-		sqlite3_stmt *dStmt; //Delete
-		sqlite3_stmt *lStmt; //List
+		sqlite3 *conn { nullptr }; //The database connection
+		sqlite3_stmt *iStmt { nullptr }; //Insert
+		sqlite3_stmt *qStmt { nullptr }; //Get
+		sqlite3_stmt *dStmt { nullptr }; //Delete
+		sqlite3_stmt *lStmt { nullptr }; //List
 	} db;
 };
 

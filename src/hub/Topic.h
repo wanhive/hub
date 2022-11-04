@@ -59,8 +59,8 @@ public:
 	/** Maximum topic identifier */
 	static constexpr unsigned int MAX_ID = 255;
 private:
-	unsigned int n;
-	unsigned char map[(COUNT + 7) / 8];
+	unsigned int _count { 0 };
+	unsigned char bits[(COUNT + 7) / 8] { };
 };
 
 } /* namespace wanhive */

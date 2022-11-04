@@ -14,8 +14,8 @@
 
 namespace wanhive {
 
-Frame::Frame(uint64_t origin) noexcept :
-		hopCount { 0 }, referenceCount { 0 }, origin { origin } {
+Frame::Frame(uint64_t origin) noexcept : origin { origin } {
+
 }
 
 Frame::~Frame() {

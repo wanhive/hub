@@ -14,8 +14,12 @@
 
 namespace wanhive {
 
+Counter::Counter() noexcept {
+
+}
+
 Counter::Counter(unsigned long long limit) noexcept :
-		limit(limit), count(0) {
+		limit { limit } {
 
 }
 

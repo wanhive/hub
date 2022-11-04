@@ -152,8 +152,8 @@ public:
 	/** The maximum payload size in bytes */
 	static constexpr unsigned int PAYLOAD_SIZE = (MTU - HEADER_SIZE);
 private:
-	unsigned int hopCount; //Hop count
-	unsigned int referenceCount; //Reference count
+	unsigned int hopCount { 0 }; //Hop count
+	unsigned int referenceCount { 0 }; //Reference count
 	const uint64_t origin; //The local origin identifier
 	MessageHeader _header; //Routing header
 	StaticBuffer<unsigned char, MTU> _frame; //The raw bytes

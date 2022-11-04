@@ -43,11 +43,10 @@ static void writeHeading(FILE *f, int version) noexcept {
 namespace wanhive {
 
 Hosts::Hosts() noexcept {
-	memset(&db, 0, sizeof(db));
+
 }
 
 Hosts::Hosts(const char *path, bool readOnly) {
-	memset(&db, 0, sizeof(db));
 	open(path, readOnly);
 }
 

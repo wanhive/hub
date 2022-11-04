@@ -16,13 +16,11 @@
 
 namespace wanhive {
 
-DNS::DNS() noexcept :
-		result(nullptr), index(nullptr) {
+DNS::DNS() noexcept {
 
 }
 
-DNS::DNS(const char *node, const char *service, const SocketTraits *traits) :
-		result(nullptr), index(nullptr) {
+DNS::DNS(const char *node, const char *service, const SocketTraits *traits) {
 	lookup(node, service, traits);
 }
 

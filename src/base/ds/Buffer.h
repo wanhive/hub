@@ -215,24 +215,20 @@ public:
 	bool isEmpty() const noexcept;
 private:
 	WH_POD_ASSERT(X);
-	X *storage;
-	unsigned int _capacity;
-	unsigned int _limit;
-	unsigned int _index;
-	int status;
+	X *storage { nullptr };
+	unsigned int _capacity { 0 };
+	unsigned int _limit { 0 };
+	unsigned int _index { 0 };
+	int status { 0 };
 };
 
 } /* namespace wanhive */
 
 template<typename X> wanhive::Buffer<X>::Buffer() noexcept {
-	storage = nullptr;
-	_capacity = 0;
-	clear();
+
 }
 
 template<typename X> wanhive::Buffer<X>::Buffer(unsigned int size) {
-	storage = nullptr;
-	_capacity = 0;
 	initialize(size);
 }
 

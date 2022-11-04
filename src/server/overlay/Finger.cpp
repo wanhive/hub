@@ -14,8 +14,7 @@
 
 namespace wanhive {
 
-Finger::Finger() noexcept :
-		start(0), id(0), oldId(0), connected(false) {
+Finger::Finger() noexcept {
 }
 
 Finger::~Finger() {

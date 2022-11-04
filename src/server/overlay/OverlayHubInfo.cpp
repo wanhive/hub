@@ -13,12 +13,11 @@
 #include "OverlayHubInfo.h"
 #include "../../base/ds/Serializer.h"
 #include <cstdio>
-#include <cstring>
 
 namespace wanhive {
 
 OverlayHubInfo::OverlayHubInfo() noexcept {
-	clear();
+
 }
 
 OverlayHubInfo::~OverlayHubInfo() {
@@ -31,7 +30,6 @@ void OverlayHubInfo::clear() noexcept {
 	successor = 0;
 	routes = 0;
 	stable = false;
-	memset(route, 0, sizeof(route));
 }
 
 unsigned long long OverlayHubInfo::getPredecessor() const noexcept {

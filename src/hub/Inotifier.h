@@ -87,18 +87,18 @@ public:
 	 */
 	static uint32_t getCookie(const InotifyEvent *e) noexcept;
 	/**
-	 * Returns file's name which generated the notification.
+	 * Returns notification's source within the watched directory.
 	 * @param e the notification
-	 * @return the filename within the watched directory
+	 * @return file's name which generated the notification
 	 */
 	static const char* getFileName(const InotifyEvent *e) noexcept;
 private:
+	//Offset within the buffer
+	unsigned int offset { 0 };
+	//Notifications count
+	unsigned int limit { 0 };
 	//MIN: sizeof(inotify_event) + NAME_MAX + 1
 	alignas(InotifyEvent) unsigned char buffer[4096];
-	//Offset within the buffer
-	unsigned int offset;
-	//Notifications count
-	unsigned int limit;
 };
 
 } /* namespace wanhive */

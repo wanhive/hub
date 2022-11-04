@@ -20,10 +20,14 @@ namespace wanhive {
 class Counter {
 public:
 	/**
+	 * Default constructor: creates a zero-limit counter.
+	 */
+	Counter() noexcept;
+	/**
 	 * Constructor: creates a new counter with the given limit.
 	 * @param limit counter's upper limit
 	 */
-	Counter(unsigned long long limit = 0) noexcept;
+	Counter(unsigned long long limit) noexcept;
 	/**
 	 * Destructor
 	 */
@@ -72,8 +76,8 @@ public:
 	 */
 	bool down(unsigned int step = 1) noexcept;
 private:
-	unsigned long long limit; //upper limit (inclusive)
-	unsigned long long count; //total count
+	unsigned long long limit { 0 }; //upper limit (inclusive)
+	unsigned long long count { 0 }; //total count
 };
 
 } /* namespace wanhive */

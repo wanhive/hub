@@ -14,16 +14,16 @@
 #include <cctype>
 #include <cstring>
 
-namespace wanhive {
+namespace {
 
-const unsigned char Twiddler::bitCount_[256] = {
+const unsigned char bitCount_[256] = {
 #define B2(n) n, n+1, n+1, n+2
 #define B4(n) B2(n), B2(n+1), B2(n+1), B2(n+2)
 #define B6(n) B4(n), B4(n+1), B4(n+1), B4(n+2)
 		B6(0), B6(1), B6(1), B6(2) };
 
 //Position of the first set bit in Nth byte (first entry is invalid)
-const unsigned char Twiddler::bitOrdinal_[256] = {
+const unsigned char bitOrdinal_[256] = {
 #define P0 8
 #define P(n) (n-1)
 #define P1 P(1)
@@ -35,6 +35,10 @@ const unsigned char Twiddler::bitOrdinal_[256] = {
 #define P7 P(7), P1, P2, P3, P4, P5, P6
 #define P8 P(8), P1, P2, P3, P4, P5, P6, P7
 		P0, P1, P2, P3, P4, P5, P6, P7, P8 };
+
+}  // namespace
+
+namespace wanhive {
 
 unsigned int Twiddler::max(unsigned int x, unsigned int y) noexcept {
 	return x ^ ((x ^ y) & -(x < y));

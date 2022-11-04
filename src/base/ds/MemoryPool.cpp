@@ -13,20 +13,24 @@
 #include "MemoryPool.h"
 #include "Twiddler.h"
 #include "../common/Exception.h"
+#include <cstddef>
 #include <cstdlib>
 #include <cstring>
 
+namespace {
+
+//Desired alignment of each block
+static constexpr unsigned int ALIGNMENT = (alignof(max_align_t));
+
+}  // namespace
+
 namespace wanhive {
 
-MemoryPool::MemoryPool() noexcept :
-		_bucket(nullptr), _head(nullptr), _allocated(0), _capacity(0), _blockSize(
-				0) {
+MemoryPool::MemoryPool() noexcept {
 
 }
 
-MemoryPool::MemoryPool(unsigned int size, unsigned int count) :
-		_bucket(nullptr), _head(nullptr), _allocated(0), _capacity(0), _blockSize(
-				0) {
+MemoryPool::MemoryPool(unsigned int size, unsigned int count) {
 	initialize(size, count);
 }
 

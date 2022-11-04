@@ -15,22 +15,19 @@
 
 namespace wanhive {
 
-FileStream::FileStream() noexcept :
-		fp(nullptr) {
+FileStream::FileStream() noexcept {
 
 }
 
 FileStream::FileStream(FILE *fp) noexcept :
-		fp(fp) {
+		fp { fp } {
 }
 
-FileStream::FileStream(const char *path, const char *mode) :
-		fp(nullptr) {
+FileStream::FileStream(const char *path, const char *mode) {
 	open(path, mode);
 }
 
-FileStream::FileStream(int fd, const char *mode) :
-		fp(nullptr) {
+FileStream::FileStream(int fd, const char *mode) {
 	open(fd, mode);
 }
 

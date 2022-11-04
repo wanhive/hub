@@ -12,7 +12,6 @@
 
 #ifndef WH_BASE_DS_TWIDDLER_H_
 #define WH_BASE_DS_TWIDDLER_H_
-#include "../common/defines.h"
 #include <cstdint>
 
 namespace wanhive {
@@ -326,11 +325,6 @@ public:
 	 * @return pointer to the original string
 	 */
 	static char* trim(char *s, unsigned int &len) noexcept;
-private:
-	//Pre-calculated lookup table of number of bits in a 8-bit byte
-	static const unsigned char bitCount_[256];
-	//Pre-calculated lookup table of index to first set bit (from right) in a 8-bit byte
-	static const unsigned char bitOrdinal_[256];
 };
 
 } /* namespace wanhive */

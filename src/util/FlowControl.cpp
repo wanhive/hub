@@ -14,8 +14,7 @@
 
 namespace wanhive {
 
-FlowControl::FlowControl() noexcept :
-		source(0), sequenceNumber(0), session(0) {
+FlowControl::FlowControl() noexcept {
 
 }
 

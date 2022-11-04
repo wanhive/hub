@@ -157,12 +157,12 @@ public:
 	 */
 	void setMarked() noexcept;
 private:
-	void *reference;
-	int type;
-	uint32_t flags;
-	uint32_t events;
-	unsigned char group;
-	bool marked;
+	void *reference { nullptr };
+	int type { 0 };
+	uint32_t flags { 0 };
+	uint32_t events { 0 };
+	unsigned char group { 0 };
+	bool marked { false };
 };
 
 } /* namespace wanhive */

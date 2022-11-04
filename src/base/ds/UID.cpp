@@ -35,7 +35,6 @@ unsigned long long UID::get() const noexcept {
 }
 
 unsigned long long UID::next() noexcept {
-	//For all the practical purposes this is sufficient
 	return Atomic<unsigned long long>::fetchAndAdd(&_next, 1);
 }
 

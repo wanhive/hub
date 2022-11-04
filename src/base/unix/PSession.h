@@ -57,7 +57,7 @@ public:
 	static pid_t getLeader(int fd);
 public:
 	/** Controlling terminal's pathname */
-	static const char *TERMINAL;
+	static inline const char TERMINAL[] = "/dev/tty";
 };
 
 } /* namespace wanhive */

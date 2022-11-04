@@ -15,8 +15,7 @@
 
 namespace wanhive {
 
-Reactor::Reactor() noexcept :
-		timeout(-1) {
+Reactor::Reactor() noexcept {
 
 }
 

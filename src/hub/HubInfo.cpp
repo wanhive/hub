@@ -16,7 +16,7 @@
 
 namespace {
 
-static constexpr int infoBytes() noexcept {
+static constexpr unsigned int infoBytes() noexcept {
 	return (6 * sizeof(uint64_t)) + (5 * sizeof(uint32_t));
 }
 
@@ -25,7 +25,7 @@ static constexpr int infoBytes() noexcept {
 namespace wanhive {
 
 HubInfo::HubInfo() noexcept {
-	clear();
+
 }
 
 HubInfo::~HubInfo() {

@@ -67,9 +67,9 @@ public:
 	 */
 	void setSource(uint64_t source) noexcept;
 private:
-	uint64_t source;
-	uint16_t sequenceNumber;
-	uint8_t session;
+	uint64_t source { 0 };
+	uint16_t sequenceNumber { 0 };
+	uint8_t session { 0 };
 };
 
 } /* namespace wanhive */

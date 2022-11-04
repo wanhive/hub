@@ -18,8 +18,7 @@
 
 namespace wanhive {
 
-Endpoint::Endpoint() noexcept :
-		sockfd(-1), ssl(nullptr), sslContext(nullptr), pki(nullptr) {
+Endpoint::Endpoint() noexcept {
 
 }
 

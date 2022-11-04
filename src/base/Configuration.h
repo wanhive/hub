@@ -192,8 +192,6 @@ public:
 	/** Maximum value length including the NUL terminator */
 	static constexpr unsigned MAX_VALUE_LEN = 224;
 private:
-	static const char *SECTION_REGEX;
-	static const char *KEY_VALUE_REGEX;
 	// Entries in a section
 	struct Entry {
 		//Key for this entry

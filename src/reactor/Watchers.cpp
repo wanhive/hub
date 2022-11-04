@@ -14,8 +14,7 @@
 
 namespace wanhive {
 
-Watchers::Watchers() noexcept :
-		itfn(nullptr), itfnarg(nullptr) {
+Watchers::Watchers() noexcept {
 
 }
 

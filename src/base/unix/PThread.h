@@ -25,7 +25,7 @@ public:
 	/**
 	 * Constructor: creates a new thread of execution.
 	 * @param task reference to task
-	 * @param arg additional arguments for task
+	 * @param arg arguments for task
 	 * @param detached true for detached thread, false otherwise
 	 */
 	PThread(Task &task, void *arg, bool detached);

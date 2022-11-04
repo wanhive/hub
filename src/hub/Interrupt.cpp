@@ -49,7 +49,6 @@ bool Interrupt::publish(void *arg) noexcept {
 ssize_t Interrupt::read(int &signum) {
 	signum = 0;
 	signalfd_siginfo info;
-	memset(&info, 0, sizeof(info)); //Clear out the data
 	auto nRead = Descriptor::read(&info, sizeof(info));
 	if (nRead == sizeof(info)) {
 		signum = info.ssi_signo;

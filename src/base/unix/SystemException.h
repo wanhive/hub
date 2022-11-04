@@ -36,7 +36,8 @@ public:
 	const char* what() const noexcept override;
 	int errorCode() const noexcept override;
 private:
-	const char* getErrorMessage() noexcept;
+	static const char* getErrorMessage(int error, char *buffer,
+			unsigned int size) noexcept;
 private:
 	int error;
 	const char *errorMessage;

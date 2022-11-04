@@ -51,7 +51,6 @@ public:
 	int errorCode() const noexcept override;
 private:
 	int type;
-	static const char *exceptionMessages[];
 };
 
 } /* namespace wanhive */

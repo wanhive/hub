@@ -270,49 +270,6 @@ public:
 	 * For debugging: self test.
 	 */
 	static void test() noexcept;
-private:
-	static constexpr unsigned int BASE16_MAX_PADDING = 0;
-	static constexpr unsigned int BASE16_MAX_VALUE = 15;
-
-	static constexpr unsigned int BASE32_MAX_PADDING = 6;
-	static constexpr unsigned int BASE32_MAX_VALUE = 31;
-
-	static constexpr unsigned int BASE64_MAX_PADDING = 2;
-	static constexpr unsigned int BASE64_MAX_VALUE = 63;
-
-	static constexpr unsigned int BASE16_GROUP_LENGTH = 4;
-	static constexpr unsigned int BASE32_GROUP_LENGTH = 5;
-	static constexpr unsigned int BASE64_GROUP_LENGTH = 6;
-
-	static constexpr unsigned int BASE16_DECODER_IN = 2;
-	static constexpr unsigned int BASE16_ENCODER_IN = 1;
-	static constexpr unsigned int BASE32_DECODER_IN = 8;
-	static constexpr unsigned int BASE32_ENCODER_IN = 5;
-	static constexpr unsigned int BASE64_DECODER_IN = 4;
-	static constexpr unsigned int BASE64_ENCODER_IN = 3;
-
-	static const char BASE16_ALPHABET[];
-	static const char BASE32_ALPHABET[];
-	static const char BASE64_ALPHABET[];
-
-	static const unsigned char BASE16_INVERSE_LIST[];
-	static const unsigned char BASE32_INVERSE_LIST[];
-	static const unsigned char BASE64_INVERSE_LIST[];
-
-	struct Traits {
-		unsigned int decoder;
-		unsigned int encoder;
-		unsigned int group;
-		unsigned int padding;
-		unsigned int value;
-	};
-
-	static const Traits TRAITS[];
-	static const char *ALPHABETS[];
-	static const unsigned char *INVERSE_LISTS[];
-
-	/* RFC 4648 test vectors */
-	static const char *testVectors[];
 };
 
 } /* namespace wanhive */

@@ -15,8 +15,7 @@
 
 namespace wanhive {
 State::State() noexcept {
-	clear();
-	marked = false;
+
 }
 
 State::~State() {

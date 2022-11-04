@@ -203,15 +203,15 @@ public:
 private:
 	char* locateConfigurationFile() noexcept;
 public:
-	/** The default configuration file name */
+	/** Configuration file's default name */
 	static const char *CONF_FILE;
-	/** The default configuration file pathname (global) */
+	/** Configuration file's default pathname (global) */
 	static const char *CONF_PATH;
-	/** The default configuration file pathname (system) */
+	/** Configuration file's default pathname (system) */
 	static const char *CONF_SYSTEM_PATH;
 private:
 	//Unique ID of the currently running instance
-	InstanceID *instanceId;
+	InstanceID *instanceId { nullptr };
 	//Application's properties
 	Configuration properties;
 	//The hosts database
@@ -231,25 +231,24 @@ private:
 	} ssl;
 
 	struct {
-		//Path to the configuration file supplied from the command line
-		char *config;
-		//Absolute path to the configuration file
-		char *configurationFileName;
-		//Absolute path to the hosts database file
-		char *hostsDatabaseName;
-		//Absolute path to the clear text hosts file
-		char *hostsFileName;
-		//Absolute path to the private key file
-		char *privateKeyFileName;
-		//Absolute path to the public key
-		char *publicKeyFileName;
-
-		//SSL trusted certificate chain
-		char *sslTrustedCertificateFileName;
-		//SSL certificate chain
-		char *sslCertificateFileName;
-		//SSL private key
-		char *sslHostKeyFileName;
+		//Configuration file's pathname from the command line
+		char *config { nullptr };
+		//Configuration file's resolved pathname
+		char *configurationFileName { nullptr };
+		//Hosts database file's pathname
+		char *hostsDatabaseName { nullptr };
+		//Clear text hosts file's pathname
+		char *hostsFileName { nullptr };
+		//Private key file's pathname
+		char *privateKeyFileName { nullptr };
+		//Public key file's pathname
+		char *publicKeyFileName { nullptr };
+		//SSL trusted certificate chain file's pathname
+		char *sslTrustedCertificateFileName { nullptr };
+		//SSL certificate chain file's pathname
+		char *sslCertificateFileName { nullptr };
+		//SSL private key file's pathname
+		char *sslHostKeyFileName { nullptr };
 	} paths;
 };
 

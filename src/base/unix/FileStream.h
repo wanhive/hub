@@ -47,22 +47,22 @@ public:
 	~FileStream();
 	//-----------------------------------------------------------------
 	/**
-	 * Returns the associated stream.
+	 * Returns the managed stream.
 	 * @return stream pointer
 	 */
 	FILE* get() const noexcept;
 	/**
-	 * Sets a stream after closing the existing one.
-	 * @param fp new stream pointer
+	 * Replaces the managed stream (closes the previously managed stream).
+	 * @param fp new stream's pointer
 	 */
 	void set(FILE *fp) noexcept;
 	/**
-	 * Releases and returns the associated stream
+	 * Returns the managed stream and releases its ownership.
 	 * @return stream pointer
 	 */
 	FILE* release() noexcept;
 	/**
-	 * Wrapper for fclose(3): flushes and closes the stream.
+	 * Wrapper for fclose(3): flushes and closes the managed stream.
 	 * @return true on success, false on error
 	 */
 	bool close() noexcept;
@@ -80,13 +80,13 @@ public:
 	 */
 	void open(int fd, const char *mode);
 	/**
-	 * Wrapper for freopen(3): reopens the associated stream.
+	 * Wrapper for freopen(3): reopens the managed stream.
 	 * @param path file's pathname
 	 * @param mode mode string
 	 */
 	void reopen(const char *path, const char *mode);
 private:
-	FILE *fp;
+	FILE *fp { nullptr };
 };
 
 } /* namespace wanhive */

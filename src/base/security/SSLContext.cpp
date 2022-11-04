@@ -16,13 +16,11 @@
 
 namespace wanhive {
 
-SSLContext::SSLContext() noexcept :
-		ctx(nullptr) {
+SSLContext::SSLContext() noexcept {
 
 }
 
-SSLContext::SSLContext(const char *certificate, const char *privateKey) :
-		ctx(nullptr) {
+SSLContext::SSLContext(const char *certificate, const char *privateKey) {
 	try {
 		initialize(certificate, privateKey);
 	} catch (const BaseException &e) {

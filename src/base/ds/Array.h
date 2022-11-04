@@ -27,17 +27,13 @@ public:
 	 * Default constructor: creates an empty container.
 	 */
 	Array() noexcept {
-		storage = nullptr;
-		_capacity = 0;
-		_limit = 0;
-		_index = 0;
+
 	}
 	/**
 	 * Constructor: creates an empty container of the given (initial) size.
 	 * @param size containers size
 	 */
 	Array(unsigned int size) noexcept {
-		storage = nullptr;
 		initialize(size);
 	}
 	/**
@@ -235,10 +231,10 @@ private:
 	}
 private:
 	WH_POD_ASSERT(X);
-	X *storage;
-	unsigned int _capacity;
-	unsigned int _limit;
-	unsigned int _index;
+	X *storage { nullptr };
+	unsigned int _capacity { 0 };
+	unsigned int _limit { 0 };
+	unsigned int _index { 0 };
 };
 
 } /* namespace wanhive */

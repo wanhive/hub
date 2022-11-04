@@ -20,8 +20,7 @@
 
 namespace wanhive {
 
-Rsa::Rsa() noexcept :
-		_public { }, _private { } {
+Rsa::Rsa() noexcept {
 
 }
 

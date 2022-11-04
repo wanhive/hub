@@ -19,8 +19,8 @@ namespace wanhive {
  * Thread-safe unique identifier generator
  * The 64-bit counter used for generating the next identifier will eventually
  * roll over. However, such an event will take from several decades to centuries
- * to occur under normal conditions. For e.g, @10 billion new uid per second, the
- * counter will take more than 200 years to roll over.
+ * to occur under normal circumstances. For e.g, @10 billion new uid per second,
+ * the counter will take more than 200 years to roll over.
  */
 class UID {
 public:

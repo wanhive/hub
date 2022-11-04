@@ -12,13 +12,11 @@
 
 #include "Topic.h"
 #include "../base/ds/Twiddler.h"
-#include <cstring>
 
 namespace wanhive {
 
-Topic::Topic() noexcept :
-		n(0) {
-	memset(&map, 0, sizeof(map));
+Topic::Topic() noexcept {
+
 }
 
 Topic::~Topic() {
@@ -26,9 +24,9 @@ Topic::~Topic() {
 }
 
 bool Topic::set(unsigned int id) noexcept {
-	if (id < COUNT && !Twiddler::test(map, id)) {
-		Twiddler::set(map, id);
-		++n;
+	if (id < COUNT && !Twiddler::test(bits, id)) {
+		Twiddler::set(bits, id);
+		_count += 1;
 		return true;
 	} else {
 		return (id < COUNT);
@@ -36,22 +34,22 @@ bool Topic::set(unsigned int id) noexcept {
 }
 
 void Topic::clear(unsigned int id) noexcept {
-	if (id < COUNT && n && Twiddler::test(map, id)) {
-		Twiddler::clear(map, id);
-		--n;
+	if (id < COUNT && _count && Twiddler::test(bits, id)) {
+		Twiddler::clear(bits, id);
+		_count -= 1;
 	}
 }
 
 bool Topic::test(unsigned int id) const noexcept {
-	if (id < COUNT && n) {
-		return Twiddler::test(map, id);
+	if (id < COUNT && _count) {
+		return Twiddler::test(bits, id);
 	} else {
 		return false;
 	}
 }
 
 unsigned int Topic::count() const noexcept {
-	return n;
+	return _count;
 }
 
 } /* namespace wanhive */

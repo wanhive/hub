@@ -212,28 +212,22 @@ private:
 	}
 private:
 	WH_POD_ASSERT(X);
-	X *storage;
-	unsigned int _size;
-	unsigned int _capacity;
-	unsigned int writeIndex;
-	unsigned int readIndex;
-	int status;
+	X *storage { nullptr };
+	unsigned int _size { 0 };
+	unsigned int _capacity { 0 };
+	unsigned int writeIndex { 0 };
+	unsigned int readIndex { 0 };
+	int status { 0 };
 };
 
 } /* namespace wanhive */
 
 template<typename X, bool ATOMIC> wanhive::CircularBuffer<X, ATOMIC>::CircularBuffer() noexcept {
-	storage = nullptr;
-	_size = 0;
-	_capacity = 0;
 	clear();
 }
 
 template<typename X, bool ATOMIC> wanhive::CircularBuffer<X, ATOMIC>::CircularBuffer(
 		unsigned int size) {
-	storage = nullptr;
-	_size = 0;
-	_capacity = 0;
 	initialize(size);
 }
 

@@ -12,7 +12,6 @@
 
 #ifndef WH_BASE_DS_MEMORYPOOL_H_
 #define WH_BASE_DS_MEMORYPOOL_H_
-#include <cstddef>
 
 namespace wanhive {
 /**
@@ -82,13 +81,11 @@ public:
 	 */
 	bool isInitialized() const noexcept;
 private:
-	void *_bucket;
-	void *_head;				//Pointer to the first available block
-	unsigned int _allocated;
-	unsigned int _capacity;
-	unsigned int _blockSize;
-	//Desired alignment of each block
-	static constexpr unsigned int ALIGNMENT = (alignof(max_align_t));
+	void *_bucket { nullptr };
+	void *_head { nullptr };
+	unsigned int _allocated { 0 };
+	unsigned int _capacity { 0 };
+	unsigned int _blockSize { 0 };
 };
 
 } /* namespace wanhive */

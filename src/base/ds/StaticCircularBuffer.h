@@ -202,20 +202,19 @@ private:
 	}
 private:
 	WH_POD_ASSERT(X);
-	const unsigned int _size;
-	const unsigned int _capacity;
-	int status;
-	unsigned int writeIndex;
-	unsigned int readIndex;
+	WH_STATIC_ASSERT((SIZE && !(SIZE & (SIZE - 1))), "Invalid buffer size");
+	const unsigned int _size { SIZE };
+	const unsigned int _capacity { (SIZE ? (SIZE - 1) : SIZE) };
+	int status { 0 };
+	unsigned int writeIndex { 0 };
+	unsigned int readIndex { 0 };
 	X storage[SIZE];
 };
 
 } /* namespace wanhive */
 
 template<typename X, unsigned int SIZE, bool ATOMIC> wanhive::StaticCircularBuffer<
-		X, SIZE, ATOMIC>::StaticCircularBuffer() noexcept :
-		_size(SIZE), _capacity(SIZE ? (SIZE - 1) : SIZE) {
-	WH_STATIC_ASSERT((SIZE && !(SIZE & (SIZE - 1))), "Bad buffer size");
+		X, SIZE, ATOMIC>::StaticCircularBuffer() noexcept {
 	clear();
 }
 

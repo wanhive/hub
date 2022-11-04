@@ -126,10 +126,10 @@ public:
 	static constexpr unsigned int MAX_BYTES = MIN_BYTES
 			+ (25 * DHT::KEY_LENGTH);
 private:
-	unsigned long long predecessor;
-	unsigned long long successor;
-	unsigned int routes;
-	bool stable;
+	unsigned long long predecessor { 0 };
+	unsigned long long successor { 0 };
+	unsigned int routes { 0 };
+	bool stable { false };
 	RouteInfo route[DHT::KEY_LENGTH];
 };
 

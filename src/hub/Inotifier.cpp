@@ -17,12 +17,10 @@
 
 namespace wanhive {
 
-Inotifier::Inotifier(bool blocking) :
-		offset(0), limit(0) {
+Inotifier::Inotifier(bool blocking) {
 	auto fd = inotify_init1(!blocking ? IN_NONBLOCK : 0);
 	if (fd != -1) {
 		Descriptor::setHandle(fd);
-		memset(buffer, 0, sizeof(buffer));
 	} else {
 		throw SystemException();
 	}

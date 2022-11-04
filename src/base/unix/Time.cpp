@@ -12,16 +12,17 @@
 
 #include "Time.h"
 #include "SystemException.h"
-#include <cstring>
 
 namespace wanhive {
 
-Time::Time() noexcept {
-	::memset(&ts, 0, sizeof(ts));
+Time::Time() noexcept :
+		ts { } {
+
 }
 
-Time::Time(const timespec &ts) noexcept {
-	set(ts);
+Time::Time(const timespec &ts) noexcept :
+		ts(ts) {
+
 }
 
 Time::Time(clockid_t id) {

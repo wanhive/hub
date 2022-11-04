@@ -17,7 +17,7 @@ namespace wanhive {
 /**
  * MT19937 (32-bit generator)
  * Not suitable for cryptographic application
- * REF: http://www.math.sci.hiroshima-u.ac.jp/~m-mat/MT/MT2002/CODES/mt19937ar.c
+ * @ref http://www.math.sci.hiroshima-u.ac.jp/~m-mat/MT/MT2002/CODES/mt19937ar.c
  */
 class MersenneTwister {
 public:

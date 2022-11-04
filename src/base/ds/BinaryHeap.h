@@ -149,9 +149,9 @@ private:
 
 private:
 	WH_POD_ASSERT(X);
-	X *storage;
-	unsigned int _capacity;
-	unsigned int _size;
+	X *storage { nullptr };
+	unsigned int _capacity { 0 };
+	unsigned int _size { 0 };
 	BHFN indexer;
 	CMPFN cmp;
 };
@@ -160,14 +160,11 @@ private:
 
 template<typename X, typename CMPFN, typename BHFN>
 wanhive::BinaryHeap<X, CMPFN, BHFN>::BinaryHeap() noexcept {
-	storage = nullptr;
-	_capacity = 0;
-	_size = 0;
+
 }
 
 template<typename X, typename CMPFN, typename BHFN>
 wanhive::BinaryHeap<X, CMPFN, BHFN>::BinaryHeap(unsigned int size) {
-	storage = nullptr;
 	initialize(size);
 }
 

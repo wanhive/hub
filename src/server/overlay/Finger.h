@@ -82,10 +82,10 @@ public:
 	 */
 	unsigned int commit() noexcept;
 private:
-	unsigned int start;
-	unsigned int id;
-	unsigned int oldId;
-	bool connected;
+	unsigned int start { 0 };
+	unsigned int id { 0 };
+	unsigned int oldId { 0 };
+	bool connected { false };
 };
 
 } /* namespace wanhive */

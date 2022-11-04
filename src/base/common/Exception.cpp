@@ -12,13 +12,17 @@
 
 #include "Exception.h"
 
-namespace wanhive {
+namespace {
 
-const char *Exception::exceptionMessages[] = { "Null reference",
-		"Index out of bounds", "Invalid parameter(s)",
-		"Memory allocation failed", "Container underflow", "Container overflow",
-		"Invalid range", "Invalid operation", "Invalid state",
-		"Resource unavailable", "Security violation" };
+const char *exceptionMessages[] = { "Null reference", "Index out of bounds",
+		"Invalid parameter(s)", "Memory allocation failed",
+		"Container underflow", "Container overflow", "Invalid range",
+		"Invalid operation", "Invalid state", "Resource unavailable",
+		"Security violation" };
+
+}  // namespace
+
+namespace wanhive {
 
 Exception::Exception(ExceptionType type) noexcept {
 	this->type = type;

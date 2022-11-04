@@ -27,33 +27,28 @@
 
 namespace wanhive {
 
-File::File() noexcept :
-		fd(-1) {
+File::File() noexcept {
 
 }
 
 File::File(int fd) noexcept :
-		fd(fd) {
+		fd { fd } {
 
 }
 
-File::File(const char *path, int flags) :
-		fd(-1) {
+File::File(const char *path, int flags) {
 	open(path, flags);
 }
 
-File::File(const char *path, int flags, mode_t mode) :
-		fd(-1) {
+File::File(const char *path, int flags, mode_t mode) {
 	open(path, flags, mode);
 }
 
-File::File(int dirfd, const char *path, int flags) :
-		fd(-1) {
+File::File(int dirfd, const char *path, int flags) {
 	open(dirfd, path, flags);
 }
 
-File::File(int dirfd, const char *path, int flags, mode_t mode) :
-		fd(-1) {
+File::File(int dirfd, const char *path, int flags, mode_t mode) {
 	open(dirfd, path, flags, mode);
 }
 

@@ -41,9 +41,7 @@ const char *Identity::CONF_FILE = (const char*) WH_CONF_FILE;
 const char *Identity::CONF_PATH = (const char*) WH_CONF_PATH;
 const char *Identity::CONF_SYSTEM_PATH = (const char*) WH_CONF_SYSTEM_PATH;
 //=================================================================
-Identity::Identity(const char *path) noexcept :
-		instanceId { nullptr } {
-	memset(&paths, 0, sizeof(paths));
+Identity::Identity(const char *path) noexcept {
 	paths.config = path ? WH_strdup(path) : nullptr;
 }
 
@@ -461,8 +459,7 @@ char* Identity::locateConfigurationFile() noexcept {
 		}
 
 		//For resolution of default configuration file paths
-		char buffer[PATH_MAX];
-		memset(buffer, 0, sizeof(buffer));
+		char buffer[PATH_MAX] = { };
 
 		//STEP 1: Search in the current working directory
 		System::currentWorkingDirectory(buffer, sizeof(buffer));

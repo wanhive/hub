@@ -18,18 +18,15 @@
 
 namespace wanhive {
 
-Directory::Directory() noexcept :
-		dir(nullptr) {
+Directory::Directory() noexcept {
 
 }
 
-Directory::Directory(const char *name) :
-		dir(nullptr) {
+Directory::Directory(const char *name) {
 	open(name);
 }
 
-Directory::Directory(int fd) :
-		dir(nullptr) {
+Directory::Directory(int fd) {
 	open(fd);
 }
 

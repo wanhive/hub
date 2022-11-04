@@ -19,10 +19,14 @@
 #include <cctype>
 #include <cstring>
 
-namespace wanhive {
+namespace {
 
-const char *Configuration::SECTION_REGEX = "[ %63[A-Za-z0-9] ]";
-const char *Configuration::KEY_VALUE_REGEX = "%31[^= ] = %223[^\n]";
+const char SECTION_REGEX[] = "[ %63[A-Za-z0-9] ]";
+const char KEY_VALUE_REGEX[] = "%31[^= ] = %223[^\n]";
+
+}  // namespace
+
+namespace wanhive {
 
 Configuration::Configuration() noexcept {
 	memset(&data, 0, sizeof(data));
