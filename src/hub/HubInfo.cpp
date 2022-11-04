@@ -16,7 +16,7 @@
 
 namespace {
 
-static constexpr unsigned int infoBytes() noexcept {
+constexpr unsigned int infoBytes() noexcept {
 	return (6 * sizeof(uint64_t)) + (5 * sizeof(uint32_t));
 }
 
