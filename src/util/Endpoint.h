@@ -104,7 +104,7 @@ public:
 	/**
 	 * Swaps the managed secure connection object.
 	 * @param ssl new SSL object
-	 * @return pointer previous SSL object
+	 * @return previous SSL object
 	 */
 	SSL* swapSecureSocket(SSL *ssl);
 	/**
