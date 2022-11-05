@@ -213,13 +213,6 @@ public:
 	/** Serialized header data size in bytes */
 	static constexpr unsigned int SIZE = MessageAddress::SIZE
 			+ MessageControl::SIZE + MessageContext::SIZE;
-private:
-	//Offset to serialized address data
-	static constexpr unsigned int OFF_ADDR = 0;
-	//Offset to serialized flow control data
-	static constexpr unsigned int OFF_CTRL = MessageAddress::SIZE;
-	//Offset to serialized context data
-	static constexpr unsigned int OFF_CTX = OFF_CTRL + MessageControl::SIZE;
 };
 
 } /* namespace wanhive */

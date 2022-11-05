@@ -14,6 +14,17 @@
 #include <cinttypes>
 #include <cstdio>
 
+namespace {
+
+//Offset to serialized address data
+constexpr unsigned int OFF_ADDR = 0;
+//Offset to serialized flow control data
+constexpr unsigned int OFF_CTRL = wanhive::MessageAddress::SIZE;
+//Offset to serialized context data
+constexpr unsigned int OFF_CTX = OFF_CTRL + wanhive::MessageControl::SIZE;
+
+}  // namespace
+
 namespace wanhive {
 
 MessageHeader::MessageHeader() noexcept {
