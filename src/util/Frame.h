@@ -74,7 +74,7 @@ public:
 	unsigned char* buffer(unsigned int offset = 0) noexcept;
 	/**
 	 * Returns a constant pointer to the given offset within the frame buffer's
-	 * backing array which stores the serialized data as a sequence of bytes.
+	 * backing array (serialized data).
 	 * @param offset desired offset in bytes, this value should be less than
 	 * Frame::MTU.
 	 * @return a constant pointer to the given offset inside the backing array
@@ -84,7 +84,7 @@ public:
 
 	/**
 	 * Returns a pointer to the given offset within the frame buffer's payload
-	 * area. This call is equivalent to buffer(offset + Frame::HEADER_SIZE).
+	 * data (equivalent to Frame::buffer(offset + Frame::HEADER_SIZE)).
 	 * @param offset desired offset within the payload section, this value
 	 * should be less than Frame::PAYLOAD_SIZE.
 	 * @return a pointer to the given offset inside the payload section if the
@@ -93,7 +93,7 @@ public:
 	unsigned char* payload(unsigned int offset = 0) noexcept;
 	/**
 	 * Returns a constant pointer to the given offset within the frame buffer's
-	 * payload area. This call is the same as buffer(offset + Frame::HEADER_SIZE).
+	 * payload data (equivalent to Frame::buffer(offset + Frame::HEADER_SIZE)).
 	 * @param offset desired offset within the payload section, this value
 	 * should be less than Frame::PAYLOAD_SIZE.
 	 * @return a constant pointer to the given offset inside the payload section

@@ -19,8 +19,8 @@
 namespace wanhive {
 /**
  * Request-response pattern implementation.
- * @note Supports blocking IO only, the underlying socket file descriptor must
- * be in blocking mode.
+ * @note Supports blocking I/O operations only, hence the socket must be opened
+ * in blocking mode.
  */
 class Endpoint: protected Packet {
 public:
@@ -34,12 +34,12 @@ public:
 	~Endpoint();
 	//-----------------------------------------------------------------
 	/**
-	 * Sets SSL/TLS context for secure connections.
+	 * Sets secure connection's context.
 	 * @param ctx new SSL/TLS context
 	 */
 	void setSSLContext(SSLContext *ctx) noexcept;
 	/**
-	 * Returns the SSL/TLS context.
+	 * Returns secure connection's context.
 	 * @return current SSL/TLS context
 	 */
 	SSLContext* getSSLContext() const noexcept;
@@ -49,7 +49,7 @@ public:
 	 */
 	void useKeyPair(const PKI *pki = nullptr) noexcept;
 	/**
-	 * Returns the signing and verification keys.
+	 * Returns message signing and verification keys.
 	 * @return current asymmetric keys
 	 */
 	const PKI* getKeyPair() const noexcept;
@@ -66,13 +66,13 @@ public:
 	 */
 	void disconnect();
 	/**
-	 * Returns existing connection's socket file descriptor.
+	 * Returns the managed socket file descriptor.
 	 * @return socket file descriptor
 	 */
 	int getSocket() const noexcept;
 	/**
-	 * Returns secure connection object.
-	 * @return pointer to the SSL object (can be nullptr)
+	 * Returns the managed secure connection object.
+	 * @return SSL object (can be nullptr)
 	 */
 	SSL* getSecureSocket() const noexcept;
 	/**
@@ -92,7 +92,7 @@ public:
 	int releaseSocket() noexcept;
 	/**
 	 * Releases the managed secure connection object and releases its ownership.
-	 * @return pointer to SSL object (can be nullptr)
+	 * @return SSL object (can be nullptr)
 	 */
 	SSL* releaseSecureSocket() noexcept;
 	/**
