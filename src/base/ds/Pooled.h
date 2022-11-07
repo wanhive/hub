@@ -77,44 +77,44 @@ template<typename X>
 wanhive::MemoryPool wanhive::Pooled<X>::pool;
 
 template<typename X>
-inline wanhive::Pooled<X>::Pooled(char c) noexcept {
+wanhive::Pooled<X>::Pooled(char c) noexcept {
 
 }
 
 template<typename X>
-inline void wanhive::Pooled<X>::initPool(unsigned int count) {
+void wanhive::Pooled<X>::initPool(unsigned int count) {
 	pool.initialize(sizeof(X), count);
 }
 
 template<typename X>
-inline void wanhive::Pooled<X>::destroyPool() {
+void wanhive::Pooled<X>::destroyPool() {
 	if (pool.destroy() != 0) {
 		throw Exception(EX_INVALIDSTATE);
 	}
 }
 
 template<typename X>
-inline unsigned int wanhive::Pooled<X>::poolSize() noexcept {
+unsigned int wanhive::Pooled<X>::poolSize() noexcept {
 	return pool.capacity();
 }
 
 template<typename X>
-inline unsigned int wanhive::Pooled<X>::allocated() noexcept {
+unsigned int wanhive::Pooled<X>::allocated() noexcept {
 	return pool.allocated();
 }
 
 template<typename X>
-inline unsigned int wanhive::Pooled<X>::unallocated() noexcept {
+unsigned int wanhive::Pooled<X>::unallocated() noexcept {
 	return poolSize() - allocated();
 }
 
 template<typename X>
-inline void* wanhive::Pooled<X>::operator new(size_t size) noexcept {
+void* wanhive::Pooled<X>::operator new(size_t size) noexcept {
 	return pool.allocate();
 }
 
 template<typename X>
-inline void wanhive::Pooled<X>::operator delete(void *p) noexcept {
+void wanhive::Pooled<X>::operator delete(void *p) noexcept {
 	pool.deallocate(p);
 }
 
