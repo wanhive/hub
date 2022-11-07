@@ -13,7 +13,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
-- Improve type and pointer safety in data structures.
+- Improve type and pointer safety.
+- Add and update API documentation (work in progress).
+
+### Fixed
+
+- Use logical operator instead of bitwise operator for boolean values in **Storage::open()** and **Storage::openStream()** methods.
 
 ## [9.1.1] - 2022-10-17
 
