@@ -12,7 +12,7 @@
 
 #include "InstanceID.h"
 #include "Random.h"
-#include "../base/common/defines.h"
+#include "../base/common/reflect.h"
 #include <cstring>
 
 namespace wanhive {
@@ -29,7 +29,7 @@ InstanceID::~InstanceID() {
 void InstanceID::generateNonce(Hash &hash, uint64_t salt, uint64_t id,
 		Digest *nonce) const noexcept {
 	if (nonce) {
-		uint64_t block[WH_ARRAYLEN(buffer) + 2];
+		uint64_t block[ArraySize(buffer) + 2];
 		block[0] = salt;
 		block[1] = id;
 		memcpy(&block[2], buffer, sizeof(buffer));
@@ -41,7 +41,7 @@ void InstanceID::generateNonce(Hash &hash, uint64_t salt, uint64_t id,
 bool InstanceID::verifyNonce(Hash &hash, uint64_t salt, uint64_t id,
 		const Digest *nonce) const noexcept {
 	if (nonce) {
-		uint64_t block[WH_ARRAYLEN(buffer) + 2];
+		uint64_t block[ArraySize(buffer) + 2];
 		block[0] = salt;
 		block[1] = id;
 		memcpy(&block[2], buffer, sizeof(buffer));

@@ -380,7 +380,7 @@ void OverlayService::setConnection(int connection) noexcept {
 
 void OverlayService::setBootstrapNodes(const unsigned long long *nodes) noexcept {
 	unsigned int i = 0;
-	for (; nodes && nodes[i] && (i < (WH_ARRAYLEN(ctx.nodes) - 1)); ++i) {
+	for (; nodes && nodes[i] && (i < (ArraySize(ctx.nodes) - 1)); ++i) {
 		ctx.nodes[i] = nodes[i];
 	}
 

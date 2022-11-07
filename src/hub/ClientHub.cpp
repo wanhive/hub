@@ -576,9 +576,9 @@ void ClientHub::loadIdentifiers(bool auth) {
 		unsigned long long buffer[128];
 		//-----------------------------------------------------------------
 		auto n = Identity::getIdentifiers("BOOTSTRAP",
-				(auth ? "auths" : "nodes"), buffer, WH_ARRAYLEN(buffer));
+				(auth ? "auths" : "nodes"), buffer, ArraySize(buffer));
 		if (!n) {
-			n = Identity::getIdentifiers(buffer, WH_ARRAYLEN(buffer),
+			n = Identity::getIdentifiers(buffer, ArraySize(buffer),
 					(auth ? Hosts::AUTHENTICATOR : Hosts::BOOTSTRAP));
 		}
 		//-----------------------------------------------------------------

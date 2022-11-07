@@ -68,11 +68,10 @@ void OverlayHub::configure(void *arg) {
 		ctx.groupId = conf.getNumber("OVERLAY", "groupId");
 
 		auto n = Identity::getIdentifiers("BOOTSTRAP", "nodes",
-				ctx.bootstrapNodes,
-				WH_ARRAYLEN(ctx.bootstrapNodes) - 1);
+				ctx.bootstrapNodes, ArraySize(ctx.bootstrapNodes) - 1);
 		if (!n) {
 			n = Identity::getIdentifiers(ctx.bootstrapNodes,
-			WH_ARRAYLEN(ctx.bootstrapNodes) - 1, Hosts::BOOTSTRAP);
+					ArraySize(ctx.bootstrapNodes) - 1, Hosts::BOOTSTRAP);
 		}
 		ctx.bootstrapNodes[n] = 0;
 
