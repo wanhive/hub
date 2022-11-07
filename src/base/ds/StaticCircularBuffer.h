@@ -213,48 +213,48 @@ private:
 
 } /* namespace wanhive */
 
-template<typename X, unsigned int SIZE, bool ATOMIC> wanhive::StaticCircularBuffer<
-		X, SIZE, ATOMIC>::StaticCircularBuffer() noexcept {
+template<typename X, unsigned int SIZE, bool ATOMIC>
+wanhive::StaticCircularBuffer<X, SIZE, ATOMIC>::StaticCircularBuffer() noexcept {
 	clear();
 }
 
-template<typename X, unsigned int SIZE, bool ATOMIC> wanhive::StaticCircularBuffer<
-		X, SIZE, ATOMIC>::~StaticCircularBuffer() {
+template<typename X, unsigned int SIZE, bool ATOMIC>
+wanhive::StaticCircularBuffer<X, SIZE, ATOMIC>::~StaticCircularBuffer() {
 }
 
-template<typename X, unsigned int SIZE, bool ATOMIC> void wanhive::StaticCircularBuffer<
-		X, SIZE, ATOMIC>::clear() noexcept {
+template<typename X, unsigned int SIZE, bool ATOMIC>
+void wanhive::StaticCircularBuffer<X, SIZE, ATOMIC>::clear() noexcept {
 	storeReadIndex(0);
 	storeWriteIndex(0);
 }
 
-template<typename X, unsigned int SIZE, bool ATOMIC> unsigned int wanhive::StaticCircularBuffer<
-		X, SIZE, ATOMIC>::capacity() const noexcept {
+template<typename X, unsigned int SIZE, bool ATOMIC>
+unsigned int wanhive::StaticCircularBuffer<X, SIZE, ATOMIC>::capacity() const noexcept {
 	return _capacity;
 }
 
-template<typename X, unsigned int SIZE, bool ATOMIC> unsigned int wanhive::StaticCircularBuffer<
-		X, SIZE, ATOMIC>::readSpace() const noexcept {
+template<typename X, unsigned int SIZE, bool ATOMIC>
+unsigned int wanhive::StaticCircularBuffer<X, SIZE, ATOMIC>::readSpace() const noexcept {
 	return readSpaceInternal(loadReadIndex(), loadWriteIndex());
 }
 
-template<typename X, unsigned int SIZE, bool ATOMIC> unsigned int wanhive::StaticCircularBuffer<
-		X, SIZE, ATOMIC>::writeSpace() const noexcept {
+template<typename X, unsigned int SIZE, bool ATOMIC>
+unsigned int wanhive::StaticCircularBuffer<X, SIZE, ATOMIC>::writeSpace() const noexcept {
 	return writeSpaceInternal(loadReadIndex(), loadWriteIndex());
 }
 
-template<typename X, unsigned int SIZE, bool ATOMIC> bool wanhive::StaticCircularBuffer<
-		X, SIZE, ATOMIC>::isFull() const noexcept {
+template<typename X, unsigned int SIZE, bool ATOMIC>
+bool wanhive::StaticCircularBuffer<X, SIZE, ATOMIC>::isFull() const noexcept {
 	return isFullInternal(loadReadIndex(), loadWriteIndex());
 }
 
-template<typename X, unsigned int SIZE, bool ATOMIC> bool wanhive::StaticCircularBuffer<
-		X, SIZE, ATOMIC>::isEmpty() const noexcept {
+template<typename X, unsigned int SIZE, bool ATOMIC>
+bool wanhive::StaticCircularBuffer<X, SIZE, ATOMIC>::isEmpty() const noexcept {
 	return isEmptyInternal(loadReadIndex(), loadWriteIndex());
 }
 
-template<typename X, unsigned int SIZE, bool ATOMIC> int wanhive::StaticCircularBuffer<
-		X, SIZE, ATOMIC>::getStatus() const noexcept {
+template<typename X, unsigned int SIZE, bool ATOMIC>
+int wanhive::StaticCircularBuffer<X, SIZE, ATOMIC>::getStatus() const noexcept {
 	if (ATOMIC) {
 		return Atomic<int>::load(&status);
 	} else {
@@ -262,8 +262,9 @@ template<typename X, unsigned int SIZE, bool ATOMIC> int wanhive::StaticCircular
 	}
 }
 
-template<typename X, unsigned int SIZE, bool ATOMIC> void wanhive::StaticCircularBuffer<
-		X, SIZE, ATOMIC>::setStatus(int status) noexcept {
+template<typename X, unsigned int SIZE, bool ATOMIC>
+void wanhive::StaticCircularBuffer<X, SIZE, ATOMIC>::setStatus(
+		int status) noexcept {
 	if (ATOMIC) {
 		Atomic<int>::store(&this->status, status);
 	} else {
@@ -271,8 +272,9 @@ template<typename X, unsigned int SIZE, bool ATOMIC> void wanhive::StaticCircula
 	}
 }
 
-template<typename X, unsigned int SIZE, bool ATOMIC> unsigned int wanhive::StaticCircularBuffer<
-		X, SIZE, ATOMIC>::getReadable(CircularBufferVector<X> &vector) noexcept {
+template<typename X, unsigned int SIZE, bool ATOMIC>
+unsigned int wanhive::StaticCircularBuffer<X, SIZE, ATOMIC>::getReadable(
+		CircularBufferVector<X> &vector) noexcept {
 	auto w = loadWriteIndex();
 	auto r = loadReadIndex();
 	acquireBarrier();
@@ -282,8 +284,9 @@ template<typename X, unsigned int SIZE, bool ATOMIC> unsigned int wanhive::Stati
 	return space;
 }
 
-template<typename X, unsigned int SIZE, bool ATOMIC> unsigned int wanhive::StaticCircularBuffer<
-		X, SIZE, ATOMIC>::getWritable(CircularBufferVector<X> &vector) noexcept {
+template<typename X, unsigned int SIZE, bool ATOMIC>
+unsigned int wanhive::StaticCircularBuffer<X, SIZE, ATOMIC>::getWritable(
+		CircularBufferVector<X> &vector) noexcept {
 	auto w = loadWriteIndex();
 	auto r = loadReadIndex();
 	acquireBarrier();
@@ -293,20 +296,22 @@ template<typename X, unsigned int SIZE, bool ATOMIC> unsigned int wanhive::Stati
 	return space;
 }
 
-template<typename X, unsigned int SIZE, bool ATOMIC> void wanhive::StaticCircularBuffer<
-		X, SIZE, ATOMIC>::skipRead(unsigned int count) noexcept {
+template<typename X, unsigned int SIZE, bool ATOMIC>
+void wanhive::StaticCircularBuffer<X, SIZE, ATOMIC>::skipRead(
+		unsigned int count) noexcept {
 	releaseBarrier();
 	storeReadIndex(skip(loadReadIndex(), count));
 }
 
-template<typename X, unsigned int SIZE, bool ATOMIC> void wanhive::StaticCircularBuffer<
-		X, SIZE, ATOMIC>::skipWrite(unsigned int count) noexcept {
+template<typename X, unsigned int SIZE, bool ATOMIC>
+void wanhive::StaticCircularBuffer<X, SIZE, ATOMIC>::skipWrite(
+		unsigned int count) noexcept {
 	releaseBarrier();
 	storeWriteIndex(skip(loadWriteIndex(), count));
 }
 
-template<typename X, unsigned int SIZE, bool ATOMIC> bool wanhive::StaticCircularBuffer<
-		X, SIZE, ATOMIC>::get(X &value) noexcept {
+template<typename X, unsigned int SIZE, bool ATOMIC>
+bool wanhive::StaticCircularBuffer<X, SIZE, ATOMIC>::get(X &value) noexcept {
 	auto w = loadWriteIndex();
 	auto r = loadReadIndex();
 	acquireBarrier();
@@ -319,8 +324,8 @@ template<typename X, unsigned int SIZE, bool ATOMIC> bool wanhive::StaticCircula
 	return true;
 }
 
-template<typename X, unsigned int SIZE, bool ATOMIC> X* wanhive::StaticCircularBuffer<
-		X, SIZE, ATOMIC>::get() noexcept {
+template<typename X, unsigned int SIZE, bool ATOMIC>
+X* wanhive::StaticCircularBuffer<X, SIZE, ATOMIC>::get() noexcept {
 	auto w = writeIndex;
 	auto r = readIndex;
 	if (isEmptyInternal(r, w)) {
@@ -332,8 +337,9 @@ template<typename X, unsigned int SIZE, bool ATOMIC> X* wanhive::StaticCircularB
 	return handle;
 }
 
-template<typename X, unsigned int SIZE, bool ATOMIC> bool wanhive::StaticCircularBuffer<
-		X, SIZE, ATOMIC>::put(const X &value) noexcept {
+template<typename X, unsigned int SIZE, bool ATOMIC>
+bool wanhive::StaticCircularBuffer<X, SIZE, ATOMIC>::put(
+		const X &value) noexcept {
 	auto w = loadWriteIndex();
 	auto r = loadReadIndex();
 	acquireBarrier();
@@ -346,8 +352,9 @@ template<typename X, unsigned int SIZE, bool ATOMIC> bool wanhive::StaticCircula
 	return true;
 }
 
-template<typename X, unsigned int SIZE, bool ATOMIC> unsigned int wanhive::StaticCircularBuffer<
-		X, SIZE, ATOMIC>::read(X *dest, unsigned int length) noexcept {
+template<typename X, unsigned int SIZE, bool ATOMIC>
+unsigned int wanhive::StaticCircularBuffer<X, SIZE, ATOMIC>::read(X *dest,
+		unsigned int length) noexcept {
 	auto w = loadWriteIndex();
 	auto r = loadReadIndex();
 	acquireBarrier();
@@ -374,8 +381,9 @@ template<typename X, unsigned int SIZE, bool ATOMIC> unsigned int wanhive::Stati
 	return space;
 }
 
-template<typename X, unsigned int SIZE, bool ATOMIC> unsigned int wanhive::StaticCircularBuffer<
-		X, SIZE, ATOMIC>::write(const X *src, unsigned int length) noexcept {
+template<typename X, unsigned int SIZE, bool ATOMIC>
+unsigned int wanhive::StaticCircularBuffer<X, SIZE, ATOMIC>::write(const X *src,
+		unsigned int length) noexcept {
 	auto w = loadWriteIndex();
 	auto r = loadReadIndex();
 	acquireBarrier();
@@ -402,51 +410,52 @@ template<typename X, unsigned int SIZE, bool ATOMIC> unsigned int wanhive::Stati
 	return space;
 }
 
-template<typename X, unsigned int SIZE, bool ATOMIC> X* wanhive::StaticCircularBuffer<
-		X, SIZE, ATOMIC>::array() noexcept {
+template<typename X, unsigned int SIZE, bool ATOMIC>
+X* wanhive::StaticCircularBuffer<X, SIZE, ATOMIC>::array() noexcept {
 	return this->storage;
 }
 
-template<typename X, unsigned int SIZE, bool ATOMIC> const X* wanhive::StaticCircularBuffer<
-		X, SIZE, ATOMIC>::array() const noexcept {
+template<typename X, unsigned int SIZE, bool ATOMIC>
+const X* wanhive::StaticCircularBuffer<X, SIZE, ATOMIC>::array() const noexcept {
 	return this->storage;
 }
 
-template<typename X, unsigned int SIZE, bool ATOMIC> unsigned int wanhive::StaticCircularBuffer<
-		X, SIZE, ATOMIC>::skip(unsigned int index,
-		unsigned int count) const noexcept {
+template<typename X, unsigned int SIZE, bool ATOMIC>
+unsigned int wanhive::StaticCircularBuffer<X, SIZE, ATOMIC>::skip(
+		unsigned int index, unsigned int count) const noexcept {
 	return (index + count) & _capacity;
 }
 
-template<typename X, unsigned int SIZE, bool ATOMIC> unsigned int wanhive::StaticCircularBuffer<
-		X, SIZE, ATOMIC>::readSpaceInternal(unsigned int r,
-		unsigned int w) const noexcept {
+template<typename X, unsigned int SIZE, bool ATOMIC>
+unsigned int wanhive::StaticCircularBuffer<X, SIZE, ATOMIC>::readSpaceInternal(
+		unsigned int r, unsigned int w) const noexcept {
 	//<write-index>-<read-index>
 	return ((w - r) & _capacity);
 }
 
-template<typename X, unsigned int SIZE, bool ATOMIC> unsigned int wanhive::StaticCircularBuffer<
-		X, SIZE, ATOMIC>::writeSpaceInternal(unsigned int r,
-		unsigned int w) const noexcept {
+template<typename X, unsigned int SIZE, bool ATOMIC>
+unsigned int wanhive::StaticCircularBuffer<X, SIZE, ATOMIC>::writeSpaceInternal(
+		unsigned int r, unsigned int w) const noexcept {
 	//<capacity>-<readSpace>
 	return (_capacity - ((w - r) & _capacity));
 }
 
-template<typename X, unsigned int SIZE, bool ATOMIC> unsigned int wanhive::StaticCircularBuffer<
-		X, SIZE, ATOMIC>::isFullInternal(unsigned int r,
-		unsigned int w) const noexcept {
+template<typename X, unsigned int SIZE, bool ATOMIC>
+unsigned int wanhive::StaticCircularBuffer<X, SIZE, ATOMIC>::isFullInternal(
+		unsigned int r, unsigned int w) const noexcept {
 	return (((w + 1) & _capacity) == r);
 }
 
-template<typename X, unsigned int SIZE, bool ATOMIC> unsigned int wanhive::StaticCircularBuffer<
-		X, SIZE, ATOMIC>::isEmptyInternal(unsigned int r,
-		unsigned int w) const noexcept {
+template<typename X, unsigned int SIZE, bool ATOMIC>
+unsigned int wanhive::StaticCircularBuffer<X, SIZE, ATOMIC>::isEmptyInternal(
+		unsigned int r, unsigned int w) const noexcept {
 	return (r == w);
 }
 
-template<typename X, unsigned int SIZE, bool ATOMIC> void wanhive::StaticCircularBuffer<
-		X, SIZE, ATOMIC>::getSegmentsInternal(unsigned int index,
-		unsigned int length, CircularBufferVector<X> &vector) noexcept {
+template<typename X, unsigned int SIZE, bool ATOMIC>
+void wanhive::StaticCircularBuffer<X, SIZE, ATOMIC>::getSegmentsInternal(
+		unsigned int index, unsigned int length,
+		CircularBufferVector<X> &vector) noexcept {
 	auto total = index + length;
 	if (total > _size) {
 		//Two segments (other index wrapped around)

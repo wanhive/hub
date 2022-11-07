@@ -224,19 +224,23 @@ private:
 
 } /* namespace wanhive */
 
-template<typename X> wanhive::Buffer<X>::Buffer() noexcept {
+template<typename X>
+wanhive::Buffer<X>::Buffer() noexcept {
 
 }
 
-template<typename X> wanhive::Buffer<X>::Buffer(unsigned int size) {
+template<typename X>
+wanhive::Buffer<X>::Buffer(unsigned int size) {
 	initialize(size);
 }
 
-template<typename X> wanhive::Buffer<X>::~Buffer() {
+template<typename X>
+wanhive::Buffer<X>::~Buffer() {
 	delete[] storage;
 }
 
-template<typename X> void wanhive::Buffer<X>::initialize(unsigned int size) {
+template<typename X>
+void wanhive::Buffer<X>::initialize(unsigned int size) {
 	try {
 		delete[] storage;
 		storage = new X[size];
@@ -250,17 +254,20 @@ template<typename X> void wanhive::Buffer<X>::initialize(unsigned int size) {
 	}
 }
 
-template<typename X> void wanhive::Buffer<X>::clear() noexcept {
+template<typename X>
+void wanhive::Buffer<X>::clear() noexcept {
 	_limit = _capacity;
 	_index = 0;
 }
 
-template<typename X> void wanhive::Buffer<X>::rewind() noexcept {
+template<typename X>
+void wanhive::Buffer<X>::rewind() noexcept {
 	_limit = _index;
 	_index = 0;
 }
 
-template<typename X> void wanhive::Buffer<X>::pack() noexcept {
+template<typename X>
+void wanhive::Buffer<X>::pack() noexcept {
 	auto n = space();
 	if (_index && n) {
 		memmove(storage, storage + _index, n * sizeof(X));
@@ -270,16 +277,18 @@ template<typename X> void wanhive::Buffer<X>::pack() noexcept {
 	_index = n;
 }
 
-template<typename X> unsigned int wanhive::Buffer<X>::capacity() const noexcept {
+template<typename X>
+unsigned int wanhive::Buffer<X>::capacity() const noexcept {
 	return _capacity;
 }
 
-template<typename X> unsigned int wanhive::Buffer<X>::getIndex() const noexcept {
+template<typename X>
+unsigned int wanhive::Buffer<X>::getIndex() const noexcept {
 	return _index;
 }
 
-template<typename X> bool wanhive::Buffer<X>::setIndex(
-		unsigned int index) noexcept {
+template<typename X>
+bool wanhive::Buffer<X>::setIndex(unsigned int index) noexcept {
 	if (index <= _limit) {
 		_index = index;
 		return true;
@@ -288,12 +297,13 @@ template<typename X> bool wanhive::Buffer<X>::setIndex(
 	}
 }
 
-template<typename X> unsigned int wanhive::Buffer<X>::getLimit() const noexcept {
+template<typename X>
+unsigned int wanhive::Buffer<X>::getLimit() const noexcept {
 	return _limit;
 }
 
-template<typename X> bool wanhive::Buffer<X>::setLimit(
-		unsigned int limit) noexcept {
+template<typename X>
+bool wanhive::Buffer<X>::setLimit(unsigned int limit) noexcept {
 	if (limit <= _capacity && limit >= _index) {
 		_limit = limit;
 		return true;
@@ -302,23 +312,28 @@ template<typename X> bool wanhive::Buffer<X>::setLimit(
 	}
 }
 
-template<typename X> unsigned int wanhive::Buffer<X>::space() const noexcept {
+template<typename X>
+unsigned int wanhive::Buffer<X>::space() const noexcept {
 	return _limit - _index;
 }
 
-template<typename X> bool wanhive::Buffer<X>::hasSpace() const noexcept {
+template<typename X>
+bool wanhive::Buffer<X>::hasSpace() const noexcept {
 	return _limit != _index;
 }
 
-template<typename X> int wanhive::Buffer<X>::getStatus() const noexcept {
+template<typename X>
+int wanhive::Buffer<X>::getStatus() const noexcept {
 	return status;
 }
 
-template<typename X> void wanhive::Buffer<X>::setStatus(int status) noexcept {
+template<typename X>
+void wanhive::Buffer<X>::setStatus(int status) noexcept {
 	this->status = status;
 }
 
-template<typename X> bool wanhive::Buffer<X>::get(X &value) noexcept {
+template<typename X>
+bool wanhive::Buffer<X>::get(X &value) noexcept {
 	if (_index != _limit) {
 		value = storage[_index++];
 		return true;
@@ -327,8 +342,8 @@ template<typename X> bool wanhive::Buffer<X>::get(X &value) noexcept {
 	}
 }
 
-template<typename X> bool wanhive::Buffer<X>::get(X &value,
-		unsigned int index) const noexcept {
+template<typename X>
+bool wanhive::Buffer<X>::get(X &value, unsigned int index) const noexcept {
 	if (index < _limit) {
 		value = storage[index];
 		return true;
@@ -337,8 +352,8 @@ template<typename X> bool wanhive::Buffer<X>::get(X &value,
 	}
 }
 
-template<typename X> unsigned int wanhive::Buffer<X>::get(X *dest,
-		unsigned int length) noexcept {
+template<typename X>
+unsigned int wanhive::Buffer<X>::get(X *dest, unsigned int length) noexcept {
 	length = Twiddler::min(space(), length);
 	if (dest && length) {
 		memcpy(dest, storage + _index, length * sizeof(X));
@@ -349,7 +364,8 @@ template<typename X> unsigned int wanhive::Buffer<X>::get(X *dest,
 	}
 }
 
-template<typename X> X* wanhive::Buffer<X>::get() noexcept {
+template<typename X>
+X* wanhive::Buffer<X>::get() noexcept {
 	if (_index != _limit) {
 		return &storage[_index++];
 	} else {
@@ -357,7 +373,8 @@ template<typename X> X* wanhive::Buffer<X>::get() noexcept {
 	}
 }
 
-template<typename X> bool wanhive::Buffer<X>::put(const X &value) noexcept {
+template<typename X>
+bool wanhive::Buffer<X>::put(const X &value) noexcept {
 	if (_index != _limit) {
 		storage[_index++] = value;
 		return true;
@@ -366,8 +383,8 @@ template<typename X> bool wanhive::Buffer<X>::put(const X &value) noexcept {
 	}
 }
 
-template<typename X> bool wanhive::Buffer<X>::put(const X &value,
-		unsigned int index) noexcept {
+template<typename X>
+bool wanhive::Buffer<X>::put(const X &value, unsigned int index) noexcept {
 	if (index < _limit) {
 		storage[index] = value;
 		return true;
@@ -376,8 +393,8 @@ template<typename X> bool wanhive::Buffer<X>::put(const X &value,
 	}
 }
 
-template<typename X> unsigned int wanhive::Buffer<X>::put(const X *src,
-		unsigned int length) noexcept {
+template<typename X>
+unsigned int wanhive::Buffer<X>::put(const X *src, unsigned int length) noexcept {
 	length = Twiddler::min(space(), length);
 	if (src && length) {
 		memcpy(storage + _index, src, length * sizeof(X));
@@ -388,23 +405,28 @@ template<typename X> unsigned int wanhive::Buffer<X>::put(const X *src,
 	}
 }
 
-template<typename X> X* wanhive::Buffer<X>::array() noexcept {
+template<typename X>
+X* wanhive::Buffer<X>::array() noexcept {
 	return storage;
 }
 
-template<typename X> const X* wanhive::Buffer<X>::array() const noexcept {
+template<typename X>
+const X* wanhive::Buffer<X>::array() const noexcept {
 	return storage;
 }
 
-template<typename X> X* wanhive::Buffer<X>::offset() noexcept {
+template<typename X>
+X* wanhive::Buffer<X>::offset() noexcept {
 	return storage + _index;
 }
 
-template<typename X> const X* wanhive::Buffer<X>::offset() const noexcept {
+template<typename X>
+const X* wanhive::Buffer<X>::offset() const noexcept {
 	return storage + _index;
 }
 
-template<typename X> bool wanhive::Buffer<X>::push(const X &e) noexcept {
+template<typename X>
+bool wanhive::Buffer<X>::push(const X &e) noexcept {
 	if (_index != _limit) {
 		storage[_index++] = e;
 		return true;
@@ -413,7 +435,8 @@ template<typename X> bool wanhive::Buffer<X>::push(const X &e) noexcept {
 	}
 }
 
-template<typename X> bool wanhive::Buffer<X>::pop(X &e) noexcept {
+template<typename X>
+bool wanhive::Buffer<X>::pop(X &e) noexcept {
 	if (_index) {
 		e = storage[--_index];
 		return true;
@@ -422,7 +445,8 @@ template<typename X> bool wanhive::Buffer<X>::pop(X &e) noexcept {
 	}
 }
 
-template<typename X> bool wanhive::Buffer<X>::peek(X &e) noexcept {
+template<typename X>
+bool wanhive::Buffer<X>::peek(X &e) noexcept {
 	if (_index) {
 		e = storage[_index - 1];
 		return true;
@@ -431,11 +455,13 @@ template<typename X> bool wanhive::Buffer<X>::peek(X &e) noexcept {
 	}
 }
 
-template<typename X> bool wanhive::Buffer<X>::isFull() const noexcept {
+template<typename X>
+bool wanhive::Buffer<X>::isFull() const noexcept {
 	return _index == _limit;
 }
 
-template<typename X> bool wanhive::Buffer<X>::isEmpty() const noexcept {
+template<typename X>
+bool wanhive::Buffer<X>::isEmpty() const noexcept {
 	return _index == 0;
 }
 

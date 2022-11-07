@@ -405,25 +405,27 @@ private:
 
 } /* namespace wanhive */
 
-template<typename KEY, typename VALUE, bool ISMAP, typename HFN, typename EQFN> wanhive::Khash<
-		KEY, VALUE, ISMAP, HFN, EQFN>::Khash() noexcept {
+template<typename KEY, typename VALUE, bool ISMAP, typename HFN, typename EQFN>
+wanhive::Khash<KEY, VALUE, ISMAP, HFN, EQFN>::Khash() noexcept {
 	memset(&bucket, 0, sizeof(bucket));
 }
 
-template<typename KEY, typename VALUE, bool ISMAP, typename HFN, typename EQFN> wanhive::Khash<
-		KEY, VALUE, ISMAP, HFN, EQFN>::~Khash() {
+template<typename KEY, typename VALUE, bool ISMAP, typename HFN, typename EQFN>
+wanhive::Khash<KEY, VALUE, ISMAP, HFN, EQFN>::~Khash() {
 	deleteContainer();
 	deleteFlags();
 }
 
-template<typename KEY, typename VALUE, bool ISMAP, typename HFN, typename EQFN> bool wanhive::Khash<
-		KEY, VALUE, ISMAP, HFN, EQFN>::contains(const KEY &key) const noexcept {
+template<typename KEY, typename VALUE, bool ISMAP, typename HFN, typename EQFN>
+bool wanhive::Khash<KEY, VALUE, ISMAP, HFN, EQFN>::contains(
+		const KEY &key) const noexcept {
 	auto i = get(key);
 	return (i != end());
 }
 
-template<typename KEY, typename VALUE, bool ISMAP, typename HFN, typename EQFN> bool wanhive::Khash<
-		KEY, VALUE, ISMAP, HFN, EQFN>::removeKey(const KEY &key) noexcept {
+template<typename KEY, typename VALUE, bool ISMAP, typename HFN, typename EQFN>
+bool wanhive::Khash<KEY, VALUE, ISMAP, HFN, EQFN>::removeKey(
+		const KEY &key) noexcept {
 	auto i = get(key);
 	if (i != end()) {
 		remove(i);
@@ -433,8 +435,8 @@ template<typename KEY, typename VALUE, bool ISMAP, typename HFN, typename EQFN> 
 	}
 }
 
-template<typename KEY, typename VALUE, bool ISMAP, typename HFN, typename EQFN> bool wanhive::Khash<
-		KEY, VALUE, ISMAP, HFN, EQFN>::hmGet(const KEY &key,
+template<typename KEY, typename VALUE, bool ISMAP, typename HFN, typename EQFN>
+bool wanhive::Khash<KEY, VALUE, ISMAP, HFN, EQFN>::hmGet(const KEY &key,
 		VALUE &val) const noexcept {
 	auto i = get(key);
 	if (i != end()) {
@@ -444,8 +446,8 @@ template<typename KEY, typename VALUE, bool ISMAP, typename HFN, typename EQFN> 
 	return false;
 }
 
-template<typename KEY, typename VALUE, bool ISMAP, typename HFN, typename EQFN> bool wanhive::Khash<
-		KEY, VALUE, ISMAP, HFN, EQFN>::hmPut(const KEY &key,
+template<typename KEY, typename VALUE, bool ISMAP, typename HFN, typename EQFN>
+bool wanhive::Khash<KEY, VALUE, ISMAP, HFN, EQFN>::hmPut(const KEY &key,
 		const VALUE &val) noexcept {
 	if (ISMAP) {
 		int ret;
@@ -477,8 +479,8 @@ bool wanhive::Khash<KEY, VALUE, ISMAP, HFN, EQFN>::hmReplace(const KEY &key,
 	return false;
 }
 
-template<typename KEY, typename VALUE, bool ISMAP, typename HFN, typename EQFN> bool wanhive::Khash<
-		KEY, VALUE, ISMAP, HFN, EQFN>::hmSwap(KEY const &first,
+template<typename KEY, typename VALUE, bool ISMAP, typename HFN, typename EQFN>
+bool wanhive::Khash<KEY, VALUE, ISMAP, HFN, EQFN>::hmSwap(KEY const &first,
 		KEY const &second, unsigned int (&iterators)[2], bool swap) noexcept {
 
 	if (!ISMAP) {
@@ -524,8 +526,9 @@ template<typename KEY, typename VALUE, bool ISMAP, typename HFN, typename EQFN> 
 	}
 }
 
-template<typename KEY, typename VALUE, bool ISMAP, typename HFN, typename EQFN> bool wanhive::Khash<
-		KEY, VALUE, ISMAP, HFN, EQFN>::hsPut(const KEY &key) noexcept {
+template<typename KEY, typename VALUE, bool ISMAP, typename HFN, typename EQFN>
+bool wanhive::Khash<KEY, VALUE, ISMAP, HFN, EQFN>::hsPut(
+		const KEY &key) noexcept {
 	if (!ISMAP) {
 		int ret;
 		put(key, ret);
@@ -536,9 +539,9 @@ template<typename KEY, typename VALUE, bool ISMAP, typename HFN, typename EQFN> 
 	return false;
 }
 
-template<typename KEY, typename VALUE, bool ISMAP, typename HFN, typename EQFN> int wanhive::Khash<
-		KEY, VALUE, ISMAP, HFN, EQFN>::resize(unsigned int newCapacity) noexcept {
-	/* This function uses 0.25*nBuckets bytes of working space instead of [sizeof(key_t+val_t)+.25]*nBuckets. */
+template<typename KEY, typename VALUE, bool ISMAP, typename HFN, typename EQFN>
+int wanhive::Khash<KEY, VALUE, ISMAP, HFN, EQFN>::resize(
+		unsigned int newCapacity) noexcept {
 	uint32_t *newFlags = nullptr;
 	auto rehash = true;
 	{
@@ -628,8 +631,9 @@ template<typename KEY, typename VALUE, bool ISMAP, typename HFN, typename EQFN> 
 	return 0;
 }
 
-template<typename KEY, typename VALUE, bool ISMAP, typename HFN, typename EQFN> unsigned int wanhive::Khash<
-		KEY, VALUE, ISMAP, HFN, EQFN>::get(const KEY &key) const noexcept {
+template<typename KEY, typename VALUE, bool ISMAP, typename HFN, typename EQFN>
+unsigned int wanhive::Khash<KEY, VALUE, ISMAP, HFN, EQFN>::get(
+		const KEY &key) const noexcept {
 	if (capacity()) {
 		auto mask = capacity() - 1;
 		auto index = mask & (unsigned int) hash(key);
@@ -649,8 +653,9 @@ template<typename KEY, typename VALUE, bool ISMAP, typename HFN, typename EQFN> 
 	}
 }
 
-template<typename KEY, typename VALUE, bool ISMAP, typename HFN, typename EQFN> unsigned int wanhive::Khash<
-		KEY, VALUE, ISMAP, HFN, EQFN>::put(const KEY &key, int &ret) noexcept {
+template<typename KEY, typename VALUE, bool ISMAP, typename HFN, typename EQFN>
+unsigned int wanhive::Khash<KEY, VALUE, ISMAP, HFN, EQFN>::put(const KEY &key,
+		int &ret) noexcept {
 	if (occupied() >= upperBound()) { /* update the hash table */
 		if (capacity() > (size() << 1)) {
 			resize(capacity() - 1); /* clear "deleted" elements */
@@ -679,7 +684,7 @@ template<typename KEY, typename VALUE, bool ISMAP, typename HFN, typename EQFN> 
 				//Quadratic Probe
 				i = linearProbe(i, (++step), mask);
 				if (i == start) {
-					//We went full circle, record the last deleted slot and break
+					//We went full circle, save the last deleted slot and break
 					index = site;
 					break;
 				}
@@ -696,26 +701,25 @@ template<typename KEY, typename VALUE, bool ISMAP, typename HFN, typename EQFN> 
 		}
 	}
 
-	if (isEmpty(getFlags(), index)) { /* not present at all */
+	if (isEmpty(getFlags(), index)) { //Not present
 		setKey(index, key);
 		setIsbothFalse(getFlags(), index);
 		size(size() + 1);
 		occupied(occupied() + 1);
 		ret = 1;
-	} else if (isDeleted(getFlags(), index)) { /* deleted */
+	} else if (isDeleted(getFlags(), index)) { //Deleted
 		setKey(index, key);
 		setIsbothFalse(getFlags(), index);
 		size(size() + 1);
 		ret = 2;
-	} else {
-		/* Don't touch bucket.keys[x] if present and not deleted */
+	} else { //Present and not deleted
 		ret = 0;
 	}
 	return index;
 }
 
-template<typename KEY, typename VALUE, bool ISMAP, typename HFN, typename EQFN> void wanhive::Khash<
-		KEY, VALUE, ISMAP, HFN, EQFN>::remove(unsigned int x,
+template<typename KEY, typename VALUE, bool ISMAP, typename HFN, typename EQFN>
+void wanhive::Khash<KEY, VALUE, ISMAP, HFN, EQFN>::remove(unsigned int x,
 		bool shrink) noexcept {
 	if (exists(x)) {
 		setIsdeletedTrue(getFlags(), x);
@@ -728,8 +732,8 @@ template<typename KEY, typename VALUE, bool ISMAP, typename HFN, typename EQFN> 
 	}
 }
 
-template<typename KEY, typename VALUE, bool ISMAP, typename HFN, typename EQFN> void wanhive::Khash<
-		KEY, VALUE, ISMAP, HFN, EQFN>::iterate(
+template<typename KEY, typename VALUE, bool ISMAP, typename HFN, typename EQFN>
+void wanhive::Khash<KEY, VALUE, ISMAP, HFN, EQFN>::iterate(
 		int (&fn)(unsigned int index, void *arg), void *arg) {
 	for (auto k = begin(); k < end(); ++k) {
 		if (!exists(k)) {
@@ -739,41 +743,42 @@ template<typename KEY, typename VALUE, bool ISMAP, typename HFN, typename EQFN> 
 		int ret = fn(k, arg);
 		if (ret == 0) {
 			continue;
-		} else if (ret == 1) { //Remove the key, useful for cleanup
-			remove(k, false); //Shrinking here will invalidate the indexes
+		} else if (ret == 1) { //Remove the key
+			remove(k, false); //Shrinking will invalidate the iterators
 		} else { //Stop iterating
 			break;
 		}
 	}
 }
 
-template<typename KEY, typename VALUE, bool ISMAP, typename HFN, typename EQFN> unsigned int wanhive::Khash<
-		KEY, VALUE, ISMAP, HFN, EQFN>::capacity() const noexcept {
+template<typename KEY, typename VALUE, bool ISMAP, typename HFN, typename EQFN>
+unsigned int wanhive::Khash<KEY, VALUE, ISMAP, HFN, EQFN>::capacity() const noexcept {
 	return (bucket.capacity);
 }
 
-template<typename KEY, typename VALUE, bool ISMAP, typename HFN, typename EQFN> unsigned int wanhive::Khash<
-		KEY, VALUE, ISMAP, HFN, EQFN>::size() const noexcept {
+template<typename KEY, typename VALUE, bool ISMAP, typename HFN, typename EQFN>
+unsigned int wanhive::Khash<KEY, VALUE, ISMAP, HFN, EQFN>::size() const noexcept {
 	return (bucket.size);
 }
 
-template<typename KEY, typename VALUE, bool ISMAP, typename HFN, typename EQFN> unsigned int wanhive::Khash<
-		KEY, VALUE, ISMAP, HFN, EQFN>::occupied() const noexcept {
+template<typename KEY, typename VALUE, bool ISMAP, typename HFN, typename EQFN>
+unsigned int wanhive::Khash<KEY, VALUE, ISMAP, HFN, EQFN>::occupied() const noexcept {
 	return (bucket.occupied);
 }
 
-template<typename KEY, typename VALUE, bool ISMAP, typename HFN, typename EQFN> unsigned int wanhive::Khash<
-		KEY, VALUE, ISMAP, HFN, EQFN>::upperBound() const noexcept {
+template<typename KEY, typename VALUE, bool ISMAP, typename HFN, typename EQFN>
+unsigned int wanhive::Khash<KEY, VALUE, ISMAP, HFN, EQFN>::upperBound() const noexcept {
 	return (bucket.upperBound);
 }
 
-template<typename KEY, typename VALUE, bool ISMAP, typename HFN, typename EQFN> bool wanhive::Khash<
-		KEY, VALUE, ISMAP, HFN, EQFN>::exists(unsigned int x) const noexcept {
+template<typename KEY, typename VALUE, bool ISMAP, typename HFN, typename EQFN>
+bool wanhive::Khash<KEY, VALUE, ISMAP, HFN, EQFN>::exists(
+		unsigned int x) const noexcept {
 	return (x < end() && !isEither(bucket.flags, (x)));
 }
 
-template<typename KEY, typename VALUE, bool ISMAP, typename HFN, typename EQFN> bool wanhive::Khash<
-		KEY, VALUE, ISMAP, HFN, EQFN>::getKey(unsigned int x,
+template<typename KEY, typename VALUE, bool ISMAP, typename HFN, typename EQFN>
+bool wanhive::Khash<KEY, VALUE, ISMAP, HFN, EQFN>::getKey(unsigned int x,
 		KEY &key) const noexcept {
 	if (exists(x)) {
 		key = ISMAP ? bucket.entry[x].key : bucket.keys[x];
@@ -783,8 +788,8 @@ template<typename KEY, typename VALUE, bool ISMAP, typename HFN, typename EQFN> 
 	}
 }
 
-template<typename KEY, typename VALUE, bool ISMAP, typename HFN, typename EQFN> bool wanhive::Khash<
-		KEY, VALUE, ISMAP, HFN, EQFN>::getValue(unsigned int x,
+template<typename KEY, typename VALUE, bool ISMAP, typename HFN, typename EQFN>
+bool wanhive::Khash<KEY, VALUE, ISMAP, HFN, EQFN>::getValue(unsigned int x,
 		VALUE &value) const noexcept {
 	if (ISMAP && exists(x)) {
 		value = bucket.entry[x].value;
@@ -794,8 +799,8 @@ template<typename KEY, typename VALUE, bool ISMAP, typename HFN, typename EQFN> 
 	}
 }
 
-template<typename KEY, typename VALUE, bool ISMAP, typename HFN, typename EQFN> bool wanhive::Khash<
-		KEY, VALUE, ISMAP, HFN, EQFN>::setValue(unsigned int x,
+template<typename KEY, typename VALUE, bool ISMAP, typename HFN, typename EQFN>
+bool wanhive::Khash<KEY, VALUE, ISMAP, HFN, EQFN>::setValue(unsigned int x,
 		VALUE const &value) noexcept {
 	if (ISMAP && exists(x)) {
 		bucket.entry[x].value = value;
@@ -805,8 +810,8 @@ template<typename KEY, typename VALUE, bool ISMAP, typename HFN, typename EQFN> 
 	}
 }
 
-template<typename KEY, typename VALUE, bool ISMAP, typename HFN, typename EQFN> VALUE* wanhive::Khash<
-		KEY, VALUE, ISMAP, HFN, EQFN>::getValueReference(
+template<typename KEY, typename VALUE, bool ISMAP, typename HFN, typename EQFN>
+VALUE* wanhive::Khash<KEY, VALUE, ISMAP, HFN, EQFN>::getValueReference(
 		unsigned int x) const noexcept {
 	if (ISMAP && exists(x)) {
 		return &(bucket.entry[x].value);
@@ -815,18 +820,18 @@ template<typename KEY, typename VALUE, bool ISMAP, typename HFN, typename EQFN> 
 	}
 }
 
-template<typename KEY, typename VALUE, bool ISMAP, typename HFN, typename EQFN> unsigned int wanhive::Khash<
-		KEY, VALUE, ISMAP, HFN, EQFN>::begin() const noexcept {
+template<typename KEY, typename VALUE, bool ISMAP, typename HFN, typename EQFN>
+unsigned int wanhive::Khash<KEY, VALUE, ISMAP, HFN, EQFN>::begin() const noexcept {
 	return 0;
 }
 
-template<typename KEY, typename VALUE, bool ISMAP, typename HFN, typename EQFN> unsigned int wanhive::Khash<
-		KEY, VALUE, ISMAP, HFN, EQFN>::end() const noexcept {
+template<typename KEY, typename VALUE, bool ISMAP, typename HFN, typename EQFN>
+unsigned int wanhive::Khash<KEY, VALUE, ISMAP, HFN, EQFN>::end() const noexcept {
 	return capacity();
 }
 
-template<typename KEY, typename VALUE, bool ISMAP, typename HFN, typename EQFN> void wanhive::Khash<
-		KEY, VALUE, ISMAP, HFN, EQFN>::clear() noexcept {
+template<typename KEY, typename VALUE, bool ISMAP, typename HFN, typename EQFN>
+void wanhive::Khash<KEY, VALUE, ISMAP, HFN, EQFN>::clear() noexcept {
 	resetFlags();
 	size(0);		//No elements in the hash table
 	occupied(0);	//No deleted slots in the hash table

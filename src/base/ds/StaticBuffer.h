@@ -215,25 +215,30 @@ private:
 
 } /* namespace wanhive */
 
-template<typename X, unsigned int SIZE> wanhive::StaticBuffer<X, SIZE>::StaticBuffer() noexcept {
+template<typename X, unsigned int SIZE>
+wanhive::StaticBuffer<X, SIZE>::StaticBuffer() noexcept {
 
 }
 
-template<typename X, unsigned int SIZE> wanhive::StaticBuffer<X, SIZE>::~StaticBuffer() {
+template<typename X, unsigned int SIZE>
+wanhive::StaticBuffer<X, SIZE>::~StaticBuffer() {
 
 }
 
-template<typename X, unsigned int SIZE> void wanhive::StaticBuffer<X, SIZE>::clear() noexcept {
+template<typename X, unsigned int SIZE>
+void wanhive::StaticBuffer<X, SIZE>::clear() noexcept {
 	_limit = _capacity;
 	_index = 0;
 }
 
-template<typename X, unsigned int SIZE> void wanhive::StaticBuffer<X, SIZE>::rewind() noexcept {
+template<typename X, unsigned int SIZE>
+void wanhive::StaticBuffer<X, SIZE>::rewind() noexcept {
 	_limit = _index;
 	_index = 0;
 }
 
-template<typename X, unsigned int SIZE> void wanhive::StaticBuffer<X, SIZE>::pack() noexcept {
+template<typename X, unsigned int SIZE>
+void wanhive::StaticBuffer<X, SIZE>::pack() noexcept {
 	auto n = space();
 	if (_index && n) {
 		memmove(storage, storage + _index, n * sizeof(X));
@@ -243,18 +248,18 @@ template<typename X, unsigned int SIZE> void wanhive::StaticBuffer<X, SIZE>::pac
 	_index = n;
 }
 
-template<typename X, unsigned int SIZE> unsigned int wanhive::StaticBuffer<X,
-		SIZE>::capacity() const noexcept {
+template<typename X, unsigned int SIZE>
+unsigned int wanhive::StaticBuffer<X, SIZE>::capacity() const noexcept {
 	return _capacity;
 }
 
-template<typename X, unsigned int SIZE> unsigned int wanhive::StaticBuffer<X,
-		SIZE>::getIndex() const noexcept {
+template<typename X, unsigned int SIZE>
+unsigned int wanhive::StaticBuffer<X, SIZE>::getIndex() const noexcept {
 	return _index;
 }
 
-template<typename X, unsigned int SIZE> bool wanhive::StaticBuffer<X, SIZE>::setIndex(
-		unsigned int index) noexcept {
+template<typename X, unsigned int SIZE>
+bool wanhive::StaticBuffer<X, SIZE>::setIndex(unsigned int index) noexcept {
 	if (index <= _limit) {
 		_index = index;
 		return true;
@@ -263,13 +268,13 @@ template<typename X, unsigned int SIZE> bool wanhive::StaticBuffer<X, SIZE>::set
 	}
 }
 
-template<typename X, unsigned int SIZE> unsigned int wanhive::StaticBuffer<X,
-		SIZE>::getLimit() const noexcept {
+template<typename X, unsigned int SIZE>
+unsigned int wanhive::StaticBuffer<X, SIZE>::getLimit() const noexcept {
 	return _limit;
 }
 
-template<typename X, unsigned int SIZE> bool wanhive::StaticBuffer<X, SIZE>::setLimit(
-		unsigned int limit) noexcept {
+template<typename X, unsigned int SIZE>
+bool wanhive::StaticBuffer<X, SIZE>::setLimit(unsigned int limit) noexcept {
 	if (limit <= _capacity && limit >= _index) {
 		_limit = limit;
 		return true;
@@ -278,26 +283,28 @@ template<typename X, unsigned int SIZE> bool wanhive::StaticBuffer<X, SIZE>::set
 	}
 }
 
-template<typename X, unsigned int SIZE> unsigned int wanhive::StaticBuffer<X,
-		SIZE>::space() const noexcept {
+template<typename X, unsigned int SIZE>
+unsigned int wanhive::StaticBuffer<X, SIZE>::space() const noexcept {
 	return _limit - _index;
 }
 
-template<typename X, unsigned int SIZE> bool wanhive::StaticBuffer<X, SIZE>::hasSpace() const noexcept {
+template<typename X, unsigned int SIZE>
+bool wanhive::StaticBuffer<X, SIZE>::hasSpace() const noexcept {
 	return _limit != _index;
 }
 
-template<typename X, unsigned int SIZE> int wanhive::StaticBuffer<X, SIZE>::getStatus() const noexcept {
+template<typename X, unsigned int SIZE>
+int wanhive::StaticBuffer<X, SIZE>::getStatus() const noexcept {
 	return status;
 }
 
-template<typename X, unsigned int SIZE> void wanhive::StaticBuffer<X, SIZE>::setStatus(
-		int status) noexcept {
+template<typename X, unsigned int SIZE>
+void wanhive::StaticBuffer<X, SIZE>::setStatus(int status) noexcept {
 	this->status = status;
 }
 
-template<typename X, unsigned int SIZE> bool wanhive::StaticBuffer<X, SIZE>::get(
-		X &value) noexcept {
+template<typename X, unsigned int SIZE>
+bool wanhive::StaticBuffer<X, SIZE>::get(X &value) noexcept {
 	if (_index != _limit) {
 		value = storage[_index++];
 		return true;
@@ -306,8 +313,9 @@ template<typename X, unsigned int SIZE> bool wanhive::StaticBuffer<X, SIZE>::get
 	}
 }
 
-template<typename X, unsigned int SIZE> bool wanhive::StaticBuffer<X, SIZE>::get(
-		X &value, unsigned int index) const noexcept {
+template<typename X, unsigned int SIZE>
+bool wanhive::StaticBuffer<X, SIZE>::get(X &value,
+		unsigned int index) const noexcept {
 	if (index < _limit) {
 		value = storage[index];
 		return true;
@@ -316,8 +324,9 @@ template<typename X, unsigned int SIZE> bool wanhive::StaticBuffer<X, SIZE>::get
 	}
 }
 
-template<typename X, unsigned int SIZE> unsigned int wanhive::StaticBuffer<X,
-		SIZE>::get(X *dest, unsigned int length) noexcept {
+template<typename X, unsigned int SIZE>
+unsigned int wanhive::StaticBuffer<X, SIZE>::get(X *dest,
+		unsigned int length) noexcept {
 	length = Twiddler::min(space(), length);
 	if (dest && length) {
 		memcpy(dest, storage + _index, length * sizeof(X));
@@ -328,7 +337,8 @@ template<typename X, unsigned int SIZE> unsigned int wanhive::StaticBuffer<X,
 	}
 }
 
-template<typename X, unsigned int SIZE> X* wanhive::StaticBuffer<X, SIZE>::get() noexcept {
+template<typename X, unsigned int SIZE>
+X* wanhive::StaticBuffer<X, SIZE>::get() noexcept {
 	if (_index != _limit) {
 		return &storage[_index++];
 	} else {
@@ -336,8 +346,8 @@ template<typename X, unsigned int SIZE> X* wanhive::StaticBuffer<X, SIZE>::get()
 	}
 }
 
-template<typename X, unsigned int SIZE> bool wanhive::StaticBuffer<X, SIZE>::put(
-		const X &value) noexcept {
+template<typename X, unsigned int SIZE>
+bool wanhive::StaticBuffer<X, SIZE>::put(const X &value) noexcept {
 	if (_index != _limit) {
 		storage[_index++] = value;
 		return true;
@@ -346,8 +356,9 @@ template<typename X, unsigned int SIZE> bool wanhive::StaticBuffer<X, SIZE>::put
 	}
 }
 
-template<typename X, unsigned int SIZE> bool wanhive::StaticBuffer<X, SIZE>::put(
-		const X &value, unsigned int index) noexcept {
+template<typename X, unsigned int SIZE>
+bool wanhive::StaticBuffer<X, SIZE>::put(const X &value,
+		unsigned int index) noexcept {
 	if (index < _limit) {
 		storage[index] = value;
 		return true;
@@ -356,8 +367,9 @@ template<typename X, unsigned int SIZE> bool wanhive::StaticBuffer<X, SIZE>::put
 	}
 }
 
-template<typename X, unsigned int SIZE> unsigned int wanhive::StaticBuffer<X,
-		SIZE>::put(const X *src, unsigned int length) noexcept {
+template<typename X, unsigned int SIZE>
+unsigned int wanhive::StaticBuffer<X, SIZE>::put(const X *src,
+		unsigned int length) noexcept {
 	length = Twiddler::min(space(), length);
 	if (src && length) {
 		memcpy(storage + _index, src, length * sizeof(X));
@@ -368,24 +380,28 @@ template<typename X, unsigned int SIZE> unsigned int wanhive::StaticBuffer<X,
 	}
 }
 
-template<typename X, unsigned int SIZE> X* wanhive::StaticBuffer<X, SIZE>::array() noexcept {
+template<typename X, unsigned int SIZE>
+X* wanhive::StaticBuffer<X, SIZE>::array() noexcept {
 	return storage;
 }
 
-template<typename X, unsigned int SIZE> const X* wanhive::StaticBuffer<X, SIZE>::array() const noexcept {
+template<typename X, unsigned int SIZE>
+const X* wanhive::StaticBuffer<X, SIZE>::array() const noexcept {
 	return storage;
 }
 
-template<typename X, unsigned int SIZE> X* wanhive::StaticBuffer<X, SIZE>::offset() noexcept {
+template<typename X, unsigned int SIZE>
+X* wanhive::StaticBuffer<X, SIZE>::offset() noexcept {
 	return storage + _index;
 }
 
-template<typename X, unsigned int SIZE> const X* wanhive::StaticBuffer<X, SIZE>::offset() const noexcept {
+template<typename X, unsigned int SIZE>
+const X* wanhive::StaticBuffer<X, SIZE>::offset() const noexcept {
 	return storage + _index;
 }
 
-template<typename X, unsigned int SIZE> bool wanhive::StaticBuffer<X, SIZE>::push(
-		const X &e) noexcept {
+template<typename X, unsigned int SIZE>
+bool wanhive::StaticBuffer<X, SIZE>::push(const X &e) noexcept {
 	if (_index != _limit) {
 		storage[_index++] = e;
 		return true;
@@ -394,8 +410,8 @@ template<typename X, unsigned int SIZE> bool wanhive::StaticBuffer<X, SIZE>::pus
 	}
 }
 
-template<typename X, unsigned int SIZE> bool wanhive::StaticBuffer<X, SIZE>::pop(
-		X &e) noexcept {
+template<typename X, unsigned int SIZE>
+bool wanhive::StaticBuffer<X, SIZE>::pop(X &e) noexcept {
 	if (_index) {
 		e = storage[--_index];
 		return true;
@@ -404,8 +420,8 @@ template<typename X, unsigned int SIZE> bool wanhive::StaticBuffer<X, SIZE>::pop
 	}
 }
 
-template<typename X, unsigned int SIZE> bool wanhive::StaticBuffer<X, SIZE>::peek(
-		X &e) noexcept {
+template<typename X, unsigned int SIZE>
+bool wanhive::StaticBuffer<X, SIZE>::peek(X &e) noexcept {
 	if (_index) {
 		e = storage[_index - 1];
 		return true;
@@ -414,11 +430,13 @@ template<typename X, unsigned int SIZE> bool wanhive::StaticBuffer<X, SIZE>::pee
 	}
 }
 
-template<typename X, unsigned int SIZE> bool wanhive::StaticBuffer<X, SIZE>::isFull() const noexcept {
+template<typename X, unsigned int SIZE>
+bool wanhive::StaticBuffer<X, SIZE>::isFull() const noexcept {
 	return _index == _limit;
 }
 
-template<typename X, unsigned int SIZE> bool wanhive::StaticBuffer<X, SIZE>::isEmpty() const noexcept {
+template<typename X, unsigned int SIZE>
+bool wanhive::StaticBuffer<X, SIZE>::isEmpty() const noexcept {
 	return _index == 0;
 }
 
