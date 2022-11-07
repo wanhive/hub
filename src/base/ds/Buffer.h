@@ -15,7 +15,7 @@
 #include "BufferVector.h"
 #include "Twiddler.h"
 #include "../common/Exception.h"
-#include "../common/pod.h"
+#include "../common/reflect.h"
 #include <cstring>
 
 namespace wanhive {

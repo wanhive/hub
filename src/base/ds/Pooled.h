@@ -14,6 +14,7 @@
 #define WH_BASE_DS_POOLED_H_
 #include "MemoryPool.h"
 #include "../common/Exception.h"
+#include <cstddef>
 
 namespace wanhive {
 /**

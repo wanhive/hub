@@ -12,7 +12,7 @@
 
 #ifndef WH_BASE_COMMON_ATOMIC_H_
 #define WH_BASE_COMMON_ATOMIC_H_
-#include "pod.h"
+#include "reflect.h"
 #ifndef WH_GCC
 #error "This package must be compiled by GCC."
 #endif

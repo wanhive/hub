@@ -40,7 +40,7 @@
 #include "functors.h"
 #include "Twiddler.h"
 #include "../common/Memory.h"
-#include "../common/pod.h"
+#include "../common/reflect.h"
 
 namespace wanhive {
 /**

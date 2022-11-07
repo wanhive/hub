@@ -12,7 +12,7 @@
 
 #ifndef WH_REACTOR_HANDLE_H_
 #define WH_REACTOR_HANDLE_H_
-#include "../base/common/pod.h"
+#include "../base/common/reflect.h"
 
 namespace wanhive {
 /**

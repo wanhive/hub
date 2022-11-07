@@ -13,7 +13,7 @@
 #ifndef WH_BASE_DS_ARRAY_H_
 #define WH_BASE_DS_ARRAY_H_
 #include "../common/Memory.h"
-#include "../common/pod.h"
+#include "../common/reflect.h"
 #include <cstdlib>
 
 namespace wanhive {
