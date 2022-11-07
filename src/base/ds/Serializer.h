@@ -291,8 +291,8 @@ public:
 	 */
 	static void test() noexcept;
 private:
-	WH_STATIC_ASSERT(sizeof(float) == 4, "Platform is not IEEE-754 compliant");
-	WH_STATIC_ASSERT(sizeof(double) == 8, "Platform is not IEEE-754 compliant");
+	static_assert(sizeof(float) == 4, "Platform is not IEEE-754 compliant");
+	static_assert(sizeof(double) == 8, "Platform is not IEEE-754 compliant");
 };
 
 } /* namespace wanhive */

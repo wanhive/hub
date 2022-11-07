@@ -294,7 +294,7 @@ public:
 	}
 private:
 	WH_SCALAR_ASSERT(X);
-	WH_STATIC_ASSERT(sizeof(X) <= 16, "Invalid object size");
+	static_assert(sizeof(X) <= 16, "Invalid object size");
 };
 
 } /* namespace wanhive */

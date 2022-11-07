@@ -205,7 +205,7 @@ public:
 	bool isEmpty() const noexcept;
 private:
 	WH_POD_ASSERT(X);
-	WH_STATIC_ASSERT((SIZE > 0), "Bad buffer size");
+	static_assert((SIZE > 0), "Bad buffer size");
 	const unsigned int _capacity { SIZE };
 	unsigned int _limit { _capacity };
 	unsigned int _index { 0 };

@@ -202,7 +202,7 @@ private:
 	}
 private:
 	WH_POD_ASSERT(X);
-	WH_STATIC_ASSERT((SIZE && !(SIZE & (SIZE - 1))), "Invalid buffer size");
+	static_assert((SIZE && !(SIZE & (SIZE - 1))), "Invalid buffer size");
 	const unsigned int _size { SIZE };
 	const unsigned int _capacity { (SIZE ? (SIZE - 1) : SIZE) };
 	int status { 0 };
