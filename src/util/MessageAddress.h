@@ -136,7 +136,7 @@ public:
 	static void writeDestination(unsigned char *data,
 			uint64_t destination) noexcept;
 public:
-	/** Serialized object size in bytes */
+	/** Serialized object's size in bytes */
 	static constexpr unsigned int SIZE = 24;
 private:
 	uint64_t label; //Application dependent
