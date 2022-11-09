@@ -1,7 +1,7 @@
 /*
  * MessageContext.h
  *
- * Message context implementation
+ * Message's context
  *
  *
  * Copyright (C) 2022 Amit Kumar (amitkriit@gmail.com)
@@ -16,130 +16,128 @@
 
 namespace wanhive {
 /**
- * Message's context: (command, qualifier, status)
+ * Message context implementation
  */
 class MessageContext {
 public:
 	/**
-	 * Default constructor: zeroes (0) out all the fields.
+	 * Default constructor: zero-initializes the data members.
 	 */
 	MessageContext() noexcept;
 	/**
-	 * Constructor: initializes command, qualifier and status fields to
-	 * the given values.
-	 * @param command the command
-	 * @param qualifier the qualifier
-	 * @param status the status code
+	 * Constructor: initializes data members with the given values.
+	 * @param command command's value
+	 * @param qualifier qualifier's value
+	 * @param status status code's value
 	 */
 	MessageContext(uint8_t command, uint8_t qualifier, uint8_t status) noexcept;
 	/**
-	 * Constructor: uses serialized data for initialization.
-	 * @param buffer pointer to the serialized object
+	 * Constructor: extracts values from a serialized object.
+	 * @param data serialized object
 	 */
-	MessageContext(const unsigned char *buffer) noexcept;
+	MessageContext(const unsigned char *data) noexcept;
 	/**
 	 * Destructor
 	 */
 	~MessageContext();
 	//-----------------------------------------------------------------
 	/**
-	 * Returns the command classifier.
-	 * @return the command
+	 * Returns the command.
+	 * @return command
 	 */
 	uint8_t getCommand() const noexcept;
 	/**
-	 * Sets the command.
-	 * @param command the new command
+	 * Sets a new command.
+	 * @param command new command
 	 */
 	void setCommand(uint8_t command) noexcept;
 	/**
 	 * Returns the qualifier.
-	 * @return the qualifier
+	 * @return qualifier
 	 */
 	uint8_t getQualifier() const noexcept;
 	/**
-	 * Sets the qualifier
-	 * @param qualifier the new qualifier
+	 * Sets a new qualifier
+	 * @param qualifier new qualifier
 	 */
 	void setQualifier(uint8_t qualifier) noexcept;
 	/**
 	 * Returns the status code.
-	 * @return the status code
+	 * @return status code
 	 */
 	uint8_t getStatus() const noexcept;
 	/**
-	 * Sets the status code.
-	 * @param status the new status code
+	 * Sets a new status code.
+	 * @param status new status code
 	 */
 	void setStatus(uint8_t status) noexcept;
 	//-----------------------------------------------------------------
 	/**
-	 * Returns the command, qualifier, and status values in a single call.
-	 * @param command object for storing the command
-	 * @param qualifier object for storing the qualifier
-	 * @param status object for storing the status code
+	 * Returns command, qualifier, and status values.
+	 * @param command stores command's value
+	 * @param qualifier stores qualifier's value
+	 * @param status stores status code's value
 	 */
 	void getContext(uint8_t &command, uint8_t &qualifier,
 			uint8_t &status) const noexcept;
 	/**
-	 * Sets the command, qualifier, and status values in a single call.
-	 * @param command the new command
-	 * @param qualifier the new qualifier
-	 * @param status the new status code
+	 * Sets command, qualifier, and status values.
+	 * @param command new command
+	 * @param qualifier new qualifier
+	 * @param status new status code
 	 */
 	void setContext(uint8_t command, uint8_t qualifier, uint8_t status) noexcept;
 	//-----------------------------------------------------------------
 	/**
-	 * Reads the serialized data and stores them into this object.
-	 * @param buffer pointer to the serialized object
+	 * Extracts values from a serialized object.
+	 * @param data serialized object
 	 */
-	void readContext(const unsigned char *buffer) noexcept;
+	void readContext(const unsigned char *data) noexcept;
 	/**
-	 * Serializes this object into the given buffer
-	 * @param buffer pointer to the buffer for storing the result. The
-	 * minimum buffer size should be MessageContext::SIZE bytes.
+	 * Translates context data into a serialized object.
+	 * @param data output buffer (MessageContext::SIZE is the minimum required
+	 * buffer size in bytes).
 	 */
-	void writeContext(unsigned char *buffer) const noexcept;
+	void writeContext(unsigned char *data) const noexcept;
 	//-----------------------------------------------------------------
 	/**
-	 * Reads the command from a serialized object.
-	 * @param buffer pointer to the serialized object
-	 * @return the command
+	 * Reads serialized object's command.
+	 * @param data serialized object
+	 * @return command
 	 */
-	static uint8_t readCommand(const unsigned char *buffer) noexcept;
+	static uint8_t readCommand(const unsigned char *data) noexcept;
 	/**
-	 * Writes new command into a serialized object.
-	 * @param buffer pointer to the serialized object
-	 * @param command the new command
+	 * Updates serialized object's command.
+	 * @param data serialized object
+	 * @param command new command
 	 */
-	static void writeCommand(unsigned char *buffer, uint8_t command) noexcept;
+	static void writeCommand(unsigned char *data, uint8_t command) noexcept;
 	/**
-	 * Reads the qualifier from a serialized object.
-	 * @param buffer pointer to the serialized object
-	 * @return the qualifier
+	 * Reads serialized object's qualifier.
+	 * @param data serialized object
+	 * @return qualifier
 	 */
-	static uint8_t readQualifier(const unsigned char *buffer) noexcept;
+	static uint8_t readQualifier(const unsigned char *data) noexcept;
 	/**
-	 * Writes new qualifier into a serialized object.
-	 * @param buffer pointer to the serialized object
-	 * @param qualifier the new qualifier
+	 * Updates serialized object's qualifier.
+	 * @param data serialized object
+	 * @param qualifier new qualifier
 	 */
-	static void writeQualifier(unsigned char *buffer,
-			uint8_t qualifier) noexcept;
+	static void writeQualifier(unsigned char *data, uint8_t qualifier) noexcept;
 	/**
-	 * Reads the status code from a serialized object.
-	 * @param buffer pointer to the serialized object
-	 * @return the status code
+	 * Reads serialized object's status code.
+	 * @param data serialized object
+	 * @return status code
 	 */
-	static uint8_t readStatus(const unsigned char *buffer) noexcept;
+	static uint8_t readStatus(const unsigned char *data) noexcept;
 	/**
-	 * Writes new status code into a serialized object.
-	 * @param buffer pointer to the serialized object
-	 * @param status the new status code
+	 * Updates serialized object's status code.
+	 * @param data serialized object
+	 * @param status new status code
 	 */
-	static void writeStatus(unsigned char *buffer, uint8_t status) noexcept;
+	static void writeStatus(unsigned char *data, uint8_t status) noexcept;
 public:
-	/** Serialized object size in bytes */
+	/** Serialized object's size in bytes */
 	static constexpr unsigned int SIZE = 3;
 private:
 	uint8_t command; //Command

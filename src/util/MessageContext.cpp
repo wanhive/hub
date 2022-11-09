@@ -1,7 +1,7 @@
 /*
  * MessageContext.cpp
  *
- * Message context implementation
+ * Message's context
  *
  *
  * Copyright (C) 2022 Amit Kumar (amitkriit@gmail.com)
@@ -26,8 +26,8 @@ MessageContext::MessageContext(uint8_t command, uint8_t qualifier,
 
 }
 
-MessageContext::MessageContext(const unsigned char *buffer) noexcept {
-	readContext(buffer);
+MessageContext::MessageContext(const unsigned char *data) noexcept {
+	readContext(data);
 }
 
 MessageContext::~MessageContext() {
@@ -72,42 +72,41 @@ void MessageContext::setContext(uint8_t command, uint8_t qualifier,
 	setStatus(status);
 }
 
-void MessageContext::readContext(const unsigned char *buffer) noexcept {
-	setCommand(readCommand(buffer));
-	setQualifier(readQualifier(buffer));
-	setStatus(readStatus(buffer));
+void MessageContext::readContext(const unsigned char *data) noexcept {
+	setCommand(readCommand(data));
+	setQualifier(readQualifier(data));
+	setStatus(readStatus(data));
 }
 
-void MessageContext::writeContext(unsigned char *buffer) const noexcept {
-	writeCommand(buffer, getCommand());
-	writeQualifier(buffer, getQualifier());
-	writeStatus(buffer, getStatus());
+void MessageContext::writeContext(unsigned char *data) const noexcept {
+	writeCommand(data, getCommand());
+	writeQualifier(data, getQualifier());
+	writeStatus(data, getStatus());
 }
 
-uint8_t MessageContext::readCommand(const unsigned char *buffer) noexcept {
-	return Serializer::unpacku8(buffer);
+uint8_t MessageContext::readCommand(const unsigned char *data) noexcept {
+	return Serializer::unpacku8(data);
 }
 
-void MessageContext::writeCommand(unsigned char *buffer,
-		uint8_t command) noexcept {
-	Serializer::packi8(buffer, command);
+void MessageContext::writeCommand(unsigned char *data, uint8_t command) noexcept {
+	Serializer::packi8(data, command);
 }
 
-uint8_t MessageContext::readQualifier(const unsigned char *buffer) noexcept {
-	return Serializer::unpacku8(buffer + 1);
+uint8_t MessageContext::readQualifier(const unsigned char *data) noexcept {
+	return Serializer::unpacku8(data + 1);
 }
 
-void MessageContext::writeQualifier(unsigned char *buffer,
+void MessageContext::writeQualifier(unsigned char *data,
 		uint8_t qualifier) noexcept {
-	Serializer::packi8(buffer + 1, qualifier);
+	Serializer::packi8(data + 1, qualifier);
 }
 
-uint8_t MessageContext::readStatus(const unsigned char *buffer) noexcept {
-	return Serializer::unpacku8(buffer + 2);
+uint8_t MessageContext::readStatus(const unsigned char *data) noexcept {
+	return Serializer::unpacku8(data + 2);
 }
 
-void MessageContext::writeStatus(unsigned char *buffer, uint8_t status) noexcept {
-	Serializer::packi8(buffer + 2, status);
+void MessageContext::writeStatus(unsigned char *data, uint8_t status) noexcept {
+	Serializer::packi8(data + 2, status);
 }
 
 } /* namespace wanhive */
