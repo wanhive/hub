@@ -41,11 +41,11 @@ Message* Message::create(uint64_t origin) noexcept {
 	}
 }
 
-void Message::recycle(Message *p) noexcept {
-	if (!p || p->getReferenceCount() <= 1) {
-		delete p;
+void Message::recycle(Message *m) noexcept {
+	if (!m || m->getReferenceCount() <= 1) {
+		delete m;
 	} else {
-		p->setReferenceCount(p->getReferenceCount() - 1);
+		m->setReferenceCount(m->getReferenceCount() - 1);
 	}
 }
 
