@@ -1,7 +1,7 @@
 /*
  * MessageHeader.h
  *
- * Message header implementation
+ * Message header
  *
  *
  * Copyright (C) 2018 Amit Kumar (amitkriit@gmail.com)
@@ -18,201 +18,196 @@
 
 namespace wanhive {
 /**
- * The message header
+ * Message header implementation
  */
 class MessageHeader final: public MessageAddress,
 		public MessageControl,
 		public MessageContext {
 public:
 	/**
-	 * Default constructor: zeroes out the data.
+	 * Default constructor: zero-initializes the data members.
 	 */
 	MessageHeader() noexcept;
 	/**
-	 * Constructor: uses serialized data for initialization.
-	 * @param buffer pointer to the serialized header data
+	 * Constructor: extracts values from a serialized object.
+	 * @param data serialized header
 	 */
-	MessageHeader(const unsigned char *buffer) noexcept;
+	MessageHeader(const unsigned char *data) noexcept;
 	/**
 	 * Destructor
 	 */
 	~MessageHeader();
 	/**
-	 * Zeroes out the header data
+	 * Clears (zeroes out) the header data
 	 */
 	void clear() noexcept;
 	//-----------------------------------------------------------------
 	/**
-	 * Deserializes the header data and stores them into this object.
-	 * @param buffer pointer to the serialized header data
-	 * @return serialized header size in bytes
+	 * Extracts values from a serialized header.
+	 * @param data serialized header
+	 * @return serialized header's size in bytes
 	 */
-	unsigned int read(const unsigned char *buffer) noexcept;
+	unsigned int read(const unsigned char *data) noexcept;
 	/**
 	 * Serializes this object.
-	 * @param buffer pointer to a buffer for storing the serialized header. The
-	 * minimum buffer size (in bytes) should be MessageHeader::SIZE.
-	 * @return serialized header size in bytes
+	 * @param data output buffer (MessageHeader::SIZE is the minimum required
+	 * buffer size in bytes).
+	 * @return serialized header's size in bytes
 	 */
-	unsigned int write(unsigned char *buffer) const noexcept;
+	unsigned int write(unsigned char *data) const noexcept;
 	//-----------------------------------------------------------------
 	/**
-	 * Reads the serialized address (label, source, destination) data and stores
-	 * them into this object.
-	 * @param buffer pointer to the serialized header data
+	 * Reads serialized header's address.
+	 * @param data serialized header
 	 */
-	void readAddress(const unsigned char *buffer) noexcept;
+	void readAddress(const unsigned char *data) noexcept;
 	/**
-	 * Serializes this object's address (label, source, destination) data.
-	 * @param buffer pointer to the serialized header data
+	 * Updates serialized header's address.
+	 * @param data serialized header
 	 */
-	void writeAddress(unsigned char *buffer) const noexcept;
+	void writeAddress(unsigned char *data) const noexcept;
 	/**
-	 * Reads the serialized flow control (length, sequence-number, session) data
-	 * and stores them into this object.
-	 * @param buffer pointer to the serialized header data
+	 * Reads the serialized header's flow control.
+	 * @param data serialized header
 	 */
-	void readControl(const unsigned char *buffer) noexcept;
+	void readControl(const unsigned char *data) noexcept;
 	/**
-	 * Serializes this object's flow control (length, sequence-number, session)
-	 * data.
-	 * @param buffer pointer to the serialized header data
+	 * Updates serialized header's flow control.
+	 * @param data serialized header
 	 */
-	void writeControl(unsigned char *buffer) const noexcept;
+	void writeControl(unsigned char *data) const noexcept;
 	/**
-	 * Reads the serialized context (command, qualifier, status) data and stores
-	 * them into this object.
-	 * @param buffer pointer to the serialized header data
+	 * Reads serialized header's context.
+	 * @param data serialized header
 	 */
-	void readContext(const unsigned char *buffer) noexcept;
+	void readContext(const unsigned char *data) noexcept;
 	/**
-	 * Serializes this object's context (command, qualifier, status) data.
-	 * @param buffer pointer to the serialized header data
+	 * Updates serialized header's context.
+	 * @param data serialized header
 	 */
-	void writeContext(unsigned char *buffer) const noexcept;
+	void writeContext(unsigned char *data) const noexcept;
 	//-----------------------------------------------------------------
 	/**
-	 * For debugging, prints the object to stderr.
+	 * For debugging: prints header's data to stderr.
 	 */
 	void print() const noexcept;
 	//-----------------------------------------------------------------
 	/**
-	 * Reads the label from serialized header.
-	 * @param buffer pointer to the serialized header data
-	 * @return the label
+	 * Reads serialized header's label.
+	 * @param data serialized header
+	 * @return label
 	 */
-	static uint64_t readLabel(const unsigned char *buffer) noexcept;
+	static uint64_t readLabel(const unsigned char *data) noexcept;
 	/**
-	 * Writes new label into serialized header.
-	 * @param buffer pointer to the serialized header data
-	 * @param label the new label
+	 * Updates serialized header's label.
+	 * @param data serialized header
+	 * @param label new label
 	 */
-	static void writeLabel(unsigned char *buffer, uint64_t label) noexcept;
+	static void writeLabel(unsigned char *data, uint64_t label) noexcept;
 	/**
-	 * Reads the source identifier from serialized header.
-	 * @param buffer pointer to the serialized header data
-	 * @return the source identifier
+	 * Reads serialized header's source identifier.
+	 * @param data serialized header
+	 * @return source identifier
 	 */
-	static uint64_t readSource(const unsigned char *buffer) noexcept;
+	static uint64_t readSource(const unsigned char *data) noexcept;
 	/**
-	 * Writes new source identifier into serialized header.
-	 * @param buffer pointer to the serialized header data
-	 * @param source the new source identifier
+	 * Updates serialized header's source identifier.
+	 * @param data serialized header
+	 * @param source new source identifier
 	 */
-	static void writeSource(unsigned char *buffer, uint64_t source) noexcept;
+	static void writeSource(unsigned char *data, uint64_t source) noexcept;
 	/**
-	 * Reads the destination identifier from serialized header.
-	 * @param buffer pointer to the serialized header data
-	 * @return the destination identifier
+	 * Reads serialized header's destination identifier.
+	 * @param data serialized header
+	 * @return destination identifier
 	 */
-	static uint64_t readDestination(const unsigned char *buffer) noexcept;
+	static uint64_t readDestination(const unsigned char *data) noexcept;
 	/**
-	 * Writes new destination identifier into serialized header.
-	 * @param buffer pointer to the serialized header data
-	 * @param destination the new destination identifier
+	 * Updates serialized header's destination identifier.
+	 * @param data serialized header
+	 * @param destination new destination identifier
 	 */
-	static void writeDestination(unsigned char *buffer,
+	static void writeDestination(unsigned char *data,
 			uint64_t destination) noexcept;
 	//-----------------------------------------------------------------
 	/**
-	 * Reads the length from serialized header.
-	 * @param buffer pointer to the serialized header data
-	 * @return the length
+	 * Reads serialized header's length field.
+	 * @param data serialized header
+	 * @return length
 	 */
-	static uint16_t readLength(const unsigned char *buffer) noexcept;
+	static uint16_t readLength(const unsigned char *data) noexcept;
 	/**
-	 * Writes new length into serialized header.
-	 * @param buffer pointer to the serialized header data
-	 * @param length the new length
+	 * Updates serialized header's length field.
+	 * @param data serialized header
+	 * @param length new length
 	 */
-	static void writeLength(unsigned char *buffer, uint16_t length) noexcept;
+	static void writeLength(unsigned char *data, uint16_t length) noexcept;
 	/**
-	 * Reads the sequence number from serialized header.
-	 * @param buffer pointer to the serialized header data
-	 * @return the sequence number
+	 * Reads serialized header's sequence number.
+	 * @param data serialized header
+	 * @return sequence number
 	 */
-	static uint16_t readSequenceNumber(const unsigned char *buffer) noexcept;
+	static uint16_t readSequenceNumber(const unsigned char *data) noexcept;
 	/**
-	 * Writes new sequence number into serialized header.
-	 * @param buffer pointer to the serialized header data
-	 * @param sequenceNumber the new sequence number
+	 * Updates serialized header's sequence number.
+	 * @param data serialized header
+	 * @param sequenceNumber new sequence number
 	 */
-	static void writeSequenceNumber(unsigned char *buffer,
+	static void writeSequenceNumber(unsigned char *data,
 			uint16_t sequenceNumber) noexcept;
 	/**
-	 * Reads the session identifier from serialized header.
-	 * @param buffer pointer to the serialized header data
-	 * @return the session identifier
+	 * Reads serialized header's session identifier.
+	 * @param data serialized header
+	 * @return session identifier
 	 */
-	static uint8_t readSession(const unsigned char *buffer) noexcept;
+	static uint8_t readSession(const unsigned char *data) noexcept;
 	/**
-	 * Writes new session identifier into serialized header.
-	 * @param buffer pointer to the serialized header data
-	 * @param session the new session identifier
+	 * Updates serialized header's session identifier.
+	 * @param data serialized header
+	 * @param session new session identifier
 	 */
-	static void writeSession(unsigned char *buffer, uint8_t session) noexcept;
+	static void writeSession(unsigned char *data, uint8_t session) noexcept;
 	//-----------------------------------------------------------------
 	/**
-	 * Reads the command from serialized header.
-	 * @param buffer pointer to the serialized header data
-	 * @return the command
+	 * Reads serialized header's command.
+	 * @param data serialized header
+	 * @return command
 	 */
-	static uint8_t readCommand(const unsigned char *buffer) noexcept;
+	static uint8_t readCommand(const unsigned char *data) noexcept;
 	/**
-	 * Writes new command into serialized header.
-	 * @param buffer pointer to the serialized header data
-	 * @param command the new command
+	 * Updates serialized header's command.
+	 * @param data serialized header
+	 * @param command new command
 	 */
-	static void writeCommand(unsigned char *buffer, uint8_t command) noexcept;
+	static void writeCommand(unsigned char *data, uint8_t command) noexcept;
 	/**
-	 * Reads the qualifier from serialized header.
-	 * @param buffer pointer to the serialized header data
-	 * @return the qualifier
+	 * Reads serialized header's qualifier.
+	 * @param data serialized header
+	 * @return qualifier
 	 */
-	static uint8_t readQualifier(const unsigned char *buffer) noexcept;
+	static uint8_t readQualifier(const unsigned char *data) noexcept;
 	/**
-	 * Writes new qualifier into serialized header.
-	 * @param buffer pointer to the serialized header data
-	 * @param qualifier the new qualifier
+	 * Updates serialized header's qualifier.
+	 * @param data serialized header
+	 * @param qualifier new qualifier
 	 */
-	static void writeQualifier(unsigned char *buffer,
-			uint8_t qualifier) noexcept;
+	static void writeQualifier(unsigned char *data, uint8_t qualifier) noexcept;
 	/**
-	 * Reads the status code from serialized header.
-	 * @param buffer pointer to the serialized header data
-	 * @return the status code
+	 * Reads serialized header's status code.
+	 * @param data serialized header
+	 * @return status code
 	 */
-	static uint8_t readStatus(const unsigned char *buffer) noexcept;
+	static uint8_t readStatus(const unsigned char *data) noexcept;
 	/**
-	 * Writes new status code into serialized header.
-	 * @param buffer pointer to the serialized header data
-	 * @param status the new status code
+	 * Updates serialized header's status code.
+	 * @param data serialized header
+	 * @param status new status code
 	 */
-	static void writeStatus(unsigned char *buffer, uint8_t status) noexcept;
+	static void writeStatus(unsigned char *data, uint8_t status) noexcept;
 public:
-	/** Serialized header data size in bytes */
-	static constexpr unsigned int SIZE = MessageAddress::SIZE
-			+ MessageControl::SIZE + MessageContext::SIZE;
+	/** Serialized header's size in bytes */
+	static constexpr unsigned int SIZE = (MessageAddress::SIZE
+			+ MessageControl::SIZE + MessageContext::SIZE);
 };
 
 } /* namespace wanhive */
