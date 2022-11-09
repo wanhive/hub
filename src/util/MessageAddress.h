@@ -1,7 +1,7 @@
 /*
  * MessageAddress.h
  *
- * Message address implementation
+ * Message's address
  *
  *
  * Copyright (C) 2022 Amit Kumar (amitkriit@gmail.com)
@@ -16,26 +16,27 @@
 
 namespace wanhive {
 /**
- * Message's address (label, source, destination)
+ * Message address implementation
  */
 class MessageAddress {
 public:
 	/**
-	 * Default constructor: zeroes (0) out all the fields.
+	 * Default constructor: zero-initializes the data members.
 	 */
 	MessageAddress() noexcept;
 	/**
-	 * Constructor: initializes the source and destination identifiers to
-	 * the given values. Sets the label to zero (0).
-	 * @param source the source identifier
-	 * @param destination the destination identifier
+	 * Constructor: initializes data members with the given values.
+	 * @param source source identifier's value
+	 * @param destination destination identifier's value
+	 * @param label label's value
 	 */
-	MessageAddress(uint64_t source, uint64_t destination) noexcept;
+	MessageAddress(uint64_t source, uint64_t destination,
+			uint64_t label = 0) noexcept;
 	/**
-	 * Constructor: uses serialized data for initialization.
-	 * @param buffer pointer to the serialized object
+	 * Constructor: extracts values from a serialized object.
+	 * @param data serialized object
 	 */
-	MessageAddress(const unsigned char *buffer) noexcept;
+	MessageAddress(const unsigned char *data) noexcept;
 	/**
 	 * Destructor
 	 */
@@ -43,102 +44,102 @@ public:
 	//-----------------------------------------------------------------
 	/**
 	 * Returns the label.
-	 * @return the label (application dependent)
+	 * @return label
 	 */
 	uint64_t getLabel() const noexcept;
 	/**
-	 * Sets the label.
-	 * @param label the new label
+	 * Sets a new label.
+	 * @param label new label
 	 */
 	void setLabel(uint64_t label) noexcept;
 	/**
 	 * Returns the source identifier.
-	 * @return the source identifier
+	 * @return source identifier
 	 */
 	uint64_t getSource() const noexcept;
 	/**
-	 * Sets the source identifier.
-	 * @param source the new source identifier
+	 * Sets a new source identifier.
+	 * @param source new source identifier
 	 */
 	void setSource(uint64_t source) noexcept;
 	/**
 	 * Returns the destination identifier.
-	 * @return the destination identifier
+	 * @return destination identifier
 	 */
 	uint64_t getDestination() const noexcept;
 	/**
-	 * Sets the destination identifier.
-	 * @param destination the new destination identifier
+	 * Sets a new destination identifier.
+	 * @param destination new destination identifier
 	 */
 	void setDestination(uint64_t destination) noexcept;
-
+	//-----------------------------------------------------------------
 	/**
-	 * Returns the source and destination identifiers.
-	 * @param source object for storing the source identifier
-	 * @param destination object for storing the destination identifier
+	 * Returns source and destination identifiers.
+	 * @param source stores source identifier's value
+	 * @param destination stores destination identifier's value
 	 */
 	void getAddress(uint64_t &source, uint64_t &destination) const noexcept;
 	/**
-	 * Sets the source and destination identifiers (label isn't modified).
-	 * @param source the new source identifier
-	 * @param destination the new destination identifier
+	 * Sets new source and destination identifiers.
+	 * @param source new source identifier
+	 * @param destination new destination identifier
 	 */
 	void setAddress(uint64_t source, uint64_t destination) noexcept;
 	//-----------------------------------------------------------------
 	/**
-	 * Reads the serialized data and stores them into this object.
-	 * @param buffer pointer to the serialized object
+	 * Extracts values from a serialized object.
+	 * @param data serialized object
 	 */
-	void readAddress(const unsigned char *buffer) noexcept;
+	void readAddress(const unsigned char *data) noexcept;
 	/**
-	 * Serializes this object into the given buffer.
-	 * @param buffer pointer to the buffer for storing the result. The
-	 * minimum buffer size should be MessageAddress::SIZE bytes.
+	 * Translates address data into a serialized object.
+	 * @param data output buffer (MessageAddress::SIZE is the minimum required
+	 * buffer size in bytes).
 	 */
-	void writeAddress(unsigned char *buffer) const noexcept;
+	void writeAddress(unsigned char *data) const noexcept;
 	//-----------------------------------------------------------------
 	/**
-	 * Reads the label from a serialized object.
-	 * @param buffer pointer to the serialized object
-	 * @return the label
+	 * Reads serialized object's label.
+	 * @param data serialized object
+	 * @return label
 	 */
-	static uint64_t readLabel(const unsigned char *buffer) noexcept;
+	static uint64_t readLabel(const unsigned char *data) noexcept;
 	/**
-	 * Writes new label into a serialized object.
-	 * @param buffer pointer to the serialized object
-	 * @param label the new label
+	 * Updates serialized object's label.
+	 * @param data serialized object
+	 * @param label new label
 	 */
-	static void writeLabel(unsigned char *buffer, uint64_t label) noexcept;
+	static void writeLabel(unsigned char *data, uint64_t label) noexcept;
 	/**
-	 * Reads the source identifier from a serialized object.
-	 * @param buffer pointer to the serialized object
-	 * @return the source identifier
+	 * Reads serialized object's source identifier.
+	 * @param data serialized object
+	 * @return source identifier
 	 */
-	static uint64_t readSource(const unsigned char *buffer) noexcept;
+	static uint64_t readSource(const unsigned char *data) noexcept;
 	/**
-	 * Writes new source identifier into a serialized object.
-	 * @param buffer pointer to the serialized object
-	 * @param source the new source identifier
+	 * Updates serialized object's source identifier.
+	 * @param data serialized object
+	 * @param source new source identifier
 	 */
-	static void writeSource(unsigned char *buffer, uint64_t source) noexcept;
+	static void writeSource(unsigned char *data, uint64_t source) noexcept;
 	/**
-	 * Reads the destination identifier from a serialized object.
-	 * @param buffer pointer to the serialized object
-	 * @return the destination identifier
+	 * Reads serialized object's destination identifier.
+	 * @param data serialized object
+	 * @return destination identifier
 	 */
-	static uint64_t readDestination(const unsigned char *buffer) noexcept;
+	static uint64_t readDestination(const unsigned char *data) noexcept;
 	/**
-	 * Writes new destination identifier into a serialized object.
-	 * @param buffer pointer to the serialized object
-	 * @param destination the new destination identifier
+	 * Updates serialized object's destination identifier.
+	 * @param data serialized object
+	 * @param destination new destination identifier
 	 */
-	static void writeDestination(unsigned char *buffer,
+	static void writeDestination(unsigned char *data,
 			uint64_t destination) noexcept;
 public:
 	/** Serialized object size in bytes */
 	static constexpr unsigned int SIZE = 24;
 private:
-	uint64_t label { }; //Application dependent
+	uint64_t label; //Application dependent
 	uint64_t source; //Source identifier
 	uint64_t destination; //Destination identifier
 };

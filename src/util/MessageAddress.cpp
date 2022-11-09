@@ -1,7 +1,7 @@
 /*
  * MessageAddress.cpp
  *
- * Message address implementation
+ * Message's address
  *
  *
  * Copyright (C) 2022 Amit Kumar (amitkriit@gmail.com)
@@ -16,17 +16,18 @@
 namespace wanhive {
 
 MessageAddress::MessageAddress() noexcept :
-		source { }, destination { } {
+		label { }, source { }, destination { } {
 
 }
 
-MessageAddress::MessageAddress(uint64_t source, uint64_t destination) noexcept :
-		source { source }, destination { destination } {
+MessageAddress::MessageAddress(uint64_t source, uint64_t destination,
+		uint64_t label) noexcept :
+		label { label }, source { source }, destination { destination } {
 
 }
 
-MessageAddress::MessageAddress(const unsigned char *buffer) noexcept {
-	readAddress(buffer);
+MessageAddress::MessageAddress(const unsigned char *data) noexcept {
+	readAddress(data);
 }
 
 MessageAddress::~MessageAddress() {
@@ -68,42 +69,41 @@ void MessageAddress::setAddress(uint64_t source, uint64_t destination) noexcept 
 	setDestination(destination);
 }
 
-void MessageAddress::readAddress(const unsigned char *buffer) noexcept {
-	setLabel(readLabel(buffer));
-	setSource(readSource(buffer));
-	setDestination(readDestination(buffer));
+void MessageAddress::readAddress(const unsigned char *data) noexcept {
+	setLabel(readLabel(data));
+	setSource(readSource(data));
+	setDestination(readDestination(data));
 }
 
-void MessageAddress::writeAddress(unsigned char *buffer) const noexcept {
-	writeLabel(buffer, getLabel());
-	writeSource(buffer, getSource());
-	writeDestination(buffer, getDestination());
+void MessageAddress::writeAddress(unsigned char *data) const noexcept {
+	writeLabel(data, getLabel());
+	writeSource(data, getSource());
+	writeDestination(data, getDestination());
 }
 
-uint64_t MessageAddress::readLabel(const unsigned char *buffer) noexcept {
-	return Serializer::unpacku64(buffer);
+uint64_t MessageAddress::readLabel(const unsigned char *data) noexcept {
+	return Serializer::unpacku64(data);
 }
 
-void MessageAddress::writeLabel(unsigned char *buffer, uint64_t label) noexcept {
-	Serializer::packi64(buffer, label);
+void MessageAddress::writeLabel(unsigned char *data, uint64_t label) noexcept {
+	Serializer::packi64(data, label);
 }
 
-uint64_t MessageAddress::readSource(const unsigned char *buffer) noexcept {
-	return Serializer::unpacku64(buffer + 8);
+uint64_t MessageAddress::readSource(const unsigned char *data) noexcept {
+	return Serializer::unpacku64(data + 8);
 }
 
-void MessageAddress::writeSource(unsigned char *buffer,
-		uint64_t source) noexcept {
-	Serializer::packi64(buffer + 8, source);
+void MessageAddress::writeSource(unsigned char *data, uint64_t source) noexcept {
+	Serializer::packi64(data + 8, source);
 }
 
-uint64_t MessageAddress::readDestination(const unsigned char *buffer) noexcept {
-	return Serializer::unpacku64(buffer + 16);
+uint64_t MessageAddress::readDestination(const unsigned char *data) noexcept {
+	return Serializer::unpacku64(data + 16);
 }
 
-void MessageAddress::writeDestination(unsigned char *buffer,
+void MessageAddress::writeDestination(unsigned char *data,
 		uint64_t destination) noexcept {
-	Serializer::packi64(buffer + 16, destination);
+	Serializer::packi64(data + 16, destination);
 }
 
 } /* namespace wanhive */
