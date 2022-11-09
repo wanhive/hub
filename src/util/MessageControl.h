@@ -1,7 +1,7 @@
 /*
  * MessageControl.h
  *
- * Message flow control implementation
+ * Message's flow control
  *
  *
  * Copyright (C) 2022 Amit Kumar (amitkriit@gmail.com)
@@ -16,28 +16,27 @@
 
 namespace wanhive {
 /**
- * Message's flow control (length, sequence-number, session)
+ * Message flow control implementation
  */
 class MessageControl {
 public:
 	/**
-	 * Default constructor: zeroes (0) out all the fields.
+	 * Default constructor: zero-initializes the data members.
 	 */
 	MessageControl() noexcept;
 	/**
-	 * Constructor: initializes length, sequence-number, and session to
-	 * the given values.
-	 * @param length the length
-	 * @param sequenceNumber the sequence number
-	 * @param session the session identifier
+	 * Constructor: initializes data members with the given values.
+	 * @param length length's value
+	 * @param sequenceNumber sequence number's value
+	 * @param session session identifier's value
 	 */
 	MessageControl(uint16_t length, uint16_t sequenceNumber,
 			uint8_t session) noexcept;
 	/**
-	 * Constructor: uses serialized data for initialization.
-	 * @param buffer pointer to the serialized object
+	 * Constructor: extracts values from a serialized object.
+	 * @param data serialized object
 	 */
-	MessageControl(const unsigned char *buffer) noexcept;
+	MessageControl(const unsigned char *data) noexcept;
 	/**
 	 * Destructor
 	 */
@@ -45,103 +44,103 @@ public:
 	//-----------------------------------------------------------------
 	/**
 	 * Returns the length.
-	 * @return the length
+	 * @return length
 	 */
 	uint16_t getLength() const noexcept;
 	/**
-	 * Sets the length.
-	 * @param length the new length
+	 * Sets a new length.
+	 * @param length new length
 	 */
 	void setLength(uint16_t length) noexcept;
 	/**
 	 * Returns the sequence number.
-	 * @return the sequence number
+	 * @return sequence number
 	 */
 	uint16_t getSequenceNumber() const noexcept;
 	/**
-	 * Sets the sequence number.
-	 * @param sequenceNumber the new sequence number
+	 * Sets a new sequence number.
+	 * @param sequenceNumber new sequence number
 	 */
 	void setSequenceNumber(uint16_t sequenceNumber) noexcept;
 	/**
 	 * Returns the session identifier.
-	 * @return the session identifier
+	 * @return session identifier
 	 */
 	uint8_t getSession() const noexcept;
 	/**
-	 * Sets the session identifier.
-	 * @param session the new session identifier
+	 * Sets a new session identifier.
+	 * @param session new session identifier
 	 */
 	void setSession(uint8_t session) noexcept;
 	//-----------------------------------------------------------------
 	/**
-	 * Returns the length, sequence-number, and session values in a single call.
-	 * @param length object for storing the length
-	 * @param sequenceNumber object for storing the sequence number
-	 * @param session object for storing the session identifier
+	 * Returns length, sequence-number, and session values.
+	 * @param length stores length's value
+	 * @param sequenceNumber stores sequence number's value
+	 * @param session stores session identifier's value
 	 */
 	void getControl(uint16_t &length, uint16_t &sequenceNumber,
 			uint8_t &session) const noexcept;
 	/**
-	 * Sets the length, sequence-number, and session values in a single call.
-	 * @param length the new length
-	 * @param sequenceNumber the new sequence number
-	 * @param session the new session identifier
+	 * Sets new length, sequence-number, and session values.
+	 * @param length new length
+	 * @param sequenceNumber new sequence number
+	 * @param session new session identifier
 	 */
 	void setControl(uint16_t length, uint16_t sequenceNumber,
 			uint8_t session) noexcept;
 	//-----------------------------------------------------------------
 	/**
-	 * Reads the serialized data and stores them into this object.
-	 * @param buffer pointer to the serialized object
+	 * Extracts values from a serialized object.
+	 * @param data serialized object
 	 */
-	void readControl(const unsigned char *buffer) noexcept;
+	void readControl(const unsigned char *data) noexcept;
 	/**
-	 * Serializes this object into the given buffer.
-	 * @param buffer pointer to the buffer for storing the result. The
-	 * minimum buffer size should be MessageControl::SIZE bytes.
+	 * Translates control data into a serialized object.
+	 * @param data output buffer (MessageControl::SIZE is the minimum required
+	 * buffer size in bytes).
 	 */
-	void writeControl(unsigned char *buffer) const noexcept;
+	void writeControl(unsigned char *data) const noexcept;
 	//-----------------------------------------------------------------
 	/**
-	 * Reads the length from a serialized object.
-	 * @param buffer pointer to the serialized object
-	 * @return the length
+	 * Reads serialized object's length field.
+	 * @param data serialized object
+	 * @return length
 	 */
-	static uint16_t readLength(const unsigned char *buffer) noexcept;
+	static uint16_t readLength(const unsigned char *data) noexcept;
 	/**
-	 * Writes new length into a serialized object.
-	 * @param buffer pointer to the serialized object
-	 * @param length the new length
+	 * Updates serialized object's length field.
+	 * @param data serialized object
+	 * @param length new length
 	 */
-	static void writeLength(unsigned char *buffer, uint16_t length) noexcept;
+	static void writeLength(unsigned char *data, uint16_t length) noexcept;
 	/**
-	 * Reads the sequence number from a serialized object.
-	 * @param buffer pointer to the serialized object
-	 * @return the sequence number
+	 * Reads serialized object's sequence number.
+	 * @param data serialized object
+	 * @return sequence number
 	 */
-	static uint16_t readSequenceNumber(const unsigned char *buffer) noexcept;
+	static uint16_t readSequenceNumber(const unsigned char *data) noexcept;
 	/**
-	 * Writes new sequence number into a serialized object.
-	 * @param buffer pointer to the serialized object
-	 * @param sequenceNumber the new sequence number
+	 * Updates serialized object's sequence number.
+	 * @param data serialized object
+	 * @param sequenceNumber new sequence number
 	 */
-	static void writeSequenceNumber(unsigned char *buffer,
+	static void writeSequenceNumber(unsigned char *data,
 			uint16_t sequenceNumber) noexcept;
 	/**
-	 * Reads the session identifier from a serialized object.
-	 * @param buffer pointer to the serialized object
-	 * @return the session identifier
+	 * Reads serialized object's session identifier.
+	 * @param data serialized object
+	 * @return session identifier
 	 */
-	static uint8_t readSession(const unsigned char *buffer) noexcept;
+	static uint8_t readSession(const unsigned char *data) noexcept;
 	/**
-	 * Writes new session identifier into a serialized object.
-	 * @param buffer pointer to the serialized object
-	 * @param session the new session identifier
+	 * Updates serialized object's session identifier.
+	 * @param data serialized object
+	 * @param session new session identifier
 	 */
-	static void writeSession(unsigned char *buffer, uint8_t session) noexcept;
+	static void writeSession(unsigned char *data, uint8_t session) noexcept;
 public:
-	/** Serialized object size in bytes */
+	/** Serialized object's size in bytes */
 	static constexpr unsigned int SIZE = 5;
 private:
 	uint16_t length; //Length in bytes

@@ -1,7 +1,7 @@
 /*
  * MessageControl.cpp
  *
- * Message flow control implementation
+ * Message's flow control
  *
  *
  * Copyright (C) 2022 Amit Kumar (amitkriit@gmail.com)
@@ -26,8 +26,8 @@ MessageControl::MessageControl(uint16_t length, uint16_t sequenceNumber,
 
 }
 
-MessageControl::MessageControl(const unsigned char *buffer) noexcept {
-	readControl(buffer);
+MessageControl::MessageControl(const unsigned char *data) noexcept {
+	readControl(data);
 }
 
 MessageControl::~MessageControl() {
@@ -72,44 +72,41 @@ void MessageControl::setControl(uint16_t length, uint16_t sequenceNumber,
 	setSession(session);
 }
 
-void MessageControl::readControl(const unsigned char *buffer) noexcept {
-	setLength(readLength(buffer));
-	setSequenceNumber(readSequenceNumber(buffer));
-	setSession(readSession(buffer));
+void MessageControl::readControl(const unsigned char *data) noexcept {
+	setLength(readLength(data));
+	setSequenceNumber(readSequenceNumber(data));
+	setSession(readSession(data));
 }
 
-void MessageControl::writeControl(unsigned char *buffer) const noexcept {
-	writeLength(buffer, getLength());
-	writeSequenceNumber(buffer, getSequenceNumber());
-	writeSession(buffer, getSession());
+void MessageControl::writeControl(unsigned char *data) const noexcept {
+	writeLength(data, getLength());
+	writeSequenceNumber(data, getSequenceNumber());
+	writeSession(data, getSession());
 }
 
-uint16_t MessageControl::readLength(const unsigned char *buffer) noexcept {
-	return Serializer::unpacku16(buffer);
+uint16_t MessageControl::readLength(const unsigned char *data) noexcept {
+	return Serializer::unpacku16(data);
 }
 
-void MessageControl::writeLength(unsigned char *buffer,
-		uint16_t length) noexcept {
-	Serializer::packi16(buffer, length);
+void MessageControl::writeLength(unsigned char *data, uint16_t length) noexcept {
+	Serializer::packi16(data, length);
 }
 
-uint16_t MessageControl::readSequenceNumber(
-		const unsigned char *buffer) noexcept {
-	return Serializer::unpacku16(buffer + 2);
+uint16_t MessageControl::readSequenceNumber(const unsigned char *data) noexcept {
+	return Serializer::unpacku16(data + 2);
 }
 
-void MessageControl::writeSequenceNumber(unsigned char *buffer,
+void MessageControl::writeSequenceNumber(unsigned char *data,
 		uint16_t sequenceNumber) noexcept {
-	Serializer::packi16(buffer + 2, sequenceNumber);
+	Serializer::packi16(data + 2, sequenceNumber);
 }
 
-uint8_t MessageControl::readSession(const unsigned char *buffer) noexcept {
-	return Serializer::unpacku8(buffer + 4);
+uint8_t MessageControl::readSession(const unsigned char *data) noexcept {
+	return Serializer::unpacku8(data + 4);
 }
 
-void MessageControl::writeSession(unsigned char *buffer,
-		uint8_t session) noexcept {
-	Serializer::packi8(buffer + 4, session);
+void MessageControl::writeSession(unsigned char *data, uint8_t session) noexcept {
+	Serializer::packi8(data + 4, session);
 }
 
 } /* namespace wanhive */
