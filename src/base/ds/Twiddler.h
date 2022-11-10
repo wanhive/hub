@@ -319,8 +319,8 @@ public:
 	/**
 	 * Trims an ASCII string (removes leading and trailing backspace characters).
 	 * @param s nul-terminated string
-	 * @param len the final string length
-	 * @return trimmed portion of the original string
+	 * @param len stores trimmed string's length
+	 * @return modified input string
 	 */
 	static char* trim(char *s, unsigned int &len) noexcept;
 };
