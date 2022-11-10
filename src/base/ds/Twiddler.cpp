@@ -214,20 +214,20 @@ unsigned char Twiddler::bitMask(unsigned int index) noexcept {
 	return (1U << mod8(index));
 }
 
-void Twiddler::set(unsigned char *bitmap, unsigned int index) noexcept {
-	bitmap[bitSlot(index)] |= bitMask(index);
+void Twiddler::set(unsigned char *bits, unsigned int index) noexcept {
+	bits[bitSlot(index)] |= bitMask(index);
 }
 
-void Twiddler::clear(unsigned char *bitmap, unsigned int index) noexcept {
-	bitmap[bitSlot(index)] &= ~bitMask(index);
+void Twiddler::clear(unsigned char *bits, unsigned int index) noexcept {
+	bits[bitSlot(index)] &= ~bitMask(index);
 }
 
-void Twiddler::toggle(unsigned char *bitmap, unsigned int index) noexcept {
-	bitmap[bitSlot(index)] ^= bitMask(index);
+void Twiddler::toggle(unsigned char *bits, unsigned int index) noexcept {
+	bits[bitSlot(index)] ^= bitMask(index);
 }
 
-bool Twiddler::test(const unsigned char *bitmap, unsigned int index) noexcept {
-	return (bitmap[bitSlot(index)] & bitMask(index));
+bool Twiddler::test(const unsigned char *bits, unsigned int index) noexcept {
+	return (bits[bitSlot(index)] & bitMask(index));
 }
 
 unsigned int Twiddler::align(unsigned int size, unsigned int alignment) noexcept {
