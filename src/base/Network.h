@@ -21,24 +21,21 @@ namespace wanhive {
 class Network {
 public:
 	/**
-	 * Creates a socket descriptor which can listen for and accept incoming
+	 * Creates a socket file descriptor which can listen for and accept incoming
 	 * connection requests.
-	 * @param service describes the internet service (usually the port number)
-	 * @param sa object for storing the address information
-	 * @param blocking true to configure the listening socket for blocking IO
-	 * (see Network::accept()), false for nonblocking IO.
-	 * @return listening socket descriptor
+	 * @param service describes the internet service (usually a port number)
+	 * @param sa stores new socket's address
+	 * @param blocking true for blocking mode, false for nonblocking IO
+	 * @return listening socket's file descriptor
 	 */
 	static int serverSocket(const char *service, SocketAddress &sa,
 			bool blocking);
-	//Returns a connected socket
 	/**
-	 * Creates a connected socket descriptor.
+	 * Creates a connected socket file descriptor.
 	 * @param name describes the internet host (usually the IP address)
 	 * @param service describes the internet service (usually the port number)
 	 * @param sa object for storing the host's address information
-	 * @param blocking true to configure the connection for blocking IO, false
-	 * for nonblocking IO.
+	 * @param blocking true for blocking mode, false for nonblocking IO
 	 * @return connected socket descriptor
 	 */
 	static int connectedSocket(const char *name, const char *service,
@@ -47,8 +44,7 @@ public:
 	 * Creates a connected socket descriptor.
 	 * @param ni the internet resource name
 	 * @param sa object for storing the host's address information
-	 * @param blocking true to configure the connection for blocking IO, false
-	 * for nonblocking IO.
+	 * @param blocking true for blocking mode, false for nonblocking IO
 	 * @return connected socket descriptor
 	 */
 	static int connectedSocket(const NameInfo &ni, SocketAddress &sa,
@@ -61,35 +57,34 @@ public:
 	 */
 	static void listen(int sfd, int backlog);
 	/**
-	 * Accepts incoming connections on the given socket descriptor
+	 * Accepts incoming connections on the given listening socket.
 	 * @param listenfd listening socket descriptor
-	 * @param sa object for storing the address of peer socket
-	 * @param blocking blocking true to configure the new connection for
-	 * blocking IO, false for nonblocking IO.
+	 * @param sa stores the peer's socket address
+	 * @param blocking true for blocking mode, false for nonblocking IO
 	 * @return socket descriptor corresponding to the accepted connection
 	 */
 	static int accept(int listenfd, SocketAddress &sa, bool blocking);
 	/**
-	 * Wrapper for the shutdown(2) system call.
-	 * @param sfd the scket descriptor
+	 * Wrapper for shutdown(2) system call.
+	 * @param sfd socket descriptor
 	 * @param how shutdown mode
-	 * @return return value of the system call
+	 * @return value returned by the system call
 	 */
 	static int shutdown(int sfd, int how = SHUT_RDWR) noexcept;
 	/**
 	 * Wrapper for close(2) system call.
-	 * @param sfd the socket descriptor
-	 * @return return value of the system call
+	 * @param sfd socket descriptor
+	 * @return value returned by the system call
 	 */
 	static int close(int sfd) noexcept;
 	/**
-	 * Configures the given socket descriptor's blocking/non-blocking IO mode.
+	 * Configures a socket descriptor's blocking mode.
 	 * @param sfd socket descriptor
-	 * @param block true for blocking IO, false for non-blocking IO
+	 * @param block true for blocking mode, false for nonblocking IO
 	 */
 	static void setBlocking(int sfd, bool block);
 	/**
-	 * Tests if an IO operation on the given socket descriptor will block.
+	 * Tests whether a socket descriptor is in blocking mode.
 	 * @param sfd socket descriptor
 	 * @return true if blocking IO is enabled, false otherwise
 	 */
@@ -99,44 +94,41 @@ public:
 	 * Creates a unix domain socket and binds it to the given path.
 	 * @param path pathname of the socket file
 	 * @param sa object for storing the address information
-	 * @param blocking true to configure the listening socket for blocking IO
-	 * (see Network::accept()), false for nonblocking IO.
+	 * @param blocking true for blocking mode, false for nonblocking IO
 	 * @return listening socket descriptor
 	 */
 	static int unixServerSocket(const char *path, SocketAddress &sa,
 			bool blocking);
 	/**
-	 * Establishes new connection to a listening unix domain socket (connection
-	 * may complete in background).
-	 * @param path pathname of the socket file
-	 * @param sa object for storing the address of peer socket
-	 * @param blocking true to configure the connection for blocking IO, false
-	 * for nonblocking IO.
+	 * Establishes a unix domain socket connection (connection may complete in
+	 * background).
+	 * @param path socket file's pathname
+	 * @param sa stores the peer's socket address
+	 * @param blocking true for blocking mode, false for nonblocking IO
 	 * @return connected socket descriptor
 	 */
 	static int unixConnectedSocket(const char *path, SocketAddress &sa,
 			bool blocking);
 	/**
 	 * Creates an unnamed pair of connected sockets (unix domain).
-	 * @param sv object for for storing the pair of socket descriptors
-	 * @param blocking true to configure the socket pair for blocking IO, false
-	 * for non-blocking IO.
+	 * @param sv stores the socket descriptors
+	 * @param blocking true for blocking mode, false for nonblocking IO
 	 */
-	static void socketPair(int sv[2], bool blocking);
+	static void socketPair(int (&sv)[2], bool blocking);
 	//-----------------------------------------------------------------
 	/**
-	 * Writes data to a blocking socket connection.
-	 * @param sockfd socket descriptor (must be configured for blocking IO)
-	 * @param buf data to write
+	 * Writes data to a socket connection opened in blocking mode.
+	 * @param sockfd socket descriptor
+	 * @param buf outgoing data
 	 * @param length data size in bytes
 	 * @return number of bytes written to the socket connection
 	 */
 	static size_t sendStream(int sockfd, const unsigned char *buf,
 			size_t length);
 	/**
-	 * Reads data from a blocking socket connection.
-	 * @param sockfd socket descriptor (must be configured for blocking IO)
-	 * @param buf buffer for storing the incoming data
+	 * Reads data from a socket connection opened in blocking mode.
+	 * @param sockfd socket descriptor
+	 * @param buf stores incoming data
 	 * @param length maximum number of bytes to read
 	 * @param strict true to read exactly the given number of bytes, false to
 	 * read at most the given number of bytes (potentially zero).
@@ -146,23 +138,23 @@ public:
 			bool strict = true);
 	//-----------------------------------------------------------------
 	/**
-	 * Sets the socket read operation's timeout.
+	 * Sets read operation's timeout.
 	 * @param sfd socket descriptor
 	 * @param milliseconds timeout value in milliseconds, set 0 to block forever
 	 */
 	static void setReceiveTimeout(int sfd, int milliseconds);
 	/**
-	 * Sets the socket write operation's timeout.
+	 * Sets write operation's timeout.
 	 * @param sfd socket descriptor
 	 * @param milliseconds timeout value in milliseconds, set 0 to block forever
 	 */
 	static void setSendTimeout(int sfd, int milliseconds);
 	/**
-	 * Sets socket read and write operations timeout. Negative timeout value will
-	 * be ignored.
+	 * Sets read and write operations' timeout values. Negative timeout value
+	 * will be ignored.
 	 * @param sfd socket descriptor
-	 * @param recvTimeout read timeout value (milliseconds), 0 to block forever
-	 * @param sendTimeout write timeout value (milliseconds), 0 to block forever
+	 * @param recvTimeout read timeout in milliseconds, 0 to block forever
+	 * @param sendTimeout write timeout in milliseconds, 0 to block forever
 	 */
 	static void setSocketTimeout(int sfd, int recvTimeout, int sendTimeout);
 };

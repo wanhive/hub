@@ -190,7 +190,7 @@ int Network::unixConnectedSocket(const char *path, SocketAddress &sa,
 	}
 }
 
-void Network::socketPair(int sv[2], bool blocking) {
+void Network::socketPair(int (&sv)[2], bool blocking) {
 	auto type = blocking ? SOCK_STREAM : (SOCK_STREAM | SOCK_NONBLOCK);
 	if (::socketpair(AF_UNIX, type, 0, sv) == -1) {
 		throw SystemException();
