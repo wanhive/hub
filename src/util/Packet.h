@@ -17,15 +17,19 @@
 
 namespace wanhive {
 /**
- * Enhanced data-unit implementation. Adds error checking to the message Frame.
+ * Data-unit enhancement: adds error-checking to the managed frame.
  */
 class Packet: public Frame {
 public:
 	/**
-	 * Constructor: sets this packet's origin.
-	 * @param origin the origin identifier
+	 * Default constructor: sets origin to zero(0).
 	 */
-	Packet(uint64_t origin = 0) noexcept;
+	Packet() noexcept;
+	/**
+	 * Constructor: sets packet's origin.
+	 * @param origin origin's identifier
+	 */
+	Packet(uint64_t origin) noexcept;
 	/**
 	 * Destructor
 	 */

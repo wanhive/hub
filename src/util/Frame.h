@@ -17,7 +17,7 @@
 
 namespace wanhive {
 /**
- * An immutable chunk of binary data.
+ * Immutable binary data.
  */
 struct Data {
 	const unsigned char *base; /**< Base pointer */
@@ -26,17 +26,21 @@ struct Data {
 
 /**
  * Bare-bone data unit implementation. It consists of a routing header and a
- * frame buffer. Routing header provides the route information during message
- * delivery and forwarding. Frame buffer stores the serialized binary data.
+ * frame buffer. The routing header provides the route information during the
+ * message delivery and forwarding. Frame buffer stores serialized data.
  * @note Frame buffer's structure: [(MESSAGE HEADER)(VARIABLE LENGTH PAYLOAD)]
  */
 class Frame {
 public:
 	/**
-	 * Constructor: sets this frame's origin.
-	 * @param origin the origin identifier
+	 * Default constructor: sets origin to zero(0).
 	 */
-	Frame(uint64_t origin = 0) noexcept;
+	Frame() noexcept;
+	/**
+	 * Constructor: sets frame's origin.
+	 * @param origin origin's identifier
+	 */
+	Frame(uint64_t origin) noexcept;
 	/**
 	 * Destructor
 	 */
@@ -154,9 +158,9 @@ public:
 private:
 	unsigned int hopCount { 0 }; //Hop count
 	unsigned int referenceCount { 0 }; //Reference count
-	const uint64_t origin; //The local origin identifier
+	const uint64_t origin; //Origin's identifier
 	MessageHeader _header; //Routing header
-	StaticBuffer<unsigned char, MTU> _frame; //The raw bytes
+	StaticBuffer<unsigned char, MTU> _frame; //Frame buffer
 };
 
 } /* namespace wanhive */

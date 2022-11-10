@@ -15,6 +15,10 @@
 
 namespace wanhive {
 
+Packet::Packet() noexcept {
+
+}
+
 Packet::Packet(uint64_t origin) noexcept :
 		Frame { origin } {
 

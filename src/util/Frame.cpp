@@ -14,7 +14,13 @@
 
 namespace wanhive {
 
-Frame::Frame(uint64_t origin) noexcept : origin { origin } {
+Frame::Frame() noexcept :
+		origin { } {
+
+}
+
+Frame::Frame(uint64_t origin) noexcept :
+		origin { origin } {
 
 }
 
