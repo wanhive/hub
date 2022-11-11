@@ -21,47 +21,46 @@ namespace wanhive {
 class Network {
 public:
 	/**
-	 * Creates a socket file descriptor which can listen for and accept incoming
-	 * connection requests.
+	 * Creates a listening socket.
 	 * @param service describes the internet service (usually a port number)
-	 * @param sa stores new socket's address
+	 * @param sa stores socket's address
 	 * @param blocking true for blocking mode, false for nonblocking IO
 	 * @return listening socket's file descriptor
 	 */
 	static int serverSocket(const char *service, SocketAddress &sa,
 			bool blocking);
 	/**
-	 * Creates a connected socket file descriptor.
+	 * Creates a connected socket.
 	 * @param name describes the internet host (usually the IP address)
 	 * @param service describes the internet service (usually the port number)
-	 * @param sa object for storing the host's address information
+	 * @param sa stores host's socket address
 	 * @param blocking true for blocking mode, false for nonblocking IO
-	 * @return connected socket descriptor
+	 * @return connected socket's file descriptor
 	 */
 	static int connectedSocket(const char *name, const char *service,
 			SocketAddress &sa, bool blocking);
 	/**
-	 * Creates a connected socket descriptor.
+	 * Creates a connected socket.
 	 * @param ni the internet resource name
-	 * @param sa object for storing the host's address information
+	 * @param sa stores host's socket address
 	 * @param blocking true for blocking mode, false for nonblocking IO
-	 * @return connected socket descriptor
+	 * @return connected socket's file descriptor
 	 */
 	static int connectedSocket(const NameInfo &ni, SocketAddress &sa,
 			bool blocking);
 	//-----------------------------------------------------------------
 	/**
-	 * Listens for incoming connections on the given socket descriptor.
-	 * @param sfd socket descriptor
+	 * Listens for incoming connections.
+	 * @param sfd listening socket's file descriptor
 	 * @param backlog pending queue size
 	 */
 	static void listen(int sfd, int backlog);
 	/**
-	 * Accepts incoming connections on the given listening socket.
-	 * @param listenfd listening socket descriptor
-	 * @param sa stores the peer's socket address
+	 * Accepts incoming connections on a given listening socket.
+	 * @param listenfd listening socket's descriptor
+	 * @param sa stores peer's socket address
 	 * @param blocking true for blocking mode, false for nonblocking IO
-	 * @return socket descriptor corresponding to the accepted connection
+	 * @return accepted connection's socket file descriptor
 	 */
 	static int accept(int listenfd, SocketAddress &sa, bool blocking);
 	/**

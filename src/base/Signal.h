@@ -17,18 +17,17 @@
 namespace wanhive {
 /**
  * Common signal handling routines
- * All the methods are thread safe
  */
 class Signal {
 public:
 	/**
-	 * Blocks the given signal signal, will be delivered when unblocked.
-	 * @param signum the signal number
+	 * Blocks a given signal.
+	 * @param signum signal number
 	 */
 	static void block(int signum);
 	/**
-	 * Unblocks the given signal.
-	 * @param signum the signal number
+	 * Unblocks a given signal.
+	 * @param signum signal number
 	 */
 	static void unblock(int signum);
 	/**
@@ -40,25 +39,24 @@ public:
 	 */
 	static void unblockAll();
 	/**
-	 * Specifies that the given signal should be ignored (the signal handler set
-	 * to SIG_IGN).
-	 * @param signum the signal number
+	 * Specifies that a given signal should be ignored.
+	 * @param signum signal number
 	 */
 	static void ignore(int signum);
 	/**
-	 * Specifies that the given signal should be assigned it's default behavior
-	 * (the handler set to SIG_DFL).
-	 * @param signum the signal number
+	 * Installs a given signal's default handler.
+	 * @param signum signal number
 	 */
 	static void reset(int signum);
 	/**
-	 * Installs a callback (handler) for the given signal.
-	 * @param signum the signal number
-	 * @param handler the signal handler, if nullptr then uses a dummy handler
-	 * @param restart true to set the SA_RESTART flag, false otherwise
+	 * Installs a given signal's handler.
+	 * @param signum signal number
+	 * @param handler signal handler (nullptr for a dummy handler)
+	 * @param restart true to force restart of interruptible system calls when
+	 * interrupted by a signal handler, false otherwise.
 	 */
-	static void handle(int signum, void (*handler)(int)=nullptr, bool restart =
-			true);
+	static void handle(int signum, void (*handler)(int) = nullptr,
+			bool restart = true);
 };
 
 } /* namespace wanhive */
