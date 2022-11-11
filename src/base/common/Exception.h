@@ -37,7 +37,7 @@ enum ExceptionType {
 /**
  * Application generated exception
  */
-class Exception: public BaseException {
+class Exception final: public BaseException {
 public:
 	/**
 	 * Constructor: creates a new exception.

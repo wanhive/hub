@@ -18,7 +18,7 @@ namespace wanhive {
 /**
  * Exceptions generate by system calls
  */
-class SystemException: public BaseException {
+class SystemException final: public BaseException {
 public:
 	/**
 	 * Default constructor: reads the current errno.

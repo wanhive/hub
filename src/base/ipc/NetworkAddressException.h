@@ -18,7 +18,7 @@ namespace wanhive {
 /**
  * Exceptions generated during network address translation
  */
-class NetworkAddressException: public BaseException {
+class NetworkAddressException final: public BaseException {
 public:
 	/**
 	 * Constructor: assigns an error code.
