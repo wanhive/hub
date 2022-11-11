@@ -58,11 +58,6 @@
  */
 
 /*
- * For compile time assertions
- */
-#define WH_STATIC_ASSERT(expr, msg) static_assert(expr, msg)
-
-/*
  * Enable/disable run-time assertions
  */
 #ifndef WH_DEBUG
@@ -99,7 +94,7 @@
 #define WH_BOOLF(expr) ((expr) ? "YES" : "NO")
 //-----------------------------------------------------------------
 /**
- * For probing the fields of a C-style structure
+ * For probing a C-style structure
  */
 #define WH_FIELD_SIZEOF(type, field) sizeof(((type *)0)->field)
 #define WH_FIELD_TYPEOF(type, field) decltype(((type *)0)->field)
