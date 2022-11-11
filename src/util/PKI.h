@@ -24,9 +24,9 @@ namespace wanhive {
 #define WH_PKI_ENCODING_LEN ((WH_PKI_KEY_LENGTH) / 8)
 
 //RSA signature
-using Signature=unsigned char[WH_PKI_ENCODING_LEN];
+using Signature = unsigned char[WH_PKI_ENCODING_LEN];
 //RSA encrypted data
-using PKIEncryptedData=unsigned char[WH_PKI_ENCODING_LEN];
+using PKIEncryptedData = unsigned char[WH_PKI_ENCODING_LEN];
 //-----------------------------------------------------------------
 /**
  * The asymmetric cryptography facility based on RSA

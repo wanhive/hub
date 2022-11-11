@@ -17,9 +17,9 @@
 namespace wanhive {
 //-----------------------------------------------------------------
 //We are using SHA-512, 64-bytes (512-bits) digest
-using Digest=unsigned char[64];
+using Digest = unsigned char[64];
 //Base 64 encoding of a raw Digest, 89 bytes are used including the NUL-terminator
-using EncodedDigest=char[128];
+using EncodedDigest = char[128];
 //-----------------------------------------------------------------
 /**
  * SHA512 based message digest

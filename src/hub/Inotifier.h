@@ -20,7 +20,7 @@ namespace wanhive {
  * Treat this as an opaque object and use methods provided by the Inotifier to
  * fetch additional information.
  */
-using InotifyEvent=inotify_event;
+using InotifyEvent = inotify_event;
 
 /**
  * Reports file system events
