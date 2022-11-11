@@ -92,7 +92,7 @@ void File::open(const char *path, int flags) {
 			throw SystemException();
 		}
 	} else {
-		throw Exception(EX_INVALIDPARAM);
+		throw Exception(EX_ARGUMENT);
 	}
 }
 
@@ -105,7 +105,7 @@ void File::open(const char *path, int flags, mode_t mode) {
 			throw SystemException();
 		}
 	} else {
-		throw Exception(EX_INVALIDPARAM);
+		throw Exception(EX_ARGUMENT);
 	}
 }
 
@@ -118,7 +118,7 @@ void File::open(int dirfd, const char *path, int flags) {
 			throw SystemException();
 		}
 	} else {
-		throw Exception(EX_INVALIDPARAM);
+		throw Exception(EX_ARGUMENT);
 	}
 }
 
@@ -131,7 +131,7 @@ void File::open(int dirfd, const char *path, int flags, mode_t mode) {
 			throw SystemException();
 		}
 	} else {
-		throw Exception(EX_INVALIDPARAM);
+		throw Exception(EX_ARGUMENT);
 	}
 }
 
@@ -173,7 +173,7 @@ int File::duplicate(int newfd, int flags) {
 			throw SystemException();
 		}
 	} else {
-		throw Exception(EX_INVALIDPARAM);
+		throw Exception(EX_ARGUMENT);
 	}
 }
 

@@ -152,7 +152,7 @@ void FStat::read(int fd) {
 
 void FStat::read(const char *path, bool symLink) {
 	if (!path) {
-		throw Exception(EX_INVALIDPARAM);
+		throw Exception(EX_ARGUMENT);
 	} else {
 		auto ret = !symLink ? ::stat(path, &_stat) : ::lstat(path, &_stat);
 		if (ret == -1) {
@@ -163,7 +163,7 @@ void FStat::read(const char *path, bool symLink) {
 
 void FStat::read(int dirfd, const char *path, int flags) {
 	if (!path) {
-		throw Exception(EX_INVALIDPARAM);
+		throw Exception(EX_ARGUMENT);
 	} else if (::fstatat(dirfd, path, &_stat, flags) == -1) {
 		throw SystemException();
 	} else {

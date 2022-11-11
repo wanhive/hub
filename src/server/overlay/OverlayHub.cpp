@@ -1528,7 +1528,7 @@ Watcher* OverlayHub::createProxyConnection(unsigned long long id, Digest *hc) {
 	Socket *conn = nullptr;
 	try {
 		if (getUid() == id || !hc) {
-			throw Exception(EX_INVALIDPARAM);
+			throw Exception(EX_ARGUMENT);
 		}
 
 		NameInfo ni;
@@ -1540,7 +1540,7 @@ Watcher* OverlayHub::createProxyConnection(unsigned long long id, Digest *hc) {
 		auto msg = Protocol::createGetKeyRequest( { 0, id },
 				{ verifyHost() ? getPKI() : nullptr, hc }, nullptr);
 		if (!msg) {
-			throw Exception(EX_ALLOCFAILED);
+			throw Exception(EX_MEMORY);
 		}
 		conn->publish(msg);
 		conn->setUid(id);

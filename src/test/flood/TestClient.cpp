@@ -55,10 +55,10 @@ void TestClient::bootstrap(uint64_t id, int timeout) {
 			if (authenticate()) {
 				WH_LOG_INFO("Authentication successful");
 			} else {
-				throw Exception(EX_INVALIDOPERATION);
+				throw Exception(EX_OPERATION);
 			}
 		} else {
-			throw Exception(EX_INVALIDOPERATION);
+			throw Exception(EX_OPERATION);
 		}
 	} catch (const BaseException &e) {
 		WH_LOG_EXCEPTION(e);

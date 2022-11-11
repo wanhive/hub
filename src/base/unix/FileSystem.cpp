@@ -55,7 +55,7 @@ mode_t FileSystem::umask(mode_t mask) noexcept {
 
 void FileSystem::chmod(const char *path, mode_t mode) {
 	if (!path) {
-		throw Exception(EX_INVALIDPARAM);
+		throw Exception(EX_ARGUMENT);
 	} else if (::chmod(path, mode) == -1) {
 		throw SystemException();
 	} else {
@@ -73,7 +73,7 @@ void FileSystem::chmod(int fd, mode_t mode) {
 
 void FileSystem::chmod(int dirfd, const char *path, mode_t mode, int flag) {
 	if (!path) {
-		throw Exception(EX_INVALIDPARAM);
+		throw Exception(EX_ARGUMENT);
 	} else if (::fchmodat(dirfd, path, mode, flag) == -1) {
 		throw SystemException();
 	} else {
@@ -84,7 +84,7 @@ void FileSystem::chmod(int dirfd, const char *path, mode_t mode, int flag) {
 void FileSystem::chown(const char *path, uid_t owner, gid_t group,
 		bool symLink) {
 	if (!path) {
-		throw Exception(EX_INVALIDPARAM);
+		throw Exception(EX_ARGUMENT);
 	} else {
 		auto ret =
 				!symLink ?
@@ -105,7 +105,7 @@ void FileSystem::chown(int fd, uid_t owner, gid_t group) {
 void FileSystem::chown(int dirfd, const char *path, uid_t owner, gid_t group,
 		int flag) {
 	if (!path) {
-		throw Exception(EX_INVALIDPARAM);
+		throw Exception(EX_ARGUMENT);
 	} else if (fchownat(dirfd, path, owner, group, flag) == -1) {
 		throw SystemException();
 	} else {
@@ -115,7 +115,7 @@ void FileSystem::chown(int dirfd, const char *path, uid_t owner, gid_t group,
 
 void FileSystem::truncate(const char *path, off_t length) {
 	if (!path) {
-		throw Exception(EX_INVALIDPARAM);
+		throw Exception(EX_ARGUMENT);
 	} else if (::truncate(path, length) == -1) {
 		throw SystemException();
 	} else {
@@ -133,7 +133,7 @@ void FileSystem::truncate(int fd, off_t length) {
 
 void FileSystem::link(const char *oldPath, const char *newPath) {
 	if (!oldPath || !newPath) {
-		throw Exception(EX_INVALIDPARAM);
+		throw Exception(EX_ARGUMENT);
 	} else if (::link(oldPath, newPath) == -1) {
 		throw SystemException();
 	} else {
@@ -144,7 +144,7 @@ void FileSystem::link(const char *oldPath, const char *newPath) {
 void FileSystem::link(int oldDirfd, const char *oldPath, int newDirfd,
 		const char *newPath, int flag) {
 	if (!oldPath || !newPath) {
-		throw Exception(EX_INVALIDPARAM);
+		throw Exception(EX_ARGUMENT);
 	} else if (::linkat(oldDirfd, oldPath, newDirfd, newPath, flag) == -1) {
 		throw SystemException();
 	} else {
@@ -154,7 +154,7 @@ void FileSystem::link(int oldDirfd, const char *oldPath, int newDirfd,
 
 void FileSystem::unlink(const char *path) {
 	if (!path) {
-		throw Exception(EX_INVALIDPARAM);
+		throw Exception(EX_ARGUMENT);
 	} else if (::unlink(path) == -1) {
 		throw SystemException();
 	} else {
@@ -164,7 +164,7 @@ void FileSystem::unlink(const char *path) {
 
 void FileSystem::unlink(int dirfd, const char *path, int flag) {
 	if (!path) {
-		throw Exception(EX_INVALIDPARAM);
+		throw Exception(EX_ARGUMENT);
 	} else if (::unlinkat(dirfd, path, flag) == -1) {
 		throw SystemException();
 	} else {
@@ -200,7 +200,7 @@ void FileSystem::rename(int oldDirfd, const char *oldPath, int newDirfd,
 
 void FileSystem::symLink(const char *target, const char *linkPath) {
 	if (!target || !linkPath) {
-		throw Exception(EX_INVALIDPARAM);
+		throw Exception(EX_ARGUMENT);
 	} else if (::symlink(target, linkPath) == -1) {
 		throw SystemException();
 	} else {
@@ -210,7 +210,7 @@ void FileSystem::symLink(const char *target, const char *linkPath) {
 
 void FileSystem::symLink(int dirfd, const char *target, const char *linkPath) {
 	if (!target || !linkPath) {
-		throw Exception(EX_INVALIDPARAM);
+		throw Exception(EX_ARGUMENT);
 	} else if (::symlinkat(target, dirfd, linkPath) == -1) {
 		throw SystemException();
 	} else {
@@ -221,7 +221,7 @@ void FileSystem::symLink(int dirfd, const char *target, const char *linkPath) {
 size_t FileSystem::readLink(const char *path, char *buf, size_t size) {
 	struct stat sb;
 	if (!path || !buf || !size) {
-		throw Exception(EX_INVALIDPARAM);
+		throw Exception(EX_ARGUMENT);
 	} else if (::lstat(path, &sb) == -1) {
 		throw SystemException();
 	} else if ((size - 1) < (size_t) sb.st_size) {
@@ -241,7 +241,7 @@ size_t FileSystem::readLink(int dirfd, const char *path, char *buf,
 		size_t size) {
 	struct stat sb;
 	if (!path || !buf || !size) {
-		throw Exception(EX_INVALIDPARAM);
+		throw Exception(EX_ARGUMENT);
 	} else if (::fstatat(dirfd, path, &sb, AT_SYMLINK_NOFOLLOW) == -1) {
 		throw SystemException();
 	} else if ((size - 1) < (size_t) sb.st_size) {
@@ -268,7 +268,7 @@ void FileSystem::setTimestamp(int fd, const timespec times[2]) {
 void FileSystem::setTimestamp(int dirfd, const char *path,
 		const timespec times[2], int flag) {
 	if (!path) {
-		throw Exception(EX_INVALIDPARAM);
+		throw Exception(EX_ARGUMENT);
 	} else if (::utimensat(dirfd, path, times, flag) == -1) {
 		throw SystemException();
 	} else {

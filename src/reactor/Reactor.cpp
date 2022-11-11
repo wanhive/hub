@@ -41,7 +41,7 @@ void Reactor::add(Watcher *w, uint32_t events) {
 
 		w->setFlags(WATCHER_RUNNING);
 	} else {
-		throw Exception(EX_INVALIDPARAM);
+		throw Exception(EX_ARGUMENT);
 	}
 }
 
@@ -50,7 +50,7 @@ void Reactor::modify(Watcher *w, uint32_t events) {
 		events |= (IO_CLOSE | TRIGGER_EDGE);
 		selector.modify(w->getHandle(), events, w);
 	} else {
-		throw Exception(EX_INVALIDPARAM);
+		throw Exception(EX_ARGUMENT);
 	}
 }
 

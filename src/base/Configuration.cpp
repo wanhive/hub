@@ -36,7 +36,7 @@ Configuration::Configuration(const char *filename) {
 	memset(&data, 0, sizeof(data));
 	if (!load(filename)) {
 		clear();
-		throw Exception(EX_INVALIDOPERATION);
+		throw Exception(EX_OPERATION);
 	}
 }
 

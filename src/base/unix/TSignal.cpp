@@ -56,7 +56,7 @@ int TSignal::suspend(const SignalSet &ss) {
 
 int TSignal::suspend(const sigset_t *set) {
 	if (!set) {
-		throw Exception(EX_INVALIDPARAM);
+		throw Exception(EX_ARGUMENT);
 	} else {
 		int signum = 0;
 		auto rc = ::sigwait(set, &signum);

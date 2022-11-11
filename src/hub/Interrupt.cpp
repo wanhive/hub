@@ -57,7 +57,7 @@ ssize_t Interrupt::read(int &signum) {
 		return nRead;
 	} else {
 		//Something broke
-		throw Exception(EX_INVALIDSTATE);
+		throw Exception(EX_STATE);
 	}
 }
 

@@ -17,24 +17,25 @@
 namespace wanhive {
 //-----------------------------------------------------------------
 /**
- * Enumeration of error codes for application-generated exception
+ * Enumeration of application-generated exception types
  */
 enum ExceptionType {
 	EX_NULL, /**< Null reference */
-	EX_INDEXOUTOFBOUNDS,/**< Invalid index */
-	EX_INVALIDPARAM, /**< Invalid parameter */
-	EX_ALLOCFAILED, /**< Memory allocation failed */
+	EX_INDEX, /**< Invalid index */
+	EX_ARGUMENT, /**< Invalid argument */
+	EX_PARAMETER, /**< Invalid parameter */
+	EX_MEMORY, /**< Memory operation failed */
 	EX_UNDERFLOW, /**< Container underflow */
 	EX_OVERFLOW, /**< Container overflow */
-	EX_INVALIDRANGE, /**< Invalid range/bounds */
-	EX_INVALIDOPERATION,/**< Invalid operation */
-	EX_INVALIDSTATE, /**< Invalid application state */
+	EX_RANGE, /**< Invalid range/bounds */
+	EX_OPERATION, /**< Invalid operation */
+	EX_STATE, /**< Invalid application state */
 	EX_RESOURCE, /**< Invalid resource */
 	EX_SECURITY /**< Security constraints violation */
 };
 //-----------------------------------------------------------------
 /**
- * Application generated exceptions
+ * Application generated exception
  */
 class Exception: public BaseException {
 public:

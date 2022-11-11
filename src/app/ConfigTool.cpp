@@ -163,7 +163,7 @@ void ConfigTool::generateVerifier() {
 		Authenticator auth(true);
 		if (!auth.generateVerifier(name, (const unsigned char*) password,
 				strlen(password), rounds)) {
-			throw Exception(EX_INVALIDOPERATION);
+			throw Exception(EX_OPERATION);
 		}
 
 		char buffer[4096];

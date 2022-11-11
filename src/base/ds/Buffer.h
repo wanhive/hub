@@ -250,7 +250,7 @@ void wanhive::Buffer<X>::initialize(unsigned int size) {
 		storage = nullptr;
 		_capacity = 0;
 		clear();
-		throw Exception(EX_ALLOCFAILED);
+		throw Exception(EX_MEMORY);
 	}
 }
 

@@ -89,7 +89,7 @@ void wanhive::Pooled<X>::initPool(unsigned int count) {
 template<typename X>
 void wanhive::Pooled<X>::destroyPool() {
 	if (pool.destroy() != 0) {
-		throw Exception(EX_INVALIDSTATE);
+		throw Exception(EX_STATE);
 	}
 }
 

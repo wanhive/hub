@@ -14,11 +14,11 @@
 
 namespace {
 
-const char *exceptionMessages[] = { "Null reference", "Index out of bounds",
-		"Invalid parameter(s)", "Memory allocation failed",
-		"Container underflow", "Container overflow", "Invalid range",
-		"Invalid operation", "Invalid state", "Resource unavailable",
-		"Security violation" };
+const char *exceptionMessages[] = { "NULL reference", "Invalid index",
+		"Invalid argument(s)", "Invalid parameter(s)",
+		"Invalid memory operation", "Container underflow", "Container overflow",
+		"Invalid range", "Invalid operation", "Invalid state",
+		"Resource unavailable", "Security violation" };
 
 }  // namespace
 

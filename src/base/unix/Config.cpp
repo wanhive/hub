@@ -39,7 +39,7 @@ long Config::path(int fd, int name) {
 
 long Config::path(const char *path, int name) {
 	if (path == nullptr) {
-		throw Exception(EX_INVALIDPARAM);
+		throw Exception(EX_ARGUMENT);
 	} else {
 		errno = 0;
 		auto ret = ::pathconf(path, name);

@@ -23,7 +23,7 @@ Node::Node(unsigned int key) :
 	if (key <= MAX_ID) {
 		initialize();
 	} else {
-		throw Exception(EX_INVALIDPARAM);
+		throw Exception(EX_ARGUMENT);
 	}
 }
 

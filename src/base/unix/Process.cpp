@@ -50,7 +50,7 @@ pid_t Process::wait(pid_t pid, int options, int *status) noexcept {
 
 void Process::execute(const char *name, char *const argv[], bool search) {
 	if (!name || !argv) {
-		throw Exception(EX_INVALIDPARAM);
+		throw Exception(EX_ARGUMENT);
 	} else if (search) {
 		::execvp(name, argv);
 		throw SystemException();
@@ -63,7 +63,7 @@ void Process::execute(const char *name, char *const argv[], bool search) {
 void Process::execute(const char *name, char *const argv[], char *const envp[],
 		bool search) {
 	if (!name || !argv) {
-		throw Exception(EX_INVALIDPARAM);
+		throw Exception(EX_ARGUMENT);
 	} else if (search) {
 		::execvpe(name, argv, envp);
 		throw SystemException();
@@ -75,7 +75,7 @@ void Process::execute(const char *name, char *const argv[], char *const envp[],
 
 void Process::execute(int fd, char *const argv[], char *const envp[]) {
 	if (!argv) {
-		throw Exception(EX_INVALIDPARAM);
+		throw Exception(EX_ARGUMENT);
 	} else {
 		::fexecve(fd, argv, envp);
 		throw SystemException();
@@ -93,7 +93,7 @@ clock_t Process::time(tms *buf) {
 
 void Process::getLimit(int resource, rlimit *limit) {
 	if (!limit) {
-		throw Exception(EX_INVALIDPARAM);
+		throw Exception(EX_ARGUMENT);
 	} else if (::getrlimit(resource, limit) != 0) {
 		throw SystemException();
 	} else {
@@ -103,7 +103,7 @@ void Process::getLimit(int resource, rlimit *limit) {
 
 void Process::setLimit(int resource, const rlimit *limit) {
 	if (!limit) {
-		throw Exception(EX_INVALIDPARAM);
+		throw Exception(EX_ARGUMENT);
 	} else if (::setrlimit(resource, limit) != 0) {
 		throw SystemException();
 	} else {

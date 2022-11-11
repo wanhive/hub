@@ -76,7 +76,7 @@ void Hosts::batchUpdate(const char *path) {
 
 	auto f = Storage::openStream(path, "r", false);
 	if (!f) {
-		throw Exception(EX_INVALIDPARAM);
+		throw Exception(EX_ARGUMENT);
 	}
 
 	try {
@@ -116,13 +116,13 @@ void Hosts::batchDump(const char *path, int version) {
 		if (sqlite3_prepare_v2(db.conn, query, strlen(query), &stmt,
 				nullptr) != SQLITE_OK) {
 			finalize(stmt);
-			throw Exception(EX_INVALIDSTATE);
+			throw Exception(EX_STATE);
 		}
 		//-----------------------------------------------------------------
 		auto f = Storage::openStream(path, "w", true);
 		if (!f) {
 			finalize(stmt);
-			throw Exception(EX_INVALIDPARAM);
+			throw Exception(EX_ARGUMENT);
 		}
 
 		writeHeading(f, version);
@@ -243,7 +243,7 @@ void Hosts::createDummy(const char *path, int version) {
 		}
 		Storage::closeStream(f);
 	} else {
-		throw Exception(EX_INVALIDPARAM);
+		throw Exception(EX_ARGUMENT);
 	}
 }
 
@@ -262,7 +262,7 @@ void Hosts::openConnection(const char *path, bool readOnly) {
 		WH_LOG_DEBUG("%s", sqlite3_errmsg(conn));
 		//sqlite3_open_v2 always returns a connection handle
 		sqlite3_close(conn);
-		throw Exception(EX_INVALIDOPERATION);
+		throw Exception(EX_OPERATION);
 	} else {
 		db.conn = conn;
 	}
@@ -282,7 +282,7 @@ void Hosts::createTable() {
 	if (!db.conn
 			|| sqlite3_exec(db.conn, tq, nullptr, nullptr, nullptr) != SQLITE_OK) {
 		WH_LOG_DEBUG("Could not create database tables");
-		throw Exception(EX_INVALIDOPERATION);
+		throw Exception(EX_OPERATION);
 	} else {
 		//SUCCESS
 	}
@@ -306,7 +306,7 @@ void Hosts::prepareStatements() {
 					!= SQLITE_OK)) {
 		closeStatements();
 		WH_LOG_DEBUG("Could not create prepared statements");
-		throw Exception(EX_INVALIDOPERATION);
+		throw Exception(EX_OPERATION);
 	} else {
 		resetStatements();
 	}
@@ -347,7 +347,7 @@ void Hosts::beginTransaction() {
 	if (!db.conn
 			|| sqlite3_exec(db.conn, "BEGIN", nullptr, nullptr, nullptr)
 					!= SQLITE_OK) {
-		throw Exception(EX_INVALIDOPERATION);
+		throw Exception(EX_OPERATION);
 	}
 }
 
@@ -355,7 +355,7 @@ void Hosts::endTransaction() {
 	if (!db.conn
 			|| sqlite3_exec(db.conn, "COMMIT", nullptr, nullptr, nullptr)
 					!= SQLITE_OK) {
-		throw Exception(EX_INVALIDOPERATION);
+		throw Exception(EX_OPERATION);
 	}
 }
 
@@ -363,7 +363,7 @@ void Hosts::cancelTransaction() {
 	if (!db.conn
 			|| sqlite3_exec(db.conn, "ROLLBACK", nullptr, nullptr, nullptr)
 					!= SQLITE_OK) {
-		throw Exception(EX_INVALIDOPERATION);
+		throw Exception(EX_OPERATION);
 	}
 }
 

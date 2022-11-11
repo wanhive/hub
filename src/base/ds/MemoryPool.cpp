@@ -42,16 +42,16 @@ MemoryPool::~MemoryPool() {
 
 void MemoryPool::initialize(unsigned int size, unsigned int count) {
 	if (isInitialized()) {
-		throw Exception(EX_INVALIDOPERATION);
+		throw Exception(EX_OPERATION);
 	} else if (!size && count) {
-		throw Exception(EX_INVALIDPARAM);
+		throw Exception(EX_ARGUMENT);
 	} else if (!count) {
 		return;
 	}
 
 	size = Twiddler::align(size, Twiddler::power2Ceil(ALIGNMENT));
 	if ((_bucket = calloc(count, size)) == nullptr) {
-		throw Exception(EX_ALLOCFAILED);
+		throw Exception(EX_MEMORY);
 	}
 
 	_head = _bucket;

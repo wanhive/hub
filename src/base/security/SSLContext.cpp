@@ -132,7 +132,7 @@ void SSLContext::clear() noexcept {
 
 size_t SSLContext::receiveStream(SSL *ssl, unsigned char *buf, size_t length) {
 	if (!ssl || (!buf && length)) {
-		throw Exception(EX_INVALIDPARAM);
+		throw Exception(EX_ARGUMENT);
 	} else if (!length) {
 		return 0;
 	} else {
@@ -154,7 +154,7 @@ size_t SSLContext::receiveStream(SSL *ssl, unsigned char *buf, size_t length) {
 size_t SSLContext::sendStream(SSL *ssl, const unsigned char *buf,
 		size_t length) {
 	if (!ssl || (!buf && length)) {
-		throw Exception(EX_INVALIDPARAM);
+		throw Exception(EX_ARGUMENT);
 	} else if (!length) {
 		return 0;
 	} else {

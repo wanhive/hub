@@ -194,7 +194,7 @@ void ClientHub::connectToAuthenticator() noexcept {
 		//-----------------------------------------------------------------
 		//Check for consistency
 		if (!isStage(WHC_IDENTIFY)) {
-			throw Exception(EX_INVALIDSTATE);
+			throw Exception(EX_STATE);
 		}
 
 		if (!ctx.passwordLength) {
@@ -245,7 +245,7 @@ void ClientHub::connectToOverlay() noexcept {
 		//-----------------------------------------------------------------
 		//Check for consistency
 		if (!isStage(WHC_BOOTSTRAP)) {
-			throw Exception(EX_INVALIDSTATE);
+			throw Exception(EX_STATE);
 		}
 		//-----------------------------------------------------------------
 		//Check for timed-out connection
@@ -291,7 +291,7 @@ bool ClientHub::checkStageTimeout(unsigned int milliseconds) const noexcept {
 void ClientHub::initAuthentication() noexcept {
 	try {
 		if (!isStage(WHC_AUTHENTICATE) || !bs.auth) {
-			throw Exception(EX_INVALIDSTATE);
+			throw Exception(EX_STATE);
 		} else {
 			//Message destination is correctly set
 			Hub::sendMessage(createAuthenticationRequest());
@@ -309,7 +309,7 @@ void ClientHub::findRoot() noexcept {
 	auto fresh = false;
 	try {
 		if (!isStage(WHC_ROOT) || !bs.node) {
-			throw Exception(EX_INVALIDSTATE);
+			throw Exception(EX_STATE);
 		} else if (bs.root == bs.node->getUid()) {
 			fresh = false;
 			WH_LOG_DEBUG("Found the root node [%llu]", bs.root);
@@ -330,7 +330,7 @@ void ClientHub::findRoot() noexcept {
 				{ verifyHost() ? getPKI() : nullptr, &bs.nonce }, nullptr);
 		//-----------------------------------------------------------------
 		if (!msg) {
-			throw Exception(EX_ALLOCFAILED);
+			throw Exception(EX_MEMORY);
 		} else if (fresh) {
 			s->publish(msg);
 			attach(s, IO_WR, WATCHER_ACTIVE);
@@ -356,7 +356,7 @@ void ClientHub::initAuthorization() noexcept {
 	try {
 		if (!isStage(WHC_AUTHORIZE) || !bs.node
 				|| (ctx.passwordLength && !bs.auth)) {
-			throw Exception(EX_INVALIDSTATE);
+			throw Exception(EX_STATE);
 		} else if (bs.auth) {
 			auto msg = createRegistrationRequest(false);
 			msg->setDestination(bs.auth->getUid());
@@ -382,7 +382,7 @@ Message* ClientHub::createIdentificationRequest() {
 			throw Exception(EX_SECURITY);
 		} else if (!(msg = Protocol::createIdentificationRequest(
 				{ getUid(), 0 }, nonce, 0))) {
-			throw Exception(EX_ALLOCFAILED);
+			throw Exception(EX_MEMORY);
 		} else {
 			return msg;
 		}
@@ -420,13 +420,13 @@ Message* ClientHub::createAuthenticationRequest() {
 		Message *msg = nullptr;
 		Data proof;
 		if (!bs.auth) {
-			throw Exception(EX_INVALIDOPERATION);
+			throw Exception(EX_OPERATION);
 		} else if (!bs.authenticator.generateUserProof(proof.base,
 				proof.length)) {
-			throw Exception(EX_INVALIDSTATE);
+			throw Exception(EX_STATE);
 		} else if (!(msg = Protocol::createAuthenticationRequest(
 				{ 0, bs.auth->getUid() }, proof, 0))) {
-			throw Exception(EX_ALLOCFAILED);
+			throw Exception(EX_MEMORY);
 		} else {
 			return msg;
 		}
@@ -458,7 +458,7 @@ Message* ClientHub::createFindRootRequest() {
 		if (msg) {
 			return msg;
 		} else {
-			throw Exception(EX_ALLOCFAILED);
+			throw Exception(EX_MEMORY);
 		}
 	} catch (const BaseException &e) {
 		WH_LOG_EXCEPTION(e);
@@ -507,7 +507,7 @@ Message* ClientHub::createRegistrationRequest(bool sign) {
 			}
 			return msg;
 		} else {
-			throw Exception(EX_ALLOCFAILED);
+			throw Exception(EX_MEMORY);
 		}
 	} catch (const BaseException &e) {
 		WH_LOG_EXCEPTION(e);
@@ -568,7 +568,7 @@ bool ClientHub::isStage(int stage) const noexcept {
 void ClientHub::loadIdentifiers(bool auth) {
 	try {
 		if (bs.identifiers.getStatus()) {
-			throw Exception(EX_INVALIDSTATE);
+			throw Exception(EX_STATE);
 		}
 
 		bs.identifiers.setStatus(1);

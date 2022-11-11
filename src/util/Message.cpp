@@ -84,13 +84,13 @@ bool Message::build(Source<unsigned char> &in) {
 				return false;
 			}
 		} else {
-			throw Exception(EX_INVALIDRANGE);
+			throw Exception(EX_RANGE);
 		}
 		/* no break */
 	case MSG_WAIT_PROCESSING:
 		return true;
 	default:
-		throw Exception(EX_INVALIDSTATE);
+		throw Exception(EX_STATE);
 	}
 }
 

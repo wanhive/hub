@@ -38,7 +38,7 @@ bool CommandLine::inputError(bool verbose) {
 			return false;
 		}
 	} catch (...) {
-		throw Exception(EX_INVALIDOPERATION);
+		throw Exception(EX_OPERATION);
 	}
 }
 

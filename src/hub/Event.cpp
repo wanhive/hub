@@ -64,7 +64,7 @@ ssize_t Event::read(unsigned long long &count) {
 		return nRead;
 	} else {
 		//Something broke
-		throw Exception(EX_INVALIDSTATE);
+		throw Exception(EX_STATE);
 	}
 }
 

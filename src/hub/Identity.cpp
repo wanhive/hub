@@ -118,7 +118,7 @@ void Identity::getAddress(uint64_t uid, NameInfo &ni) {
 	if (hosts.get(uid, ni) == 0) {
 		return;
 	} else {
-		throw Exception(EX_INVALIDOPERATION);
+		throw Exception(EX_OPERATION);
 	}
 }
 
@@ -213,7 +213,7 @@ void Identity::generateInstanceId() {
 		throw;
 	} catch (...) {
 		WH_LOG_EXCEPTION_U();
-		throw Exception(EX_ALLOCFAILED);
+		throw Exception(EX_MEMORY);
 	}
 }
 
@@ -233,7 +233,7 @@ void Identity::loadConfiguration() {
 					paths.configurationFileName);
 			WH_free(paths.configurationFileName);
 			paths.configurationFileName = nullptr;
-			throw Exception(EX_INVALIDPARAM);
+			throw Exception(EX_ARGUMENT);
 		}
 	} catch (const BaseException &e) {
 		WH_LOG_EXCEPTION(e);
@@ -411,7 +411,7 @@ void Identity::loadPublicKey() {
 void Identity::loadSSLCertificate() {
 	try {
 		if (!ssl.enabled) {
-			throw Exception(EX_INVALIDOPERATION);
+			throw Exception(EX_OPERATION);
 		} else if (!paths.sslCertificateFileName) {
 			WH_LOG_WARNING("No SSL certificate file");
 			return;
@@ -436,7 +436,7 @@ void Identity::loadSSLCertificate() {
 void Identity::loadSSLHostKey() {
 	try {
 		if (!ssl.enabled) {
-			throw Exception(EX_INVALIDOPERATION);
+			throw Exception(EX_OPERATION);
 		} else if (!paths.sslHostKeyFileName) {
 			WH_LOG_WARNING("No SSL private key file");
 			return;

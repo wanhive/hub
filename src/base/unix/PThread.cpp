@@ -27,7 +27,7 @@ PThread::~PThread() {
 
 void* PThread::join() {
 	if (detached) {
-		throw Exception(EX_INVALIDOPERATION);
+		throw Exception(EX_OPERATION);
 	} else {
 		void *ret;
 		auto status = ::pthread_join(tid, &ret);

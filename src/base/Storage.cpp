@@ -82,7 +82,7 @@ int Storage::open(const char *path, int flags, mode_t mode, bool createPath) {
 		}
 		return fd;
 	} else {
-		throw Exception(EX_INVALIDPARAM);
+		throw Exception(EX_ARGUMENT);
 	}
 }
 

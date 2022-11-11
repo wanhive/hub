@@ -62,7 +62,7 @@ void PSignal::pending(SignalSet &ss) {
 
 void PSignal::pending(sigset_t *set) {
 	if (!set) {
-		throw Exception(EX_INVALIDPARAM);
+		throw Exception(EX_ARGUMENT);
 	} else if (::sigpending(set) == -1) {
 		throw SystemException();
 	} else {
@@ -76,7 +76,7 @@ void PSignal::suspend(const SignalSet &ss) {
 
 void PSignal::suspend(const sigset_t *set) {
 	if (!set) {
-		throw Exception(EX_INVALIDPARAM);
+		throw Exception(EX_ARGUMENT);
 	} else if (::sigsuspend(set) == -1 && errno != EINTR) {
 		throw SystemException();
 	} else {

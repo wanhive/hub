@@ -19,7 +19,7 @@ namespace wanhive {
 
 void WorkingDirectory::set(const char *path) {
 	if (!path) {
-		throw Exception(EX_INVALIDPARAM);
+		throw Exception(EX_ARGUMENT);
 	} else if (::chdir(path) == -1) {
 		throw SystemException();
 	} else {

@@ -33,7 +33,7 @@ const char* Environment::get(const char *name) noexcept {
 
 void Environment::put(char *string) {
 	if (!string) {
-		throw Exception(EX_INVALIDPARAM);
+		throw Exception(EX_ARGUMENT);
 	} else if (::putenv(string) != 0) {
 		throw SystemException();
 	} else {
@@ -43,7 +43,7 @@ void Environment::put(char *string) {
 
 void Environment::set(const char *name, const char *value, bool replace) {
 	if (!name || !value) {
-		throw Exception(EX_INVALIDPARAM);
+		throw Exception(EX_ARGUMENT);
 	} else if (::setenv(name, value, (replace ? 1 : 0)) != 0) {
 		throw SystemException();
 	} else {
@@ -53,7 +53,7 @@ void Environment::set(const char *name, const char *value, bool replace) {
 
 void Environment::unset(const char *name) {
 	if (!name) {
-		throw Exception(EX_INVALIDPARAM);
+		throw Exception(EX_ARGUMENT);
 	} else if (::unsetenv(name) != 0) {
 		throw SystemException();
 	} else {

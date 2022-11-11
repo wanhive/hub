@@ -112,7 +112,7 @@ void OverlayService::cleanup() noexcept {
 void OverlayService::setup() {
 	try {
 		if (!uid || initialized) {
-			throw Exception(EX_INVALIDOPERATION);
+			throw Exception(EX_OPERATION);
 		}
 
 		//Set the flag for book-keeping
@@ -128,7 +128,7 @@ void OverlayService::setup() {
 			WH_LOG_INFO("Connection to the controller established");
 		} else {
 			WH_LOG_ERROR("Controller is unreachable");
-			throw Exception(EX_INVALIDSTATE);
+			throw Exception(EX_STATE);
 		}
 		//-----------------------------------------------------------------
 		//Bootstrap using a predefined list of external nodes
@@ -136,7 +136,7 @@ void OverlayService::setup() {
 			WH_LOG_INFO("Bootstrap succeeded");
 		} else {
 			WH_LOG_ERROR("Bootstrap failed");
-			throw Exception(EX_INVALIDSTATE);
+			throw Exception(EX_STATE);
 		}
 	} catch (const BaseException &e) {
 		WH_LOG_EXCEPTION(e);
@@ -357,7 +357,7 @@ bool OverlayService::repairSuccessor(uint64_t id) {
 			}
 		}
 		//Could not recover, bail out
-		throw Exception(EX_INVALIDSTATE);
+		throw Exception(EX_STATE);
 	} catch (const BaseException &e) {
 		WH_LOG_EXCEPTION(e);
 		throw;

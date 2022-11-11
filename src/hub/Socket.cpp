@@ -89,7 +89,7 @@ void* Socket::operator new(size_t size) {
 	if (p) {
 		return p;
 	} else {
-		throw Exception(EX_ALLOCFAILED);
+		throw Exception(EX_MEMORY);
 	}
 }
 
@@ -351,7 +351,7 @@ ssize_t Socket::secureWrite() {
 
 void Socket::initSSL() {
 	if (!sslCtx || (secure.callRead && secure.callWrite)) {
-		throw Exception(EX_INVALIDSTATE);
+		throw Exception(EX_STATE);
 	} else if (!secure.ssl) {
 		secure.ssl = sslCtx->create(Descriptor::getHandle(),
 				!isType(SOCKET_PROXY));
@@ -368,7 +368,7 @@ void Socket::initSSL() {
 
 ssize_t Socket::sslRead(void *buf, size_t count) {
 	if (!secure.ssl || !buf || !count) {
-		throw Exception(EX_INVALIDPARAM);
+		throw Exception(EX_ARGUMENT);
 	}
 
 	auto bytes = SSL_read(secure.ssl, buf, count);
@@ -405,7 +405,7 @@ ssize_t Socket::sslRead(void *buf, size_t count) {
 
 ssize_t Socket::sslWrite(const void *buf, size_t count) {
 	if (!secure.ssl || !buf || !count) {
-		throw Exception(EX_INVALIDPARAM);
+		throw Exception(EX_ARGUMENT);
 	}
 
 	auto bytes = SSL_write(secure.ssl, buf, count);

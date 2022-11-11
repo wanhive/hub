@@ -125,7 +125,7 @@ void Hub::attach(Watcher *w, uint32_t events, uint32_t flags) {
 		watchers.put(w);
 		w->setFlags(flags);
 	} else {
-		throw Exception(EX_INVALIDOPERATION);
+		throw Exception(EX_OPERATION);
 	}
 }
 
@@ -214,7 +214,7 @@ void Hub::adapt(Watcher *w) {
 		w->start();
 		w->setReference(static_cast<Hub*>(this)); //:-)
 	} else {
-		throw Exception(EX_INVALIDPARAM);
+		throw Exception(EX_ARGUMENT);
 	}
 }
 
@@ -648,7 +648,7 @@ void Hub::initListener() {
 	} catch (...) {
 		WH_LOG_EXCEPTION_U();
 		delete listener;
-		throw Exception(EX_ALLOCFAILED);
+		throw Exception(EX_MEMORY);
 	}
 }
 
@@ -671,7 +671,7 @@ void Hub::initAlarm() {
 	} catch (...) {
 		WH_LOG_EXCEPTION_U();
 		delete alarm;
-		throw Exception(EX_ALLOCFAILED);
+		throw Exception(EX_MEMORY);
 	}
 }
 
@@ -688,7 +688,7 @@ void Hub::initEvent() {
 	} catch (...) {
 		WH_LOG_EXCEPTION_U();
 		delete event;
-		throw Exception(EX_ALLOCFAILED);
+		throw Exception(EX_MEMORY);
 	}
 }
 
@@ -705,7 +705,7 @@ void Hub::initInotifier() {
 	} catch (...) {
 		WH_LOG_EXCEPTION_U();
 		delete inotifier;
-		throw Exception(EX_ALLOCFAILED);
+		throw Exception(EX_MEMORY);
 	}
 }
 
@@ -728,7 +728,7 @@ void Hub::initInterrupt() {
 	} catch (...) {
 		WH_LOG_EXCEPTION_U();
 		delete interrupt;
-		throw Exception(EX_ALLOCFAILED);
+		throw Exception(EX_MEMORY);
 	}
 }
 
@@ -745,7 +745,7 @@ void Hub::startWorker(void *arg) {
 		throw;
 	} catch (...) {
 		WH_LOG_EXCEPTION_U();
-		throw Exception(EX_ALLOCFAILED);
+		throw Exception(EX_MEMORY);
 	}
 }
 

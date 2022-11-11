@@ -204,7 +204,7 @@ int Endpoint::connect(const NameInfo &ni, SocketAddress &sa, int timeoutMils) {
 
 void Endpoint::send(int sfd, Packet &packet, const PKI *pki) {
 	if (!packet.validate()) {
-		throw Exception(EX_INVALIDRANGE);
+		throw Exception(EX_RANGE);
 	} else if (!packet.sign(pki)) {
 		throw Exception(EX_SECURITY);
 	} else {
@@ -214,7 +214,7 @@ void Endpoint::send(int sfd, Packet &packet, const PKI *pki) {
 
 void Endpoint::send(SSL *ssl, Packet &packet, const PKI *pki) {
 	if (!packet.validate()) {
-		throw Exception(EX_INVALIDRANGE);
+		throw Exception(EX_RANGE);
 	} else if (!packet.sign(pki)) {
 		throw Exception(EX_SECURITY);
 	} else {
@@ -232,7 +232,7 @@ void Endpoint::receive(int sfd, Packet &packet, unsigned int sequenceNumber,
 
 		//Prepare the header and the frame buffer
 		if (!packet.unpackHeader()) {
-			throw Exception(EX_INVALIDRANGE);
+			throw Exception(EX_RANGE);
 		}
 
 		//Receive the payload
@@ -255,7 +255,7 @@ void Endpoint::receive(SSL *ssl, Packet &packet, unsigned int sequenceNumber,
 
 		//Prepare the header and the frame buffer
 		if (!packet.unpackHeader()) {
-			throw Exception(EX_INVALIDRANGE);
+			throw Exception(EX_RANGE);
 		}
 
 		//Receive the payload

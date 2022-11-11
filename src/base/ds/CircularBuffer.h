@@ -252,7 +252,7 @@ void wanhive::CircularBuffer<X, ATOMIC>::initialize(unsigned int size) {
 		_size = 0;
 		_capacity = 0;
 		clear();
-		throw Exception(EX_ALLOCFAILED);
+		throw Exception(EX_MEMORY);
 	}
 }
 
