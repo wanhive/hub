@@ -43,7 +43,7 @@ void OverlayService::periodic() noexcept {
 				break;
 			}
 		}
-	} catch (BaseException &e) {
+	} catch (const BaseException &e) {
 		WH_LOG_EXCEPTION(e);
 	}
 
