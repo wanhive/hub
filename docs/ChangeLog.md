@@ -14,7 +14,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 
 - Improve type and pointer safety.
-- Add and update API documentation (work in progress).
+- Update user-generated exception types (backward incompatible).
+- Update API documentation (work in progress).
 
 ### Fixed
 
