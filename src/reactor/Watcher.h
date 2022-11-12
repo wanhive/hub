@@ -13,7 +13,7 @@
 #ifndef WH_REACTOR_WATCHER_H_
 #define WH_REACTOR_WATCHER_H_
 #include "Descriptor.h"
-#include "Handle.h"
+#include "../base/ds/Handle.h"
 
 namespace wanhive {
 //-----------------------------------------------------------------

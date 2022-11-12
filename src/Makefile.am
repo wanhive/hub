@@ -12,10 +12,11 @@ WH_BASE_COMMONSOURCES = base/common/CommandLine.cpp base/common/Exception.cpp \
 ## src/base/ds
 WH_BASE_DSHEADERS = base/ds/Array.h base/ds/BinaryHeap.h base/ds/Buffer.h \
 	base/ds/BufferVector.h base/ds/CircularBuffer.h base/ds/CircularBufferVector.h \
-	base/ds/Counter.h base/ds/Encoding.h base/ds/Khash.h base/ds/MemoryPool.h \
-	base/ds/MersenneTwister.h base/ds/Pooled.h base/ds/Serializer.h base/ds/State.h \
-	base/ds/StaticBuffer.h base/ds/StaticCircularBuffer.h base/ds/Twiddler.h \
-	base/ds/UID.h base/ds/functors.h
+	base/ds/Counter.h base/ds/Encoding.h base/ds/Handle.h base/ds/Khash.h \
+	base/ds/MemoryPool.h base/ds/MersenneTwister.h base/ds/Pooled.h \
+	base/ds/Serializer.h base/ds/State.h base/ds/StaticBuffer.h \
+	base/ds/StaticCircularBuffer.h base/ds/Twiddler.h base/ds/UID.h \
+	base/ds/functors.h
 WH_BASE_DSSOURCES = base/ds/Counter.cpp base/ds/Encoding.cpp base/ds/MemoryPool.cpp \
 	base/ds/MersenneTwister.cpp base/ds/Serializer.cpp base/ds/State.cpp \
 	base/ds/Twiddler.cpp base/ds/UID.cpp
@@ -66,8 +67,8 @@ WH_BASESOURCES =  $(WH_BASE_COMMONSOURCES) $(WH_BASE_DSSOURCES) $(WH_BASE_IPCSOU
 	$(WH_BASE_SECURITYSOURCES) $(WH_BASEUNIXSOURCES) $(WH_BASE_TOPSOURCES)
 
 ## src/reactor collection
-WH_REACTORHEADERS = reactor/Descriptor.h reactor/Handle.h reactor/Handler.h \
-	reactor/Reactor.h reactor/Watcher.h reactor/Watchers.h
+WH_REACTORHEADERS = reactor/Descriptor.h reactor/Handler.h reactor/Reactor.h \
+	reactor/Watcher.h reactor/Watchers.h
 WH_REACTORSOURCES = reactor/Descriptor.cpp reactor/Reactor.cpp \
 	reactor/Watcher.cpp reactor/Watchers.cpp
 
