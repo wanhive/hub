@@ -15,6 +15,5 @@
 
 #include "reactor/Handler.h"
 #include "reactor/Reactor.h"
-#include "reactor/Watchers.h"
 
 #endif /* WH_WANHIVE_REACTOR_H_ */

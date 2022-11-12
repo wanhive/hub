@@ -20,13 +20,13 @@
 #include "Interrupt.h"
 #include "Logic.h"
 #include "Socket.h"
+#include "Watchers.h"
 #include "../base/Timer.h"
 #include "../base/Thread.h"
 #include "../base/ds/Buffer.h"
 #include "../base/ds/CircularBuffer.h"
 #include "../reactor/Handler.h"
 #include "../reactor/Reactor.h"
-#include "../reactor/Watchers.h"
 
 namespace wanhive {
 /**

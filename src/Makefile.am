@@ -68,9 +68,8 @@ WH_BASESOURCES =  $(WH_BASE_COMMONSOURCES) $(WH_BASE_DSSOURCES) $(WH_BASE_IPCSOU
 
 ## src/reactor collection
 WH_REACTORHEADERS = reactor/Descriptor.h reactor/Handler.h reactor/Reactor.h \
-	reactor/Watcher.h reactor/Watchers.h
-WH_REACTORSOURCES = reactor/Descriptor.cpp reactor/Reactor.cpp \
-	reactor/Watcher.cpp reactor/Watchers.cpp
+	reactor/Watcher.h
+WH_REACTORSOURCES = reactor/Descriptor.cpp reactor/Reactor.cpp reactor/Watcher.cpp
 
 ## src/util collection
 WH_UTILHEADERS = util/Authenticator.h util/Endpoint.h util/FlowControl.h \
@@ -86,10 +85,10 @@ WH_UTILSOURCES = util/Authenticator.cpp util/Endpoint.cpp util/FlowControl.cpp \
 ## src/hub collection
 WH_HUBHEADERS = hub/Alarm.h hub/ClientHub.h hub/Event.h hub/Hub.h \
 	hub/HubInfo.h hub/Identity.h hub/Inotifier.h hub/Interrupt.h hub/Logic.h \
-	hub/Protocol.h hub/Socket.h hub/Topic.h
+	hub/Protocol.h hub/Socket.h hub/Topic.h hub/Watchers.h
 WH_HUBSOURCES = hub/Alarm.cpp hub/ClientHub.cpp hub/Event.cpp hub/Hub.cpp \
 	hub/HubInfo.cpp hub/Identity.cpp hub/Inotifier.cpp hub/Interrupt.cpp \
-	hub/Logic.cpp hub/Protocol.cpp hub/Socket.cpp hub/Topic.cpp
+	hub/Logic.cpp hub/Protocol.cpp hub/Socket.cpp hub/Topic.cpp hub/Watchers.cpp
 
 ## src/server collection
 WH_SERVERHEADERS = server/auth/AuthenticationHub.h server/overlay/commands.h \

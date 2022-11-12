@@ -10,10 +10,10 @@
  *
  */
 
-#ifndef WH_REACTOR_WATCHERS_H_
-#define WH_REACTOR_WATCHERS_H_
+#ifndef WH_HUB_WATCHERS_H_
+#define WH_HUB_WATCHERS_H_
 #include "../base/ds/Khash.h"
-#include "Watcher.h"
+#include "../reactor/Watcher.h"
 
 namespace wanhive {
 /**
@@ -116,4 +116,4 @@ private:
 
 } /* namespace wanhive */
 
-#endif /* WH_REACTOR_WATCHERS_H_ */
+#endif /* WH_HUB_WATCHERS_H_ */
