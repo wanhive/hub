@@ -37,7 +37,7 @@
 
 namespace wanhive {
 //=================================================================
-const char *Identity::CONF_FILE = (const char*) WH_CONF_FILE;
+const char *Identity::CONF_FILE_NAME = (const char*) WH_CONF_FILE;
 const char *Identity::CONF_PATH = (const char*) WH_CONF_PATH;
 const char *Identity::CONF_SYSTEM_PATH = (const char*) WH_CONF_SYSTEM_PATH;
 //=================================================================
