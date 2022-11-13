@@ -13,6 +13,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- Package restructuring (introduces backward incompatible API changes).
 - Improve type and pointer safety.
 - Update user-generated exception types (backward incompatible).
 - Update API documentation (work in progress).
