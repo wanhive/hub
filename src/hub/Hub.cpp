@@ -116,13 +116,13 @@ bool Hub::attached(unsigned long long id) const noexcept {
 }
 
 Watcher* Hub::fetch(unsigned long long id) const noexcept {
-	return watchers.get(id);
+	return watchers.select(id);
 }
 
 void Hub::attach(Watcher *w, uint32_t events, uint32_t flags) {
 	if (w && !watchers.contains(w->getUid())) {
 		add(w, events);
-		watchers.put(w);
+		watchers.insert(w);
 		w->setFlags(flags);
 	} else {
 		throw Exception(EX_OPERATION);

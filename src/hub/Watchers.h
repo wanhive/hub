@@ -36,24 +36,24 @@ public:
 	 */
 	bool contains(unsigned long long key) const noexcept;
 	/**
-	 * Returns watcher associated with a key.
+	 * Returns watcher associated with a given key.
 	 * @param key key's value
 	 * @return associated watcher, nullptr if the key doesn't exist
 	 */
-	Watcher* get(unsigned long long key) const noexcept;
+	Watcher* select(unsigned long long key) const noexcept;
 	/**
 	 * Inserts a new (key, watcher) pair.
 	 * @param key key's value
 	 * @param w watcher's pointer, its UID is updated to match the key
 	 * @return true on success, false otherwise
 	 */
-	bool put(unsigned long long key, Watcher *w) noexcept;
+	bool insert(unsigned long long key, Watcher *w) noexcept;
 	/**
 	 * Inserts a new watcher. Watcher's UID is used as the key.
 	 * @param w watcher's pointer
 	 * @return true on success, false otherwise
 	 */
-	bool put(Watcher *w) noexcept;
+	bool insert(Watcher *w) noexcept;
 	/**
 	 * Inserts a (key, watcher) pair. If the given key already exists then the
 	 * associated watcher is replaced and returned.

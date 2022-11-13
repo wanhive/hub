@@ -26,13 +26,13 @@ bool Watchers::contains(unsigned long long key) const noexcept {
 	return watchers.contains(key);
 }
 
-Watcher* Watchers::get(unsigned long long key) const noexcept {
+Watcher* Watchers::select(unsigned long long key) const noexcept {
 	Watcher *w = nullptr;
 	watchers.hmGet(key, w);
 	return w;
 }
 
-bool Watchers::put(unsigned long long key, Watcher *w) noexcept {
+bool Watchers::insert(unsigned long long key, Watcher *w) noexcept {
 	if (w && watchers.hmPut(key, w)) {
 		w->setUid(key);
 		return true;
@@ -41,8 +41,8 @@ bool Watchers::put(unsigned long long key, Watcher *w) noexcept {
 	}
 }
 
-bool Watchers::put(Watcher *w) noexcept {
-	return w && put(w->getUid(), w);
+bool Watchers::insert(Watcher *w) noexcept {
+	return w && insert(w->getUid(), w);
 }
 
 Watcher* Watchers::replace(unsigned long long key, Watcher *w) noexcept {
