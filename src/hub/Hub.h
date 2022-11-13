@@ -107,31 +107,31 @@ protected:
 	void metrics(HubInfo &info) const noexcept;
 	//-----------------------------------------------------------------
 	/**
-	 * Watcher management: checks whether a watcher is associated with the given
-	 * key.
+	 * Watcher management: checks whether a watcher is associated with a
+	 * given key.
 	 * @param id key's value
 	 * @return true if the key exists, false otherwise
 	 */
 	bool attached(unsigned long long id) const noexcept;
 	/**
-	 * Watcher management: returns the watcher associated with the given key.
+	 * Watcher management: returns watcher associated with a given key.
 	 * @param id key's value
-	 * @return the associated watcher on match, nullptr if the key doesn't exist
+	 * @return associated watcher if the key exists, nullptr otherwise
 	 */
 	Watcher* fetch(unsigned long long id) const noexcept;
 	/**
 	 * Watcher management: registers a watcher, watcher's unique identifier is
-	 * used as the key.
+	 * used as its key.
 	 * @param w watcher to register
-	 * @param events IO events of interest
-	 * @param flags watcher's flags to set on successful registration
+	 * @param events events of interest
+	 * @param flags watcher's flags to set on success
 	 */
 	void attach(Watcher *w, uint32_t events, uint32_t flags);
 	/**
-	 * Watcher management: removes a key and the associated watcher.
+	 * Watcher management: removes a key and its associated watcher.
 	 * @param id key's value
-	 * @return true if the operation could not be completed immediately (the
-	 * operation scheduled for silent completion), false otherwise.
+	 * @return true if the operation could not complete immediately (scheduled
+	 * for future), false otherwise.
 	 */
 	bool detach(unsigned long long id) noexcept;
 	/**
@@ -139,7 +139,7 @@ protected:
 	 * a watcher is associated with the new key and replacement is allowed then
 	 * the conflicting watcher is disabled. On success, the watcher being moved
 	 * has it's WATCHER_ACTIVE flag set and it's UID is updated to match the new
-	 * key. On failure, the watcher associated with the old key is disabled.
+	 * key. On failure, watcher associated with the old key is disabled.
 	 * @param from old key's value
 	 * @param to new key's value
 	 * @param replace true to replace on conflict, false to fail on conflict
