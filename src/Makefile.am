@@ -52,12 +52,12 @@ WH_BASEUNIXSOURCES = base/unix/Config.cpp base/unix/Directory.cpp \
 	base/unix/WorkingDirectory.cpp
 
 ## src/base
-WH_BASE_TOPHEADERS = base/Condition.h base/Configuration.h base/Network.h \
-	base/Selector.h base/Signal.h base/Storage.h base/System.h base/Thread.h \
-	base/Timer.h
-WH_BASE_TOPSOURCES = base/Condition.cpp base/Configuration.cpp base/Network.cpp \
-	base/Selector.cpp base/Signal.cpp base/Storage.cpp base/System.cpp \
-	base/Thread.cpp base/Timer.cpp
+WH_BASE_TOPHEADERS = base/Configuration.h base/Network.h base/Selector.h \
+	base/Signal.h base/Storage.h base/System.h base/Thread.h base/Timer.h \
+	base/TurnGate.h
+WH_BASE_TOPSOURCES = base/Configuration.cpp base/Network.cpp base/Selector.cpp \
+	base/Signal.cpp base/Storage.cpp base/System.cpp base/Thread.cpp \
+	base/Timer.cpp base/TurnGate.cpp
 
 ## src/base collection
 WH_BASEHEADERS = $(WH_BASE_COMMONHEADERS) $(WH_BASE_DSHEADERS) $(WH_BASE_IPCHEADERS) \

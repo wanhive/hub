@@ -14,7 +14,7 @@
 #define WH_SERVER_OVERLAY_OVERLAYSERVICE_H_
 #include "Node.h"
 #include "OverlayProtocol.h"
-#include "../../base/Condition.h"
+#include "../../base/TurnGate.h"
 
 namespace wanhive {
 /**
@@ -116,8 +116,8 @@ private:
 	bool controllerFailed;
 	//Initialization status
 	bool initialized;
-	//The condition variable for thread synchronization
-	Condition condition;
+	//For thread synchronization
+	TurnGate barrier;
 	//-----------------------------------------------------------------
 	/*
 	 * List of backup successors excluding the immediate successor. The network

@@ -1,7 +1,7 @@
 /*
- * Condition.cpp
+ * TurnGate.cpp
  *
- * Thread signaling
+ * Turn gate for threads
  *
  *
  * Copyright (C) 2019 Amit Kumar (amitkriit@gmail.com)
@@ -10,19 +10,19 @@
  *
  */
 
-#include "Condition.h"
+#include "TurnGate.h"
 #include "unix/SystemException.h"
 #include <cerrno>
 #include <cstdlib>
 
 namespace wanhive {
 
-Condition::Condition() noexcept {
+TurnGate::TurnGate() noexcept {
 	mutex = PTHREAD_MUTEX_INITIALIZER;
 	condition = PTHREAD_COND_INITIALIZER;
 }
 
-Condition::~Condition() {
+TurnGate::~TurnGate() {
 	if (pthread_cond_destroy(&condition) != 0) {
 		abort();
 	}
@@ -32,15 +32,15 @@ Condition::~Condition() {
 	}
 }
 
-bool Condition::wait() {
+bool TurnGate::wait() {
 	auto status = pthread_mutex_lock(&mutex);
 	if (status == 0) {
-		++waiters;
+		++count;
 		int rc = 0;
 		while (!flag && rc == 0) {
 			rc = pthread_cond_wait(&condition, &mutex);
 		}
-		--waiters;
+		--count;
 		auto value = flag;
 		flag = false;
 		pthread_mutex_unlock(&mutex);
@@ -55,10 +55,10 @@ bool Condition::wait() {
 	}
 }
 
-bool Condition::timedWait(unsigned int milliseconds) {
+bool TurnGate::wait(unsigned int milliseconds) {
 	auto status = pthread_mutex_lock(&mutex);
 	if (status == 0) {
-		++waiters;
+		++count;
 		int rc = 0;
 		if (!flag && milliseconds) {
 			struct timespec tv;
@@ -73,7 +73,7 @@ bool Condition::timedWait(unsigned int milliseconds) {
 				rc = pthread_cond_timedwait(&condition, &mutex, &tv);
 			}
 		}
-		--waiters;
+		--count;
 		auto value = flag;
 		flag = false;
 		pthread_mutex_unlock(&mutex);
@@ -88,7 +88,7 @@ bool Condition::timedWait(unsigned int milliseconds) {
 	}
 }
 
-void Condition::notify() {
+void TurnGate::signal() {
 	auto status = pthread_mutex_lock(&mutex);
 	if (status == 0) {
 		flag = true;

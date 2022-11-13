@@ -49,7 +49,6 @@
 /*
  * System utilities
  */
-#include "base/Condition.h"
 #include "base/Configuration.h"
 #include "base/Network.h"
 #include "base/Selector.h"
@@ -58,6 +57,7 @@
 #include "base/System.h"
 #include "base/Thread.h"
 #include "base/Timer.h"
+#include "base/TurnGate.h"
 
 /*
  * Cryptography

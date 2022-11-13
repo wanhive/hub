@@ -87,7 +87,7 @@ bool OverlayService::execute() {
 
 bool OverlayService::wait(unsigned int timeout) {
 	try {
-		return condition.timedWait(timeout);
+		return barrier.wait(timeout);
 	} catch (const BaseException &e) {
 		WH_LOG_EXCEPTION(e);
 		throw;
@@ -96,7 +96,7 @@ bool OverlayService::wait(unsigned int timeout) {
 
 bool OverlayService::notify() noexcept {
 	try {
-		condition.notify();
+		barrier.signal();
 		return true;
 	} catch (const BaseException &e) {
 		return false;
