@@ -44,7 +44,7 @@
 
 namespace wanhive {
 /**
- * Symbol table of POD (plain old data) types.
+ * Hash table of POD (plain old data) types.
  * @note C++ adaption of khash version 0.2.8 by Attractive Chaos
  * @ref https://github.com/attractivechaos/klib/blob/master/khash.h
  * @tparam KEY key's type
@@ -68,27 +68,27 @@ public:
 	/**
 	 * Hash-map/hash-set operation: checks if the given key exists in the
 	 * hash table.
-	 * @param key the key to search for
+	 * @param key key to search for
 	 * @return true if the key exists, false otherwise
 	 */
 	bool contains(KEY const &key) const noexcept;
 	/**
 	 * Hash-map/hash-set operation: removes the given key from the hash table.
-	 * @param key the key for removal
+	 * @param key key for removal
 	 * @return true if the key existed, false otherwise
 	 */
 	bool removeKey(KEY const &key) noexcept;
 	//-----------------------------------------------------------------
 	/**
 	 * Hash-map operation: reads the value associated with the given key.
-	 * @param key the key to search for
+	 * @param key key to search for
 	 * @param val object to store the value associated with the given key
 	 * @return true on success (key found), false otherwise (key doesn't exist)
 	 */
 	bool hmGet(KEY const &key, VALUE &val) const noexcept;
 	/**
 	 * Hash-map operation: inserts a new key-value pair in the hash table.
-	 * @param key the key to insert
+	 * @param key key to insert
 	 * @param val value to associate with the given key
 	 * @return true on success, false on failure (the key already exists)
 	 */
@@ -97,8 +97,8 @@ public:
 	 * Hash-map operation: stores a key-value pair in the hash table. If the key
 	 * already exists then assigns the desired value to the existing key and
 	 * returns the old value.
-	 * @param key the key to insert or update
-	 * @param val the value to assign to the given key
+	 * @param key key to insert or update
+	 * @param val value to assign to the given key
 	 * @param oldVal object for returning the old value
 	 * @return true if old value was replaced (key exists), false otherwise
 	 */
@@ -109,8 +109,8 @@ public:
 	 * key is removed and it's value gets assigned to the non-existing key. If
 	 * both the keys exist and swapping is allowed then the values associated
 	 * with the given keys are exchanged.
-	 * @param first the first key
-	 * @param second the second key
+	 * @param first first key
+	 * @param second second key
 	 * @param iterators stores iterators associated with the updated keys in
 	 * their given order. The values remain valid until a hash table update.
 	 * @param swap true to enable swapping, false otherwise
@@ -122,36 +122,36 @@ public:
 	//-----------------------------------------------------------------
 	/**
 	 * Hash-set operation: inserts a new key into the hash table.
-	 * @param key the key to add
+	 * @param key key to add
 	 * @return true on success, false otherwise (key already exists)
 	 */
 	bool hsPut(KEY const &key) noexcept;
 	//-----------------------------------------------------------------
 	/**
 	 * Resizes the hash table.
-	 * @param newCapacity the new capacity
+	 * @param newCapacity new capacity
 	 * @return always 0
 	 */
 	int resize(unsigned int newCapacity) noexcept;
 	/**
-	 * Returns iterator to the given key.
-	 * @param key the key to search for
-	 * @return iterator to the found element, or Khash::end() if not found.
+	 * Returns iterator to a given key.
+	 * @param key key to search for
+	 * @return iterator to the found element, or Khash::end() if not found
 	 */
 	unsigned int get(KEY const &key) const noexcept;
 	/**
 	 * Inserts a key into the hash table.
-	 * @param key the key to insert
-	 * @param ret object for storing the extra return code: 0 if the key is
-	 * already present, 1 if the bucket was empty and not deleted, 2 if the
-	 * bucket was deleted previously.
+	 * @param key key to insert
+	 * @param ret stores an extra return code: 0 if the key is already
+	 * present, 1 if the bucket was empty and not deleted, 2 if the bucket
+	 * was deleted previously.
 	 * @return iterator to the inserted element
 	 */
 	unsigned int put(KEY const &key, int &ret) noexcept;
 	/**
 	 * Removes a key from the hash table.
-	 * @param x iterator of the key (see Khash::get())
-	 * @param shrink true to shrink the hash table if it gets sparsely populated,
+	 * @param x key's iterator (see Khash::get())
+	 * @param shrink true to shrink the hash table if it is sparsely populated,
 	 * false otherwise. Shrinking invalidates the iterators.
 	 */
 	void remove(unsigned int x, bool shrink = true) noexcept;
@@ -159,14 +159,14 @@ public:
 	 * Iterates a callback function over the hash table. The Callback function
 	 * must return zero (0) to continue iterating, 1 to remove the key at it's
 	 * current position, and any other value to stop the iteration.
-	 * @param fn the callback function. It's first argument is an iterator to
-	 * the next item and the second argument is a generic pointer.
+	 * @param fn callback function. It's first argument is an iterator to
+	 * the next item and its second argument is a generic pointer.
 	 * @param arg second argument of the callback function
 	 */
 	void iterate(int (&fn)(unsigned int index, void *arg), void *arg);
 	/**
 	 * Returns hash table's capacity.
-	 * @return number of buckets in the hash table
+	 * @return number of buckets
 	 */
 	unsigned int capacity() const noexcept;
 	/**
@@ -183,56 +183,56 @@ public:
 	/**
 	 * Returns the maximum number of buckets which can be occupied at the
 	 * current capacity.
-	 * @return the upper bound on the permissible number of occupied buckets.
+	 * @return maximum permissible number of occupied buckets
 	 */
 	unsigned int upperBound() const noexcept;
 	/**
-	 * Checks if the bucket at the given index is filled, i.e. it is neither
+	 * Checks if the bucket at a given index is filled, i.e. it is neither
 	 * empty nor deleted.
-	 * @param x the index to check
+	 * @param x index to check
 	 * @return true if the bucket is filled, false if the bucket is either
 	 * empty or deleted.
 	 */
 	bool exists(unsigned int x) const noexcept;
 	/**
-	 * Returns the key present in the bucket at the given index.
+	 * Returns the key present in the bucket at a given index.
 	 * @param x the index
 	 * @param key object for storing the key
 	 * @return true on success, false otherwise (invalid index)
 	 */
 	bool getKey(unsigned int x, KEY &key) const noexcept;
 	/**
-	 * Returns the value present in the bucket at given index
+	 * Returns the value present in the bucket at a given index.
 	 * @param x the index
 	 * @param value object for storing the value
 	 * @return true on success, false otherwise (invalid index)
 	 */
 	bool getValue(unsigned int x, VALUE &value) const noexcept;
 	/**
-	 * Sets a value in the bucket at given index
+	 * Updates value stored at a given index.
 	 * @param x the index
-	 * @param value the new value to store at the given index
+	 * @param value new value
 	 * @return true on success, false otherwise (invalid index)
 	 */
 	bool setValue(unsigned int x, VALUE const &value) noexcept;
 	/**
-	 * Returns the pointer to the stored value at the given index.
+	 * Returns pointer to the stored value at a given index.
 	 * @param x the index
-	 * @return pointer to the bucket, nullptr if the the index is invalid
+	 * @return stored value's pointer, nullptr if the index is invalid
 	 */
 	VALUE* getValueReference(unsigned int x) const noexcept;
 	/**
 	 * Returns the start iterator that determines the inclusive lower bound.
-	 * @return start iterator's value
+	 * @return start iterator
 	 */
 	unsigned int begin() const noexcept;
 	/**
 	 * Returns the end iterator that determines the exclusive upper bound.
-	 * @return end iterator's value
+	 * @return end iterator
 	 */
 	unsigned int end() const noexcept;
 	/**
-	 * Clears out the hash table (doesn't deallocate the memory).
+	 * Empties the hash table (doesn't deallocate memory).
 	 */
 	void clear() noexcept;
 private:
@@ -482,7 +482,6 @@ bool wanhive::Khash<KEY, VALUE, ISMAP, HFN, EQFN>::hmReplace(const KEY &key,
 template<typename KEY, typename VALUE, bool ISMAP, typename HFN, typename EQFN>
 bool wanhive::Khash<KEY, VALUE, ISMAP, HFN, EQFN>::hmSwap(KEY const &first,
 		KEY const &second, unsigned int (&iterators)[2], bool swap) noexcept {
-
 	if (!ISMAP) {
 		iterators[0] = end();
 		iterators[1] = end();
