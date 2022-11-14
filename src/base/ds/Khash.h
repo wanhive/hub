@@ -40,7 +40,6 @@
 #include "functors.h"
 #include "Twiddler.h"
 #include "../common/Memory.h"
-#include "../common/reflect.h"
 
 namespace wanhive {
 /**
@@ -239,19 +238,19 @@ private:
 	//Delete the key-value buffer
 	void deleteContainer() noexcept {
 		if (ISMAP) {
-			WH_free(bucket.entry);
+			Memory<Pair>::free(bucket.entry);
 			bucket.entry = nullptr;
 		} else {
-			WH_free(bucket.keys);
+			Memory<KEY>::free(bucket.keys);
 			bucket.keys = nullptr;
 		}
 	}
 	//Resize the  key-value buffer
 	void resizeContainer(unsigned int size) noexcept {
 		if (ISMAP) {
-			WH_resize(bucket.entry, size);
+			Memory<Pair>::resize(bucket.entry, size);
 		} else {
-			WH_resize(bucket.keys, size);
+			Memory<KEY>::resize(bucket.keys, size);
 		}
 	}
 
@@ -303,7 +302,7 @@ private:
 
 	//Set a new flags buffer (frees the existing one)
 	void setFlags(uint32_t *flags) noexcept {
-		WH_free(bucket.flags);
+		Memory<uint32_t>::free(bucket.flags);
 		bucket.flags = flags;
 	}
 
@@ -314,16 +313,15 @@ private:
 
 	//Delete the flags buffer
 	void deleteFlags() noexcept {
-		WH_free(bucket.flags);
+		Memory<uint32_t>::free(bucket.flags);
 		bucket.flags = nullptr;
 	}
 
 	//Create a new flags buffer for the given capacity
 	static uint32_t* createFlags(unsigned int entries) noexcept {
-		uint32_t *new_flags = (uint32_t*) WH_malloc(
-				fSize(entries) * sizeof(uint32_t));
-		resetFlags(new_flags, entries);
-		return new_flags;
+		auto flags = Memory<uint32_t>::allocate(fSize(entries));
+		resetFlags(flags, entries);
+		return flags;
 	}
 
 	//Reset the flags (set default value)
@@ -376,17 +374,18 @@ private:
 		return (unsigned int) ((capacity * LOAD_FACTOR) + 0.5);
 	}
 private:
-	//Hash table's container
+	struct Pair {
+		KEY key;
+		VALUE value;
+	};
+
 	struct {
 		unsigned int capacity;	//Total number of slots, always power of two
 		unsigned int size;			//Total number of filled up slots
 		unsigned int occupied;//Total number of occupied slots (size + deleted)
 		unsigned int upperBound;	//Upper Limit on occupied slots
 		uint32_t *flags;	//Status of each slot, need to specify data width
-		struct {
-			KEY key;
-			VALUE value;
-		} *entry; //Used by HASH-MAP
+		Pair *entry; //Used by HASH-MAP
 		KEY *keys; //Used by HASH-SET
 	} bucket;
 

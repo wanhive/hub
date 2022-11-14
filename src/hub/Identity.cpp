@@ -15,8 +15,8 @@
 #include "../base/Timer.h"
 #include "../base/common/Exception.h"
 #include "../base/common/Logger.h"
-#include "../base/common/Memory.h"
 #include "../base/ds/MersenneTwister.h"
+#include <cstdlib>
 #include <cstring>
 
 #ifndef WH_CONF_BASE
@@ -42,20 +42,20 @@ const char *Identity::CONF_PATH = (const char*) WH_CONF_PATH;
 const char *Identity::CONF_SYSTEM_PATH = (const char*) WH_CONF_SYSTEM_PATH;
 //=================================================================
 Identity::Identity(const char *path) noexcept {
-	paths.config = path ? WH_strdup(path) : nullptr;
+	paths.config = path ? strdup(path) : nullptr;
 }
 
 Identity::~Identity() {
 	delete instanceId;
-	WH_free(paths.config);
-	WH_free(paths.configurationFileName);
-	WH_free(paths.hostsDatabaseName);
-	WH_free(paths.hostsFileName);
-	WH_free(paths.privateKeyFileName);
-	WH_free(paths.publicKeyFileName);
-	WH_free(paths.sslTrustedCertificateFileName);
-	WH_free(paths.sslCertificateFileName);
-	WH_free(paths.sslHostKeyFileName);
+	free(paths.config);
+	free(paths.configurationFileName);
+	free(paths.hostsDatabaseName);
+	free(paths.hostsFileName);
+	free(paths.privateKeyFileName);
+	free(paths.publicKeyFileName);
+	free(paths.sslTrustedCertificateFileName);
+	free(paths.sslCertificateFileName);
+	free(paths.sslHostKeyFileName);
 }
 
 void Identity::initialize() {
@@ -143,12 +143,12 @@ unsigned int Identity::getIdentifiers(const char *section, const char *option,
 	memset(nodes, 0, count * sizeof(unsigned long long));
 	auto filename = properties.getPathName(section, option, nullptr);
 	if (Storage::testFile(filename) != 1) {
-		WH_free(filename);
+		free(filename);
 		return 0;
 	}
 
 	auto fp = Storage::openStream(filename, "r", false);
-	WH_free(filename);
+	free(filename);
 	if (!fp) {
 		return 0;
 	}
@@ -219,7 +219,7 @@ void Identity::generateInstanceId() {
 
 void Identity::loadConfiguration() {
 	try {
-		WH_free(paths.configurationFileName);
+		free(paths.configurationFileName);
 		paths.configurationFileName = locateConfigurationFile();
 		properties.clear();
 
@@ -231,7 +231,7 @@ void Identity::loadConfiguration() {
 		} else {
 			WH_LOG_ERROR("Could not read the configuration file %s",
 					paths.configurationFileName);
-			WH_free(paths.configurationFileName);
+			free(paths.configurationFileName);
 			paths.configurationFileName = nullptr;
 			throw Exception(EX_ARGUMENT);
 		}
@@ -242,8 +242,8 @@ void Identity::loadConfiguration() {
 }
 
 void Identity::loadHosts() {
-	WH_free(paths.hostsDatabaseName);
-	WH_free(paths.hostsFileName);
+	free(paths.hostsDatabaseName);
+	free(paths.hostsFileName);
 	paths.hostsDatabaseName = properties.getPathName("HOSTS", "hostsDb");
 	if (!paths.hostsDatabaseName) {
 		paths.hostsFileName = properties.getPathName("HOSTS", "hostsFile");
@@ -262,17 +262,17 @@ void Identity::loadHosts() {
 		WH_LOG_INFO("Hosts initialized");
 	} catch (const BaseException &e) {
 		WH_LOG_EXCEPTION(e);
-		WH_free(paths.hostsDatabaseName);
+		free(paths.hostsDatabaseName);
 		paths.hostsDatabaseName = nullptr;
-		WH_free(paths.hostsFileName);
+		free(paths.hostsFileName);
 		paths.hostsFileName = nullptr;
 		throw;
 	}
 }
 
 void Identity::loadKeys() {
-	WH_free(paths.privateKeyFileName);
-	WH_free(paths.publicKeyFileName);
+	free(paths.privateKeyFileName);
+	free(paths.publicKeyFileName);
 	paths.privateKeyFileName = properties.getPathName("KEYS", "privateKey");
 	paths.publicKeyFileName = properties.getPathName("KEYS", "publicKey");
 
@@ -304,9 +304,9 @@ void Identity::loadKeys() {
 		WH_LOG_EXCEPTION(e);
 		auth.enabled = false;
 		auth.verify = false;
-		WH_free(paths.privateKeyFileName);
+		free(paths.privateKeyFileName);
 		paths.privateKeyFileName = nullptr;
-		WH_free(paths.publicKeyFileName);
+		free(paths.publicKeyFileName);
 		paths.publicKeyFileName = nullptr;
 		throw;
 	}
@@ -319,9 +319,9 @@ void Identity::loadSSL() {
 		return;
 	}
 
-	WH_free(paths.sslTrustedCertificateFileName);
-	WH_free(paths.sslCertificateFileName);
-	WH_free(paths.sslHostKeyFileName);
+	free(paths.sslTrustedCertificateFileName);
+	free(paths.sslCertificateFileName);
+	free(paths.sslHostKeyFileName);
 	paths.sslTrustedCertificateFileName = properties.getPathName("SSL",
 			"trust");
 	paths.sslCertificateFileName = properties.getPathName("SSL", "certificate");
@@ -334,11 +334,11 @@ void Identity::loadSSL() {
 		WH_LOG_INFO("SSL/TLS enabled");
 	} catch (const BaseException &e) {
 		WH_LOG_EXCEPTION(e);
-		WH_free(paths.sslTrustedCertificateFileName);
+		free(paths.sslTrustedCertificateFileName);
 		paths.sslTrustedCertificateFileName = nullptr;
-		WH_free(paths.sslCertificateFileName);
+		free(paths.sslCertificateFileName);
 		paths.sslCertificateFileName = nullptr;
-		WH_free(paths.sslHostKeyFileName);
+		free(paths.sslHostKeyFileName);
 		paths.sslHostKeyFileName = nullptr;
 		throw;
 	}
@@ -465,14 +465,14 @@ char* Identity::locateConfigurationFile() noexcept {
 		System::currentWorkingDirectory(buffer, sizeof(buffer));
 		strncat(buffer, "/" WH_CONF_FILE, sizeof(buffer) - strlen(buffer) - 1);
 		if (Storage::testFile(buffer) == 1) {
-			return WH_strdup(buffer);
+			return strdup(buffer);
 		}
 
 		//STEP 2: Search in executable's directory
 		System::executableDirectory(buffer, sizeof(buffer));
 		strncat(buffer, "/" WH_CONF_FILE, sizeof(buffer) - strlen(buffer) - 1);
 		if (Storage::testFile(buffer) == 1) {
-			return WH_strdup(buffer);
+			return strdup(buffer);
 		}
 
 		//STEP 3: Search in home
@@ -480,13 +480,13 @@ char* Identity::locateConfigurationFile() noexcept {
 		if (Storage::testFile(cfgPath) == 1) {
 			return cfgPath;
 		} else {
-			WH_free(cfgPath);
+			free(cfgPath);
 			cfgPath = nullptr;
 		}
 
 		//STEP 4: Search in /etc/wanhive
 		if (Storage::testFile(WH_CONF_SYSTEM_PATH) == 1) {
-			return WH_strdup(WH_CONF_SYSTEM_PATH);
+			return strdup(WH_CONF_SYSTEM_PATH);
 		}
 
 		//All attempts exhausted

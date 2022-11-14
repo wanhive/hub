@@ -227,7 +227,7 @@ char* Storage::expandPathName(const char *pathname) noexcept {
 			char **w = p.we_wordv;
 			//Take the first one
 			if (p.we_wordc) {
-				buffer = WH_strdup(w[0]);
+				buffer = strdup(w[0]);
 			}
 		}
 		wordfree(&p);

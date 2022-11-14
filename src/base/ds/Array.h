@@ -13,8 +13,6 @@
 #ifndef WH_BASE_DS_ARRAY_H_
 #define WH_BASE_DS_ARRAY_H_
 #include "../common/Memory.h"
-#include "../common/reflect.h"
-#include <cstdlib>
 
 namespace wanhive {
 /**
@@ -40,7 +38,7 @@ public:
 	 * Destructor
 	 */
 	~Array() {
-		WH_free(storage);
+		Memory<X>::free(storage);
 	}
 	//-----------------------------------------------------------------
 	/**
@@ -193,40 +191,13 @@ public:
 			resize(_limit << 1);
 		}
 	}
-	//-----------------------------------------------------------------
-	/**
-	 * Inserts a value at the end of the dynamically resizable array.
-	 * @param array pointer to the dynamically resizable array
-	 * @param capacity value-result argument for passing on the array's current
-	 * size and receiving the updated size (array may get resized).
-	 * @param offset value-result argument for passing on the current number of
-	 * elements in the array and receiving the updated count.
-	 * @param value the value to insert
-	 * @return pointer to the newly added value inside the array
-	 */
-	static X* insert(X *&array, unsigned int &capacity, unsigned int &offset,
-			const X &value) noexcept {
-		if (offset == capacity) {
-			if (capacity < 4) {
-				capacity = 4;
-			} else {
-				capacity <<= 1;
-			}
-			array = (X*) realloc(array, sizeof(X) * capacity);
-			if (array == nullptr) {
-				abort();
-			}
-		}
-		array[offset++] = value;
-		return &array[offset - 1];
-	}
 private:
 	void removeAtIndex(unsigned int index) noexcept {
 		storage[index] = storage[--_limit];
 	}
 
 	void resize(unsigned int size) noexcept {
-		WH_resize(storage, size);
+		Memory<X>::resize(storage, size);
 		_capacity = size;
 	}
 private:

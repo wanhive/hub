@@ -1,7 +1,7 @@
 /*
  * Memory.h
  *
- * C style memory management in C++
+ * C style memory management routines
  *
  *
  * Copyright (C) 2018 Amit Kumar (amitkriit@gmail.com)
@@ -12,64 +12,187 @@
 
 #ifndef WH_BASE_COMMON_MEMORY_H_
 #define WH_BASE_COMMON_MEMORY_H_
-#include "defines.h"
-#include <cstddef>
+#include "Exception.h"
+#include "reflect.h"
+#include <cstdlib>
+#include <cstring>
 
 namespace wanhive {
 /**
- * C style memory management routines, succeed or bust mode.
- * Use the macros provided at the bottom of this header.
- * Do not mix with new and delete.
+ * C style memory management routines.
+ * @tparam T data type
+ * @tparam NOTHROW true for succeed or bust mode, false for error checking
  */
-class Memory {
+template<typename T, bool NOTHROW = true> class Memory {
 public:
 	/**
-	 * Wrapper for malloc(3) library function.
-	 * @param size number of bytes to allocate
-	 * @param filename source filename for debugging
-	 * @param linenumber line number for debugging
-	 * @param function caller's name for debugging
+	 * Default constructor: creates an empty object.
 	 */
-	static void* malloc(size_t size, const char *filename, int linenumber,
-			const char *function) noexcept;
+	Memory() noexcept :
+			p { nullptr }, _capacity { 0 } {
+
+	}
 	/**
-	 * Wrapper for free(3) library function
-	 * @param p pointer to the memory location
+	 * Constructor: dynamically allocates memory of a given size.
+	 * @param count elements count
+	 * @throw
 	 */
-	static void free(void *p) noexcept;
+	Memory(size_t count) noexcept (NOTHROW) :
+			p { Memory::allocate(count) }, _capacity { count } {
+
+	}
 	/**
-	 * Wrapper for realloc(3) library function
-	 * @param p pointer to the pointer to the effected memory location
-	 * @param elementSize unit size in bytes
-	 * @param count number of units
-	 * @param filename source filename for debugging
-	 * @param linenumber line number for debugging
-	 * @param function caller's name for debugging
+	 * Destructor: frees memory.
 	 */
-	static void realloc(void **p, size_t elementSize, size_t count,
-			const char *filename, int linenumber, const char *function) noexcept;
+	~Memory() {
+		Memory::free(p);
+	}
+	//-----------------------------------------------------------------
 	/**
-	 * Wrapper for strdup(3) library function
-	 * @param s pointer to the string to duplicate
-	 * @param filename source filename for debugging
-	 * @param linenumber line number for debugging
-	 * @param function caller's name for debugging
-	 * @return pointer to the duplicated string
+	 * Resizes the dynamically allocated memory.
+	 * @param count new elements count
+	 * @throw
 	 */
-	static char* strdup(const char *s, const char *filename, int linenumber,
-			const char *function) noexcept;
+	void resize(size_t count) noexcept (NOTHROW) {
+		Memory::resize(p, count);
+		_capacity = count;
+	}
+	/**
+	 * Returns the allocated memory's capacity.
+	 * @return current capacity (elements count)
+	 */
+	size_t capacity() const noexcept {
+		return _capacity;
+	}
+	//-----------------------------------------------------------------
+	/**
+	 * Returns reference to the element stored at a given index.
+	 * @param index index's value
+	 * @return element's reference
+	 */
+	T& operator[](size_t index) {
+		if (index < _capacity) {
+			return p[index];
+		} else {
+			throw Exception(EX_INDEX);
+		}
+	}
+
+	/**
+	 * Returns reference to the element stored at a given index.
+	 * @param index index's value
+	 * @return element's reference
+	 */
+	const T& operator[](size_t index) const {
+		if (index < _capacity) {
+			return p[index];
+		} else {
+			throw Exception(EX_INDEX);
+		}
+	}
+
+	/**
+	 * Returns the element's address at a given index.
+	 * @param index index's value
+	 * @return element's address
+	 */
+	T* offset(size_t index = 0) noexcept {
+		if (index < _capacity) {
+			return &p[index];
+		} else {
+			return nullptr;
+		}
+	}
+
+	/**
+	 * Returns the element's address at a given index.
+	 * @param index index's value
+	 * @return element's address
+	 */
+	const T* offset(size_t index = 0) const noexcept {
+		if (index < _capacity) {
+			return &p[index];
+		} else {
+			return nullptr;
+		}
+	}
+	//-----------------------------------------------------------------
+	/**
+	 * Appends a value to a dynamically resizable array.
+	 * @param array pointer to the dynamically resizable array
+	 * @param size value-result argument for array's total size
+	 * @param limit value-result argument for array's limit
+	 * @param value input value
+	 * @throw
+	 * @return updated memory location inside the array
+	 */
+	static T* append(T *&array, unsigned int &size, unsigned int &limit,
+			const T &value) noexcept (NOTHROW) {
+		if (limit == size) {
+			if (size < 4) {
+				size = 4;
+			} else {
+				size <<= 1;
+			}
+
+			Memory::resize(array, size);
+		}
+		array[limit++] = value;
+		return &array[limit - 1];
+	}
+	//-----------------------------------------------------------------
+	/**
+	 * Dynamically allocates memory of a given size.
+	 * @param count elements count
+	 * @throw
+	 * @return allocated memory's address
+	 */
+	static T* allocate(size_t count) noexcept (NOTHROW) {
+		auto p = static_cast<T*>(::calloc(count, sizeof(T)));
+		if (p || !count) {
+			return p;
+		} else if constexpr (!NOTHROW) {
+			throw Exception(EX_MEMORY);
+		} else {
+			abort();
+		}
+	}
+
+	/**
+	 * Changes dynamically allocated memory's size (memory bock's address may
+	 * change on successful operation).
+	 * @param p value-result argument for memory block's address
+	 * @param count new elements count
+	 * @throw
+	 */
+	static void resize(T *&p, size_t count) noexcept (NOTHROW) {
+#if _DEFAULT_SOURCE
+		auto np = static_cast<T*>(::reallocarray(p, count, sizeof(T)));
+#else
+		auto np = static_cast<T*>(::realloc(p, (count * sizeof(T))));
+#endif
+		if (np || !count) {
+			p = np;
+		} else if constexpr (!NOTHROW) {
+			throw Exception(EX_MEMORY);
+		} else {
+			abort();
+		}
+	}
+
+	/**
+	 * Frees dynamically allocated memory.
+	 * @param p memory's address
+	 */
+	static void free(T *p) noexcept {
+		::free(p);
+	}
+private:
+	T *p;
+	size_t _capacity;
+	WH_POD_ASSERT(T);
 };
-//-----------------------------------------------------------------
-/*
- * Useful macros
- */
-#define WH_malloc(size) Memory::malloc((size), WH_FILE, WH_LINE, WH_FUNCTION)
-#define WH_free(p) Memory::free((p))
-#define WH_realloc(ptr, blockSize, length) \
-	Memory::realloc((void**)&ptr, blockSize, length, WH_FILE, WH_LINE, WH_FUNCTION)
-#define WH_resize(ptr, length) WH_realloc(ptr, sizeof(ptr[0]), length)
-#define WH_strdup(s) Memory::strdup((s), WH_FILE, WH_LINE, WH_FUNCTION)
-//-----------------------------------------------------------------
+
 } /* namespace wanhive */
 
 #endif /* WH_BASE_COMMON_MEMORY_H_ */

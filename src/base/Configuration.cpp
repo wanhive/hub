@@ -14,7 +14,7 @@
 #include "Storage.h"
 #include "Timer.h"
 #include "common/Exception.h"
-#include "ds/Array.h"
+#include "common/Memory.h"
 #include "ds/Twiddler.h"
 #include <cctype>
 #include <cstring>
@@ -47,9 +47,9 @@ Configuration::~Configuration() {
 void Configuration::clear() noexcept {
 	for (unsigned int i = 0; i < data.nSections; ++i) {
 		memset(data.sections[i].entries, 0, sizeof(Entry));
-		WH_free(data.sections[i].entries);
+		free(data.sections[i].entries);
 	}
-	WH_free(data.sections);
+	free(data.sections);
 	memset(&data, 0, sizeof(data));
 }
 
@@ -296,7 +296,10 @@ char* Configuration::expandPath(const char *pathname) const noexcept {
 		return Storage::expandPathName(pathname);
 	}
 	//-----------------------------------------------------------------
-	auto tmp = WH_strdup(pathname);	//The working copy
+	auto tmp = strdup(pathname);	//The working copy
+	if (!tmp) {
+		return nullptr;
+	}
 	/*
 	 * Resolve the postfix which is the substring
 	 * succeeding the first path separator
@@ -329,13 +332,13 @@ char* Configuration::expandPath(const char *pathname) const noexcept {
 		tmp[i] = postfix[0] ? Storage::DIR_SEPARATOR : '\0';
 		//Expand into the full path and return
 		auto result = Storage::expandPathName(tmp);
-		WH_free(tmp);
+		free(tmp);
 		return result;
 	} else {
 		//1. Construct the string in format: prefix/postfix
 		auto prefixLen = strlen(prefix);
 		auto postfixLen = strlen(postfix);
-		auto result = (char*) WH_malloc(prefixLen + postfixLen + 2);
+		auto result = Memory<char>::allocate(prefixLen + postfixLen + 2);
 		strcpy(result, prefix);
 		if (postfixLen
 				&& (!prefixLen
@@ -344,12 +347,12 @@ char* Configuration::expandPath(const char *pathname) const noexcept {
 			strcat(result, Storage::DIR_SEPARATOR_STR);
 		}
 		strcat(result, postfix);
-		WH_free(tmp);
+		free(tmp);
 
 		//2. Expand into the full path and return
 		tmp = result;
 		result = Storage::expandPathName(result);
-		WH_free(tmp);
+		free(tmp);
 		return result;
 	}
 }
@@ -385,7 +388,7 @@ Configuration::Section* Configuration::addSection(const char *name) noexcept {
 	Section section;
 	memset(&section, 0, sizeof(section));
 	strncpy(section.name, name, MAX_SECTION_LEN - 1);
-	return Array<Section>::insert(data.sections, data.capacity, data.nSections,
+	return Memory<Section>::append(data.sections, data.capacity, data.nSections,
 			section);
 }
 
@@ -394,7 +397,7 @@ Configuration::Entry* Configuration::addEntry(const char *name,
 	Entry entry;
 	memset(&entry, 0, sizeof(entry));
 	strncpy(entry.key, name, MAX_KEY_LEN - 1);
-	return Array<Entry>::insert(section->entries, section->capacity,
+	return Memory<Entry>::append(section->entries, section->capacity,
 			section->nEntries, entry);
 }
 
