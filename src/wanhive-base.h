@@ -24,7 +24,6 @@
 /*
  * Data structures
  */
-#include "base/ds/Array.h"
 #include "base/ds/BinaryHeap.h"
 #include "base/ds/Buffer.h"
 #include "base/ds/CircularBuffer.h"
@@ -34,6 +33,7 @@
 #include "base/ds/Khash.h"
 #include "base/ds/MersenneTwister.h"
 #include "base/ds/Pooled.h"
+#include "base/ds/ReadyList.h"
 #include "base/ds/Serializer.h"
 #include "base/ds/State.h"
 #include "base/ds/StaticBuffer.h"

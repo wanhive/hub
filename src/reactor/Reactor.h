@@ -13,7 +13,7 @@
 #ifndef WH_REACTOR_REACTOR_H_
 #define WH_REACTOR_REACTOR_H_
 #include "Watcher.h"
-#include "../base/ds/Array.h"
+#include "../base/ds/ReadyList.h"
 #include "../base/Selector.h"
 
 namespace wanhive {
@@ -156,7 +156,7 @@ private:
 	//The selector (event demultiplexer)
 	Selector selector;
 	//The ready list of watchers
-	Array<Watcher*> readyList;
+	ReadyList<Watcher*> readyList;
 };
 
 } /* namespace wanhive */

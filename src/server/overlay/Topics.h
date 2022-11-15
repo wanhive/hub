@@ -12,8 +12,8 @@
 
 #ifndef WH_SERVER_OVERLAY_TOPICS_H_
 #define WH_SERVER_OVERLAY_TOPICS_H_
-#include "../../base/ds/Array.h"
 #include "../../base/ds/Khash.h"
+#include "../../base/ds/ReadyList.h"
 #include "../../base/ds/Twiddler.h"
 #include "../../hub/Topic.h"
 #include "../../reactor/Watcher.h"
@@ -89,7 +89,7 @@ private:
 	};
 
 	//Lists of watchers organized by topics
-	Array<const Watcher*> topics[Topic::COUNT];
+	ReadyList<const Watcher*> topics[Topic::COUNT];
 	//Index lookup table for fast insertion and deletion
 	Khash<Key, unsigned int, true, HFN, EQFN> indexes;
 };
