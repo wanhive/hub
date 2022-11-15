@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- Tag classes which cannot be copy-constructed or copy-assigned.
 - Additional watcher flags, including the two user-defined flags.
 
 ### Changed
