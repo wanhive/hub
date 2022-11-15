@@ -20,6 +20,7 @@ Hash::Hash() noexcept :
 }
 
 Hash::~Hash() {
+
 }
 
 bool Hash::create(const void *block, unsigned int size, Digest *digest) noexcept {

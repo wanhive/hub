@@ -220,6 +220,7 @@ wanhive::StaticCircularBuffer<X, SIZE, ATOMIC>::StaticCircularBuffer() noexcept 
 
 template<typename X, unsigned int SIZE, bool ATOMIC>
 wanhive::StaticCircularBuffer<X, SIZE, ATOMIC>::~StaticCircularBuffer() {
+
 }
 
 template<typename X, unsigned int SIZE, bool ATOMIC>
