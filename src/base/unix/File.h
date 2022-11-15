@@ -12,6 +12,7 @@
 
 #ifndef WH_BASE_UNIX_FILE_H_
 #define WH_BASE_UNIX_FILE_H_
+#include "../common/NonCopyable.h"
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <fcntl.h>
@@ -20,7 +21,7 @@ namespace wanhive {
 /**
  * File descriptor management
  */
-class File {
+class File: private NonCopyable {
 public:
 	/**
 	 * Default constructor: creates an empty object.

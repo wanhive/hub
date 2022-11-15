@@ -13,6 +13,7 @@
 #ifndef WH_BASE_COMMON_MEMORY_H_
 #define WH_BASE_COMMON_MEMORY_H_
 #include "Exception.h"
+#include "NonCopyable.h"
 #include "reflect.h"
 #include <cstdlib>
 #include <cstring>
@@ -23,7 +24,7 @@ namespace wanhive {
  * @tparam T data type
  * @tparam NOTHROW true for succeed or bust mode, false for error checking
  */
-template<typename T, bool NOTHROW = true> class Memory {
+template<typename T, bool NOTHROW = true> class Memory: private NonCopyable {
 public:
 	/**
 	 * Default constructor: creates an empty object.

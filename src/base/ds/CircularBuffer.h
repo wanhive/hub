@@ -16,6 +16,7 @@
 #include "Twiddler.h"
 #include "../common/Atomic.h"
 #include "../common/Exception.h"
+#include "../common/NonCopyable.h"
 #include <cstring>
 
 namespace wanhive {
@@ -26,7 +27,7 @@ namespace wanhive {
  * @tparam X storage type
  * @tparam ATOMIC true for thread safety, false otherwise
  */
-template<typename X, bool ATOMIC = false> class CircularBuffer {
+template<typename X, bool ATOMIC = false> class CircularBuffer: private NonCopyable {
 public:
 	/**
 	 * Default constructor: creates a zero-size empty buffer.

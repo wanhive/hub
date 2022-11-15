@@ -14,6 +14,7 @@
 #define WH_UTIL_ENDPOINT_H_
 #include "Packet.h"
 #include "../base/Network.h"
+#include "../base/common/NonCopyable.h"
 #include "../base/security/SSLContext.h"
 
 namespace wanhive {
@@ -22,7 +23,7 @@ namespace wanhive {
  * @note Supports blocking I/O operations only, hence the socket must be opened
  * in blocking mode.
  */
-class Endpoint: protected Packet {
+class Endpoint: protected Packet, private NonCopyable {
 public:
 	/**
 	 * Constructor: creates a disconnected endpoint.

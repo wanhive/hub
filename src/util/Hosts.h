@@ -14,6 +14,7 @@
 #define WH_UTIL_HOSTS_H_
 #include "../base/Network.h"
 #include "../base/Storage.h"
+#include "../base/common/NonCopyable.h"
 #include <sqlite3.h>
 
 namespace wanhive {
@@ -21,7 +22,7 @@ namespace wanhive {
  * The hosts database
  * Thread safe at class level
  */
-class Hosts {
+class Hosts: private NonCopyable {
 public:
 	/**
 	 * Default constructor: doesn't create a database connection. Call

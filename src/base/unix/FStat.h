@@ -210,7 +210,7 @@ public:
 	 */
 	void clear() noexcept;
 private:
-	struct stat _stat;
+	struct stat _stat { };
 };
 
 } /* namespace wanhive */

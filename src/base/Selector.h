@@ -12,6 +12,7 @@
 
 #ifndef WH_BASE_SELECTOR_H_
 #define WH_BASE_SELECTOR_H_
+#include "common/NonCopyable.h"
 #include "ds/Buffer.h"
 #include <signal.h>
 #include <sys/epoll.h>
@@ -52,7 +53,7 @@ enum SelectorFlag : uint32_t {
  * is ready for performing an IO operation.
  * @note Provides abstraction of Linux's epoll(7) mechanism.
  */
-class Selector {
+class Selector: private NonCopyable {
 public:
 	/**
 	 * Default constructor: creates an uninitialized selector. To initialize the

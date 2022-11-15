@@ -12,13 +12,14 @@
 
 #ifndef WH_BASE_UNIX_FILESTREAM_H_
 #define WH_BASE_UNIX_FILESTREAM_H_
+#include "../common/NonCopyable.h"
 #include <cstdio>
 
 namespace wanhive {
 /**
  * File stream
  */
-class FileStream {
+class FileStream: private NonCopyable {
 public:
 	/**
 	 * Default constructor: creates an empty object.

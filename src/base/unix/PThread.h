@@ -12,6 +12,7 @@
 
 #ifndef WH_BASE_UNIX_PTHREAD_H_
 #define WH_BASE_UNIX_PTHREAD_H_
+#include "../common/NonCopyable.h"
 #include "../common/Task.h"
 #include <pthread.h>
 
@@ -20,7 +21,7 @@ namespace wanhive {
  * Posix thread abstraction
  * @ref pthreads(7)
  */
-class PThread {
+class PThread: private NonCopyable {
 public:
 	/**
 	 * Constructor: creates a new thread of execution.

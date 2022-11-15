@@ -19,6 +19,7 @@
 #include "base/common/Exception.h"
 #include "base/common/Logger.h"
 #include "base/common/Memory.h"
+#include "base/common/NonCopyable.h"
 #include "base/common/Sink.h"
 #include "base/common/Source.h"
 #include "base/common/Task.h"

@@ -12,13 +12,14 @@
 
 #ifndef WH_BASE_SECURITY_SSLCONTEXT_H_
 #define WH_BASE_SECURITY_SSLCONTEXT_H_
+#include "../common/NonCopyable.h"
 #include <openssl/ssl.h>
 
 namespace wanhive {
 /**
  * Secure connection's context
  */
-class SSLContext {
+class SSLContext: private NonCopyable {
 public:
 	/**
 	 * Default constructor: creates an empty context.

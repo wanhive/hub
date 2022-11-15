@@ -53,7 +53,7 @@ namespace wanhive {
  * @tparam EQFN equality functor (returns true on equal keys, false otherwise)
  */
 template<typename KEY = int, typename VALUE = char, bool ISMAP = true,
-		typename HFN = wh_hash_fn, typename EQFN = wh_eq_fn> class Khash {
+		typename HFN = wh_hash_fn, typename EQFN = wh_eq_fn> class Khash: private NonCopyable {
 public:
 	/**
 	 * Default constructor: creates an empty hash table.

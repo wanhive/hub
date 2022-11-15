@@ -12,13 +12,14 @@
 
 #ifndef WH_BASE_TURNGATE_H_
 #define WH_BASE_TURNGATE_H_
+#include "common/NonCopyable.h"
 #include <pthread.h>
 
 namespace wanhive {
 /**
  * Turn gate for threads: allows a single thread to pass through.
  */
-class TurnGate {
+class TurnGate: private NonCopyable {
 public:
 	/**
 	 * Default constructor: initializes the object

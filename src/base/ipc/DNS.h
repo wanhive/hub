@@ -13,12 +13,13 @@
 #ifndef WH_BASE_IPC_DNS_H_
 #define WH_BASE_IPC_DNS_H_
 #include "inet.h"
+#include "../common/NonCopyable.h"
 
 namespace wanhive {
 /**
  * Domain name resolution and reverse lookup
  */
-class DNS {
+class DNS: private NonCopyable {
 public:
 	/**
 	 * Default constructor: initializes an empty object.

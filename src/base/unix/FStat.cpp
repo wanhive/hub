@@ -19,7 +19,7 @@
 namespace wanhive {
 
 FStat::FStat() noexcept {
-	clear();
+
 }
 
 FStat::FStat(int fd) {
@@ -35,7 +35,7 @@ FStat::FStat(int dirfd, const char *path, int flags) {
 }
 
 FStat::~FStat() {
-	clear();
+
 }
 
 bool FStat::isRegularFile() const noexcept {

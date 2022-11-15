@@ -12,6 +12,7 @@
 
 #ifndef WH_BASE_CONFIGURATION_H_
 #define WH_BASE_CONFIGURATION_H_
+#include "common/NonCopyable.h"
 #include <cstdio>
 
 namespace wanhive {
@@ -19,7 +20,7 @@ namespace wanhive {
  * Configuration manager that accepts simplified INI file format.
  * @ref https://en.wikipedia.org/wiki/INI_file
  */
-class Configuration {
+class Configuration: private NonCopyable {
 public:
 	/**
 	 * Default constructor: initializes an empty object.

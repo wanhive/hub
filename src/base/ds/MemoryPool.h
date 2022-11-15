@@ -12,13 +12,14 @@
 
 #ifndef WH_BASE_DS_MEMORYPOOL_H_
 #define WH_BASE_DS_MEMORYPOOL_H_
+#include "../common/NonCopyable.h"
 
 namespace wanhive {
 /**
  * Memory pool for efficient memory allocation and deallocation.
  * Trades-off safety and versatility for speed.
  */
-class MemoryPool {
+class MemoryPool: private NonCopyable {
 public:
 	/**
 	 * Default constructor: creates a zero-capacity memory pool.

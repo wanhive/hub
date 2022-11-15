@@ -13,6 +13,7 @@
 #ifndef WH_BASE_DS_READYLIST_H_
 #define WH_BASE_DS_READYLIST_H_
 #include "../common/Memory.h"
+#include "../common/NonCopyable.h"
 
 namespace wanhive {
 /**
@@ -20,7 +21,7 @@ namespace wanhive {
  * @tparam T data type
  * @tparam NOTHROW true for succeed or bust mode, false for error checking
  */
-template<typename T = int, bool NOTHROW = true> class ReadyList {
+template<typename T = int, bool NOTHROW = true> class ReadyList: private NonCopyable {
 public:
 	/**
 	 * Default constructor: creates an empty container.

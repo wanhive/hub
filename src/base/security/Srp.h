@@ -13,6 +13,7 @@
 #ifndef WH_BASE_SECURITY_SRP_H_
 #define WH_BASE_SECURITY_SRP_H_
 #include "Sha.h"
+#include "../common/NonCopyable.h"
 #include <openssl/bn.h>
 
 namespace wanhive {
@@ -35,7 +36,7 @@ enum SrpGroup {
  * @ref http://srp.stanford.edu/design.html
  * @ref https://tools.ietf.org/html/rfc5054
  */
-class Srp {
+class Srp: private NonCopyable {
 public:
 	/**
 	 * Constructor: assigns the SRP-6a context.

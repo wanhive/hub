@@ -12,13 +12,14 @@
 
 #ifndef WH_BASE_SECURITY_RSA_H_
 #define WH_BASE_SECURITY_RSA_H_
+#include"../common/NonCopyable.h"
 #include <openssl/rsa.h>
 
 namespace wanhive {
 /**
  * RSA public key cryptography
  */
-class Rsa {
+class Rsa: private NonCopyable {
 public:
 	/**
 	 * Default constructor

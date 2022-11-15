@@ -12,6 +12,7 @@
 
 #ifndef WH_BASE_SECURITY_SHA_H_
 #define WH_BASE_SECURITY_SHA_H_
+#include "../common/NonCopyable.h"
 #include <openssl/evp.h>
 #include <openssl/sha.h>
 
@@ -30,7 +31,7 @@ enum DigestType {
  * SHA message digest implementation. Supported message digest types have been
  * enumerated above.
  */
-class Sha {
+class Sha: private NonCopyable {
 public:
 	/**
 	 * Constructor: assigns a message digest context.

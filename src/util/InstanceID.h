@@ -13,12 +13,13 @@
 #ifndef WH_UTIL_INSTANCEID_H_
 #define WH_UTIL_INSTANCEID_H_
 #include "Hash.h"
+#include "../base/common/NonCopyable.h"
 
 namespace wanhive {
 /**
  * A unique and secret identifier.
  */
-class InstanceID {
+class InstanceID: private NonCopyable {
 public:
 	/**
 	 * Default constructor: creates a secure instance ID.

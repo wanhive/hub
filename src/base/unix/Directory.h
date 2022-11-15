@@ -12,6 +12,7 @@
 
 #ifndef WH_BASE_UNIX_DIRECTORY_H_
 #define WH_BASE_UNIX_DIRECTORY_H_
+#include "../common/NonCopyable.h"
 #include <dirent.h>
 #include <fcntl.h>
 #include <ftw.h>
@@ -22,7 +23,7 @@ namespace wanhive {
 /**
  * Directory management
  */
-class Directory {
+class Directory: private NonCopyable {
 public:
 	/**
 	 * Default constructor: creates an empty object.

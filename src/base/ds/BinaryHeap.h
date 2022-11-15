@@ -15,6 +15,7 @@
 #include "functors.h"
 #include "Twiddler.h"
 #include "../common/Exception.h"
+#include "../common/NonCopyable.h"
 #include "../common/reflect.h"
 
 namespace wanhive {
@@ -38,7 +39,7 @@ template<typename X> struct wh_bhfn_fn {
  * reference to the updated slot, the second argument is that slot's index.
  */
 template<typename X = int, typename CMPFN = wh_lt_fn,
-		typename BHFN = wh_bhfn_fn<X> > class BinaryHeap {
+		typename BHFN = wh_bhfn_fn<X> > class BinaryHeap: private NonCopyable {
 public:
 	/**
 	 * Default constructor: creates a zero-capacity binary heap.

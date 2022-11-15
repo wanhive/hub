@@ -15,6 +15,7 @@
 #include "BufferVector.h"
 #include "Twiddler.h"
 #include "../common/Exception.h"
+#include "../common/NonCopyable.h"
 #include "../common/reflect.h"
 #include <cstring>
 
@@ -24,7 +25,7 @@ namespace wanhive {
  * track magnetic tape storage.
  * @tparam X storage type
  */
-template<typename X> class Buffer {
+template<typename X> class Buffer: private NonCopyable {
 public:
 	/**
 	 * Default constructor: creates an empty buffer of zero capacity.
