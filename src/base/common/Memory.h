@@ -160,7 +160,7 @@ public:
 	}
 
 	/**
-	 * Changes dynamically allocated memory's size (memory bock's address may
+	 * Changes dynamically allocated memory's size (memory block's address may
 	 * change on successful operation).
 	 * @param p value-result argument for memory block's address
 	 * @param count new elements count
