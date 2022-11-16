@@ -74,5 +74,12 @@ AS_IF([test "x$with_executables" != "xno"], [AC_CHECK_LIB([pq], [PQfinish], , [A
 AS_IF([test "x$with_executables" != "xno"], [AC_CHECK_HEADERS([postgresql/libpq-fe.h], , [AC_MSG_ERROR([Additional header file missing.])])])
 AM_CONDITIONAL([WH_WITH_EXECUTABLES], [test "x$with_executables" != "xno"])
 
+# Doxygen configuration file generation
+AC_CHECK_PROG([HAVE_DOXYGEN], [doxygen], [yes], [no])
+AS_IF([test "x$HAVE_DOXYGEN" = "xyes"], [AC_CONFIG_FILES([Doxyfile])], [AC_MSG_WARN([Doxygen not found - continuing without Doxygen support.])])
+AM_CONDITIONAL([WH_HAVE_DOXYGEN], [test "x$HAVE_DOXYGEN" = "xyes"])
+AC_CHECK_PROG([HAVE_DOT], [dot], [YES], [NO])
+AC_SUBST([HAVE_DOT])
+
 AC_CONFIG_FILES([Makefile data/Makefile docs/Makefile src/Makefile src/wanhive.pc])
 AC_OUTPUT
