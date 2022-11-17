@@ -388,9 +388,7 @@ private:
 	public:
 		BigNumber() noexcept;
 		~BigNumber();
-
 		bool put(BIGNUM *n) noexcept;
-		//Converts length bytes in binary to BIGNUM
 		bool put(const unsigned char *binary, unsigned int length) noexcept;
 		bool put(const char *hex) noexcept;
 		bool random(int bits, int top = BN_RAND_TOP_ANY, int bottom =
@@ -400,13 +398,12 @@ private:
 		const unsigned char* getBinary() const noexcept;
 		unsigned int size() const noexcept;
 		void print() const noexcept;
-	private:
 		void clear() noexcept;
 	private:
-		BIGNUM *n;
-		unsigned int bytes;
-		//Sufficient for storing 8192 bits (largest N)
-		unsigned char binary[1024];
+		BIGNUM *n { nullptr };
+		unsigned int bytes { 0 };
+		//Sufficient for 8192 bits (largest N)
+		unsigned char binary[1024] { };
 	};
 private:
 	//Max buffer size for storing the message digest (64 bytes)
@@ -477,14 +474,6 @@ private:
 		BigNumber nonce; //Value in range [0, N)
 		unsigned char salt[MDSIZE]; //Fake salt
 	} fake;
-
-	//For left padding to N
-	unsigned char zeros[1024];
-	//Populated from Appendix A of RFC 5054
-	static const struct constants {
-		const char *Nhex;
-		const char *ghex;
-	} Nghex[7];
 };
 
 } /* namespace wanhive */

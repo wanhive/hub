@@ -14,8 +14,17 @@
 #include <cstring>
 #include <new>
 
-namespace wanhive {
-const Srp::constants Srp::Nghex[7] = { {
+namespace {
+
+struct SRPConstants {
+	const char *Nhex;
+	const char *ghex;
+};
+
+/*
+ * Populated from Appendix A of RFC 5054
+ */
+const SRPConstants Nghex[7] = { {
 /* 1024 */
 "EEAF0AB9ADB38DD69C33F80AFA8FC5E86072618775FF3C0B9EA2314C"
 		"9C256576D674DF7496EA81D3383B4813D692C6E0E0D5D8E250B98BE4"
@@ -144,13 +153,21 @@ const Srp::constants Srp::Nghex[7] = { {
 		"FC026E479558E4475677E9AA9E3050E2765694DFC81F56E880B96E71"
 		"60C980DD98EDD3DFFFFFFFFFFFFFFFFF", "13" } };
 
+/*
+ * For left padding to N (maximum 8192 bits)
+ */
+const unsigned char zeros[1024] { };
+
+}  // namespace
+
+namespace wanhive {
+
 Srp::Srp(SrpGroup type, DigestType dType) noexcept :
 		type(type), ctx(nullptr), H(dType), status(0) {
 	memset(key.K, 0, MDSIZE);
 	memset(proof.M, 0, MDSIZE);
 	memset(proof.AMK, 0, MDSIZE);
 	memset(fake.salt, 0, MDSIZE);
-	memset(zeros, 0, sizeof(zeros));
 }
 
 Srp::~Srp() {
@@ -973,9 +990,7 @@ void Srp::freeContext() noexcept {
 }
 
 Srp::BigNumber::BigNumber() noexcept {
-	n = nullptr;
-	bytes = 0;
-	memset(binary, 0, sizeof(binary));
+
 }
 
 Srp::BigNumber::~BigNumber() {
