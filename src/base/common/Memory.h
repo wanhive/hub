@@ -16,7 +16,6 @@
 #include "NonCopyable.h"
 #include "reflect.h"
 #include <cstdlib>
-#include <cstring>
 
 namespace wanhive {
 /**
