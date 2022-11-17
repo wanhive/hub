@@ -19,8 +19,17 @@ namespace wanhive {
  */
 class ConfigTool {
 public:
+	/**
+	 * Default constructor
+	 */
 	ConfigTool() noexcept;
+	/**
+	 * Destructor
+	 */
 	~ConfigTool();
+	/**
+	 * Interactively generates application settings.
+	 */
 	void execute() noexcept;
 private:
 	static void generateKeyPair();

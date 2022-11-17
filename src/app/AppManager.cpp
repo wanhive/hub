@@ -50,12 +50,7 @@ void AppManager::execute(int argc, char *argv[]) noexcept {
 }
 
 int AppManager::parseOptions(int argc, char *argv[]) noexcept {
-	programName = nullptr;
-	menu = false;
-	hubId = (unsigned long long) -1;
-	hubType = '\0';
-	configPath = nullptr;
-	hub = nullptr;
+	clear();
 	//-----------------------------------------------------------------
 	programName = strrchr(argv[0], Storage::DIR_SEPARATOR);
 	programName = programName ? (programName + 1) : argv[0];
@@ -66,10 +61,9 @@ int AppManager::parseOptions(int argc, char *argv[]) noexcept {
 			nullptr, 'n' }, { "syslog", 0, nullptr, 'S' }, { "type", 1, nullptr,
 			't' }, { "version", 0, nullptr, 'v' }, { nullptr, 0, nullptr, 0 } };
 	//-----------------------------------------------------------------
-	int nextOption;
-	do {
-		nextOption = getopt_long(argc, argv, shortOptions, longOptions,
-				(int*) nullptr);
+	while (true) {
+		auto nextOption = getopt_long(argc, argv, shortOptions, longOptions,
+				nullptr);
 		switch (nextOption) {
 		case 'c':
 			configPath = optarg;
@@ -93,19 +87,17 @@ int AppManager::parseOptions(int argc, char *argv[]) noexcept {
 			printVersion(stdout);
 			return 1;
 		case -1:	//We are done
-			break;
+			return 0;
 		case '?': //Unknown option
 			WH_LOG_ERROR("Invalid option");
-			printHelp(stderr);
+			printUsage(stderr);
 			return -1;
 		default:
 			WH_LOG_ERROR("?? read character code 0%o ??", nextOption);
-			printHelp(stderr);
+			printUsage(stderr);
 			return -1;
 		}
-	} while (nextOption != -1);
-	//-----------------------------------------------------------------
-	return 0;
+	}
 }
 
 void AppManager::processOptions() noexcept {
@@ -211,6 +203,7 @@ void AppManager::executeHub() noexcept {
 		} else {
 			WH_LOG_ERROR("Hub was terminated due to error.");
 		}
+		restoreSignals();
 	} catch (const BaseException &e) {
 		WH_LOG_EXCEPTION(e);
 	} catch (...) {
@@ -298,6 +291,21 @@ void AppManager::installSignals() {
 	//Rest of the signals not handled
 }
 
+void AppManager::restoreSignals() {
+	//Unblock all signals
+	Signal::unblockAll();
+	//Restore SIGPIPE
+	Signal::reset(SIGPIPE);
+	//Restore SIGUSR1
+	Signal::reset(SIGUSR1);
+	//Restore the following signals
+	Signal::reset(SIGINT);
+	Signal::reset(SIGTERM);
+	Signal::reset(SIGQUIT);
+	//SIGTSTP and SIGHUP not handled
+	//Rest of the signals not handled
+}
+
 void AppManager::shutdown(int signum) noexcept {
 	hub->cancel();
 }
@@ -337,6 +345,15 @@ void AppManager::printUsage(FILE *stream) noexcept {
 void AppManager::printContact(FILE *stream) noexcept {
 	fprintf(stream, "\nurl: %s   email: %s\n\n", WH_RELEASE_URL,
 	WH_RELEASE_EMAIL);
+}
+
+void AppManager::clear() noexcept {
+	programName = nullptr;
+	menu = false;
+	hubId = (unsigned long long) -1;
+	hubType = '\0';
+	configPath = nullptr;
+	hub = nullptr;
 }
 
 }

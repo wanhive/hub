@@ -21,8 +21,19 @@ namespace wanhive {
  */
 class AppManager {
 public:
+	/**
+	 * Default constructor: does nothing
+	 */
 	AppManager() noexcept;
+	/**
+	 * Destructor
+	 */
 	~AppManager();
+	/**
+	 * Interactively executes the main application.
+	 * @param argc command line arguments count
+	 * @param argv command line arguments
+	 */
 	static void execute(int argc, char *argv[]) noexcept;
 private:
 	static int parseOptions(int argc, char *argv[]) noexcept;
@@ -35,12 +46,14 @@ private:
 	static void runComponentsTest() noexcept;
 	//-----------------------------------------------------------------
 	static void installSignals();
+	static void restoreSignals();
 	static void shutdown(int signum) noexcept;
 	//-----------------------------------------------------------------
 	static void printHelp(FILE *stream) noexcept;
 	static void printVersion(FILE *stream) noexcept;
 	static void printUsage(FILE *stream) noexcept;
 	static void printContact(FILE *stream) noexcept;
+	static void clear() noexcept;
 private:
 	static const char *programName;
 	static bool menu;
