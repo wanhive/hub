@@ -21,20 +21,18 @@ namespace {
  */
 static void writeTuple(FILE *f, unsigned long long uid, const char *host,
 		const char *service) noexcept {
-	fprintf(f, "%llu\t%s\t%s%s", uid, host, service, wanhive::Storage::NEWLINE);
+	fprintf(f, "%llu\t%s\t%s\n", uid, host, service);
 }
 
 static void writeTuple(FILE *f, unsigned long long uid, const char *host,
 		const char *service, int type) noexcept {
-	fprintf(f, "%llu\t%s\t%s\t%d%s", uid, host, service, type,
-			wanhive::Storage::NEWLINE);
+	fprintf(f, "%llu\t%s\t%s\t%d\n", uid, host, service, type);
 }
 
 static void writeHeading(FILE *f, int version) noexcept {
 	if (version == 1) {
-		fprintf(f, "# Revision: %d%s", version, wanhive::Storage::NEWLINE);
-		fprintf(f, "# UID\tHOSTNAME\tSERVICE\tTYPE%s",
-				wanhive::Storage::NEWLINE);
+		fprintf(f, "# Revision: %d\n", version);
+		fprintf(f, "# UID\tHOSTNAME\tSERVICE\tTYPE\n");
 	}
 }
 
@@ -74,7 +72,7 @@ void Hosts::batchUpdate(const char *path) {
 		throw Exception(EX_RESOURCE);
 	}
 
-	auto f = Storage::openStream(path, "r", false);
+	auto f = Storage::openStream(path, "r");
 	if (!f) {
 		throw Exception(EX_ARGUMENT);
 	}
@@ -119,7 +117,7 @@ void Hosts::batchDump(const char *path, int version) {
 			throw Exception(EX_STATE);
 		}
 		//-----------------------------------------------------------------
-		auto f = Storage::openStream(path, "w", true);
+		auto f = Storage::openStream(path, "w");
 		if (!f) {
 			finalize(stmt);
 			throw Exception(EX_ARGUMENT);
@@ -227,7 +225,7 @@ int Hosts::list(unsigned long long uids[], unsigned int &count,
 }
 
 void Hosts::createDummy(const char *path, int version) {
-	auto f = Storage::openStream(path, "w", true);
+	auto f = Storage::openStream(path, "w");
 	if (f) {
 		auto host = "127.0.0.1";
 		char service[32];

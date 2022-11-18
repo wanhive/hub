@@ -25,52 +25,36 @@ public:
 	/**
 	 * Opens a file stream (wrapper for fopen(3) library function).
 	 * @param path file's pathname
-	 * @param modes the mode string describing how to open the file
-	 * @param createPath true to create the directory structure, false otherwise
-	 * @return a valid file pointer on success, nullptr on error
+	 * @param modes string describing how to open the file
+	 * @return file stream on success, nullptr on error
 	 */
-	static FILE* openStream(const char *path, const char *modes,
-			bool createPath) noexcept;
+	static FILE* openStream(const char *path, const char *modes) noexcept;
 	/**
 	 * Closes a file stream (wrapper for fclose(3) library function).
 	 * @param fp the file pointer
 	 * @return value returned by fclose(3)
 	 */
 	static int closeStream(FILE *fp) noexcept;
-	/**
-	 * Returns the stream's associated file descriptor (wrapper for fileno(3)).
-	 * @param stream the file stream
-	 * @return file descriptor
-	 */
-	static int getDescriptor(FILE *stream);
 	//-----------------------------------------------------------------
 	/**
-	 * Opens a file: wrapper for open(2) system call.
-	 * @param path pathname of the file
-	 * @param flags the status flags
-	 * @param mode the mode flags
-	 * @param createPath true to create the directory structure, false otherwise
+	 * Opens a file (wrapper for open(2) system call).
+	 * @param path file's pathname
+	 * @param flags status flags
+	 * @param mode mode flags
 	 * @return file descriptor
 	 */
-	static int open(const char *path, int flags, mode_t mode, bool createPath);
+	static int open(const char *path, int flags, mode_t mode = 0);
 	/**
-	 * CLoses a file descriptor: wrapper for close(2) system call.
+	 * Closes a file descriptor (wrapper for close(2) system call).
 	 * @param fd file descriptor
 	 * @return value returned by close(2)
 	 */
 	static int close(int fd) noexcept;
-	/**
-	 * Opens a file stream: wrapper for fdopen(3) library function.
-	 * @param fd file descriptor
-	 * @param modes he mode string describing how to open the file
-	 * @return pointer to file stream
-	 */
-	static FILE* getStream(int fd, const char *modes);
 	//-----------------------------------------------------------------
 	/**
-	 * Reads data from the given file.
-	 * @param fd file descriptor to read from
-	 * @param buffer buffer for storing the data
+	 * Reads data from a given file.
+	 * @param fd file descriptor
+	 * @param buffer input buffer
 	 * @param count maximum number of bytes of data to read
 	 * @param strict true to read exactly the given bytes of data, false to read
 	 * at most the given bytes of data.
@@ -78,9 +62,9 @@ public:
 	 */
 	static size_t read(int fd, void *buffer, size_t count, bool strict);
 	/**
-	 * Writes data to the given file.
-	 * @param fd file descriptor for writing
-	 * @param buffer the data to write
+	 * Writes data to a given file.
+	 * @param fd file descriptor
+	 * @param buffer output buffer
 	 * @param count number of bytes to write
 	 * @return number of bytes written
 	 */
@@ -139,25 +123,18 @@ public:
 	//-----------------------------------------------------------------
 	/**
 	 * Performs posix shell like expansion of pathname.
-	 * @param pathname the pathname for expansion
-	 * @return the expanded pathname (the caller should free it using WH_free()
-	 * or free(3)).
+	 * @param pathname pathname for expansion
+	 * @return expanded pathname (caller should free this string).
 	 */
 	static char* expandPathName(const char *pathname) noexcept;
 private:
 	static bool createDirectoryForFile(const char *pathname) noexcept;
 	static bool _createDirectory(char *pathname) noexcept;
 public:
-	/** Directory separator character */
-	static constexpr char DIR_SEPARATOR = '/';
-	/** Directory separator string */
-	static inline const char *DIR_SEPARATOR_STR = "/";
-	/** Path separator character */
-	static constexpr char PATH_SEPARATOR = ':';
-	/** Path separator string */
-	static inline const char *PATH_SEPARATOR_STR = ":";
-	/** Newline string */
-	static inline const char *NEWLINE = "\n";
+	/** Pathname separator character */
+	static constexpr char PATH_SEPARATOR = '/';
+	/** Pathname separator string */
+	static inline const char PATH_SEPARATOR_STR[] = "/";
 };
 
 } /* namespace wanhive */

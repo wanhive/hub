@@ -22,8 +22,8 @@ public:
 		random = -1;
 		urandom = -1;
 		try {
-			random = Storage::open("/dev/random", O_RDONLY, S_IRUSR, false);
-			urandom = Storage::open("/dev/urandom", O_RDONLY, S_IRUSR, false);
+			random = Storage::open("/dev/random", O_RDONLY);
+			urandom = Storage::open("/dev/urandom", O_RDONLY);
 		} catch (const BaseException &e) {
 			Storage::close(random);
 			Storage::close(urandom);

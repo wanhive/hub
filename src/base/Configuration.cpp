@@ -67,7 +67,7 @@ bool Configuration::load(const char *filename, size_t *count) noexcept {
 		return false;
 	}
 
-	auto fp = Storage::openStream(filename, "r", false);
+	auto fp = Storage::openStream(filename, "r");
 	if (fp == nullptr) {
 		return false;
 	}
@@ -118,9 +118,9 @@ bool Configuration::store(const char *filename) noexcept {
 	FILE *fp = nullptr;
 	auto success = true;
 
-	if ((fp = Storage::openStream(filename, "w", true))) {
+	if ((fp = Storage::openStream(filename, "w"))) {
 		//Print sections and entries
-		success = print(fp, strrchr(filename, Storage::DIR_SEPARATOR) + 1);
+		success = print(fp, strrchr(filename, Storage::PATH_SEPARATOR) + 1);
 	} else {
 		data.status = -1;
 		return false;
@@ -307,7 +307,7 @@ char* Configuration::expandPath(const char *pathname) const noexcept {
 	unsigned int i = 0;	//Index of the first path separator or NUL terminator
 	const char *postfix = nullptr;	//Substring after the first path separator
 
-	while (tmp[i] && (tmp[i] != Storage::DIR_SEPARATOR)) {
+	while (tmp[i] && (tmp[i] != Storage::PATH_SEPARATOR)) {
 		i++;
 	}
 
@@ -329,7 +329,7 @@ char* Configuration::expandPath(const char *pathname) const noexcept {
 	 */
 	if (!prefix) {
 		//Restore the original string
-		tmp[i] = postfix[0] ? Storage::DIR_SEPARATOR : '\0';
+		tmp[i] = postfix[0] ? Storage::PATH_SEPARATOR : '\0';
 		//Expand into the full path and return
 		auto result = Storage::expandPathName(tmp);
 		free(tmp);
@@ -342,9 +342,9 @@ char* Configuration::expandPath(const char *pathname) const noexcept {
 		strcpy(result, prefix);
 		if (postfixLen
 				&& (!prefixLen
-						|| (prefix[prefixLen - 1] != Storage::DIR_SEPARATOR))) {
+						|| (prefix[prefixLen - 1] != Storage::PATH_SEPARATOR))) {
 			//Inject a path separator if required
-			strcat(result, Storage::DIR_SEPARATOR_STR);
+			strcat(result, Storage::PATH_SEPARATOR_STR);
 		}
 		strcat(result, postfix);
 		free(tmp);

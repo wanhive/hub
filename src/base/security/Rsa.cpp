@@ -285,7 +285,7 @@ EVP_PKEY* Rsa::createFromFile(const char *filename, bool isPublicKey,
 	}
 
 	//Open file for reading in text mode
-	auto fp = Storage::openStream(filename, "r", false);
+	auto fp = Storage::openStream(filename, "r");
 	if (fp == nullptr) {
 		return nullptr;
 	}
@@ -362,7 +362,7 @@ bool Rsa::generatePem(const char *filename, EVP_PKEY *key, bool isPublicKey,
 	auto passPhraseLength = password ? strlen(password) : 0;
 
 	//Open the file for writing in text mode
-	auto file = Storage::openStream(filename, "w", true);
+	auto file = Storage::openStream(filename, "w");
 	if (!file) {
 		return false;
 	}

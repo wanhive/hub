@@ -151,7 +151,7 @@ public:
 	 * @param option key's name
 	 * @param defaultValue default value to process if no valid entry found
 	 * @return expanded pathname associated with the given key (caller must free
-	 * this string using WH_free() or free(3)).
+	 * this string).
 	 */
 	char* getPathName(const char *section, const char *option,
 			const char *defaultValue = nullptr) const noexcept;

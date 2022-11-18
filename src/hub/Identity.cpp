@@ -147,7 +147,7 @@ unsigned int Identity::getIdentifiers(const char *section, const char *option,
 		return 0;
 	}
 
-	auto fp = Storage::openStream(filename, "r", false);
+	auto fp = Storage::openStream(filename, "r");
 	free(filename);
 	if (!fp) {
 		return 0;

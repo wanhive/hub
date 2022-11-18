@@ -33,18 +33,16 @@ int rmHelper(const char *path, const struct stat *s, int flag,
 
 namespace wanhive {
 
-FILE* Storage::openStream(const char *path, const char *modes,
-		bool createPath) noexcept {
-	auto cf = false;
+FILE* Storage::openStream(const char *path, const char *modes) noexcept {
+	auto createPath = false;
 	for (auto x = modes; x && *x; ++x) {
 		auto c = *x;
 		if (c == 'w' || c == 'a') {
-			cf = true;
+			createPath = true;
 			break;
 		}
 	}
 
-	createPath = (createPath && cf); //Adjust
 	FILE *f = nullptr;
 	while ((f = fopen(path, modes)) == nullptr) {
 		if (errno == ENOENT && createPath && createDirectoryForFile(path)) {
@@ -60,19 +58,10 @@ int Storage::closeStream(FILE *fp) noexcept {
 	return fclose(fp);
 }
 
-int Storage::getDescriptor(FILE *stream) {
-	auto result = fileno(stream);
-	if (result != -1) {
-		return result;
-	} else {
-		throw SystemException();
-	}
-}
-
-int Storage::open(const char *path, int flags, mode_t mode, bool createPath) {
+int Storage::open(const char *path, int flags, mode_t mode) {
 	if (path && path[0]) {
 		int fd = -1;
-		createPath = createPath && (flags & O_CREAT); //Adjust
+		auto createPath = (flags & O_CREAT);
 		while ((fd = ::open(path, flags, mode)) == -1) {
 			if (errno == ENOENT && createPath && createDirectoryForFile(path)) {
 				continue;
@@ -88,15 +77,6 @@ int Storage::open(const char *path, int flags, mode_t mode, bool createPath) {
 
 int Storage::close(int fd) noexcept {
 	return ::close(fd);
-}
-
-FILE* Storage::getStream(int fd, const char *modes) {
-	auto fp = fdopen(fd, modes);
-	if (fp) {
-		return fp;
-	} else {
-		throw SystemException();
-	}
 }
 
 size_t Storage::read(int fd, void *buffer, size_t count, bool strict) {
@@ -242,7 +222,7 @@ bool Storage::createDirectoryForFile(const char *pathname) noexcept {
 		char tmp[PATH_MAX];
 		memset(tmp, 0, sizeof(tmp));
 		strncpy(tmp, pathname, (sizeof(tmp) - 1));
-		Twiddler::stripLast(tmp, DIR_SEPARATOR);
+		Twiddler::stripLast(tmp, PATH_SEPARATOR);
 		return _createDirectory(tmp);
 	} else {
 		return false;
@@ -255,12 +235,12 @@ bool Storage::_createDirectory(char *pathname) noexcept {
 	}
 
 	auto mark = pathname;
-	for (; *mark == DIR_SEPARATOR; ++mark) {
+	for (; *mark == PATH_SEPARATOR; ++mark) {
 		//skip heading '/'s
 	}
 
 	for (; *mark; ++mark) {
-		mark = strchr(mark, DIR_SEPARATOR);
+		mark = strchr(mark, PATH_SEPARATOR);
 
 		if (mark) {		//Move into the tree one level at a time
 			*mark = 0;
@@ -278,7 +258,7 @@ bool Storage::_createDirectory(char *pathname) noexcept {
 		}
 		//-----------------------------------------------------------------
 		if (mark) {
-			*mark = DIR_SEPARATOR;
+			*mark = PATH_SEPARATOR;
 		} else {		//No more levels left
 			break;
 		}

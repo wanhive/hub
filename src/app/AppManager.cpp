@@ -52,7 +52,7 @@ void AppManager::execute(int argc, char *argv[]) noexcept {
 int AppManager::parseOptions(int argc, char *argv[]) noexcept {
 	clear();
 	//-----------------------------------------------------------------
-	programName = strrchr(argv[0], Storage::DIR_SEPARATOR);
+	programName = strrchr(argv[0], Storage::PATH_SEPARATOR);
 	programName = programName ? (programName + 1) : argv[0];
 	//-----------------------------------------------------------------
 	auto shortOptions = "c:hmn:St:v";
