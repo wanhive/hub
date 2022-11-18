@@ -178,12 +178,12 @@ public:
 	//-----------------------------------------------------------------
 	/**
 	 * Returns pointer to the internal object.
-	 * @return pointer to stat structure
+	 * @return pointer to internal stat structure
 	 */
 	struct stat* get() noexcept;
 	/**
-	 * Constant pointer to the internal object.
-	 * @return pointer to stat structure
+	 * Returns constant pointer to the internal object.
+	 * @return pointer to internal stat structure
 	 */
 	const struct stat* get() const noexcept;
 	//-----------------------------------------------------------------
