@@ -141,16 +141,15 @@ public:
 	 * @param sfd socket descriptor
 	 * @param milliseconds timeout value in milliseconds, set 0 to block forever
 	 */
-	static void setReceiveTimeout(int sfd, int milliseconds);
+	static void setReceiveTimeout(int sfd, unsigned int milliseconds);
 	/**
 	 * Sets write operation's timeout.
 	 * @param sfd socket descriptor
 	 * @param milliseconds timeout value in milliseconds, set 0 to block forever
 	 */
-	static void setSendTimeout(int sfd, int milliseconds);
+	static void setSendTimeout(int sfd, unsigned int milliseconds);
 	/**
-	 * Sets read and write operations' timeout values. Negative timeout value
-	 * will be ignored.
+	 * Sets read and write timeout values. Negative timeout value is ignored.
 	 * @param sfd socket descriptor
 	 * @param recvTimeout read timeout in milliseconds, 0 to block forever
 	 * @param sendTimeout write timeout in milliseconds, 0 to block forever

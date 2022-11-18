@@ -236,20 +236,20 @@ size_t Network::receiveStream(int sockfd, unsigned char *buf, size_t length,
 	return (length - toRecv);
 }
 
-void Network::setReceiveTimeout(int sfd, int milliseconds) {
+void Network::setReceiveTimeout(int sfd, unsigned int milliseconds) {
 	timeval to;
 	to.tv_sec = milliseconds / 1000;
 	to.tv_usec = (milliseconds % 1000) * 1000;
-	if (::setsockopt(sfd, SOL_SOCKET, SO_RCVTIMEO, &to, sizeof(timeval))) {
+	if (::setsockopt(sfd, SOL_SOCKET, SO_RCVTIMEO, &to, sizeof(to))) {
 		throw SystemException();
 	}
 }
 
-void Network::setSendTimeout(int sfd, int milliseconds) {
+void Network::setSendTimeout(int sfd, unsigned int milliseconds) {
 	timeval to;
 	to.tv_sec = milliseconds / 1000;
 	to.tv_usec = (milliseconds % 1000) * 1000;
-	if (::setsockopt(sfd, SOL_SOCKET, SO_SNDTIMEO, &to, sizeof(timeval))) {
+	if (::setsockopt(sfd, SOL_SOCKET, SO_SNDTIMEO, &to, sizeof(to))) {
 		throw SystemException();
 	}
 }
