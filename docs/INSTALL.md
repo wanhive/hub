@@ -404,7 +404,7 @@ Start additional overlay hubs in any order. The overlay hubs will automatically 
 
 ### Client authentication (optional)
 
-The following instructions are valid for a **Standard setup**.
+The following instructions are valid for a [standard setup](#standard-installation).
 
 Client authentication is disabled by default, i.e., an overlay hub accepts all the well-formed registration requests from it's clients.
 
@@ -422,7 +422,7 @@ authenticateClient = YES
 
 ### Domain controlled access (optional)
 
-The following instructions are valid for a **Standard setup**.
+The following instructions are valid for a [standard setup](#standard-installation).
 
 *Domain controlled access* allows only those clients that belong to the same logical group (**domain**) to communicate with one another.
 
@@ -441,7 +441,7 @@ netMask = 0xfffffffffffffc00
 
 ## Authentication hub (Server)
 
-The following instructions are valid for a **Standard setup**.
+The following instructions are valid for a [standard setup](#standard-installation).
 
 An authentication hub acts as a *trusted third party* during the authentication and authorization of the clients.
 
@@ -469,7 +469,7 @@ Wanhive network can have multiple authentication hubs for [redundancy](#bootstra
 
 ## Multicast consumer (client)
 
-The following instructions are valid for a **Basic setup** (for testing purposes only).
+The following instructions are valid for a [basic setup](#basic-installation).
 
 1. Start an overlay hub with [clustering](#clustering-optional) and [client authentication](#client-authentication-optional) disabled.
 2. Disable the following property (comment-out or set to FALSE) in the client's configuration file:
@@ -492,7 +492,7 @@ wanhive -tm -n 65536
 
 **NOTE**: Clients should not use identifiers in the range [0-65535].
 
-Following "additional" instructions are applicable for a **Standard setup** (for testing purposes only).
+Following "additional" instructions are applicable for a [standard setup](#standard-installation).
 
 1. Start an authentication hub.
 2. Disable clustering at the overlay hub.
