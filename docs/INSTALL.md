@@ -50,6 +50,12 @@ make
 make install
 ```
 
+* Generate API documentation (optional)
+
+```
+doxygen
+```
+
 * Uninstall the programs.
 
 ```
@@ -83,7 +89,7 @@ Read the output carefully.
 
 Follow these steps to create a "bare minimum" functional setup for testing.
 
-* Create **$HOME/.config/wanhive** directory.
+* Create a new directory inside the user's home directory to store application-specific settings.
     
 ```
 mkdir -pv $HOME/.config/wanhive
@@ -110,40 +116,35 @@ Press **Ctrl+C** to exit the program.
 
 **NOTES:**
 
-* Clients should not use the identifiers in the range [0-65535].
-* Overlay hubs use the identifiers in the range [0-1023].
-* Clients cannot connect with the overlay hub attached to the identifier 0.
+* Clients should not use identifiers in the range [0-65535].
+* Overlay hubs use identifiers in the range [0-1023].
+* Clients cannot connect with an overlay hub with identifier 0.
 
-# Setup options
+# Customization options
 
-## Basic setup
+## Basic installation
 
-* Install this package.
-    * Sufficient for [testing](#getting-started).
-    * Sufficient for building small IoT applications over a local IP network.
+* [Install](#getting-started) this package.
+    * Sufficient for testing.
+    * Sufficient for building small IoT applications on a local IP network.
     * Supports clustering.
-    * Does not support user and endpoint management.
-    * Does not support authentication.
-    * Does not support access control.
-    * Does not support device type identification.
+    * Does not support user and endpoint management, authentication, and access control.
 
-## Standard setup
+## Standard installation
 
-* Install this package.
+* [Install](#getting-started) this package.
 * Install Postgresql database server 10 or above.
 * Install the [Wanhive IoT web console](https://github.com/wanhive/webconsole).
 * Install [Network key](#network-key-optional).
-* Enable [Client authentication](#client-authentication-optional).
-* Enable [Domain controlled access](#domain-controlled-access-optional).
+* Activate [Client authentication](#client-authentication-optional).
+* Activate [Domain controlled access](#domain-controlled-access-optional).
 
 # Configuration
 
-Wanhive hub is configured using an external configuration file.
-
-If the command line doesn't provide the configuration file's pathname, then the program will attempt to read **wanhive.conf** from the locations listed below (in the given order):
+Wanhive hub requires an external configuration file. Users can provide the configuration file's pathname as a command line option. Alternatively, the program will attempt to read **wanhive.conf** from the locations listed below (in the given order):
 
 1. Current working directory (`$PWD`)
-2. Executable's directory
+2. Executable file's directory
 3. $HOME/.config/wanhive
 4. [sysconfdir](https://www.gnu.org/software/automake/manual/html_node/Standard-Directory-Variables.html)
 
@@ -151,22 +152,22 @@ If the command line doesn't provide the configuration file's pathname, then the 
 
 The configuration file uses a restricted version of the [INI file](https://en.wikipedia.org/wiki/INI_file) format.
 
-* Update the **HOSTS** and **BOOTSTRAP** sections of the configuration file correctly.
+* Update the **HOSTS** and **BOOTSTRAP** sections correctly.
     * Do not skip this step.
 * This package includes a sample configuration file (*wanhive.conf*).
-* After installation, you can find a copy of the sample configuration file inside the [datadir](https://www.gnu.org/software/automake/manual/html_node/Standard-Directory-Variables.html).
+* A sample configuration file is installed inside the [datadir](https://www.gnu.org/software/automake/manual/html_node/Standard-Directory-Variables.html).
 
 ## Hosts
 
-Wanhive hubs use a special text file to learn the network addresses.
+Wanhive hubs use a tab-delimited text file to discover the network addresses.
 
-* A server uses this file to bind it's listening socket to the correct address.
+* A server uses this file to bind its listening socket to the correct address.
 * A client uses this file to find and connect to a server.
 
-The required steps have been summarized below:
+Required steps:
 
-1. Create a text file containing addresses of all the *available* hosts (overlay and authentication hubs).
-2. Update the **HOSTS** section of the configuration file as illustrated below.
+1. Create a text file containing the addresses of all the *available* hosts (overlay and authentication hubs).
+2. Update the configuration file's **HOSTS** section (see below).
 
 ```
 [HOSTS]
@@ -177,13 +178,13 @@ hostsFile = <pathname-of-hosts-file>
 
 ### The hosts file
 
-A **hosts file** contains rows of *tab-separated* tuples:
+A **hosts file** contains rows of *tab-separated* data:
 
 ```
 IDENTITY	HOST	SERVICE		[TYPE]
 ```
 
-Each row maps an **identifier** to a **network address** and a **type (optional)**.
+Each row associates an **identifier** with a **network address** and a **type (optional)**.
 
 For example:
 
@@ -200,7 +201,7 @@ For example:
 
 * **IDENTITY** and **TYPE** should be non-negative integers.
 * The **TYPE** column is optional.
-* The following **TYPE** codes have special meanings ([see bootstrapping](#bootstrap)):
+* The following **TYPE** codes carry special meanings ([see bootstrapping](#bootstrap)):
     * An overlay hub (**1**)
     * An authentication hub (**2**)
 * Server applications bind their listening TCP/IP socket to the wildcard address.
@@ -208,7 +209,7 @@ For example:
 
 #### Option 1: Create manually
 
-You can use a text editor to create or edit a **hosts file**. For example, the following **hosts file** describes five hubs:
+Use a text editor to create or edit a **hosts file**. For example, the following **hosts file** describes five hosts:
 
 ```
 0	127.0.0.1	9000
@@ -225,7 +226,7 @@ You can use a text editor to create or edit a **hosts file**. For example, the f
 
 * Columns are **TAB-separated**.
 
-#### Option 2: Generate a dummy file
+#### Option 2: Generate a sample file
 
 ```
 wanhive -m
@@ -240,7 +241,7 @@ wanhive -m
 #### Option 3: Use the default template
 
 * This package includes a sample **hosts file** for testing purposes.
-* After installation, you can find a copy of the sample **hosts file** at the [datadir](https://www.gnu.org/software/automake/manual/html_node/Standard-Directory-Variables.html).
+* A sample **hosts file** at the [datadir](https://www.gnu.org/software/automake/manual/html_node/Standard-Directory-Variables.html) location.
 * Edit the file in a text editor.
 
 ### The hosts database
@@ -277,8 +278,8 @@ A Wanhive hub must go through a bootstrap process to join the network. The joini
 
 A Wanhive hub obtains such a list from either
 
-1. the [hosts file](#hosts), or
-2. the **bootstrap files** (default).
+1. a [hosts file or database](#hosts), or
+2. the **bootstrap files** (default, see below).
 
 **NOTES**:
 
@@ -291,10 +292,10 @@ The **bootstrap files** store a list of *stable* host identifiers:
 
 1. A text file containing a whitespace-separated list of *stable overlay hub* identifiers.
      - This package includes a sample file named **nodes**.
-     - The sample file gets copied into the **datadir** during installation.
+     - Sample file is copied into the **datadir** during installation.
 2. A text file containing a whitespace-separated list of *stable authentication hub* identifiers.
      - This package includes a sample file named **auths**.
-     - The sample file gets copied into the **datadir** during installation.
+     - Sample file is copied into the **datadir** during installation.
 
 Create both the text files and update the configuration file as shown below:
 
