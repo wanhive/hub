@@ -209,19 +209,16 @@ bool Node::isInRoute(unsigned int key) const noexcept {
 }
 
 void Node::print() noexcept {
-	fprintf(stderr, "\n==========================================\n");
 	fprintf(stderr, "KEY: %u\n", getKey());
 	fprintf(stderr, "PREDECESSOR: %u, SUCCESSOR: %u\n\n", getPredecessor(),
 			getSuccessor());
-	fprintf(stderr, "FINGER TABLE [STABLE: %s]\n", WH_BOOLF(isStable()));
-	fprintf(stderr, "------------------------------------------\n");
+	fprintf(stderr, "ROUTING TABLE [STABLE: %s]\n\n", WH_BOOLF(isStable()));
 	fprintf(stderr, " SN    START  CURRENT  HISTORY   CONNECTED\n");
 	for (unsigned int i = 0; i < TABLESIZE; ++i) {
 		auto f = getFinger(i);
-		fprintf(stderr, "%3u%9u%9u%9u   %9s\n", (i + 1), f->getStart(),
+		fprintf(stderr, "%3u%9u%9u%9u%12s\n", (i + 1), f->getStart(),
 				f->getId(), f->getOldId(), WH_BOOLF(f->isConnected()));
 	}
-	fprintf(stderr, "\n==========================================\n");
 }
 
 bool Node::isBetween(unsigned int key, unsigned int from,
