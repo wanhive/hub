@@ -51,30 +51,29 @@ class Socket final: public Pooled<Socket>,
 public:
 	/**
 	 * Constructor: assigns a file descriptor.
-	 * @param fd the file descriptor to use with this object
+	 * @param fd file descriptor
 	 */
 	Socket(int fd) noexcept;
 	/**
 	 * Constructor: assigns a secure connection object.
-	 * @param ssl the SSL/TLS connection object
+	 * @param ssl SSL/TLS connection object
 	 */
 	Socket(SSL *ssl);
 	/**
 	 * Constructor: connects to a host.
-	 * @param ni the remote host's address, set the service filed to "unix" for
-	 * establishing a unix domain socket connection.
+	 * @param ni host's address, set the service field to "unix" for unix domain
+	 * socket connection.
 	 * @param blocking true for blocking IO, false for non-blocking IO (default)
-	 * @param timeoutMils the IO timeout for blocking connection, set 0 to block
-	 * forever, -1 to ignore (use the default behavior).
+	 * @param timeout blocking IO timeout value in milliseconds, 0 to block
+	 * forever, -1 to ignore (default).
 	 */
-	Socket(const NameInfo &ni, bool blocking = false, int timeoutMils = -1);
+	Socket(const NameInfo &ni, bool blocking = false, int timeout = -1);
 	/**
 	 * Constructor: creates a host which can accept incoming connections.
-	 * @param service the service name (usually the listening port number for
-	 * a TCP/IP socket, or the pathname for a unix domain socket).
-	 * @param backlog the listening backlog
-	 * @param isUnix true for creating a unix domain socket, false for creating
-	 * a TCP/IP socket (default).
+	 * @param service service's name (usually a port number for TCP/IP socket,
+	 * or a pathname for unix domain socket).
+	 * @param backlog listening backlog
+	 * @param isUnix true for unix domain socket, false for TCP/IP
 	 * @param blocking true for blocking IO, false for non-blocking IO (default)
 	 */
 	Socket(const char *service, int backlog, bool isUnix = false,
@@ -108,9 +107,9 @@ public:
 	//-----------------------------------------------------------------
 	/**
 	 * Accepts an incoming connection request.
-	 * @param blocking true for setting blocking IO on the new connection, false
-	 * for non-blocking IO.
-	 * @return a new incoming connection, nullptr if the call would block
+	 * @param blocking true to set blocking IO mode for the new connection,
+	 * false for non-blocking IO.
+	 * @return newly accepted connection, nullptr if the call would block
 	 */
 	Socket* accept(bool blocking = false);
 	/**
@@ -121,7 +120,7 @@ public:
 	 */
 	ssize_t read();
 	/**
-	 * Writes outgoing messages to the underlying connection.
+	 * Writes outgoing messages to the managed connection.
 	 * @return the number of bytes written, possibly zero (0) if the outgoing
 	 * messages queue is empty.
 	 */
@@ -135,7 +134,7 @@ public:
 	/**
 	 * Creates an unnamed socket pair.
 	 * @param sfd stores the remote end's file descriptor
-	 * @param blocking true for for blocking IO, false for non-blocking IO
+	 * @param blocking true for blocking IO, false for non-blocking IO
 	 * @return socket connection object
 	 */
 	static Socket* createSocketPair(int &sfd, bool blocking = false);
@@ -145,9 +144,9 @@ public:
 	 */
 	static void setSSLContext(SSLContext *ctx) noexcept;
 	/**
-	 * Checks whether the given value is a temporary socket identifier.
+	 * Checks whether a given identifier is an ephemeral value.
 	 * @param id identifier's value
-	 * @return true for temporary identifier, false otherwise.
+	 * @return true for temporary identifier, false otherwise
 	 */
 	static bool isEphemeralId(unsigned long long id) noexcept;
 private:
@@ -183,13 +182,13 @@ private:
 	//Free internal resources
 	void cleanup() noexcept;
 public:
-	/** The minimum value for active socket identifier */
+	/** Minimum value for active socket identifier */
 	static constexpr uint64_t MIN_ACTIVE_ID = 0;
-	/** The maximum value for active socket identifier */
+	/** Maximum value for active socket identifier */
 	static constexpr uint64_t MAX_ACTIVE_ID = INT64_MAX;
-	/** The incoming message buffer size in bytes (must be power of two) */
+	/** Incoming message buffer's size in bytes (must be power of two) */
 	static constexpr unsigned int READ_BUFFER_SIZE = (Message::MTU << 3);
-	/** Size of the output queue (must be power of two) */
+	/** Outgoing message queue's size (must be power of two) */
 	static constexpr unsigned int OUT_QUEUE_SIZE = 1024;
 private:
 	//-----------------------------------------------------------------

@@ -37,7 +37,7 @@ Socket::Socket(SSL *ssl) :
 	}
 }
 
-Socket::Socket(const NameInfo &ni, bool blocking, int timeoutMils) :
+Socket::Socket(const NameInfo &ni, bool blocking, int timeout) :
 		Pooled(0) {
 	try {
 		clear();
@@ -50,8 +50,8 @@ Socket::Socket(const NameInfo &ni, bool blocking, int timeoutMils) :
 			Descriptor::setHandle(Network::connectedSocket(ni, sa, blocking));
 		}
 		if (blocking) {
-			Network::setSocketTimeout(Descriptor::getHandle(), timeoutMils,
-					timeoutMils);
+			Network::setSocketTimeout(Descriptor::getHandle(), timeout,
+					timeout);
 		}
 		setType(SOCKET_PROXY);
 	} catch (const BaseException &e) {
