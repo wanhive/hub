@@ -9,19 +9,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-- Tag classes which cannot be copy-constructed or copy-assigned.
 - Additional watcher flags, including the two user-defined flags.
+- **NonCopyable** class which cannot be copy-constructed or copy-assigned.
+- Doxygen support.
 
 ### Changed
 
-- Package restructuring (introduces backward incompatible API changes).
+- Package restructuring and API changes (backward incompatible).
+- Improve API documentation (work in progress).
 - Improve type and pointer safety.
-- Update user-generated exception types (backward incompatible).
-- Update API documentation (work in progress).
-
-### Fixed
-
-- Use logical operator instead of bitwise operator for boolean values in **Storage::open()** and **Storage::openStream()** methods.
+- Improve exception handling.
 
 ## [9.1.1] - 2022-10-17
 
