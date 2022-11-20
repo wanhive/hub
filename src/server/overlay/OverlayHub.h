@@ -242,7 +242,7 @@ private:
 	Hash hash;
 	//-----------------------------------------------------------------
 	/*
-	 * Watch list of files
+	 * Watch list of application data files
 	 * [0]: Configuration file
 	 * [1]: Hosts database
 	 * [2]: Hosts file
@@ -254,6 +254,7 @@ private:
 	 */
 	static constexpr unsigned int WATCHLIST_SIZE = 8;
 	struct {
+		int context;
 		int identifier;
 		uint32_t events;
 	} watchlist[WATCHLIST_SIZE];

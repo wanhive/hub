@@ -111,89 +111,27 @@ public:
 			unsigned long long nodes[], unsigned int count) noexcept;
 	//-----------------------------------------------------------------
 	/**
-	 * Returns configuration file's pathname.
-	 * @return configuration file's pathname
+	 * Returns an application data file's pathname.
+	 * @param context context's value
+	 * @return file's pathname if exists, nullptr otherwise
 	 */
-	const char* getConfigurationFile() const noexcept;
+	const char* dataPathName(int context) const noexcept;
 	/**
-	 * Returns host database file's pathname.
-	 * @return host database file's pathname, nullptr if not available
+	 * Partially reloads settings.
+	 * @param context context's value
 	 */
-	const char* getHostsDatabase() const noexcept;
-	/**
-	 * Returns tab-delimited host file's pathname.
-	 * @return host file's pathname, nullptr if not available
-	 */
-	const char* getHostsFile() const noexcept;
-	/**
-	 * Returns private key file's pathname.
-	 * @return private key file's pathname, nullptr if not available
-	 */
-	const char* getPrivateKeyFile() const noexcept;
-	/**
-	 * Returns public key file's pathname.
-	 * @return public key file's pathname, nullptr if not available
-	 */
-	const char* getPublicKeyFile() const noexcept;
-	/**
-	 * Returns trusted certificate (root CA) file's pathname.
-	 * @return trusted certificate file's pathname, nullptr if not available
-	 */
-	const char* getSSLTrustedCertificateFile() const noexcept;
-	/**
-	 * Returns SSL certificate file's pathname.
-	 * @return SSL certificate file's pathname, nullptr if not available
-	 */
-	const char* getSSLCertificateFile() const noexcept;
-	/**
-	 * Returns private SSL key file's pathname.
-	 * @return private SSL key file's pathname, nullptr if not available
-	 */
-	const char* getSSLHostKeyFile() const noexcept;
-	//-----------------------------------------------------------------
-	/**
-	 * Generates a new instance identifier.
-	 */
+	void reload(int context);
+private:
 	void generateInstanceId();
-	/**
-	 * Reloads configuration data.
-	 */
 	void loadConfiguration();
-	/**
-	 * Reloads hosts database (either from a database file or a text file).
-	 */
 	void loadHosts();
-	/**
-	 * Reloads private and public keys (for asymmetric cryptography).
-	 */
 	void loadKeys();
-	/**
-	 * Reconfigures SSL/TLS.
-	 */
 	void loadSSL();
-	/**
-	 * Reloads hosts database from a database file.
-	 */
 	void loadHostsDatabase();
-	/**
-	 * Reloads hosts database from a text file.
-	 */
 	void loadHostsFile();
-	/**
-	 * Reloads private key (for asymmetric cryptography).
-	 */
 	void loadPrivateKey();
-	/**
-	 * Reloads public key (for asymmetric cryptography).
-	 */
 	void loadPublicKey();
-	/**
-	 * Reloads SSL certificates.
-	 */
 	void loadSSLCertificate();
-	/**
-	 * Reloads private SSL key.
-	 */
 	void loadSSLHostKey();
 private:
 	char* locateConfigurationFile() noexcept;
@@ -204,6 +142,19 @@ public:
 	static const char *CONF_PATH;
 	/** Configuration file's default pathname (system) */
 	static const char *CONF_SYSTEM_PATH;
+	/**
+	 * Application data contexts (non-negative integral values).
+	 */
+	enum {
+		CTX_CONFIGURATION, /**< Configuration data */
+		CTX_HOSTS_DB, /**< Hosts database */
+		CTX_HOSTS_FILE, /**< Hosts file */
+		CTX_PKI_PRIVATE, /**< Private key */
+		CTX_PKI_PUBLIC, /**< Public key */
+		CTX_SSL_ROOT, /**< Root CA certificate */
+		CTX_SSL_CERTIFICATE, /**< SSL certificate */
+		CTX_SSL_PRIVATE /**< SSL private key */
+	};
 private:
 	//Unique ID of the currently running instance
 	InstanceID *instanceId { nullptr };
@@ -229,21 +180,21 @@ private:
 		//Configuration file's pathname from the command line
 		char *config { nullptr };
 		//Configuration file's resolved pathname
-		char *configurationFileName { nullptr };
+		char *configurationFile { nullptr };
 		//Hosts database file's pathname
-		char *hostsDatabaseName { nullptr };
+		char *hostsDB { nullptr };
 		//Clear text hosts file's pathname
-		char *hostsFileName { nullptr };
+		char *hostsFile { nullptr };
 		//Private key file's pathname
-		char *privateKeyFileName { nullptr };
+		char *privateKey { nullptr };
 		//Public key file's pathname
-		char *publicKeyFileName { nullptr };
+		char *publicKey { nullptr };
 		//SSL trusted certificate chain file's pathname
-		char *sslTrustedCertificateFileName { nullptr };
+		char *sslRoot { nullptr };
 		//SSL certificate chain file's pathname
-		char *sslCertificateFileName { nullptr };
+		char *sslCertificate { nullptr };
 		//SSL private key file's pathname
-		char *sslHostKeyFileName { nullptr };
+		char *sslHostKey { nullptr };
 	} paths;
 };
 

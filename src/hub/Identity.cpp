@@ -48,14 +48,14 @@ Identity::Identity(const char *path) noexcept {
 Identity::~Identity() {
 	delete instanceId;
 	free(paths.config);
-	free(paths.configurationFileName);
-	free(paths.hostsDatabaseName);
-	free(paths.hostsFileName);
-	free(paths.privateKeyFileName);
-	free(paths.publicKeyFileName);
-	free(paths.sslTrustedCertificateFileName);
-	free(paths.sslCertificateFileName);
-	free(paths.sslHostKeyFileName);
+	free(paths.configurationFile);
+	free(paths.hostsDB);
+	free(paths.hostsFile);
+	free(paths.privateKey);
+	free(paths.publicKey);
+	free(paths.sslRoot);
+	free(paths.sslCertificate);
+	free(paths.sslHostKey);
 }
 
 void Identity::initialize() {
@@ -170,36 +170,59 @@ unsigned int Identity::getIdentifiers(const char *section, const char *option,
 	return i;
 }
 
-const char* Identity::getConfigurationFile() const noexcept {
-	return paths.configurationFileName;
+const char* Identity::dataPathName(int context) const noexcept {
+	switch (context) {
+	case CTX_CONFIGURATION:
+		return paths.configurationFile;
+	case CTX_HOSTS_DB:
+		return paths.hostsDB;
+	case CTX_HOSTS_FILE:
+		return paths.hostsFile;
+	case CTX_PKI_PRIVATE:
+		return paths.privateKey;
+	case CTX_PKI_PUBLIC:
+		return paths.publicKey;
+	case CTX_SSL_ROOT:
+		return paths.sslRoot;
+	case CTX_SSL_CERTIFICATE:
+		return paths.sslCertificate;
+	case CTX_SSL_PRIVATE:
+		return paths.sslHostKey;
+	default:
+		return nullptr;
+	}
 }
 
-const char* Identity::getHostsDatabase() const noexcept {
-	return paths.hostsDatabaseName;
-}
-
-const char* Identity::getHostsFile() const noexcept {
-	return paths.hostsFileName;
-}
-
-const char* Identity::getPrivateKeyFile() const noexcept {
-	return paths.privateKeyFileName;
-}
-
-const char* Identity::getPublicKeyFile() const noexcept {
-	return paths.publicKeyFileName;
-}
-
-const char* Identity::getSSLTrustedCertificateFile() const noexcept {
-	return paths.sslTrustedCertificateFileName;
-}
-
-const char* Identity::getSSLCertificateFile() const noexcept {
-	return paths.sslCertificateFileName;
-}
-
-const char* Identity::getSSLHostKeyFile() const noexcept {
-	return paths.sslHostKeyFileName;
+void Identity::reload(int context) {
+	switch (context) {
+	case CTX_CONFIGURATION:
+		initialize();
+		break;
+	case CTX_HOSTS_DB:
+		loadHostsDatabase();
+		break;
+	case CTX_HOSTS_FILE:
+		loadHostsFile();
+		break;
+	case CTX_PKI_PRIVATE:
+		loadPrivateKey();
+		break;
+	case CTX_PKI_PUBLIC:
+		loadPublicKey();
+		break;
+	case CTX_SSL_ROOT:
+		loadSSL();
+		break;
+	case CTX_SSL_CERTIFICATE:
+		loadSSLCertificate();
+		break;
+	case CTX_SSL_PRIVATE:
+		loadSSLHostKey();
+		break;
+	default:
+		throw Exception(EX_ARGUMENT);
+		break;
+	}
 }
 
 void Identity::generateInstanceId() {
@@ -219,20 +242,20 @@ void Identity::generateInstanceId() {
 
 void Identity::loadConfiguration() {
 	try {
-		free(paths.configurationFileName);
-		paths.configurationFileName = locateConfigurationFile();
+		free(paths.configurationFile);
+		paths.configurationFile = locateConfigurationFile();
 		properties.clear();
 
-		if (!paths.configurationFileName) {
+		if (!paths.configurationFile) {
 			WH_LOG_WARNING("No configuration file");
-		} else if (properties.load(paths.configurationFileName)) {
+		} else if (properties.load(paths.configurationFile)) {
 			WH_LOG_INFO("Configuration loaded from %s",
-					paths.configurationFileName);
+					paths.configurationFile);
 		} else {
 			WH_LOG_ERROR("Could not read the configuration file %s",
-					paths.configurationFileName);
-			free(paths.configurationFileName);
-			paths.configurationFileName = nullptr;
+					paths.configurationFile);
+			free(paths.configurationFile);
+			paths.configurationFile = nullptr;
 			throw Exception(EX_ARGUMENT);
 		}
 	} catch (const BaseException &e) {
@@ -242,19 +265,19 @@ void Identity::loadConfiguration() {
 }
 
 void Identity::loadHosts() {
-	free(paths.hostsDatabaseName);
-	free(paths.hostsFileName);
-	paths.hostsDatabaseName = properties.getPathName("HOSTS", "hostsDb");
-	if (!paths.hostsDatabaseName) {
-		paths.hostsFileName = properties.getPathName("HOSTS", "hostsFile");
+	free(paths.hostsDB);
+	free(paths.hostsFile);
+	paths.hostsDB = properties.getPathName("HOSTS", "hostsDb");
+	if (!paths.hostsDB) {
+		paths.hostsFile = properties.getPathName("HOSTS", "hostsFile");
 	} else {
-		paths.hostsFileName = nullptr;
+		paths.hostsFile = nullptr;
 	}
 	//-----------------------------------------------------------------
 	try {
-		if (!paths.hostsDatabaseName && !paths.hostsFileName) {
+		if (!paths.hostsDB && !paths.hostsFile) {
 			WH_LOG_WARNING("No hosts file or database");
-		} else if (paths.hostsDatabaseName) {
+		} else if (paths.hostsDB) {
 			loadHostsDatabase();
 		} else {
 			loadHostsFile();
@@ -262,24 +285,24 @@ void Identity::loadHosts() {
 		WH_LOG_INFO("Hosts initialized");
 	} catch (const BaseException &e) {
 		WH_LOG_EXCEPTION(e);
-		free(paths.hostsDatabaseName);
-		paths.hostsDatabaseName = nullptr;
-		free(paths.hostsFileName);
-		paths.hostsFileName = nullptr;
+		free(paths.hostsDB);
+		paths.hostsDB = nullptr;
+		free(paths.hostsFile);
+		paths.hostsFile = nullptr;
 		throw;
 	}
 }
 
 void Identity::loadKeys() {
-	free(paths.privateKeyFileName);
-	free(paths.publicKeyFileName);
-	paths.privateKeyFileName = properties.getPathName("KEYS", "privateKey");
-	paths.publicKeyFileName = properties.getPathName("KEYS", "publicKey");
+	free(paths.privateKey);
+	free(paths.publicKey);
+	paths.privateKey = properties.getPathName("KEYS", "privateKey");
+	paths.publicKey = properties.getPathName("KEYS", "publicKey");
 
 	auth.verify = properties.getBoolean("KEYS", "verifyHost");
 	if (!auth.verify) {
 		WH_LOG_WARNING("Host verification disabled");
-	} else if (!paths.publicKeyFileName) {
+	} else if (!paths.publicKey) {
 		WH_LOG_WARNING("Host verification enabled but no public key");
 		auth.verify = false;
 	} else {
@@ -287,13 +310,13 @@ void Identity::loadKeys() {
 	}
 	//-----------------------------------------------------------------
 	try {
-		if (!paths.publicKeyFileName && !paths.privateKeyFileName) {
+		if (!paths.publicKey && !paths.privateKey) {
 			WH_LOG_WARNING("Public key infrastructure disabled");
 			auth.enabled = false;
 			auth.verify = false;
 		} else {
-			auth.enabled = auth.pki.initialize(paths.privateKeyFileName,
-					paths.publicKeyFileName);
+			auth.enabled = auth.pki.initialize(paths.privateKey,
+					paths.publicKey);
 			if (auth.enabled) {
 				WH_LOG_INFO("Public key infrastructure enabled");
 			} else {
@@ -304,10 +327,10 @@ void Identity::loadKeys() {
 		WH_LOG_EXCEPTION(e);
 		auth.enabled = false;
 		auth.verify = false;
-		free(paths.privateKeyFileName);
-		paths.privateKeyFileName = nullptr;
-		free(paths.publicKeyFileName);
-		paths.publicKeyFileName = nullptr;
+		free(paths.privateKey);
+		paths.privateKey = nullptr;
+		free(paths.publicKey);
+		paths.publicKey = nullptr;
 		throw;
 	}
 }
@@ -319,39 +342,37 @@ void Identity::loadSSL() {
 		return;
 	}
 
-	free(paths.sslTrustedCertificateFileName);
-	free(paths.sslCertificateFileName);
-	free(paths.sslHostKeyFileName);
-	paths.sslTrustedCertificateFileName = properties.getPathName("SSL",
-			"trust");
-	paths.sslCertificateFileName = properties.getPathName("SSL", "certificate");
-	paths.sslHostKeyFileName = properties.getPathName("SSL", "key");
+	free(paths.sslRoot);
+	free(paths.sslCertificate);
+	free(paths.sslHostKey);
+	paths.sslRoot = properties.getPathName("SSL", "trust");
+	paths.sslCertificate = properties.getPathName("SSL", "certificate");
+	paths.sslHostKey = properties.getPathName("SSL", "key");
 	//-----------------------------------------------------------------
 	try {
-		ssl.ctx.initialize(paths.sslCertificateFileName,
-				paths.sslHostKeyFileName);
-		ssl.ctx.loadTrustedPaths(paths.sslTrustedCertificateFileName, nullptr);
+		ssl.ctx.initialize(paths.sslCertificate, paths.sslHostKey);
+		ssl.ctx.loadTrustedPaths(paths.sslRoot, nullptr);
 		WH_LOG_INFO("SSL/TLS enabled");
 	} catch (const BaseException &e) {
 		WH_LOG_EXCEPTION(e);
-		free(paths.sslTrustedCertificateFileName);
-		paths.sslTrustedCertificateFileName = nullptr;
-		free(paths.sslCertificateFileName);
-		paths.sslCertificateFileName = nullptr;
-		free(paths.sslHostKeyFileName);
-		paths.sslHostKeyFileName = nullptr;
+		free(paths.sslRoot);
+		paths.sslRoot = nullptr;
+		free(paths.sslCertificate);
+		paths.sslCertificate = nullptr;
+		free(paths.sslHostKey);
+		paths.sslHostKey = nullptr;
 		throw;
 	}
 }
 
 void Identity::loadHostsDatabase() {
 	try {
-		if (!paths.hostsDatabaseName) {
+		if (!paths.hostsDB) {
 			WH_LOG_WARNING("No hosts database");
 		} else {
 			//Load the database file from the disk in read-only mode
-			hosts.open(paths.hostsDatabaseName, true);
-			WH_LOG_DEBUG("Hosts loaded from %s", paths.hostsDatabaseName);
+			hosts.open(paths.hostsDB, true);
+			WH_LOG_DEBUG("Hosts loaded from %s", paths.hostsDB);
 		}
 	} catch (const BaseException &e) {
 		WH_LOG_EXCEPTION(e);
@@ -361,13 +382,13 @@ void Identity::loadHostsDatabase() {
 
 void Identity::loadHostsFile() {
 	try {
-		if (!paths.hostsFileName) {
+		if (!paths.hostsFile) {
 			WH_LOG_WARNING("No hosts file");
 		} else {
 			//Load the hosts into in-memory database
 			hosts.open(":memory:");
-			hosts.batchUpdate(paths.hostsFileName);
-			WH_LOG_DEBUG("Hosts loaded from %s", paths.hostsFileName);
+			hosts.batchUpdate(paths.hostsFile);
+			WH_LOG_DEBUG("Hosts loaded from %s", paths.hostsFile);
 		}
 	} catch (const BaseException &e) {
 		WH_LOG_EXCEPTION(e);
@@ -377,11 +398,10 @@ void Identity::loadHostsFile() {
 
 void Identity::loadPrivateKey() {
 	try {
-		if (!paths.privateKeyFileName) {
+		if (!paths.privateKey) {
 			WH_LOG_WARNING("No private key file");
-		} else if (auth.pki.loadHostKey(paths.privateKeyFileName)) {
-			WH_LOG_DEBUG("Private key loaded from %s",
-					paths.privateKeyFileName);
+		} else if (auth.pki.loadHostKey(paths.privateKey)) {
+			WH_LOG_DEBUG("Private key loaded from %s", paths.privateKey);
 			return;
 		} else {
 			throw Exception(EX_SECURITY);
@@ -394,10 +414,10 @@ void Identity::loadPrivateKey() {
 
 void Identity::loadPublicKey() {
 	try {
-		if (!paths.publicKeyFileName) {
+		if (!paths.publicKey) {
 			WH_LOG_WARNING("No public key file");
-		} else if (auth.pki.loadPublicKey(paths.publicKeyFileName)) {
-			WH_LOG_DEBUG("Public key loaded from %s", paths.publicKeyFileName);
+		} else if (auth.pki.loadPublicKey(paths.publicKey)) {
+			WH_LOG_DEBUG("Public key loaded from %s", paths.publicKey);
 			return;
 		} else {
 			throw Exception(EX_SECURITY);
@@ -412,20 +432,18 @@ void Identity::loadSSLCertificate() {
 	try {
 		if (!ssl.enabled) {
 			throw Exception(EX_OPERATION);
-		} else if (!paths.sslCertificateFileName) {
+		} else if (!paths.sslCertificate) {
 			WH_LOG_WARNING("No SSL certificate file");
 			return;
-		} else if (paths.sslHostKeyFileName
-				&& strcmp(paths.sslCertificateFileName,
-						paths.sslHostKeyFileName) == 0) {
-			ssl.ctx.initialize(paths.sslCertificateFileName,
-					paths.sslHostKeyFileName);
+		} else if (paths.sslHostKey
+				&& strcmp(paths.sslCertificate, paths.sslHostKey) == 0) {
+			ssl.ctx.initialize(paths.sslCertificate, paths.sslHostKey);
 			WH_LOG_DEBUG("SSL/TLS certificate and private key loaded from %s",
-					paths.sslCertificateFileName);
+					paths.sslCertificate);
 		} else {
-			ssl.ctx.initialize(paths.sslCertificateFileName, nullptr);
+			ssl.ctx.initialize(paths.sslCertificate, nullptr);
 			WH_LOG_DEBUG("SSL/TLS certificate loaded from %s",
-					paths.sslCertificateFileName);
+					paths.sslCertificate);
 		}
 	} catch (const BaseException &e) {
 		WH_LOG_EXCEPTION(e);
@@ -437,13 +455,13 @@ void Identity::loadSSLHostKey() {
 	try {
 		if (!ssl.enabled) {
 			throw Exception(EX_OPERATION);
-		} else if (!paths.sslHostKeyFileName) {
+		} else if (!paths.sslHostKey) {
 			WH_LOG_WARNING("No SSL private key file");
 			return;
 		} else {
-			ssl.ctx.initialize(nullptr, paths.sslHostKeyFileName);
+			ssl.ctx.initialize(nullptr, paths.sslHostKey);
 			WH_LOG_DEBUG("SSL/TLS private key loaded from %s",
-					paths.sslHostKeyFileName);
+					paths.sslHostKey);
 		}
 	} catch (const BaseException &e) {
 		WH_LOG_EXCEPTION(e);
