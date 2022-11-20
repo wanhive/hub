@@ -157,6 +157,8 @@ private:
 	static bool isInternalNode(unsigned long long uid) noexcept;
 	//Returns true if <uid> doesn't belong to the overlay nodes
 	static bool isExternalNode(unsigned long long uid) noexcept;
+	//Returns true if <uid> is an ephemeral (temporary) value
+	static bool isEphemeralId(unsigned long long uid) noexcept;
 	//-----------------------------------------------------------------
 	/*
 	 * Create and register a local unix socket, return the other end in <sfd>.

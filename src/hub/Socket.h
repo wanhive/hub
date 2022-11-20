@@ -143,12 +143,6 @@ public:
 	 * @param ctx object containing the SSL/TLS context
 	 */
 	static void setSSLContext(SSLContext *ctx) noexcept;
-	/**
-	 * Checks whether a given identifier is an ephemeral value.
-	 * @param id identifier's value
-	 * @return true for temporary identifier, false otherwise
-	 */
-	static bool isEphemeralId(unsigned long long id) noexcept;
 private:
 	//Read from a raw socket connection
 	ssize_t socketRead();

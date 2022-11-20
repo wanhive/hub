@@ -511,8 +511,7 @@ bool OverlayHub::allowRegistration(unsigned long long source,
 	if (!ctx.enableRegistration) {
 		//CASE 1
 		return false;
-	} else if (!Socket::isEphemeralId(source)
-			|| Socket::isEphemeralId(requestedId)) {
+	} else if (!isEphemeralId(source) || isEphemeralId(requestedId)) {
 		//CASE 2
 		return false;
 	} else if (isHostId(requestedId) || isController(requestedId)
@@ -631,8 +630,7 @@ bool OverlayHub::allowCommunication(unsigned long long source,
 	 * 3. Allow client -> supernode communication only via controller
 	 * 4. Apply netmask over all client -> * communications
 	 */
-	auto checkActive = !Socket::isEphemeralId(source)
-			&& !Socket::isEphemeralId(destination);
+	auto checkActive = !isEphemeralId(source) && !isEphemeralId(destination);
 	auto checkDestinations = !(isController(destination)
 			|| isWorkerId(destination));
 	auto checkPrivilege = isController(getUid())
@@ -708,7 +706,7 @@ bool OverlayHub::processMulticastRequest(Message *message) noexcept {
 	}
 
 	if (isSupernode() || isInternalNode(message->getOrigin())
-			|| Socket::isEphemeralId(message->getOrigin())
+			|| isEphemeralId(message->getOrigin())
 			|| message->getStatus() != WH_DHT_AQLF_REQUEST) {
 		return handleInvalidRequest(message);
 	}
@@ -906,8 +904,7 @@ bool OverlayHub::handleGetKeyRequest(Message *msg) noexcept {
 	 * This call succeeds if the caller is a temporary connection and the
 	 * message is of proper size, otherwise a failure message is sent back.
 	 */
-	if (Socket::isEphemeralId(origin)
-			&& msg->getPayloadLength() <= Hash::SIZE) {
+	if (isEphemeralId(origin) && msg->getPayloadLength() <= Hash::SIZE) {
 		Digest hc;	//Challenge Key
 		memset(&hc, 0, sizeof(hc));
 		generateNonce(hash, origin, getUid(), &hc);
@@ -916,7 +913,7 @@ bool OverlayHub::handleGetKeyRequest(Message *msg) noexcept {
 		msg->writeDestination(0);
 		msg->setDestination(origin);
 		msg->putStatus(WH_DHT_AQLF_ACCEPTED);
-	} else if (Socket::isEphemeralId(origin)
+	} else if (isEphemeralId(origin)
 			&& msg->getPayloadLength() == PKI::ENCRYPTED_LENGTH && verifyHost()
 			&& getPKI()) {
 		//Extract the challenge key
@@ -1486,6 +1483,10 @@ bool OverlayHub::isExternalNode(unsigned long long uid) noexcept {
 	return uid > MAX_ID;
 }
 
+bool OverlayHub::isEphemeralId(unsigned long long uid) noexcept {
+	return uid > Socket::MAX_ACTIVE_ID;
+}
+
 Watcher* OverlayHub::connect(int &sfd, bool blocking, int timeout) {
 	Socket *local = nullptr;
 	int socket = -1;
@@ -1577,7 +1578,7 @@ int OverlayHub::removeIfInvalid(Watcher *w, void *arg) noexcept {
 		return -1;
 	} else if (hub->isInternalNode(uid) || hub->isWorkerId(uid)) {
 		return 0;
-	} else if (Socket::isEphemeralId(uid) || hub->isLocal(mapKey(uid))) {
+	} else if (isEphemeralId(uid) || hub->isLocal(mapKey(uid))) {
 		return 0;
 	} else {
 		hub->disable(w);
@@ -1594,7 +1595,7 @@ int OverlayHub::removeIfClient(Watcher *w, void *arg) noexcept {
 		return -1;
 	} else if (hub->isInternalNode(uid) || hub->isWorkerId(uid)) {
 		return 0;
-	} else if (Socket::isEphemeralId(uid) && w->testFlags(WATCHER_ACTIVE)) {
+	} else if (isEphemeralId(uid) && w->testFlags(WATCHER_ACTIVE)) {
 		return 0;
 	} else {
 		hub->disable(w);

@@ -262,10 +262,6 @@ void Socket::setSSLContext(SSLContext *ctx) noexcept {
 	sslCtx = ctx;
 }
 
-bool Socket::isEphemeralId(unsigned long long id) noexcept {
-	return id > MAX_ACTIVE_ID;
-}
-
 ssize_t Socket::socketRead() {
 	ssize_t nRecv = 0;
 	CircularBufferVector<unsigned char> vector;
