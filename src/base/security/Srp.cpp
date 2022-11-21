@@ -233,7 +233,7 @@ bool Srp::loadPasswordVerifier() noexcept {
 		return false;
 	}
 
-	auto n = BN_new();
+	auto n = BN_secure_new();
 	if (!n) {
 		return false;
 	}
@@ -321,7 +321,7 @@ bool Srp::loadUserNonce() noexcept {
 		return false;
 	}
 
-	auto n = BN_new();
+	auto n = BN_secure_new();
 	if (!n) {
 		return false;
 	}
@@ -365,7 +365,7 @@ bool Srp::loadHostNonce() noexcept {
 	}
 
 	//B = kv + g^b
-	auto n = BN_new();
+	auto n = BN_secure_new();
 	if (!n) {
 		return false;
 	}
@@ -440,7 +440,7 @@ bool Srp::loadSessionKey(bool isHost) noexcept {
 	}
 
 	auto ret = false;
-	auto num = BN_new();
+	auto num = BN_secure_new();
 	if (!num) {
 		return false;
 	}
@@ -1034,7 +1034,7 @@ bool Srp::BigNumber::put(const char *hex) noexcept {
 }
 
 bool Srp::BigNumber::random(int bits, int top, int bottom) noexcept {
-	if (!n && !(n = BN_new())) {
+	if (!n && !(n = BN_secure_new())) {
 		return false;
 	} else if (!BN_rand(n, bits, top, bottom)) {
 		clear();
@@ -1045,7 +1045,7 @@ bool Srp::BigNumber::random(int bits, int top, int bottom) noexcept {
 }
 
 bool Srp::BigNumber::pseudoRandom(const BIGNUM *range) noexcept {
-	if (!n && !(n = BN_new())) {
+	if (!n && !(n = BN_secure_new())) {
 		return false;
 	} else if (!BN_rand_range(n, range)) {
 		clear();
