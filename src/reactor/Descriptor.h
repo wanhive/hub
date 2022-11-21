@@ -50,10 +50,10 @@ public:
 	void setUid(unsigned long long uid) noexcept;
 	/**
 	 * Checks whether this object has outlived the given duration.
-	 * @param timeOut timeout value in milliseconds
+	 * @param timeout timeout value in milliseconds
 	 * @return true on timeout, false otherwise
 	 */
-	bool hasTimedOut(unsigned int timeOut) const noexcept;
+	bool hasTimedOut(unsigned int timeout) const noexcept;
 protected:
 	/**
 	 * Returns the managed file descriptor (call Descriptor::closeHandle() to

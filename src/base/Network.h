@@ -109,7 +109,7 @@ public:
 	static int unixConnectedSocket(const char *path, SocketAddress &sa,
 			bool blocking);
 	/**
-	 * Creates an unnamed pair of connected sockets (unix domain).
+	 * Creates an unnamed pair of connected unix domain sockets.
 	 * @param sv stores the socket descriptors
 	 * @param blocking true for blocking mode, false for nonblocking IO
 	 */

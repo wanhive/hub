@@ -17,7 +17,7 @@
 namespace wanhive {
 /**
  * Sink interface
- * @tparam X working data type
+ * @tparam X data type
  */
 template<typename X> class Sink {
 public:
@@ -27,14 +27,14 @@ public:
 	virtual ~Sink() = default;
 	/**
 	 * Consumes data from the given buffer.
-	 * @param buffer pointer to the data buffer
+	 * @param buffer outgoing data
 	 * @param count number of elements to consume
-	 * @return number of elements actually consumed
+	 * @return number of elements consumed from the buffer
 	 */
 	virtual size_t put(X *buffer, size_t count) = 0;
 	/**
-	 * Returns the remaining capacity.
-	 * @return maximum number of elements which can be consumed
+	 * Returns the maximum number of elements which can be consumed.
+	 * @return remaining consumption capacity
 	 */
 	virtual size_t space() const noexcept = 0;
 };

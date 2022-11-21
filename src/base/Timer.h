@@ -63,9 +63,7 @@ public:
 	 */
 	static unsigned long long timeSeed() noexcept;
 private:
-	//Wrapper for clock_gettime, returns current time
 	static unsigned long long currentTime() noexcept;
-	//Returns the difference of the microsecond precision values in seconds
 	static double difference(unsigned long long start,
 			unsigned long long end) noexcept;
 public:

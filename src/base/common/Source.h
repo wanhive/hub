@@ -17,7 +17,7 @@
 namespace wanhive {
 /**
  * Source interface
- * @tparam X working data type
+ * @tparam X data type
  */
 template<typename X> class Source {
 public:
@@ -27,14 +27,14 @@ public:
 	virtual ~Source() = default;
 	/**
 	 * Transfers data into the given buffer.
-	 * @param buffer pointer to the data buffer
+	 * @param buffer stores incoming data
 	 * @param count buffer's capacity
 	 * @return number of elements transferred to the buffer
 	 */
 	virtual size_t take(X *buffer, size_t count) = 0;
 	/**
-	 * Returns the available elements count.
-	 * @return maximum number of elements which can be read
+	 * Returns the maximum number of elements available for transfer.
+	 * @return available elements count
 	 */
 	virtual size_t available() const noexcept = 0;
 };

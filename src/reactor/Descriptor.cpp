@@ -40,8 +40,8 @@ void Descriptor::setUid(unsigned long long uid) noexcept {
 	this->uid.set(uid);
 }
 
-bool Descriptor::hasTimedOut(unsigned int timeOut) const noexcept {
-	return timer.hasTimedOut(timeOut);
+bool Descriptor::hasTimedOut(unsigned int timeout) const noexcept {
+	return timer.hasTimedOut(timeout);
 }
 
 int Descriptor::getHandle() const noexcept {

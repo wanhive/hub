@@ -63,6 +63,7 @@ public:
 	 * the call would block, -1 if the underlying file descriptor was closed.
 	 */
 	ssize_t read();
+	//-----------------------------------------------------------------
 	/**
 	 * Returns the next notification (see Inotifier::read()).
 	 * @return the next notification, nullptr if no notification is pending
