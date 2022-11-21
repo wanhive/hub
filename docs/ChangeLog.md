@@ -20,6 +20,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Improve type and pointer safety.
 - Improve exception handling.
 
+### Security
+
+- Use secure heap for memory allocation in SRP-6a implementation.
+
 ## [9.1.1] - 2022-10-17
 
 ### Changed
