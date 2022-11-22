@@ -16,14 +16,18 @@
 
 namespace wanhive {
 /**
- * Data structure for vectored read/write operations on
- * linear (array-based) buffers.
+ * Data structure for vectored read/write operations on linear buffers.
  * @tparam X storage type
  */
 template<typename X> struct BufferVector {
 	X *base;
 	size_t length;
 };
+
+/**
+ * Immutable binary data.
+ */
+using Data = BufferVector<const unsigned char>;
 
 }  // namespace wanhive
 

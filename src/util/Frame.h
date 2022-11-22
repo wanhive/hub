@@ -17,14 +17,6 @@
 
 namespace wanhive {
 /**
- * Immutable binary data.
- */
-struct Data {
-	const unsigned char *base; /**< Base pointer */
-	unsigned int length; /**< Data size in bytes */
-};
-
-/**
  * Bare-bone data unit implementation. It consists of a routing header and a
  * frame buffer. The routing header provides the route information during the
  * message delivery and forwarding. Frame buffer stores serialized data.

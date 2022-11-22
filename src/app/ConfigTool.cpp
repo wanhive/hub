@@ -137,7 +137,7 @@ void ConfigTool::manageHosts() {
 
 void ConfigTool::generateVerifier() {
 	char name[64] = { '\0' };
-	char password[64] = { '\0' };
+	char secret[64] = { '\0' };
 	unsigned int rounds { 0 };
 
 	std::cout << "Identity: ";
@@ -148,7 +148,7 @@ void ConfigTool::generateVerifier() {
 	}
 
 	std::cout << "Password: ";
-	std::cin.getline(password, sizeof(password));
+	std::cin.getline(secret, sizeof(secret));
 	if (CommandLine::inputError()) {
 		return;
 	}
@@ -160,25 +160,24 @@ void ConfigTool::generateVerifier() {
 	}
 
 	try {
+		Data password { (const unsigned char*) secret, strlen(secret) };
 		Authenticator auth(true);
-		if (!auth.generateVerifier(name, (const unsigned char*) password,
-				strlen(password), rounds)) {
+		if (!auth.generateVerifier(name, password, rounds)) {
 			throw Exception(EX_OPERATION);
 		}
 
 		char buffer[4096];
-		const unsigned char *data;
-		unsigned int bytes;
+		Data data;
 
 		std::cout << "{\n";
 		std::cout << " \"id\": \"" << name << "\",\n";
-		auth.getSalt(data, bytes);
+		auth.getSalt(data);
 		buffer[0] = '\0';
-		Encoding::base16Encode(buffer, data, bytes, sizeof(buffer));
+		Encoding::base16Encode(buffer, data.base, data.length, sizeof(buffer));
 		std::cout << " \"salt\": \"" << buffer << "\",\n";
-		auth.getPasswordVerifier(data, bytes);
+		auth.getPasswordVerifier(data);
 		buffer[0] = '\0';
-		Encoding::base16Encode(buffer, data, bytes, sizeof(buffer));
+		Encoding::base16Encode(buffer, data.base, data.length, sizeof(buffer));
 		std::cout << " \"verifier\": \"" << buffer << "\"\n";
 		std::cout << "}" << std::endl;
 	} catch (const BaseException &e) {

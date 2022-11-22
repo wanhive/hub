@@ -116,8 +116,8 @@ int AuthenticationHub::handleIdentificationRequest(Message *message) noexcept {
 		Data salt { nullptr, 0 };
 		Data hostNonce { nullptr, 0 };
 
-		authenticator->getSalt(salt.base, salt.length);
-		authenticator->generateNonce(hostNonce.base, hostNonce.length);
+		authenticator->getSalt(salt);
+		authenticator->generateNonce(hostNonce);
 		return generateIdentificationResponse(message, salt, hostNonce);
 	} else {
 		//Free up the memory and stop the <origin> from making further requests
@@ -133,8 +133,8 @@ int AuthenticationHub::handleIdentificationRequest(Message *message) noexcept {
 			Data salt { ctx.salt, ctx.saltLength };
 			Data hostNonce { nullptr, 0 };
 
-			fake.generateFakeSalt(identity, salt.base, salt.length);
-			fake.generateFakeNonce(hostNonce.base, hostNonce.length);
+			fake.generateFakeSalt(identity, salt);
+			fake.generateFakeNonce(hostNonce);
 			salt.length = Twiddler::min(salt.length, 16);
 			return generateIdentificationResponse(message, salt, hostNonce);
 		} else {
@@ -155,10 +155,9 @@ int AuthenticationHub::handleAuthenticationRequest(Message *message) noexcept {
 		return handleInvalidRequest(message);
 	}
 
-	Data proof { nullptr, 0 };
-	bool success = authenticator->authenticateUser(message->getBytes(0),
-			message->getPayloadLength())
-			&& authenticator->generateHostProof(proof.base, proof.length)
+	Data proof { message->getBytes(0), message->getPayloadLength() };
+	bool success = authenticator->authenticateUser(proof)
+			&& authenticator->generateHostProof(proof)
 			&& (proof.length && (proof.length < Message::PAYLOAD_SIZE));
 	if (success) {
 		message->setBytes(0, proof.base, proof.length);
@@ -248,8 +247,7 @@ bool AuthenticationHub::loadIdentity(Authenticator *authenticator,
 		authenticator->setGroup(0xff);
 	}
 
-	auto status = authenticator->identify(identity, nonce.base, nonce.length,
-			salt, verifier);
+	auto status = authenticator->identify(identity, verifier, salt, nonce);
 
 	PQclear(res);
 	PQfinish(conn);

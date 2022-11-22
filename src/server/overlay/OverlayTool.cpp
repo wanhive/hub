@@ -206,7 +206,7 @@ void OverlayTool::identifyCmd() {
 	std::cout << "CMD: [IDENTIFY]" << std::endl;
 	uint64_t id = destinationId;
 	unsigned long long identity = 0;
-	char password[64];
+	char secret[64];
 	unsigned int rounds = 1;
 
 	std::cout << "Identity: ";
@@ -217,7 +217,7 @@ void OverlayTool::identifyCmd() {
 
 	std::cout << "Password: ";
 	std::cin.ignore();
-	std::cin.getline(password, sizeof(password));
+	std::cin.getline(secret, sizeof(secret));
 	if (CommandLine::inputError()) {
 		return;
 	}
@@ -230,13 +230,11 @@ void OverlayTool::identifyCmd() {
 
 	try {
 		Data salt, nonce;
-		bool success = auth.generateNonce(nonce.base, nonce.length)
-				&& identificationRequest( { identity, id }, nonce)
+		Data password { (const unsigned char*) secret, strlen(secret) };
+		bool success = auth.generateNonce(nonce) && identificationRequest( {
+				identity, id }, nonce)
 				&& processIdentificationResponse(salt, nonce)
-				&& auth.createIdentity(identity,
-						(const unsigned char*) password, strlen(password),
-						salt.base, salt.length, nonce.base, nonce.length,
-						rounds);
+				&& auth.createIdentity(identity, password, salt, nonce, rounds);
 
 		if (success) {
 			std::cout << "IDENTIFY SUCCEEDED" << std::endl;
@@ -255,10 +253,9 @@ void OverlayTool::authenticateCmd() {
 
 	try {
 		Data proof;
-		bool success = auth.generateUserProof(proof.base, proof.length)
-				&& authenticationRequest( { 0, id }, proof)
-				&& processAuthenticationResponse(proof)
-				&& auth.authenticateHost(proof.base, proof.length);
+		bool success = auth.generateUserProof(proof) && authenticationRequest( {
+				0, id }, proof) && processAuthenticationResponse(proof)
+				&& auth.authenticateHost(proof);
 		if (success) {
 			std::cout << "AUTHENTICATE SUCCEEDED" << std::endl;
 		} else {
@@ -427,8 +424,8 @@ void OverlayTool::publishCmd() {
 	}
 
 	try {
-		if (publishRequest(id, topic, { (const unsigned char*) s,
-				(unsigned int) strlen(s) })) {
+		if (publishRequest(id, topic,
+				{ (const unsigned char*) s, strlen(s) })) {
 			std::cout << "PUBLISH SUCCEEDED" << std::endl;
 		} else {
 			std::cout << "PUBLISH FAILED" << std::endl;
