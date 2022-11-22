@@ -4,8 +4,8 @@
 WH_BASE_COMMONHEADERS = base/common/Atomic.h base/common/BaseException.h \
 	base/common/CommandLine.h base/common/Exception.h base/common/Logger.h \
 	base/common/Memory.h base/common/NonCopyable.h base/common/Sink.h \
-	base/common/Source.h base/common/Task.h base/common/audit.h \
-	base/common/defines.h base/common/reflect.h
+	base/common/Source.h base/common/Task.h base/common/defines.h \
+	base/common/reflect.h
 WH_BASE_COMMONSOURCES = base/common/CommandLine.cpp base/common/Exception.cpp \
 	 base/common/Logger.cpp
 
