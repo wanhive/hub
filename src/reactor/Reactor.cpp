@@ -11,7 +11,6 @@
  */
 
 #include "Reactor.h"
-#include "../base/common/audit.h"
 
 namespace wanhive {
 
@@ -138,7 +137,7 @@ void Reactor::remove(Watcher *w) noexcept {
 		w->clearFlags(WATCHER_RUNNING);
 		stop(w);
 	} catch (const BaseException &e) {
-		WH_FATAL_ERROR(e.what());
+		abort();
 	}
 }
 
