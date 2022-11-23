@@ -137,11 +137,11 @@ private:
 	char* locateConfigurationFile() noexcept;
 public:
 	/** Configuration file's default name */
-	static const char *CONF_FILE_NAME;
+	static const char CONF_FILE_NAME[];
 	/** Configuration file's default pathname (user) */
-	static const char *CONF_PATH;
+	static const char CONF_PATH[];
 	/** Configuration file's default pathname (system) */
-	static const char *CONF_SYSTEM_PATH;
+	static const char CONF_SYSTEM_PATH[];
 	/**
 	 * Application data contexts (non-negative integral values).
 	 */

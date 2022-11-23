@@ -37,9 +37,9 @@
 
 namespace wanhive {
 //=================================================================
-const char *Identity::CONF_FILE_NAME = (const char*) WH_CONF_FILE;
-const char *Identity::CONF_PATH = (const char*) WH_CONF_PATH;
-const char *Identity::CONF_SYSTEM_PATH = (const char*) WH_CONF_SYSTEM_PATH;
+const char Identity::CONF_FILE_NAME[] = WH_CONF_FILE;
+const char Identity::CONF_PATH[] = WH_CONF_PATH;
+const char Identity::CONF_SYSTEM_PATH[] = WH_CONF_SYSTEM_PATH;
 //=================================================================
 Identity::Identity(const char *path) noexcept {
 	paths.config = path ? strdup(path) : nullptr;
