@@ -61,7 +61,7 @@ int Storage::closeStream(FILE *fp) noexcept {
 int Storage::open(const char *path, int flags, mode_t mode) {
 	if (path && path[0]) {
 		int fd = -1;
-		auto createPath = (flags & O_CREAT);
+		auto createPath = static_cast<bool>(flags & O_CREAT);
 		while ((fd = ::open(path, flags, mode)) == -1) {
 			if (errno == ENOENT && createPath && createDirectoryForFile(path)) {
 				continue;
