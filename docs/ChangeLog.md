@@ -5,7 +5,7 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased]
+## [10.0.0] - 2022-11-24
 
 ### Added
 
@@ -15,14 +15,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
-- Package restructuring and API changes (backward incompatible).
-- Improve API documentation (work in progress).
+- Simplify package structure and APIs.
+- Update API documentation.
 - Improve type and pointer safety.
 - Improve exception handling.
 
 ### Security
 
-- Use secure heap for memory allocation in SRP-6a implementation.
+- Use a secure heap for memory allocation in SRP-6a implementation.
 
 ## [9.1.1] - 2022-10-17
 

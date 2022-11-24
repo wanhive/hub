@@ -1,3 +1,7 @@
+## 2022-11-24
+
+- Version 10.0.0 release.
+
 ## 2022-10-17
 
 - Version 9.1.1 release.
