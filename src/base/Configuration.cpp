@@ -17,6 +17,7 @@
 #include "common/Memory.h"
 #include "ds/Twiddler.h"
 #include <cctype>
+#include <climits>
 #include <cstring>
 
 namespace {
@@ -197,7 +198,7 @@ bool Configuration::setString(const char *section, const char *option,
 
 const char* Configuration::getString(const char *section, const char *option,
 		const char *defaultValue) const noexcept {
-	if (section && option) {
+	if (section && option && option[0]) {
 		auto entry = findEntry(section, option);
 		if (entry) {
 			return entry->value;
@@ -296,64 +297,65 @@ char* Configuration::expandPath(const char *pathname) const noexcept {
 		return Storage::expandPathName(pathname);
 	}
 	//-----------------------------------------------------------------
-	auto tmp = strdup(pathname);	//The working copy
-	if (!tmp) {
-		return nullptr;
-	}
+	char orig[PATH_MAX] { };
+	strncpy(orig, pathname, sizeof(orig) - 1);
+	//-----------------------------------------------------------------
 	/*
-	 * Resolve the postfix which is the substring
-	 * succeeding the first path separator
+	 * Resolve the postfix substring succeeding the first path separator
 	 */
-	unsigned int i = 0;	//Index of the first path separator or NUL terminator
+	size_t i = 0; //Index of the first path separator or NUL terminator
 	const char *postfix = nullptr;	//Substring after the first path separator
 
-	while (tmp[i] && (tmp[i] != Storage::PATH_SEPARATOR)) {
+	while (orig[i] && (orig[i] != Storage::PATH_SEPARATOR)) {
 		i++;
 	}
 
-	if (!tmp[i]) {
+	if (!orig[i]) {
 		postfix = "";
 	} else {
-		tmp[i] = '\0';		//Inject NUL terminator to produce two substrings
-		postfix = &tmp[i + 1];
+		orig[i] = '\0';	//Inject a NUL terminator to produce two substrings
+		postfix = &orig[i + 1];
 	}
 	//-----------------------------------------------------------------
 	/*
-	 * Resolve the initial substring into prefix
+	 * Resolve the leading substring into prefix
 	 */
 	//Resolve using PATHS section inside configuration
-	auto prefix = getString("PATHS", &tmp[1]);
+	auto prefix = getString("PATHS", &orig[1]);
 	//-----------------------------------------------------------------
 	/*
 	 * Expand into the full path
 	 */
 	if (!prefix) {
 		//Restore the original string
-		tmp[i] = postfix[0] ? Storage::PATH_SEPARATOR : '\0';
+		orig[i] = postfix[0] ? Storage::PATH_SEPARATOR : '\0';
 		//Expand into the full path and return
-		auto result = Storage::expandPathName(tmp);
-		free(tmp);
-		return result;
+		return Storage::expandPathName(orig);
 	} else {
-		//1. Construct the string in format: prefix/postfix
+		//1. Construct a string in the format: prefix/postfix
 		auto prefixLen = strlen(prefix);
 		auto postfixLen = strlen(postfix);
-		auto result = Memory<char>::allocate(prefixLen + postfixLen + 2);
-		strcpy(result, prefix);
+		if ((prefixLen + postfixLen) >= PATH_MAX) {
+			return nullptr;
+		}
+
+		char result[PATH_MAX] { };
+		memcpy(result, prefix, prefixLen);
 		if (postfixLen
 				&& (!prefixLen
 						|| (prefix[prefixLen - 1] != Storage::PATH_SEPARATOR))) {
 			//Inject a path separator if required
-			strcat(result, Storage::PATH_SEPARATOR_STR);
+			result[prefixLen] = Storage::PATH_SEPARATOR;
+			prefixLen += 1;
 		}
-		strcat(result, postfix);
-		free(tmp);
 
 		//2. Expand into the full path and return
-		tmp = result;
-		result = Storage::expandPathName(result);
-		free(tmp);
-		return result;
+		if ((prefixLen + postfixLen) < PATH_MAX) {
+			memcpy(result + prefixLen, postfix, postfixLen);
+			return Storage::expandPathName(result);
+		} else {
+			return nullptr;
+		}
 	}
 }
 
