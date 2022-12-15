@@ -304,15 +304,12 @@ char* Configuration::expandPath(const char *pathname) const noexcept {
 	 * Resolve the postfix substring succeeding the first path separator
 	 */
 	size_t i = 0; //Index of the first path separator or NUL terminator
-	const char *postfix = nullptr;	//Substring after the first path separator
-
 	while (orig[i] && (orig[i] != Storage::PATH_SEPARATOR)) {
 		i++;
 	}
 
-	if (!orig[i]) {
-		postfix = "";
-	} else {
+	auto postfix = "";	//Substring after the first path separator
+	if (orig[i]) {
 		orig[i] = '\0';	//Inject a NUL terminator to produce two substrings
 		postfix = &orig[i + 1];
 	}
