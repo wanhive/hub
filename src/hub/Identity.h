@@ -112,13 +112,13 @@ public:
 	//-----------------------------------------------------------------
 	/**
 	 * Returns an application data file's pathname.
-	 * @param context context's value
+	 * @param context application data's context
 	 * @return file's pathname if exists, nullptr otherwise
 	 */
 	const char* dataPathName(int context) const noexcept;
 	/**
 	 * Partially reloads settings.
-	 * @param context context's value
+	 * @param context application data's context
 	 */
 	void reload(int context);
 private:

@@ -66,7 +66,7 @@ public:
 	}
 	//-----------------------------------------------------------------
 	/**
-	 * Returns reference to the element stored at a given index.
+	 * Returns element's reference at a given index.
 	 * @param index index's value
 	 * @return element's reference
 	 */
@@ -79,7 +79,7 @@ public:
 	}
 
 	/**
-	 * Returns reference to the element stored at a given index.
+	 * Returns element's reference at a given index.
 	 * @param index index's value
 	 * @return element's reference
 	 */
@@ -92,9 +92,9 @@ public:
 	}
 
 	/**
-	 * Returns the element's address at a given index.
+	 * Returns element's pointer at a given index.
 	 * @param index index's value
-	 * @return element's address
+	 * @return element's address on success, nullptr on error (invalid index)
 	 */
 	T* offset(size_t index = 0) noexcept {
 		if (index < _capacity) {
@@ -105,9 +105,9 @@ public:
 	}
 
 	/**
-	 * Returns the element's address at a given index.
+	 * Returns element's pointer at a given index.
 	 * @param index index's value
-	 * @return element's address
+	 * @return element's address on success, nullptr on error (invalid index)
 	 */
 	const T* offset(size_t index = 0) const noexcept {
 		if (index < _capacity) {
