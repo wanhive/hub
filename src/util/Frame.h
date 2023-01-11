@@ -18,8 +18,8 @@
 namespace wanhive {
 /**
  * Bare-bone data unit implementation. It consists of a routing header and a
- * frame buffer. The routing header provides the route information during the
- * message delivery and forwarding. Frame buffer stores serialized data.
+ * frame buffer. Routing header provides the route information during message
+ * delivery and forwarding. Frame buffer stores the serialized data.
  * @note Frame buffer's structure: [(MESSAGE HEADER)(VARIABLE LENGTH PAYLOAD)]
  */
 class Frame {
@@ -29,7 +29,7 @@ public:
 	 */
 	Frame() noexcept;
 	/**
-	 * Constructor: sets frame's origin.
+	 * Constructor: assigns an origin.
 	 * @param origin origin's identifier
 	 */
 	Frame(uint64_t origin) noexcept;
@@ -39,8 +39,8 @@ public:
 	~Frame();
 	//-----------------------------------------------------------------
 	/**
-	 * Returns the origin identifier of this object.
-	 * @return the origin identifier
+	 * Returns this frame's origin.
+	 * @return origin's identifier
 	 */
 	uint64_t getOrigin() const noexcept;
 	/**
