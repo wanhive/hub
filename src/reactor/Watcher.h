@@ -66,41 +66,41 @@ public:
 	//-----------------------------------------------------------------
 	/**
 	 * Arms the watcher, it usually involves enabling and configuring the IO
-	 * capabilities of the watcher, in most case this one will be a no-op.
+	 * capabilities of the associated file descriptor.
 	 */
 	virtual void start()=0;
 	/**
 	 * Disarms the watcher, it usually involves temporarily suspending the IO
-	 * capabilities of the watcher, in most case this one will be a no-op.
+	 * capabilities of the associated file descriptor.
 	 */
 	virtual void stop() noexcept = 0;
 	/**
-	 * The callback function for processing the pending IO events.
-	 * @param arg a generic argument
-	 * @return true if IO events are still pending, false otherwise
+	 * Processes the pending IO events.
+	 * @param arg additional argument
+	 * @return true if further processing is required, false otherwise
 	 */
 	virtual bool callback(void *arg) noexcept = 0;
 	/**
 	 * Publishes something to this watcher.
-	 * @param arg a generic pointer to an object
-	 * @return true if the operation was successful, false otherwise
+	 * @param arg published object's pointer
+	 * @return true on success, false on error
 	 */
 	virtual bool publish(void *arg) noexcept = 0;
 	//-----------------------------------------------------------------
 	/**
-	 * Multicasting: adds subscription to the given topic.
-	 * @param index the topic identifier
+	 * Multicasting: adds subscription to a given topic.
+	 * @param index topic's identifier
 	 */
 	virtual void setTopic(unsigned int index) noexcept;
 	/**
-	 * Multicasting: removes subscription from the given topic.
-	 * @param index the topic identifier
+	 * Multicasting: removes subscription from a given topic.
+	 * @param index topic's identifier
 	 */
 	virtual void clearTopic(unsigned int index) noexcept;
 	/**
-	 * Multicasting: tests subscription to a topic.
-	 * @param index the topic identifier
-	 * @return true if the topic is subscribed, false otherwise
+	 * Multicasting: tests subscription to a given topic.
+	 * @param index topic's identifier
+	 * @return true if a subscription exists, false otherwise
 	 */
 	virtual bool testTopic(unsigned int index) const noexcept;
 	//-----------------------------------------------------------------
