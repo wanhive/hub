@@ -289,15 +289,12 @@ void Configuration::remove(const char *section, const char *option) noexcept {
 
 		if (!sec || !entry) {
 			return;
-		} else if (sec->nEntries == 1) {
-			memset(entry, 0, sizeof(Entry));
 		} else {
 			auto lastIndex = sec->nEntries - 1;
 			*entry = sec->entries[lastIndex];
 			memset(&sec->entries[lastIndex], 0, sizeof(Entry));
+			sec->nEntries -= 1;
 		}
-
-		sec->nEntries -= 1;
 
 		//If the array has become too sparse then fix it
 		if (sec->capacity > 32 && sec->nEntries < (sec->capacity >> 2)) {
