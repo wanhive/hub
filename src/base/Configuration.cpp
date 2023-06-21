@@ -285,21 +285,24 @@ bool Configuration::exists(const char *section, const char *option) noexcept {
 void Configuration::remove(const char *section, const char *option) noexcept {
 	if (section && option && option[0]) {
 		Section *sec = nullptr;
-		Entry *entry = findEntry(section, option, &sec);
-		if (entry && sec) {
-			unsigned int lastIndex = sec->nEntries - 1;
-			if (sec->nEntries == 1) {
-				memset(entry, 0, sizeof(Entry));
-				sec->nEntries = 0;
-			} else {
-				*entry = sec->entries[lastIndex];
-				memset(&sec->entries[lastIndex], 0, sizeof(Entry));
-				sec->nEntries--;
-			}
-			if (sec->capacity > 32 && sec->nEntries < sec->capacity/4) {
-				Memory<Entry>::resize(sec->entries, sec->nEntries);
-				sec->capacity = sec->nEntries;
-			}
+		auto entry = findEntry(section, option, &sec);
+
+		if (!sec || !entry) {
+			return;
+		} else if (sec->nEntries == 1) {
+			memset(entry, 0, sizeof(Entry));
+		} else {
+			auto lastIndex = sec->nEntries - 1;
+			*entry = sec->entries[lastIndex];
+			memset(&sec->entries[lastIndex], 0, sizeof(Entry));
+		}
+
+		sec->nEntries -= 1;
+
+		//If the array has become too sparse then fix it
+		if (sec->capacity > 32 && sec->nEntries < (sec->capacity >> 2)) {
+			Memory<Entry>::resize(sec->entries, sec->nEntries);
+			sec->capacity = sec->nEntries;
 		}
 	}
 }

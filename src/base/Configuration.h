@@ -164,10 +164,10 @@ public:
 	 */
 	bool exists(const char *section, const char *option) noexcept;
 	/**
-	 * completely removes a configuration data corresponding to the [section, option] pair.
+	 * Removes a property.
 	 * @param section section/group name, can be empty string
 	 * @param option key's name
-	*/
+	 */
 	void remove(const char *section, const char *option) noexcept;
 	/**
 	 * Returns a status code describing the configuration data's state.
