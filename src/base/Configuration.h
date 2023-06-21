@@ -164,6 +164,12 @@ public:
 	 */
 	bool exists(const char *section, const char *option) noexcept;
 	/**
+	 * completely removes a configuration data corresponding to the [section, option] pair.
+	 * @param section section/group name, can be empty string
+	 * @param option key's name
+	*/
+	void remove(const char *section, const char *option) noexcept;
+	/**
 	 * Returns a status code describing the configuration data's state.
 	 * @return 0 if the object is empty or doesn't contain any uncommitted
 	 * changes, 1 if the object contains uncommitted changes, -1 if the last
