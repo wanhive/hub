@@ -282,6 +282,28 @@ bool Configuration::exists(const char *section, const char *option) noexcept {
 	}
 }
 
+void Configuration::remove(const char *section, const char *option) noexcept {
+	if (section && option && option[0]) {
+		Section *sec = nullptr;
+		Entry *entry = findEntry(section, option, &sec);
+		if (entry && sec) {
+			unsigned int lastIndex = sec->nEntries - 1;
+			if (sec->nEntries == 1) {
+				memset(entry, 0, sizeof(Entry));
+				sec->nEntries = 0;
+			} else {
+				*entry = sec->entries[lastIndex];
+				memset(&sec->entries[lastIndex], 0, sizeof(Entry));
+				sec->nEntries--;
+			}
+			if (sec->capacity > 32 && sec->nEntries < sec->capacity/4) {
+				Memory<Entry>::resize(sec->entries, sec->nEntries);
+				sec->capacity = sec->nEntries;
+			}
+		}
+	}
+}
+
 int Configuration::getStatus() const noexcept {
 	return data.status;
 }
