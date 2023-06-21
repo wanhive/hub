@@ -113,3 +113,7 @@ Makefile
 
 ### Linux ###
 *~
+
+### Doxygen ###
+Doxyfile
+
