@@ -42,7 +42,7 @@ OverlayHub::OverlayHub(unsigned long long uid, const char *path) :
 	clear();
 	registrationBucketLevel = 0;
 	keyBucketLevel = 0;
-    registrationLastRequestTime = std::chrono::steady_clock::now();
+	registrationLastRequestTime = std::chrono::steady_clock::now();
 	keyLastRequestTime = std::chrono::steady_clock::now();
 }
 
@@ -844,10 +844,10 @@ bool OverlayHub::handleRegistrationRequest(Message *msg) noexcept {
 	//Set correct source identifier
 	msg->setSource(origin);
 	auto currentTime = std::chrono::steady_clock::now();
-    auto elapsedTime = std::chrono::duration_cast<std::chrono::milliseconds>(currentTime - registrationLastRequestTime).count();
+	auto elapsedTime = std::chrono::duration_cast<std::chrono::milliseconds>(currentTime - registrationLastRequestTime).count();
 
 	if (elapsedTime >= alarmExpiry/requestLimit) {
-        registrationBucketLevel--;
+		registrationBucketLevel--;
 		registrationLastRequestTime = currentTime;
     }
 	//-----------------------------------------------------------------
@@ -914,10 +914,10 @@ bool OverlayHub::handleGetKeyRequest(Message *msg) noexcept {
 	}
 	//-----------------------------------------------------------------
 	auto currentTime = std::chrono::steady_clock::now();
-    auto elapsedTime = std::chrono::duration_cast<std::chrono::milliseconds>(currentTime - registrationLastRequestTime).count();
+	auto elapsedTime = std::chrono::duration_cast<std::chrono::milliseconds>(currentTime - keyLastRequestTime).count();
 
 	if (elapsedTime >= alarmExpiry/requestLimit) {
-        keyBucketLevel--;
+    	keyBucketLevel--;
 		keyLastRequestTime = currentTime;
     }
 	/*
