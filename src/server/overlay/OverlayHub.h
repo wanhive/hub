@@ -15,6 +15,7 @@
 #include "OverlayService.h"
 #include "Topics.h"
 #include "../../hub/Hub.h"
+#include<chrono>
 
 namespace wanhive {
 /**
@@ -265,6 +266,12 @@ private:
 	 * For multicasting: 256 topics in the range [0-255] are available
 	 */
 	Topics topics;
+	const long int requestLimit = 100;
+	long int alarmExpiry;
+	long int registrationBucketLevel;
+	long int keyBucketLevel;
+	std::chrono::steady_clock::time_point registrationLastRequestTime;
+	std::chrono::steady_clock::time_point keyLastRequestTime;
 };
 
 } /* namespace wanhive */

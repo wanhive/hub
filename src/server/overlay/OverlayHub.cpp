@@ -40,6 +40,10 @@ namespace wanhive {
 OverlayHub::OverlayHub(unsigned long long uid, const char *path) :
 		Hub(uid, path), Node(uid), stabilizer(uid) {
 	clear();
+	registrationBucketLevel = 0;
+	keyBucketLevel = 0;
+    registrationLastRequestTime = std::chrono::steady_clock::now();
+	keyLastRequestTime = std::chrono::steady_clock::now();
 }
 
 OverlayHub::~OverlayHub() {
@@ -66,6 +70,7 @@ void OverlayHub::configure(void *arg) {
 		auto netmaskStr = conf.getString("OVERLAY", "netMask", "0x0");
 		sscanf(netmaskStr, "%llx", &ctx.netMask);
 		ctx.groupId = conf.getNumber("OVERLAY", "groupId");
+		alarmExpiry = conf.getNumber("OVERLAY", "alarmExpiry");
 
 		auto n = Identity::getIdentifiers("BOOTSTRAP", "nodes",
 				ctx.bootstrapNodes, ArraySize(ctx.bootstrapNodes) - 1);
@@ -838,8 +843,16 @@ bool OverlayHub::handleRegistrationRequest(Message *msg) noexcept {
 	auto success = isValidRegistrationRequest(msg);
 	//Set correct source identifier
 	msg->setSource(origin);
+	auto currentTime = std::chrono::steady_clock::now();
+    auto elapsedTime = std::chrono::duration_cast<std::chrono::milliseconds>(currentTime - registrationLastRequestTime).count();
+
+	if (elapsedTime >= alarmExpiry/requestLimit) {
+        registrationBucketLevel--;
+		registrationLastRequestTime = currentTime;
+    }
 	//-----------------------------------------------------------------
-	if (success) {
+	if (success && registrationBucketLevel < requestLimit) {
+		registrationBucketLevel++;
 		WH_LOG_DEBUG("Registration request %" PRIu64"->%" PRIu64" approved",
 				origin, requestedUid);
 		//Request Accepted, message will be delivered on new UID
@@ -900,11 +913,19 @@ bool OverlayHub::handleGetKeyRequest(Message *msg) noexcept {
 		}
 	}
 	//-----------------------------------------------------------------
+	auto currentTime = std::chrono::steady_clock::now();
+    auto elapsedTime = std::chrono::duration_cast<std::chrono::milliseconds>(currentTime - registrationLastRequestTime).count();
+
+	if (elapsedTime >= alarmExpiry/requestLimit) {
+        keyBucketLevel--;
+		keyLastRequestTime = currentTime;
+    }
 	/*
 	 * This call succeeds if the caller is a temporary connection and the
 	 * message is of proper size, otherwise a failure message is sent back.
 	 */
-	if (isEphemeralId(origin) && msg->getPayloadLength() <= Hash::SIZE) {
+	if (isEphemeralId(origin) && msg->getPayloadLength() <= Hash::SIZE && keyBucketLevel < requestLimit && msg->getDestination() != origin) {
+		keyBucketLevel++;
 		Digest hc;	//Challenge Key
 		memset(&hc, 0, sizeof(hc));
 		generateNonce(hash, origin, getUid(), &hc);
@@ -915,7 +936,8 @@ bool OverlayHub::handleGetKeyRequest(Message *msg) noexcept {
 		msg->putStatus(WH_DHT_AQLF_ACCEPTED);
 	} else if (isEphemeralId(origin)
 			&& msg->getPayloadLength() == PKI::ENCRYPTED_LENGTH && verifyHost()
-			&& getPKI()) {
+			&& getPKI() && keyBucketLevel < requestLimit && msg->getDestination() != origin ) {
+		keyBucketLevel++;
 		//Extract the challenge key
 		unsigned char challenge[PKI::ENCODING_LENGTH]; //Challenge
 		memset(&challenge, 0, sizeof(challenge));
