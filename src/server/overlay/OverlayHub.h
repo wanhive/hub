@@ -15,7 +15,6 @@
 #include "OverlayService.h"
 #include "Topics.h"
 #include "../../hub/Hub.h"
-#include<chrono>
 
 namespace wanhive {
 /**
@@ -41,6 +40,8 @@ private:
 	bool trapMessage(Message *message) noexcept override;
 	void route(Message *message) noexcept override;
 	void maintain() noexcept override;
+    void processAlarm(unsigned long long uid,
+        unsigned long long ticks) noexcept override;
 	void processInotification(unsigned long long uid,
 			const InotifyEvent *event) noexcept override;
 	bool enableWorker() const noexcept override;
@@ -266,12 +267,9 @@ private:
 	 * For multicasting: 256 topics in the range [0-255] are available
 	 */
 	Topics topics;
-	const long int requestLimit = 100;
-	long int alarmExpiry;
-	long int registrationBucketLevel;
-	long int keyBucketLevel;
-	std::chrono::steady_clock::time_point registrationLastRequestTime;
-	std::chrono::steady_clock::time_point keyLastRequestTime;
+	const int requestLimit = 100;
+	int registrationBucketLevel;
+	int keyBucketLevel;
 };
 
 } /* namespace wanhive */

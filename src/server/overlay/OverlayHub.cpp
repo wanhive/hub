@@ -42,8 +42,6 @@ OverlayHub::OverlayHub(unsigned long long uid, const char *path) :
 	clear();
 	registrationBucketLevel = 0;
 	keyBucketLevel = 0;
-	registrationLastRequestTime = std::chrono::steady_clock::now();
-	keyLastRequestTime = std::chrono::steady_clock::now();
 }
 
 OverlayHub::~OverlayHub() {
@@ -70,7 +68,6 @@ void OverlayHub::configure(void *arg) {
 		auto netmaskStr = conf.getString("OVERLAY", "netMask", "0x0");
 		sscanf(netmaskStr, "%llx", &ctx.netMask);
 		ctx.groupId = conf.getNumber("OVERLAY", "groupId");
-		alarmExpiry = conf.getNumber("OVERLAY", "alarmExpiry");
 
 		auto n = Identity::getIdentifiers("BOOTSTRAP", "nodes",
 				ctx.bootstrapNodes, ArraySize(ctx.bootstrapNodes) - 1);
@@ -158,6 +155,16 @@ void OverlayHub::maintain() noexcept {
 			fixRoutingTable();
 		}
 	}
+}
+
+void OverlayHub::processAlarm(unsigned long long uid,
+        unsigned long long ticks) noexcept {
+    if(keyBucketLevel > 0){
+        keyBucketLevel--;
+    }
+    if(registrationBucketLevel > 0){
+        registrationBucketLevel--;
+    }
 }
 
 void OverlayHub::processInotification(unsigned long long uid,
@@ -843,13 +850,6 @@ bool OverlayHub::handleRegistrationRequest(Message *msg) noexcept {
 	auto success = isValidRegistrationRequest(msg);
 	//Set correct source identifier
 	msg->setSource(origin);
-	auto currentTime = std::chrono::steady_clock::now();
-	auto elapsedTime = std::chrono::duration_cast<std::chrono::milliseconds>(currentTime - registrationLastRequestTime).count();
-
-	if (elapsedTime >= alarmExpiry/requestLimit) {
-		registrationBucketLevel--;
-		registrationLastRequestTime = currentTime;
-    }
 	//-----------------------------------------------------------------
 	if (success && registrationBucketLevel < requestLimit) {
 		registrationBucketLevel++;
@@ -913,13 +913,6 @@ bool OverlayHub::handleGetKeyRequest(Message *msg) noexcept {
 		}
 	}
 	//-----------------------------------------------------------------
-	auto currentTime = std::chrono::steady_clock::now();
-	auto elapsedTime = std::chrono::duration_cast<std::chrono::milliseconds>(currentTime - keyLastRequestTime).count();
-
-	if (elapsedTime >= alarmExpiry/requestLimit) {
-    	keyBucketLevel--;
-		keyLastRequestTime = currentTime;
-    }
 	/*
 	 * This call succeeds if the caller is a temporary connection and the
 	 * message is of proper size, otherwise a failure message is sent back.
