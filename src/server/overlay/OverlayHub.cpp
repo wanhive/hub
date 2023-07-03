@@ -160,10 +160,10 @@ void OverlayHub::maintain() noexcept {
 void OverlayHub::processAlarm(unsigned long long uid,
         unsigned long long ticks) noexcept {
     if(keyBucketLevel > 0){
-        keyBucketLevel--;
+        keyBucketLevel = 0;
     }
     if(registrationBucketLevel > 0){
-        registrationBucketLevel--;
+        registrationBucketLevel = 0;
     }
 }
 
