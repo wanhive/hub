@@ -40,7 +40,7 @@ private:
 	bool trapMessage(Message *message) noexcept override;
 	void route(Message *message) noexcept override;
 	void maintain() noexcept override;
-    void processAlarm(unsigned long long uid,
+	void processAlarm(unsigned long long uid,
         unsigned long long ticks) noexcept override;
 	void processInotification(unsigned long long uid,
 			const InotifyEvent *event) noexcept override;

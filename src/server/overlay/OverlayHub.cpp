@@ -159,8 +159,8 @@ void OverlayHub::maintain() noexcept {
 
 void OverlayHub::processAlarm(unsigned long long uid,
         unsigned long long ticks) noexcept {
-    keyBucketLevel = 0;
-    registrationBucketLevel = 0;
+	keyBucketLevel = 0;
+	registrationBucketLevel = 0;
 }
 
 void OverlayHub::processInotification(unsigned long long uid,
