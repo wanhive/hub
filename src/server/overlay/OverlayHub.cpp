@@ -33,15 +33,33 @@ struct PurgeControl {
 	wanhive::OverlayHub *hub { nullptr };
 };
 
-}  // namespace
+//-----------------------------------------------------------------
+//TOKEN BUCKET: resets the buckets to a given value (-1 = disable)
+void resetTokens(int tokens[], size_t length, int value = 0) noexcept {
+	for (size_t i = 0; i < length; ++i) {
+		tokens[i] = value;
+	}
+}
+
+//TOKEN BUCKET: updates the level and returns true for a conformant request
+bool checkToken(int &level, int limit = 100) noexcept {
+	if (level < 0) {
+		return true;
+	} else if (level < limit) {
+		++level;
+		return true;
+	} else {
+		return false;
+	}
+}
+//-----------------------------------------------------------------
+}// namespace
 
 namespace wanhive {
 
 OverlayHub::OverlayHub(unsigned long long uid, const char *path) :
 		Hub(uid, path), Node(uid), stabilizer(uid) {
 	clear();
-	registrationBucketLevel = -1;
-	keyBucketLevel = -1;
 }
 
 OverlayHub::~OverlayHub() {
@@ -158,9 +176,8 @@ void OverlayHub::maintain() noexcept {
 }
 
 void OverlayHub::processAlarm(unsigned long long uid,
-        unsigned long long ticks) noexcept {
-	keyBucketLevel = 0;
-	registrationBucketLevel = 0;
+		unsigned long long ticks) noexcept {
+	resetTokens(tokens, ArraySize(tokens));
 }
 
 void OverlayHub::processInotification(unsigned long long uid,
@@ -458,6 +475,7 @@ bool OverlayHub::isValidRegistrationRequest(const Message *msg) noexcept {
 	/*
 	 * 1. Confirm that the requested ID is valid
 	 * 2. Analyze the security features (to prevent attacks)
+	 * 3. Impose rate limit
 	 */
 	auto origin = msg->getOrigin();
 	auto requestedId = msg->getSource();
@@ -472,9 +490,10 @@ bool OverlayHub::isValidRegistrationRequest(const Message *msg) noexcept {
 		//CASE 2
 		return true;
 	} else if (msg->getPayloadLength() == Hash::SIZE + PKI::SIGNATURE_LENGTH) {
-		//CASE 2
-		return verifyNonce(hash, origin, getUid(), (Digest*) msg->getBytes(0))
-				&& msg->verify(getPKI());
+		//CASE 2 & 3
+		return checkToken(tokens[0])
+				&& verifyNonce(hash, origin, getUid(),
+						(Digest*) msg->getBytes(0)) && msg->verify(getPKI());
 	} else {
 		return false;
 	}
@@ -843,7 +862,7 @@ bool OverlayHub::handleRegistrationRequest(Message *msg) noexcept {
 	 * Treat all the other cases as a registration request
 	 */
 	//Do this before the message is modified
-	auto success = (isValidRegistrationRequest(msg) && bucketNotFull(registrationBucketLevel));
+	auto success = isValidRegistrationRequest(msg);
 	//Set correct source identifier
 	msg->setSource(origin);
 	//-----------------------------------------------------------------
@@ -912,7 +931,8 @@ bool OverlayHub::handleGetKeyRequest(Message *msg) noexcept {
 	 * This call succeeds if the caller is a temporary connection and the
 	 * message is of proper size, otherwise a failure message is sent back.
 	 */
-	if (isEphemeralId(origin) && msg->getPayloadLength() <= Hash::SIZE && bucketNotFull(keyBucketLevel)) {
+	if (isEphemeralId(origin) && msg->getPayloadLength() <= Hash::SIZE
+			&& checkToken(tokens[1])) {
 		Digest hc;	//Challenge Key
 		memset(&hc, 0, sizeof(hc));
 		generateNonce(hash, origin, getUid(), &hc);
@@ -923,7 +943,7 @@ bool OverlayHub::handleGetKeyRequest(Message *msg) noexcept {
 		msg->putStatus(WH_DHT_AQLF_ACCEPTED);
 	} else if (isEphemeralId(origin)
 			&& msg->getPayloadLength() == PKI::ENCRYPTED_LENGTH && verifyHost()
-			&& getPKI() && bucketNotFull(keyBucketLevel)) {
+			&& getPKI() && checkToken(tokens[1])) {
 		//Extract the challenge key
 		unsigned char challenge[PKI::ENCODING_LENGTH]; //Challenge
 		memset(&challenge, 0, sizeof(challenge));
@@ -1495,16 +1515,6 @@ bool OverlayHub::isEphemeralId(unsigned long long uid) noexcept {
 	return uid > Socket::MAX_ACTIVE_ID;
 }
 
-bool OverlayHub::bucketNotFull(int &level) noexcept {
-	if(level == -1) {
-		return true;
-	} else if(level < requestLimit) {
-		level++;
-		return true;
-	}
-	return false;
-}
-
 Watcher* OverlayHub::connect(int &sfd, bool blocking, int timeout) {
 	Socket *local = nullptr;
 	int socket = -1;
@@ -1637,6 +1647,7 @@ void OverlayHub::clear() noexcept {
 	}
 
 	topics.clear();
+	resetTokens(tokens, ArraySize(tokens), -1);
 }
 
 void OverlayHub::metrics(OverlayHubInfo &info) const noexcept {
