@@ -40,8 +40,8 @@ namespace wanhive {
 OverlayHub::OverlayHub(unsigned long long uid, const char *path) :
 		Hub(uid, path), Node(uid), stabilizer(uid) {
 	clear();
-	registrationBucketLevel = 0;
-	keyBucketLevel = 0;
+	registrationBucketLevel = -1;
+	keyBucketLevel = -1;
 }
 
 OverlayHub::~OverlayHub() {
@@ -843,12 +843,11 @@ bool OverlayHub::handleRegistrationRequest(Message *msg) noexcept {
 	 * Treat all the other cases as a registration request
 	 */
 	//Do this before the message is modified
-	auto success = isValidRegistrationRequest(msg);
+	auto success = (isValidRegistrationRequest(msg) && bucketNotFull(registrationBucketLevel));
 	//Set correct source identifier
 	msg->setSource(origin);
 	//-----------------------------------------------------------------
-	if (success && registrationBucketLevel < requestLimit) {
-		registrationBucketLevel++;
+	if (success) {
 		WH_LOG_DEBUG("Registration request %" PRIu64"->%" PRIu64" approved",
 				origin, requestedUid);
 		//Request Accepted, message will be delivered on new UID
@@ -913,8 +912,7 @@ bool OverlayHub::handleGetKeyRequest(Message *msg) noexcept {
 	 * This call succeeds if the caller is a temporary connection and the
 	 * message is of proper size, otherwise a failure message is sent back.
 	 */
-	if (isEphemeralId(origin) && msg->getPayloadLength() <= Hash::SIZE && keyBucketLevel < requestLimit && msg->getDestination() != origin) {
-		keyBucketLevel++;
+	if (isEphemeralId(origin) && msg->getPayloadLength() <= Hash::SIZE && bucketNotFull(keyBucketLevel)) {
 		Digest hc;	//Challenge Key
 		memset(&hc, 0, sizeof(hc));
 		generateNonce(hash, origin, getUid(), &hc);
@@ -925,8 +923,7 @@ bool OverlayHub::handleGetKeyRequest(Message *msg) noexcept {
 		msg->putStatus(WH_DHT_AQLF_ACCEPTED);
 	} else if (isEphemeralId(origin)
 			&& msg->getPayloadLength() == PKI::ENCRYPTED_LENGTH && verifyHost()
-			&& getPKI() && keyBucketLevel < requestLimit && msg->getDestination() != origin ) {
-		keyBucketLevel++;
+			&& getPKI() && bucketNotFull(keyBucketLevel)) {
 		//Extract the challenge key
 		unsigned char challenge[PKI::ENCODING_LENGTH]; //Challenge
 		memset(&challenge, 0, sizeof(challenge));
@@ -1496,6 +1493,16 @@ bool OverlayHub::isExternalNode(unsigned long long uid) noexcept {
 
 bool OverlayHub::isEphemeralId(unsigned long long uid) noexcept {
 	return uid > Socket::MAX_ACTIVE_ID;
+}
+
+bool OverlayHub::bucketNotFull(int &level) noexcept {
+	if(level == -1) {
+		return true;
+	} else if(level < requestLimit) {
+		level++;
+		return true;
+	}
+	return false;
 }
 
 Watcher* OverlayHub::connect(int &sfd, bool blocking, int timeout) {

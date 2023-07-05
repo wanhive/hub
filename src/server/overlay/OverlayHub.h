@@ -161,6 +161,8 @@ private:
 	static bool isExternalNode(unsigned long long uid) noexcept;
 	//Returns true if <uid> is an ephemeral (temporary) value
 	static bool isEphemeralId(unsigned long long uid) noexcept;
+	//Returns true if request is under limit
+	bool bucketNotFull(int &level) noexcept;
 	//-----------------------------------------------------------------
 	/*
 	 * Create and register a local unix socket, return the other end in <sfd>.
