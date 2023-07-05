@@ -40,6 +40,8 @@ private:
 	bool trapMessage(Message *message) noexcept override;
 	void route(Message *message) noexcept override;
 	void maintain() noexcept override;
+	void processAlarm(unsigned long long uid,
+        unsigned long long ticks) noexcept override;
 	void processInotification(unsigned long long uid,
 			const InotifyEvent *event) noexcept override;
 	bool enableWorker() const noexcept override;
@@ -159,6 +161,8 @@ private:
 	static bool isExternalNode(unsigned long long uid) noexcept;
 	//Returns true if <uid> is an ephemeral (temporary) value
 	static bool isEphemeralId(unsigned long long uid) noexcept;
+	//Returns true if request is under limit
+	bool bucketNotFull(int &level) noexcept;
 	//-----------------------------------------------------------------
 	/*
 	 * Create and register a local unix socket, return the other end in <sfd>.
@@ -265,6 +269,9 @@ private:
 	 * For multicasting: 256 topics in the range [0-255] are available
 	 */
 	Topics topics;
+	const int requestLimit = 100;
+	int registrationBucketLevel;
+	int keyBucketLevel;
 };
 
 } /* namespace wanhive */
