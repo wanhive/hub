@@ -932,7 +932,7 @@ bool OverlayHub::handleGetKeyRequest(Message *msg) noexcept {
 	 * message is of proper size, otherwise a failure message is sent back.
 	 */
 	if (isEphemeralId(origin) && msg->getPayloadLength() <= Hash::SIZE
-			&& checkToken(tokens[1])) {
+			&& checkToken(tokens[1]) && keyRequestIsUnique(origin)) {
 		Digest hc;	//Challenge Key
 		memset(&hc, 0, sizeof(hc));
 		generateNonce(hash, origin, getUid(), &hc);
@@ -943,7 +943,7 @@ bool OverlayHub::handleGetKeyRequest(Message *msg) noexcept {
 		msg->putStatus(WH_DHT_AQLF_ACCEPTED);
 	} else if (isEphemeralId(origin)
 			&& msg->getPayloadLength() == PKI::ENCRYPTED_LENGTH && verifyHost()
-			&& getPKI() && checkToken(tokens[1])) {
+			&& getPKI() && checkToken(tokens[1]) && keyRequestIsUnique(origin)) {
 		//Extract the challenge key
 		unsigned char challenge[PKI::ENCODING_LENGTH]; //Challenge
 		memset(&challenge, 0, sizeof(challenge));
@@ -1515,6 +1515,57 @@ bool OverlayHub::isEphemeralId(unsigned long long uid) noexcept {
 	return uid > Socket::MAX_ACTIVE_ID;
 }
 
+bool OverlayHub::keyRequestIsUnique(unsigned long long uid) noexcept {
+    uint8_t fp = fingerprint(uid);
+	uint8_t indx1 = hash_func(uid);
+	uint8_t indx2 = indx1 ^ fp;
+    if(bucket[indx1] == fp || bucket[indx2] == fp){
+        return false;
+    }
+
+	if(bucket[indx1] == 0){
+		bucket[indx1] = fp;
+		return true;
+	} else if(bucket[indx2] == 0) {
+		bucket[indx2] = fp;
+		return true;
+	}
+
+	uint8_t indx = indx1;
+    uint8_t evicted_fp = fp;
+
+	for(uint32_t kick_count = 0; kick_count < capacity; ++kick_count){
+
+		uint8_t temp = evicted_fp;
+		evicted_fp = bucket[indx];
+		bucket[indx] = temp;
+
+		indx = indx^evicted_fp;
+
+		if(bucket[indx] == 0){
+			bucket[indx] = evicted_fp;
+			return true;
+		}
+		
+	}
+
+	empty_filter();
+	return true;
+}
+
+uint8_t OverlayHub::fingerprint(unsigned long long uid) noexcept{
+    return static_cast<uint8_t>((((uid >> 56) ^ uid) & 0xFF));
+}
+
+uint8_t OverlayHub::hash_func(unsigned long long uid) noexcept{
+	uint64_t hashValue = Twiddler::mix(uid);
+    return static_cast<uint8_t>(hashValue) ^ static_cast<uint8_t>(hashValue >> 8);
+}
+
+void OverlayHub::empty_filter() noexcept{
+    memset(bucket, 0, capacity * sizeof(uint8_t));
+} 
+
 Watcher* OverlayHub::connect(int &sfd, bool blocking, int timeout) {
 	Socket *local = nullptr;
 	int socket = -1;
@@ -1639,6 +1690,7 @@ void OverlayHub::clear() noexcept {
 	memset(&ctx, 0, sizeof(ctx));
 	memset(&nodes, 0, sizeof(nodes));
 	memset(sessions, 0, sizeof(sessions));
+	memset(bucket, 0, sizeof(bucket));
 
 	for (unsigned int i = 0; i < WATCHLIST_SIZE; ++i) {
 		watchlist[i].context = -1;
