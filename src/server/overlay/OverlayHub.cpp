@@ -53,6 +53,10 @@ bool checkToken(int &level, int limit = 100) noexcept {
 	}
 }
 //-----------------------------------------------------------------
+
+
+
+//-----------------------------------------------------------------
 }// namespace
 
 namespace wanhive {
@@ -1516,12 +1520,28 @@ bool OverlayHub::isEphemeralId(unsigned long long uid) noexcept {
 }
 
 bool OverlayHub::keyRequestIsUnique(unsigned long long uid) noexcept {
-	uint8_t fp = fingerprint(uid);
-	uint8_t indx1 = hash_func(uid);
-	uint8_t indx2 = indx1 ^ fp;
-	if(bucket[indx1] == fp || bucket[indx2] == fp){
+	if(lookup(uid)){
 		return false;
 	}
+	
+	insert(uid);
+	return true;
+}
+
+template<typename T>
+bool OverlayHub::insert(T elem) noexcept {
+	uint8_t fp = fingerprint(elem);
+	uint8_t indx1 = hash_func(elem);
+	uint8_t indx2 = indx1 ^ fp;
+
+	if(bucket_level > capacity/2){
+		empty_filter();
+		bucket[indx1] = fp;
+		bucket_level++;
+		return true;
+	}
+
+	bucket_level++;
 
 	if(bucket[indx1] == 0){
 		bucket[indx1] = fp;
@@ -1549,21 +1569,34 @@ bool OverlayHub::keyRequestIsUnique(unsigned long long uid) noexcept {
 		
 	}
 
-	empty_filter();
 	return true;
 }
 
-uint8_t OverlayHub::fingerprint(unsigned long long uid) noexcept{
-	return static_cast<uint8_t>((((uid >> 56) ^ uid) & 0xFF));
+template<typename T>
+bool OverlayHub::lookup(T elem) noexcept {
+	uint8_t fp = fingerprint(elem);
+	uint8_t indx1 = hash_func(elem);
+	uint8_t indx2 = indx1 ^ fp;
+	if(bucket[indx1] == fp || bucket[indx2] == fp){
+		return true;
+	}
+	return false;
 }
 
-uint8_t OverlayHub::hash_func(unsigned long long uid) noexcept{
-	uint64_t hashValue = Twiddler::mix(uid);
+template<typename T>
+uint8_t OverlayHub::fingerprint(T elem) noexcept{
+	return static_cast<uint8_t>((((elem >> (sizeof(T) * 8 - 8)) ^ elem) & 0xFF));
+}
+ 
+template<typename T>
+uint8_t OverlayHub::hash_func(T elem) noexcept{
+	uint64_t hashValue = Twiddler::mix(elem);
 	return static_cast<uint8_t>(hashValue) ^ static_cast<uint8_t>(hashValue >> 8);
 }
 
 void OverlayHub::empty_filter() noexcept{
 	memset(bucket, 0, capacity * sizeof(uint8_t));
+	bucket_level = 0;
 } 
 
 Watcher* OverlayHub::connect(int &sfd, bool blocking, int timeout) {
@@ -1700,6 +1733,7 @@ void OverlayHub::clear() noexcept {
 
 	topics.clear();
 	resetTokens(tokens, ArraySize(tokens), -1);
+	bucket_level = 0;
 }
 
 void OverlayHub::metrics(OverlayHubInfo &info) const noexcept {

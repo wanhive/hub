@@ -164,10 +164,18 @@ private:
 	static bool isEphemeralId(unsigned long long uid) noexcept;
 	//Returns true if the session key request is unique
 	bool keyRequestIsUnique(unsigned long long uid) noexcept;
+	//---------------------------------------------------------------------------
+	template<typename T>
+	bool insert(T elem) noexcept;
+	//Returns true if key is present otherwise false.
+	template<typename T>
+	bool lookup(T elem) noexcept;
 	//Returns the fingerprint of uid.
-	uint8_t fingerprint(unsigned long long uid) noexcept;
+	template<typename T>
+	uint8_t fingerprint(T elem) noexcept;
 	//Returnsa hash of size 8 bit.
-	uint8_t hash_func(unsigned long long uid) noexcept;
+	template<typename T>
+	uint8_t hash_func(T elem) noexcept;
 	//Resets the filter.
 	void empty_filter() noexcept;
 	//-----------------------------------------------------------------
@@ -286,6 +294,7 @@ private:
 	//For implementation of cuckoo filter.
 	static constexpr unsigned int capacity = 256;
 	uint8_t bucket[capacity];
+	unsigned int bucket_level;
 };
 
 } /* namespace wanhive */
