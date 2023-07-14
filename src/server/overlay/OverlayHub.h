@@ -171,6 +171,7 @@ private:
 	//Returns true if element is present otherwise false.
 	template<typename T>
 	bool lookup(T elem) noexcept;
+	//Returns true if element is deleted successfully.
 	template<typename T>
 	bool Delete(T elem) noexcept;
 	//Returns the fingerprint of element.

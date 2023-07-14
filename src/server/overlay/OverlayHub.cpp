@@ -53,10 +53,6 @@ bool checkToken(int &level, int limit = 100) noexcept {
 	}
 }
 //-----------------------------------------------------------------
-
-
-
-//-----------------------------------------------------------------
 }// namespace
 
 namespace wanhive {
@@ -1570,6 +1566,21 @@ bool OverlayHub::lookup(T elem) noexcept {
 	uint8_t indx1 = hash_func(elem);
 	uint8_t indx2 = indx1 ^ fp;
 	if(bucket[indx1] == fp || bucket[indx2] == fp){
+		return true;
+	}
+	return false;
+}
+
+template<typename T>
+bool OverlayHub::Delete(T elem) noexcept {
+	uint8_t fp = fingerprint(elem);
+	uint8_t indx1 = hash_func(elem);
+	uint8_t indx2 = indx1 ^ fp;
+	if(bucket[indx1] == fp){
+		bucket[indx1] = 0;
+		return true;
+	} else if(bucket[indx2] == fp) {
+		bucket[indx2] = 0;
 		return true;
 	}
 	return false;
