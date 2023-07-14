@@ -1534,15 +1534,6 @@ bool OverlayHub::insert(T elem) noexcept {
 	uint8_t indx1 = hash_func(elem);
 	uint8_t indx2 = indx1 ^ fp;
 
-	if(bucket_level > capacity/2){
-		empty_filter();
-		bucket[indx1] = fp;
-		bucket_level++;
-		return true;
-	}
-
-	bucket_level++;
-
 	if(bucket[indx1] == 0){
 		bucket[indx1] = fp;
 		return true;
@@ -1569,7 +1560,8 @@ bool OverlayHub::insert(T elem) noexcept {
 		
 	}
 
-	return true;
+	empty_filter();
+	return insert(elem);
 }
 
 template<typename T>
@@ -1596,7 +1588,6 @@ uint8_t OverlayHub::hash_func(T elem) noexcept{
 
 void OverlayHub::empty_filter() noexcept{
 	memset(bucket, 0, capacity * sizeof(uint8_t));
-	bucket_level = 0;
 } 
 
 Watcher* OverlayHub::connect(int &sfd, bool blocking, int timeout) {
@@ -1733,7 +1724,6 @@ void OverlayHub::clear() noexcept {
 
 	topics.clear();
 	resetTokens(tokens, ArraySize(tokens), -1);
-	bucket_level = 0;
 }
 
 void OverlayHub::metrics(OverlayHubInfo &info) const noexcept {

@@ -165,15 +165,18 @@ private:
 	//Returns true if the session key request is unique
 	bool keyRequestIsUnique(unsigned long long uid) noexcept;
 	//---------------------------------------------------------------------------
+	//Return true when element is successfully inserted to cuckoo filter
 	template<typename T>
 	bool insert(T elem) noexcept;
-	//Returns true if key is present otherwise false.
+	//Returns true if element is present otherwise false.
 	template<typename T>
 	bool lookup(T elem) noexcept;
-	//Returns the fingerprint of uid.
+	template<typename T>
+	bool Delete(T elem) noexcept;
+	//Returns the fingerprint of element.
 	template<typename T>
 	uint8_t fingerprint(T elem) noexcept;
-	//Returnsa hash of size 8 bit.
+	//Returns a hash of size 8 bit.
 	template<typename T>
 	uint8_t hash_func(T elem) noexcept;
 	//Resets the filter.
@@ -291,10 +294,10 @@ private:
 	 * [1]: session key request
 	 */
 	int tokens[2];
+	//-----------------------------------------------------------------------
 	//For implementation of cuckoo filter.
 	static constexpr unsigned int capacity = 256;
 	uint8_t bucket[capacity];
-	unsigned int bucket_level;
 };
 
 } /* namespace wanhive */
