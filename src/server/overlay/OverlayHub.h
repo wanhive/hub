@@ -15,6 +15,7 @@
 #include "OverlayService.h"
 #include "Topics.h"
 #include "../../hub/Hub.h"
+#include "../../base/ds/Twiddler.h"
 
 namespace wanhive {
 /**
@@ -161,6 +162,26 @@ private:
 	static bool isExternalNode(unsigned long long uid) noexcept;
 	//Returns true if <uid> is an ephemeral (temporary) value
 	static bool isEphemeralId(unsigned long long uid) noexcept;
+	//Returns true if the session key request is unique
+	bool keyRequestIsUnique(unsigned long long uid) noexcept;
+	//---------------------------------------------------------------------------
+	//Return true when element is successfully inserted to cuckoo filter
+	template<typename T>
+	bool insert(T elem) noexcept;
+	//Returns true if element is present otherwise false.
+	template<typename T>
+	bool lookup(T elem) noexcept;
+	//Returns true if element is deleted successfully.
+	template<typename T>
+	bool Delete(T elem) noexcept;
+	//Returns the fingerprint of element.
+	template<typename T>
+	uint8_t fingerprint(T elem) noexcept;
+	//Returns a hash of size 8 bit.
+	template<typename T>
+	uint8_t hash_func(T elem) noexcept;
+	//Resets the filter.
+	void empty_filter() noexcept;
 	//-----------------------------------------------------------------
 	/*
 	 * Create and register a local unix socket, return the other end in <sfd>.
@@ -274,6 +295,10 @@ private:
 	 * [1]: session key request
 	 */
 	int tokens[2];
+	//-----------------------------------------------------------------------
+	//For implementation of cuckoo filter.
+	static constexpr unsigned int capacity = 256;
+	uint8_t bucket[capacity];
 };
 
 } /* namespace wanhive */
