@@ -39,7 +39,7 @@ openssl x509 -req -in wh.csr -CA rootCA.crt -CAkey rootCA.key -CAcreateserial -o
 openssl x509 -req -in wh.csr -CA rootCA.crt -CAkey rootCA.key -CAserial rootCA.srl -out wh.crt -days 365 -sha256
 ```
 
-##Verify the certificate
+## Verify the certificate
 
 ```
 openssl x509 -in wh.crt -text -noout
