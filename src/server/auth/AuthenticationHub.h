@@ -62,6 +62,8 @@ private:
 	Khash<unsigned long long, Authenticator*> waitlist;
 	//For obfuscation of failed identification requests
 	Authenticator fake;
+	//Database connection
+	void *db;
 	//Configuration data
 	struct {
 		const char *connInfo;

@@ -21,12 +21,13 @@ namespace wanhive {
 
 AuthenticationHub::AuthenticationHub(unsigned long long uid,
 		const char *path) noexcept :
-		Hub(uid, path), fake(true) {
+		Hub(uid, path), fake(true), db { nullptr } {
 	memset(&ctx, 0, sizeof(ctx));
 }
 
 AuthenticationHub::~AuthenticationHub() {
-
+	PQfinish(static_cast<PGconn*>(db));
+	db = nullptr;
 }
 
 void AuthenticationHub::stop(Watcher *w) noexcept {
@@ -214,11 +215,17 @@ bool AuthenticationHub::loadIdentity(Authenticator *authenticator,
 			|| !ctx.query) {
 		return false;
 	}
+
 	//-----------------------------------------------------------------
-	auto conn = PQconnectdb(ctx.connInfo);
+	if (!db && !(db = PQconnectdb(ctx.connInfo))) {
+		return false;
+	}
+
+	auto conn = static_cast<PGconn*>(db);
 	if (PQstatus(conn) == CONNECTION_BAD) {
 		WH_LOG_DEBUG("%s", PQerrorMessage(conn));
 		PQfinish(conn);
+		db = nullptr;
 		return false;
 	}
 
@@ -234,7 +241,6 @@ bool AuthenticationHub::loadIdentity(Authenticator *authenticator,
 	if (PQresultStatus(res) != PGRES_TUPLES_OK || PQntuples(res) == 0) {
 		WH_LOG_DEBUG("%s", PQerrorMessage(conn));
 		PQclear(res);
-		PQfinish(conn);
 		return false;
 	}
 	//-----------------------------------------------------------------
@@ -250,7 +256,6 @@ bool AuthenticationHub::loadIdentity(Authenticator *authenticator,
 	auto status = authenticator->identify(identity, verifier, salt, nonce);
 
 	PQclear(res);
-	PQfinish(conn);
 	return status;
 }
 
