@@ -127,6 +127,7 @@ bool Socket::publish(void *arg) noexcept {
 	if (message && (!outQueueLimit || out.readSpace() < outQueueLimit)
 			&& out.put(message)) {
 		message->addReferenceCount();
+		setTrace(message->getTrace());
 		setFlags(WATCHER_OUT);
 		return true;
 	} else {
@@ -218,6 +219,7 @@ Message* Socket::getMessage() {
 			return nullptr;
 		}
 		incomingMessage->setType(getType());
+		incomingMessage->putTrace(getTrace());
 		incomingMessage->setGroup(getGroup());
 		incomingMessage->setMarked();
 	}
