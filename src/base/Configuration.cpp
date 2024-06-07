@@ -275,7 +275,7 @@ char* Configuration::getPathName(const char *section, const char *option,
 }
 
 bool Configuration::exists(const char *section, const char *option) noexcept {
-	if (section && option) {
+	if (section && option && option[0]) {
 		return (findEntry(section, option) != nullptr);
 	} else {
 		return false;
