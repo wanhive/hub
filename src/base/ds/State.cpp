@@ -27,6 +27,7 @@ void State::clear() noexcept {
 	type = 0;
 	flags = 0;
 	events = 0;
+	trace = 0;
 	group = 0;
 }
 
@@ -96,6 +97,30 @@ void State::clearEvents(uint32_t events) noexcept {
 
 void State::maskEvents(uint32_t events, bool set) noexcept {
 	this->events = Twiddler::mask(this->events, events, set);
+}
+
+uint32_t State::getTrace() const noexcept {
+	return trace;
+}
+
+bool State::testTrace(uint32_t trace) const noexcept {
+	return Twiddler::test(this->trace, trace);
+}
+
+void State::putTrace(uint32_t trace) noexcept {
+	this->trace = trace;
+}
+
+void State::setTrace(uint32_t trace) noexcept {
+	this->trace = Twiddler::set(this->trace, trace);
+}
+
+void State::clearTrace(uint32_t trace) noexcept {
+	this->trace = Twiddler::clear(this->trace, trace);
+}
+
+void State::maskTrace(uint32_t trace, bool set) noexcept {
+	this->trace = Twiddler::mask(this->trace, trace, set);
 }
 
 unsigned char State::getGroup() const noexcept {

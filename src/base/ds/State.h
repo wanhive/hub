@@ -131,6 +131,40 @@ public:
 	void maskEvents(uint32_t events, bool set) noexcept;
 	//-----------------------------------------------------------------
 	/**
+	 * Returns the trace.
+	 * @return 32-bit value describing the trace
+	 */
+	uint32_t getTrace() const noexcept;
+	/**
+	 * Tests whether the given trace bits are set.
+	 * @param trace the 32-bit bitmask for testing
+	 * @return true if at least one of the bits from the bitmask is set,
+	 * false otherwise.
+	 */
+	bool testTrace(uint32_t trace) const noexcept;
+	/**
+	 * Sets a new value for trace.
+	 * @param trace the new 32-bit value
+	 */
+	void putTrace(uint32_t trace) noexcept;
+	/**
+	 * Sets the given trace bits.
+	 * @param trace the bitmask to set
+	 */
+	void setTrace(uint32_t trace) noexcept;
+	/**
+	 * Clears the given trace bits.
+	 * @param trace the bitmask to clear
+	 */
+	void clearTrace(uint32_t trace) noexcept;
+	/**
+	 * Sets or clears the given trace bits.
+	 * @param trace the bitmask to set or clear
+	 * @param set true to set the bits, false to clear the bits
+	 */
+	void maskTrace(uint32_t trace, bool set) noexcept;
+	//-----------------------------------------------------------------
+	/**
 	 * Returns the group identifier.
 	 * @return group identifier's value
 	 */
@@ -161,6 +195,7 @@ private:
 	int type { 0 };
 	uint32_t flags { 0 };
 	uint32_t events { 0 };
+	uint32_t trace { 0 };
 	unsigned char group { 0 };
 	bool marked { false };
 };
