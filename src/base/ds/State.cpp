@@ -50,30 +50,6 @@ void State::setType(int type) noexcept {
 	this->type = type;
 }
 
-uint32_t State::getEvents() const noexcept {
-	return events;
-}
-
-bool State::testEvents(uint32_t events) const noexcept {
-	return Twiddler::test(this->events, events);
-}
-
-void State::putEvents(uint32_t events) noexcept {
-	this->events = events;
-}
-
-void State::setEvents(uint32_t events) noexcept {
-	this->events = Twiddler::set(this->events, events);
-}
-
-void State::clearEvents(uint32_t events) noexcept {
-	this->events = Twiddler::clear(this->events, events);
-}
-
-void State::maskEvents(uint32_t events, bool set) noexcept {
-	this->events = Twiddler::mask(this->events, events, set);
-}
-
 uint32_t State::getFlags() const noexcept {
 	return flags;
 }
@@ -96,6 +72,30 @@ void State::clearFlags(uint32_t flags) noexcept {
 
 void State::maskFlags(uint32_t flags, bool set) noexcept {
 	this->flags = Twiddler::mask(this->flags, flags, set);
+}
+
+uint32_t State::getEvents() const noexcept {
+	return events;
+}
+
+bool State::testEvents(uint32_t events) const noexcept {
+	return Twiddler::test(this->events, events);
+}
+
+void State::putEvents(uint32_t events) noexcept {
+	this->events = events;
+}
+
+void State::setEvents(uint32_t events) noexcept {
+	this->events = Twiddler::set(this->events, events);
+}
+
+void State::clearEvents(uint32_t events) noexcept {
+	this->events = Twiddler::clear(this->events, events);
+}
+
+void State::maskEvents(uint32_t events, bool set) noexcept {
+	this->events = Twiddler::mask(this->events, events, set);
 }
 
 unsigned char State::getGroup() const noexcept {

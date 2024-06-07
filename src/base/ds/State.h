@@ -63,40 +63,6 @@ public:
 	void setType(int type) noexcept;
 	//-----------------------------------------------------------------
 	/**
-	 * Returns the events.
-	 * @return 32-bit value describing the events
-	 */
-	uint32_t getEvents() const noexcept;
-	/**
-	 * Tests whether the given events bits are set.
-	 * @param events the 32-bit bitmask for testing
-	 * @return true if at least one of the bits from the bitmask is set,
-	 * false otherwise.
-	 */
-	bool testEvents(uint32_t events) const noexcept;
-	/**
-	 * Sets a new value for events.
-	 * @param events the new 32-bit value
-	 */
-	void putEvents(uint32_t events) noexcept;
-	/**
-	 * Sets the given events bits.
-	 * @param events the bitmask to set
-	 */
-	void setEvents(uint32_t events) noexcept;
-	/**
-	 * Clears the given events bits.
-	 * @param events the bitmask to clear
-	 */
-	void clearEvents(uint32_t events) noexcept;
-	/**
-	 * Sets or clears the given events bits.
-	 * @param events the bitmask to set or clear
-	 * @param set true to set the bits, false to clear the bits
-	 */
-	void maskEvents(uint32_t events, bool set) noexcept;
-	//-----------------------------------------------------------------
-	/**
 	 * Returns the flags value.
 	 * @return 32-bit value describing the flags
 	 */
@@ -129,6 +95,40 @@ public:
 	 * @param set true to set the bits, false to clear the bits
 	 */
 	void maskFlags(uint32_t flags, bool set) noexcept;
+	//-----------------------------------------------------------------
+	/**
+	 * Returns the events.
+	 * @return 32-bit value describing the events
+	 */
+	uint32_t getEvents() const noexcept;
+	/**
+	 * Tests whether the given events bits are set.
+	 * @param events the 32-bit bitmask for testing
+	 * @return true if at least one of the bits from the bitmask is set,
+	 * false otherwise.
+	 */
+	bool testEvents(uint32_t events) const noexcept;
+	/**
+	 * Sets a new value for events.
+	 * @param events the new 32-bit value
+	 */
+	void putEvents(uint32_t events) noexcept;
+	/**
+	 * Sets the given events bits.
+	 * @param events the bitmask to set
+	 */
+	void setEvents(uint32_t events) noexcept;
+	/**
+	 * Clears the given events bits.
+	 * @param events the bitmask to clear
+	 */
+	void clearEvents(uint32_t events) noexcept;
+	/**
+	 * Sets or clears the given events bits.
+	 * @param events the bitmask to set or clear
+	 * @param set true to set the bits, false to clear the bits
+	 */
+	void maskEvents(uint32_t events, bool set) noexcept;
 	//-----------------------------------------------------------------
 	/**
 	 * Returns the group identifier.
