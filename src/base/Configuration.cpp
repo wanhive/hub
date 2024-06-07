@@ -304,6 +304,27 @@ void Configuration::remove(const char *section, const char *option) noexcept {
 	}
 }
 
+void Configuration::remove(const char *section) noexcept {
+	if (section) {
+		auto sec = findSection(section);
+		if (!sec) {
+			return;
+		}
+
+		auto entries = sec->entries;
+		auto lastIndex = data.nSections - 1;
+		*sec = data.sections[lastIndex];
+		memset(&data.sections[lastIndex], 0, sizeof(Section));
+		free(entries);
+		data.nSections -= 1;
+
+		//If the array has become too sparse then fix it
+		if (data.capacity > 32 && data.nSections < (data.capacity >> 2)) {
+			Memory<Section>::resize(data.sections, data.nSections);
+		}
+	}
+}
+
 int Configuration::getStatus() const noexcept {
 	return data.status;
 }

@@ -170,6 +170,11 @@ public:
 	 */
 	void remove(const char *section, const char *option) noexcept;
 	/**
+	 * Removes a section/group.
+	 * @param section section/group name, can be empty string
+	 */
+	void remove(const char *section) noexcept;
+	/**
 	 * Returns a status code describing the configuration data's state.
 	 * @return 0 if the object is empty or doesn't contain any uncommitted
 	 * changes, 1 if the object contains uncommitted changes, -1 if the last
