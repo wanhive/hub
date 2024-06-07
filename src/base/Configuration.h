@@ -172,7 +172,7 @@ public:
 	 * @param option key's name
 	 * @return true if the property exists, false otherwise
 	 */
-	bool exists(const char *section, const char *option) noexcept;
+	bool exists(const char *section, const char *option) const noexcept;
 	/**
 	 * Removes a property.
 	 * @param section section/group name, can be empty string

@@ -291,7 +291,8 @@ void Configuration::map(const char *section,
 	}
 }
 
-bool Configuration::exists(const char *section, const char *option) noexcept {
+bool Configuration::exists(const char *section,
+		const char *option) const noexcept {
 	if (section && option && option[0]) {
 		return (findEntry(section, option) != nullptr);
 	} else {
