@@ -167,6 +167,17 @@ public:
 			void *data);
 	//-----------------------------------------------------------------
 	/**
+	 * Returns the number of sections.
+	 * @return sections/groups count
+	 */
+	unsigned int sections() const noexcept;
+	/**
+	 * Returns the number of properties within a section.
+	 * @param section section/group name, can be empty string
+	 * @return properties count
+	 */
+	unsigned int entries(const char *section) const noexcept;
+	/**
 	 * Checks if a given property exists.
 	 * @param section section/group name, can be empty string
 	 * @param option key's name

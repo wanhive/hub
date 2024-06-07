@@ -291,6 +291,19 @@ void Configuration::map(const char *section,
 	}
 }
 
+unsigned int Configuration::sections() const noexcept {
+	return data.nSections;
+}
+
+unsigned int Configuration::entries(const char *section) const noexcept {
+	if (section) {
+		auto sec = findSection(section);
+		return sec ? sec->nEntries : 0;
+	} else {
+		return 0;
+	}
+}
+
 bool Configuration::exists(const char *section,
 		const char *option) const noexcept {
 	if (section && option && option[0]) {
