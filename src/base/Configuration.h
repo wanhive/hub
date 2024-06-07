@@ -157,7 +157,17 @@ public:
 			const char *defaultValue = nullptr) const noexcept;
 	//-----------------------------------------------------------------
 	/**
-	 * Checks if the given property exists.
+	 * Traverses a given section within the configuration.
+	 * @param section section/group name, can be empty string
+	 * @param f the callback function (return 0 to continue, 1 to halt)
+	 * @param data additional argument for the callback function
+	 */
+	void map(const char *section,
+			int (&f)(const char *option, const char *value, void *arg),
+			void *data);
+	//-----------------------------------------------------------------
+	/**
+	 * Checks if a given property exists.
 	 * @param section section/group name, can be empty string
 	 * @param option key's name
 	 * @return true if the property exists, false otherwise
@@ -174,6 +184,7 @@ public:
 	 * @param section section/group name, can be empty string
 	 */
 	void remove(const char *section) noexcept;
+	//-----------------------------------------------------------------
 	/**
 	 * Returns a status code describing the configuration data's state.
 	 * @return 0 if the object is empty or doesn't contain any uncommitted

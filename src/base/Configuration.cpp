@@ -274,6 +274,23 @@ char* Configuration::getPathName(const char *section, const char *option,
 	return expandPath(getString(section, option, defaultValue));
 }
 
+void Configuration::map(const char *section,
+		int (&f)(const char *option, const char *value, void *arg),
+		void *data) {
+	if (section) {
+		auto sec = findSection(section);
+		if (!sec) {
+			return;
+		}
+
+		for (unsigned int i = 0; i < sec->nEntries; ++i) {
+			if (f(sec->entries[i].key, sec->entries[i].value, data)) {
+				break;
+			}
+		}
+	}
+}
+
 bool Configuration::exists(const char *section, const char *option) noexcept {
 	if (section && option && option[0]) {
 		return (findEntry(section, option) != nullptr);
