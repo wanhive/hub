@@ -40,7 +40,8 @@ public:
 	void fill(unsigned long long tokens) noexcept;
 	/**
 	 * Adds a given number of tokens into the bucket and activates it. On
-	 * overflow, the additional tokens are silently discarded.
+	 * overflow, the additional tokens are silently discarded and the total
+	 * number of tokens in the bucket remain unchanged.
 	 * @param count additional tokens count
 	 */
 	void add(unsigned int count) noexcept;
