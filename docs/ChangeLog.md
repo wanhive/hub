@@ -17,6 +17,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - The authentication hub now reuses the existing database connection to serve new requests.
 
+### Security
+
+- Enhanced overlay hub protection against the malicious requests (experimental feature).
+
 ## [10.0.0] - 2022-11-24
 
 ### Added

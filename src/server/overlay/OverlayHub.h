@@ -14,6 +14,7 @@
 #define WH_SERVER_OVERLAY_OVERLAYHUB_H_
 #include "OverlayService.h"
 #include "Topics.h"
+#include "../../base/ds/TokenBucket.h"
 #include "../../hub/Hub.h"
 
 namespace wanhive {
@@ -40,6 +41,8 @@ private:
 	bool trapMessage(Message *message) noexcept override;
 	void route(Message *message) noexcept override;
 	void maintain() noexcept override;
+	void processAlarm(unsigned long long uid, unsigned long long ticks) noexcept
+			override;
 	void processInotification(unsigned long long uid,
 			const InotifyEvent *event) noexcept override;
 	bool enableWorker() const noexcept override;
@@ -265,6 +268,12 @@ private:
 	 * For multicasting: 256 topics in the range [0-255] are available
 	 */
 	Topics topics;
+	//-----------------------------------------------------------------
+	/*
+	 * TODO: This is an EXPERIMENTAL FEATURE.
+	 * Registration request flood prevention.
+	 */
+	TokenBucket tokens;
 };
 
 } /* namespace wanhive */

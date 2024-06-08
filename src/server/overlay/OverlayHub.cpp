@@ -32,6 +32,18 @@ struct PurgeControl {
 	unsigned int count { 0 };
 	wanhive::OverlayHub *hub { nullptr };
 };
+//-----------------------------------------------------------------
+/**
+ * Message trace types
+ */
+enum MessageTrace : uint32_t {
+	SESSION_TRACE = 1U /**< Session requests trace */
+};
+
+/**
+ * Token bucket's default level (for the registration requests)
+ */
+constexpr unsigned long long DEF_TOKENS_COUNT = 200;
 
 //-----------------------------------------------------------------
 }// namespace
@@ -154,6 +166,11 @@ void OverlayHub::maintain() noexcept {
 			fixRoutingTable();
 		}
 	}
+}
+
+void OverlayHub::processAlarm(unsigned long long uid,
+		unsigned long long ticks) noexcept {
+	tokens.fill(DEF_TOKENS_COUNT);
 }
 
 void OverlayHub::processInotification(unsigned long long uid,
@@ -467,8 +484,9 @@ bool OverlayHub::isValidRegistrationRequest(const Message *msg) noexcept {
 		return true;
 	} else if (msg->getPayloadLength() == Hash::SIZE + PKI::SIGNATURE_LENGTH) {
 		//CASE 2 & 3
-		return verifyNonce(hash, origin, getUid(), (Digest*) msg->getBytes(0))
-				&& msg->verify(getPKI());
+		return tokens.take()
+				&& verifyNonce(hash, origin, getUid(),
+						(Digest*) msg->getBytes(0)) && msg->verify(getPKI());
 	} else {
 		return false;
 	}
@@ -901,6 +919,15 @@ bool OverlayHub::handleGetKeyRequest(Message *msg) noexcept {
 			return true;
 		}
 	}
+	//-----------------------------------------------------------------
+	/*
+	 * TODO: This is an EXPERIMENTAL FEATURE.
+	 * Session key request misuse prevention.
+	 */
+	if (msg->testTrace(SESSION_TRACE)) {
+		return handleInvalidRequest(msg);
+	}
+	msg->setTrace(SESSION_TRACE);
 	//-----------------------------------------------------------------
 	/*
 	 * This call succeeds if the caller is a temporary connection and the
