@@ -34,25 +34,6 @@ struct PurgeControl {
 };
 
 //-----------------------------------------------------------------
-//TOKEN BUCKET: resets the buckets to a given value (-1 = disable)
-void resetTokens(int tokens[], size_t length, int value = 0) noexcept {
-	for (size_t i = 0; i < length; ++i) {
-		tokens[i] = value;
-	}
-}
-
-//TOKEN BUCKET: updates the level and returns true for a conformant request
-bool checkToken(int &level, int limit = 100) noexcept {
-	if (level < 0) {
-		return true;
-	} else if (level < limit) {
-		++level;
-		return true;
-	} else {
-		return false;
-	}
-}
-//-----------------------------------------------------------------
 }// namespace
 
 namespace wanhive {
@@ -173,11 +154,6 @@ void OverlayHub::maintain() noexcept {
 			fixRoutingTable();
 		}
 	}
-}
-
-void OverlayHub::processAlarm(unsigned long long uid,
-		unsigned long long ticks) noexcept {
-	resetTokens(tokens, ArraySize(tokens));
 }
 
 void OverlayHub::processInotification(unsigned long long uid,
@@ -491,9 +467,8 @@ bool OverlayHub::isValidRegistrationRequest(const Message *msg) noexcept {
 		return true;
 	} else if (msg->getPayloadLength() == Hash::SIZE + PKI::SIGNATURE_LENGTH) {
 		//CASE 2 & 3
-		return checkToken(tokens[0])
-				&& verifyNonce(hash, origin, getUid(),
-						(Digest*) msg->getBytes(0)) && msg->verify(getPKI());
+		return verifyNonce(hash, origin, getUid(), (Digest*) msg->getBytes(0))
+				&& msg->verify(getPKI());
 	} else {
 		return false;
 	}
@@ -931,8 +906,7 @@ bool OverlayHub::handleGetKeyRequest(Message *msg) noexcept {
 	 * This call succeeds if the caller is a temporary connection and the
 	 * message is of proper size, otherwise a failure message is sent back.
 	 */
-	if (isEphemeralId(origin) && msg->getPayloadLength() <= Hash::SIZE
-			&& checkToken(tokens[1])) {
+	if (isEphemeralId(origin) && msg->getPayloadLength() <= Hash::SIZE) {
 		Digest hc;	//Challenge Key
 		memset(&hc, 0, sizeof(hc));
 		generateNonce(hash, origin, getUid(), &hc);
@@ -943,7 +917,7 @@ bool OverlayHub::handleGetKeyRequest(Message *msg) noexcept {
 		msg->putStatus(WH_DHT_AQLF_ACCEPTED);
 	} else if (isEphemeralId(origin)
 			&& msg->getPayloadLength() == PKI::ENCRYPTED_LENGTH && verifyHost()
-			&& getPKI() && checkToken(tokens[1])) {
+			&& getPKI()) {
 		//Extract the challenge key
 		unsigned char challenge[PKI::ENCODING_LENGTH]; //Challenge
 		memset(&challenge, 0, sizeof(challenge));
@@ -1647,7 +1621,6 @@ void OverlayHub::clear() noexcept {
 	}
 
 	topics.clear();
-	resetTokens(tokens, ArraySize(tokens), -1);
 }
 
 void OverlayHub::metrics(OverlayHubInfo &info) const noexcept {

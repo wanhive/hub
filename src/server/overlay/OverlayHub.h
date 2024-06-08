@@ -40,8 +40,6 @@ private:
 	bool trapMessage(Message *message) noexcept override;
 	void route(Message *message) noexcept override;
 	void maintain() noexcept override;
-	void processAlarm(unsigned long long uid, unsigned long long ticks) noexcept
-			override;
 	void processInotification(unsigned long long uid,
 			const InotifyEvent *event) noexcept override;
 	bool enableWorker() const noexcept override;
@@ -267,13 +265,6 @@ private:
 	 * For multicasting: 256 topics in the range [0-255] are available
 	 */
 	Topics topics;
-	//-----------------------------------------------------------------
-	/*
-	 * EXPERIMENTAL FEATURE: Token buckets for rate limiting
-	 * [0]: registration request
-	 * [1]: session key request
-	 */
-	int tokens[2];
 };
 
 } /* namespace wanhive */
