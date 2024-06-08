@@ -15,11 +15,11 @@ WH_BASE_DSHEADERS = base/ds/BinaryHeap.h base/ds/Buffer.h base/ds/BufferVector.h
 	base/ds/Encoding.h base/ds/Handle.h base/ds/Khash.h base/ds/MemoryPool.h \
 	base/ds/MersenneTwister.h base/ds/Pooled.h base/ds/ReadyList.h \
 	base/ds/Serializer.h base/ds/State.h base/ds/StaticBuffer.h \
-	base/ds/StaticCircularBuffer.h base/ds/Twiddler.h base/ds/UID.h \
-	base/ds/functors.h
+	base/ds/StaticCircularBuffer.h base/ds/TokenBucket.h base/ds/Twiddler.h \
+	base/ds/UID.h base/ds/functors.h
 WH_BASE_DSSOURCES = base/ds/Counter.cpp base/ds/Encoding.cpp base/ds/MemoryPool.cpp \
 	base/ds/MersenneTwister.cpp base/ds/Serializer.cpp base/ds/State.cpp \
-	base/ds/Twiddler.cpp base/ds/UID.cpp
+	base/ds/TokenBucket.cpp base/ds/Twiddler.cpp base/ds/UID.cpp
 
 ## src/base/ipc
 WH_BASE_IPCHEADERS = base/ipc/DNS.h base/ipc/NetworkAddressException.h \

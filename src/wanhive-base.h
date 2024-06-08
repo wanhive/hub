@@ -27,7 +27,6 @@
 #include "base/ds/BinaryHeap.h"
 #include "base/ds/Buffer.h"
 #include "base/ds/CircularBuffer.h"
-#include "base/ds/Counter.h"
 #include "base/ds/Encoding.h"
 #include "base/ds/Handle.h"
 #include "base/ds/Khash.h"
@@ -38,6 +37,7 @@
 #include "base/ds/State.h"
 #include "base/ds/StaticBuffer.h"
 #include "base/ds/StaticCircularBuffer.h"
+#include "base/ds/TokenBucket.h"
 #include "base/ds/UID.h"
 
 /*

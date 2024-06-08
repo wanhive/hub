@@ -42,6 +42,7 @@
 #include "base/ds/State.h"
 #include "base/ds/StaticBuffer.h"
 #include "base/ds/StaticCircularBuffer.h"
+#include "base/ds/TokenBucket.h"
 #include "base/ds/Twiddler.h"
 #include "base/ds/UID.h"
 #include "base/ds/functors.h"
