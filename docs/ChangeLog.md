@@ -11,6 +11,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - The Configuration class now includes new methods for better management of sections and properties.
 - Implementation of end-to-end local message tracing.
+- Token bucket implementation.
 
 ### Changed
 
