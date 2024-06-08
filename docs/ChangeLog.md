@@ -8,8 +8,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
-- Configuration::remove method to remove a property.
-- Rate limit on session key and registration requests in the overlay hub.
+
+- The Configuration class now includes new methods for better management of sections and properties.
+- Implementation of end-to-end local message tracing.
+
+### Changed
+
+- The authentication hub now reuses the existing database connection to serve new requests.
 
 ## [10.0.0] - 2022-11-24
 
