@@ -325,6 +325,7 @@ void Configuration::remove(const char *section, const char *option) noexcept {
 			*entry = sec->entries[lastIndex];
 			memset(&sec->entries[lastIndex], 0, sizeof(Entry));
 			sec->nEntries -= 1;
+			data.status = 1;
 		}
 
 		//If the array has become too sparse then fix it
@@ -348,6 +349,7 @@ void Configuration::remove(const char *section) noexcept {
 		memset(&data.sections[lastIndex], 0, sizeof(Section));
 		free(entries);
 		data.nSections -= 1;
+		data.status = 1;
 
 		//If the array has become too sparse then fix it
 		if (data.capacity > 32 && data.nSections < (data.capacity >> 2)) {
