@@ -156,7 +156,7 @@ private:
 			CircularBufferVector<X> &vector) noexcept;
 
 	unsigned int loadReadIndex() const noexcept {
-		if (ATOMIC) {
+		if constexpr (ATOMIC) {
 			return Atomic<>::load(&readIndex);
 		} else {
 			return readIndex;
@@ -164,7 +164,7 @@ private:
 	}
 
 	void storeReadIndex(unsigned int val) noexcept {
-		if (ATOMIC) {
+		if constexpr (ATOMIC) {
 			Atomic<>::store(&readIndex, val);
 		} else {
 			readIndex = val;
@@ -172,7 +172,7 @@ private:
 	}
 
 	unsigned int loadWriteIndex() const noexcept {
-		if (ATOMIC) {
+		if constexpr (ATOMIC) {
 			return Atomic<>::load(&writeIndex);
 		} else {
 			return writeIndex;
@@ -180,7 +180,7 @@ private:
 	}
 
 	void storeWriteIndex(unsigned int val) noexcept {
-		if (ATOMIC) {
+		if constexpr (ATOMIC) {
 			Atomic<>::store(&writeIndex, val);
 		} else {
 			writeIndex = val;
@@ -189,14 +189,14 @@ private:
 
 	//Load-Load barrier:  memory operations below this barrier remain below it.
 	void acquireBarrier() const noexcept {
-		if (ATOMIC) {
+		if constexpr (ATOMIC) {
 			Atomic<>::threadFence(MO_ACQUIRE);
 		}
 	}
 
 	//Store-Store barrier: memory operations above this barrier remain above it.
 	void releaseBarrier() const noexcept {
-		if (ATOMIC) {
+		if constexpr (ATOMIC) {
 			Atomic<>::threadFence(MO_RELEASE);
 		}
 	}
@@ -256,7 +256,7 @@ bool wanhive::StaticCircularBuffer<X, SIZE, ATOMIC>::isEmpty() const noexcept {
 
 template<typename X, unsigned int SIZE, bool ATOMIC>
 int wanhive::StaticCircularBuffer<X, SIZE, ATOMIC>::getStatus() const noexcept {
-	if (ATOMIC) {
+	if constexpr (ATOMIC) {
 		return Atomic<int>::load(&status);
 	} else {
 		return status;
@@ -266,7 +266,7 @@ int wanhive::StaticCircularBuffer<X, SIZE, ATOMIC>::getStatus() const noexcept {
 template<typename X, unsigned int SIZE, bool ATOMIC>
 void wanhive::StaticCircularBuffer<X, SIZE, ATOMIC>::setStatus(
 		int status) noexcept {
-	if (ATOMIC) {
+	if constexpr (ATOMIC) {
 		Atomic<int>::store(&this->status, status);
 	} else {
 		this->status = status;
