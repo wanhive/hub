@@ -237,9 +237,9 @@ public:
 private:
 	//Delete the key-value buffer
 	void deleteContainer() noexcept {
-		if (ISMAP) {
-			Memory<Pair>::free(bucket.entry);
-			bucket.entry = nullptr;
+		if constexpr (ISMAP) {
+			Memory<Pair>::free(bucket.entries);
+			bucket.entries = nullptr;
 		} else {
 			Memory<KEY>::free(bucket.keys);
 			bucket.keys = nullptr;
@@ -247,8 +247,8 @@ private:
 	}
 	//Resize the  key-value buffer
 	void resizeContainer(unsigned int size) noexcept {
-		if (ISMAP) {
-			Memory<Pair>::resize(bucket.entry, size);
+		if constexpr (ISMAP) {
+			Memory<Pair>::resize(bucket.entries, size);
 		} else {
 			Memory<KEY>::resize(bucket.keys, size);
 		}
@@ -273,13 +273,17 @@ private:
 
 	//Get the iterator's key
 	const KEY& getKey(unsigned int x) const noexcept {
-		return (ISMAP ? bucket.entry[x].key : bucket.keys[x]);
+		if constexpr (ISMAP) {
+			return bucket.entries[x].key;
+		} else {
+			return bucket.keys[x];
+		}
 	}
 
 	//Set the iterator's key
 	void setKey(unsigned int x, KEY const &key) noexcept {
-		if (ISMAP) {
-			bucket.entry[x].key = key;
+		if constexpr (ISMAP) {
+			bucket.entries[x].key = key;
 		} else {
 			bucket.keys[x] = key;
 		}
@@ -287,12 +291,12 @@ private:
 
 	//Get the iterator's value
 	const VALUE& getValue(unsigned int x) const noexcept {
-		return (bucket.entry[x].value);
+		return (bucket.entries[x].value);
 	}
 
 	//Get the iterator's value as lvalue
 	VALUE& valueAt(unsigned int x) noexcept {
-		return (bucket.entry[x].value);
+		return (bucket.entries[x].value);
 	}
 
 	//Get the flags buffer
@@ -385,7 +389,7 @@ private:
 		unsigned int occupied;//Total number of occupied slots (size + deleted)
 		unsigned int upperBound;	//Upper Limit on occupied slots
 		uint32_t *flags;	//Status of each slot, need to specify data width
-		Pair *entry; //Used by HASH-MAP
+		Pair *entries; //Used by HASH-MAP
 		KEY *keys; //Used by HASH-SET
 	} bucket;
 
@@ -448,7 +452,7 @@ bool wanhive::Khash<KEY, VALUE, ISMAP, HFN, EQFN>::hmGet(const KEY &key,
 template<typename KEY, typename VALUE, bool ISMAP, typename HFN, typename EQFN>
 bool wanhive::Khash<KEY, VALUE, ISMAP, HFN, EQFN>::hmPut(const KEY &key,
 		const VALUE &val) noexcept {
-	if (ISMAP) {
+	if constexpr (ISMAP) {
 		int ret;
 		auto i = put(key, ret);
 		if (ret) {
@@ -462,7 +466,7 @@ bool wanhive::Khash<KEY, VALUE, ISMAP, HFN, EQFN>::hmPut(const KEY &key,
 template<typename KEY, typename VALUE, bool ISMAP, typename HFN, typename EQFN>
 bool wanhive::Khash<KEY, VALUE, ISMAP, HFN, EQFN>::hmReplace(const KEY &key,
 		const VALUE &val, VALUE &oldVal) noexcept {
-	if (ISMAP) {
+	if constexpr (ISMAP) {
 		int ret;
 		auto i = put(key, ret);
 		if (ret) {
@@ -481,7 +485,7 @@ bool wanhive::Khash<KEY, VALUE, ISMAP, HFN, EQFN>::hmReplace(const KEY &key,
 template<typename KEY, typename VALUE, bool ISMAP, typename HFN, typename EQFN>
 bool wanhive::Khash<KEY, VALUE, ISMAP, HFN, EQFN>::hmSwap(KEY const &first,
 		KEY const &second, unsigned int (&iterators)[2], bool swap) noexcept {
-	if (!ISMAP) {
+	if constexpr (!ISMAP) {
 		iterators[0] = end();
 		iterators[1] = end();
 		return false;
@@ -527,7 +531,7 @@ bool wanhive::Khash<KEY, VALUE, ISMAP, HFN, EQFN>::hmSwap(KEY const &first,
 template<typename KEY, typename VALUE, bool ISMAP, typename HFN, typename EQFN>
 bool wanhive::Khash<KEY, VALUE, ISMAP, HFN, EQFN>::hsPut(
 		const KEY &key) noexcept {
-	if (!ISMAP) {
+	if constexpr (!ISMAP) {
 		int ret;
 		put(key, ret);
 		if (ret) {
@@ -572,7 +576,7 @@ int wanhive::Khash<KEY, VALUE, ISMAP, HFN, EQFN>::resize(
 				KEY key = getKey(j);
 				VALUE val;
 				auto newMask = newCapacity - 1;
-				if (ISMAP) {
+				if constexpr (ISMAP) {
 					val = valueAt(j);
 				}
 				setIsdeletedTrue(getFlags(), j);
@@ -599,7 +603,7 @@ int wanhive::Khash<KEY, VALUE, ISMAP, HFN, EQFN>::resize(
 							setKey(i, key);
 							key = tmp;
 						}
-						if (ISMAP) {
+						if constexpr (ISMAP) {
 							VALUE tmp = getValue(i);
 							valueAt(i) = val;
 							val = tmp;
@@ -609,7 +613,7 @@ int wanhive::Khash<KEY, VALUE, ISMAP, HFN, EQFN>::resize(
 					} else {
 						/* write the element and jump out of the loop */
 						setKey(i, key);
-						if (ISMAP) {
+						if constexpr (ISMAP) {
 							valueAt(i) = val;
 						}
 						break;
@@ -779,7 +783,7 @@ template<typename KEY, typename VALUE, bool ISMAP, typename HFN, typename EQFN>
 bool wanhive::Khash<KEY, VALUE, ISMAP, HFN, EQFN>::getKey(unsigned int x,
 		KEY &key) const noexcept {
 	if (exists(x)) {
-		key = ISMAP ? bucket.entry[x].key : bucket.keys[x];
+		key = ISMAP ? bucket.entries[x].key : bucket.keys[x];
 		return true;
 	} else {
 		return false;
@@ -790,7 +794,7 @@ template<typename KEY, typename VALUE, bool ISMAP, typename HFN, typename EQFN>
 bool wanhive::Khash<KEY, VALUE, ISMAP, HFN, EQFN>::getValue(unsigned int x,
 		VALUE &value) const noexcept {
 	if (ISMAP && exists(x)) {
-		value = bucket.entry[x].value;
+		value = bucket.entries[x].value;
 		return true;
 	} else {
 		return false;
@@ -801,7 +805,7 @@ template<typename KEY, typename VALUE, bool ISMAP, typename HFN, typename EQFN>
 bool wanhive::Khash<KEY, VALUE, ISMAP, HFN, EQFN>::setValue(unsigned int x,
 		VALUE const &value) noexcept {
 	if (ISMAP && exists(x)) {
-		bucket.entry[x].value = value;
+		bucket.entries[x].value = value;
 		return true;
 	} else {
 		return false;
@@ -812,7 +816,7 @@ template<typename KEY, typename VALUE, bool ISMAP, typename HFN, typename EQFN>
 VALUE* wanhive::Khash<KEY, VALUE, ISMAP, HFN, EQFN>::getValueReference(
 		unsigned int x) const noexcept {
 	if (ISMAP && exists(x)) {
-		return &(bucket.entry[x].value);
+		return &(bucket.entries[x].value);
 	} else {
 		return nullptr;
 	}
