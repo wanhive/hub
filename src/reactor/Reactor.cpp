@@ -19,7 +19,7 @@ Reactor::Reactor() noexcept {
 }
 
 Reactor::Reactor(unsigned int maxEvents, bool signal) {
-	initialize(maxEvents, signal);
+	selector.initialize(maxEvents, signal);
 }
 
 Reactor::~Reactor() {
@@ -29,6 +29,7 @@ Reactor::~Reactor() {
 void Reactor::initialize(unsigned int maxEvents, bool signal) {
 	timeout = -1;
 	selector.initialize(maxEvents, signal);
+	readyList.initialize();
 }
 
 void Reactor::add(Watcher *w, uint32_t events) {
