@@ -22,8 +22,9 @@ This package includes
 
 ### Recommended packages
 
-* [Wanhive IoT web console](https://github.com/wanhive/webconsole) a web application for the management of users and IoT endpoints.
+* [Wanhive Pug](https://github.com/wanhive/pug) physical computing library for the Wanhive IoT Platform.
 * [Wanhive EndPoint](https://github.com/wanhive/endpoint.java) the IoT endpoint development library written in Java.
+* [Wanhive IoT web console](https://github.com/wanhive/webconsole) a web application for the management of users and IoT endpoints.
 
 # Download
 
