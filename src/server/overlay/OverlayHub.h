@@ -14,7 +14,7 @@
 #define WH_SERVER_OVERLAY_OVERLAYHUB_H_
 #include "OverlayService.h"
 #include "Topics.h"
-#include "../../base/ds/TokenBucket.h"
+#include "../../base/ds/Tokens.h"
 #include "../../hub/Hub.h"
 
 namespace wanhive {
@@ -273,7 +273,7 @@ private:
 	 * TODO: This is an EXPERIMENTAL FEATURE.
 	 * Registration request flood prevention.
 	 */
-	TokenBucket tokens;
+	Tokens tokens;
 };
 
 } /* namespace wanhive */
