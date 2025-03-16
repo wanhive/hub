@@ -72,8 +72,8 @@ private:
 	//Fetches the settings
 	void settings(unsigned int &expiration, unsigned int &interval);
 private:
-	unsigned int expiration;	//Initial expiration in miliseconds
-	unsigned int interval;	//Interval for periodic timer in miliseconds
+	unsigned int expiration;	//Initial expiration in milliseconds
+	unsigned int interval;	//Interval for periodic timer in milliseconds
 };
 
 } /* namespace wanhive */
