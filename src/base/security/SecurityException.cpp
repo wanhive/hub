@@ -30,7 +30,7 @@ const char* SecurityException::what() const noexcept {
 }
 
 int SecurityException::errorCode() const noexcept {
-	return error;
+	return 0;
 }
 
 } /* namespace wanhive */
