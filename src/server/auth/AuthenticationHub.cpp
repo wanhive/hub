@@ -21,13 +21,12 @@ namespace wanhive {
 
 AuthenticationHub::AuthenticationHub(unsigned long long uid,
 		const char *path) noexcept :
-		Hub(uid, path), fake(true), db { nullptr } {
+		Hub(uid, path), fake(true) {
 	memset(&ctx, 0, sizeof(ctx));
 }
 
 AuthenticationHub::~AuthenticationHub() {
-	PQfinish(static_cast<PGconn*>(db));
-	db = nullptr;
+
 }
 
 void AuthenticationHub::stop(Watcher *w) noexcept {
@@ -45,8 +44,9 @@ void AuthenticationHub::configure(void *arg) {
 	try {
 		Hub::configure(arg);
 		auto &conf = Identity::getConfiguration();
-		ctx.connInfo = conf.getString("AUTH", "connInfo");
-		ctx.query = conf.getString("AUTH", "query");
+		ctx.db.name = conf.getString("AUTH", "connInfo");
+		ctx.db.query = conf.getString("AUTH", "query");
+		conf.map("RDBMS", loadDatabaseParams, &ctx.db);
 
 		ctx.salt = (const unsigned char*) conf.getString("AUTH", "salt");
 		if (ctx.salt) {
@@ -58,8 +58,8 @@ void AuthenticationHub::configure(void *arg) {
 		auto mask = conf.getBoolean("OPT", "secureLog", true); //default: true
 
 		WH_LOG_DEBUG(
-				"Authentication hub settings:\nCONNINFO= \"%s\"\nQUERY= \"%s\"\nSALT= \"%s\"\n",
-				WH_MASK_STR(mask, ctx.connInfo), WH_MASK_STR(mask, ctx.query),
+				"Authentication hub settings:\nDATABASE= \"%s\"\nQUERY= \"%s\"\nSALT= \"%s\"\n",
+				WH_MASK_STR(mask, ctx.db.name), WH_MASK_STR(mask, ctx.db.query),
 				WH_MASK_STR(mask, (const char *)ctx.salt));
 	} catch (const BaseException &e) {
 		WH_LOG_EXCEPTION(e);
@@ -69,6 +69,7 @@ void AuthenticationHub::configure(void *arg) {
 
 void AuthenticationHub::cleanup() noexcept {
 	waitlist.iterate(deleteAuthenticators, this);
+	closeDatabaseConnection();
 	memset(&ctx, 0, sizeof(ctx));
 	//Clean up the base class object
 	Hub::cleanup();
@@ -211,21 +212,13 @@ bool AuthenticationHub::isBanned(unsigned long long identity) const noexcept {
 
 bool AuthenticationHub::loadIdentity(Authenticator *authenticator,
 		unsigned long long identity, const Data &nonce) noexcept {
-	if (!authenticator || !nonce.base || !nonce.length || !ctx.connInfo
-			|| !ctx.query) {
+	if (!authenticator || !nonce.base || !nonce.length || !ctx.db.query) {
 		return false;
 	}
 
 	//-----------------------------------------------------------------
-	if (!db && !(db = PQconnectdb(ctx.connInfo))) {
-		return false;
-	}
-
-	auto conn = static_cast<PGconn*>(db);
-	if (PQstatus(conn) == CONNECTION_BAD) {
-		WH_LOG_DEBUG("%s", PQerrorMessage(conn));
-		PQfinish(conn);
-		db = nullptr;
+	auto conn = static_cast<PGconn*>(getDatabaseConnection());
+	if (!conn) {
 		return false;
 	}
 
@@ -236,8 +229,8 @@ bool AuthenticationHub::loadIdentity(Authenticator *authenticator,
 	const char *paramValues[1];
 	paramValues[0] = identityString;
 	//Request binary result
-	auto res = PQexecParams(conn, ctx.query, 1, nullptr, paramValues, nullptr,
-			nullptr, 1);
+	auto res = PQexecParams(conn, ctx.db.query, 1, nullptr, paramValues,
+			nullptr, nullptr, 1);
 	if (PQresultStatus(res) != PGRES_TUPLES_OK || PQntuples(res) == 0) {
 		WH_LOG_DEBUG("%s", PQerrorMessage(conn));
 		PQclear(res);
@@ -283,6 +276,45 @@ int AuthenticationHub::generateIdentificationResponse(Message *message,
 		message->setDestination(message->getOrigin());
 	}
 	return 0;
+}
+
+void* AuthenticationHub::getDatabaseConnection() noexcept {
+	if (ctx.db.conn) {
+		//Already connected
+	} else if (ctx.db.name) {
+		ctx.db.conn = PQconnectdb(ctx.db.name);
+	} else {
+		ctx.db.conn = PQconnectdbParams(ctx.db.params.keys,
+				ctx.db.params.values, 0);
+	}
+
+	//Check for completion
+	if (PQstatus(static_cast<PGconn*>(ctx.db.conn)) != CONNECTION_OK) {
+		WH_LOG_DEBUG("%s", PQerrorMessage(static_cast<PGconn*>(ctx.db.conn)));
+		closeDatabaseConnection();
+	}
+
+	return ctx.db.conn;
+}
+
+void AuthenticationHub::closeDatabaseConnection() noexcept {
+	if (ctx.db.conn) {
+		PQfinish(static_cast<PGconn*>(ctx.db.conn));
+		ctx.db.conn = nullptr;
+	}
+}
+
+int AuthenticationHub::loadDatabaseParams(const char *option, const char *value,
+		void *arg) noexcept {
+	auto &params = (static_cast<DbConnection*>(arg))->params;
+	if (params.index < 31) {
+		params.keys[params.index] = option;
+		params.values[params.index] = value;
+		params.index += 1;
+		return 0;
+	} else {
+		return 1;
+	}
 }
 
 int AuthenticationHub::deleteAuthenticators(unsigned int index,

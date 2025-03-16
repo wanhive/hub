@@ -55,6 +55,13 @@ private:
 	int generateIdentificationResponse(Message *message, const Data &salt,
 			const Data &nonce) noexcept;
 	//-----------------------------------------------------------------
+	//Establishes database connection
+	void* getDatabaseConnection() noexcept;
+	//Closes database connection
+	void closeDatabaseConnection() noexcept;
+	//Iterator for populating the database parameters
+	static int loadDatabaseParams(const char *option, const char *value,
+			void *arg) noexcept;
 	//Iterator for cleaning up the lookup table during shut down
 	static int deleteAuthenticators(unsigned int index, void *arg) noexcept;
 private:
@@ -62,12 +69,20 @@ private:
 	Kmap<unsigned long long, Authenticator*> waitlist;
 	//For obfuscation of failed identification requests
 	Authenticator fake;
-	//Database connection
-	void *db;
+	//For database connection management
+	struct DbConnection {
+		void *conn;
+		const char *name;
+		const char *query;
+		struct {
+			const char *keys[32];
+			const char *values[32];
+			unsigned int index;
+		} params;
+	};
 	//Configuration data
 	struct {
-		const char *connInfo;
-		const char *query;
+		DbConnection db;
 		const unsigned char *salt;
 		unsigned int saltLength;
 	} ctx;
