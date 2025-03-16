@@ -164,7 +164,7 @@ public:
 	 */
 	void map(const char *section,
 			int (&f)(const char *option, const char *value, void *arg),
-			void *data);
+			void *data) const;
 	//-----------------------------------------------------------------
 	/**
 	 * Returns the number of sections.

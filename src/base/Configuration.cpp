@@ -276,7 +276,7 @@ char* Configuration::getPathName(const char *section, const char *option,
 
 void Configuration::map(const char *section,
 		int (&f)(const char *option, const char *value, void *arg),
-		void *data) {
+		void *data) const {
 	if (section) {
 		auto sec = findSection(section);
 		if (!sec) {
