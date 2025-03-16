@@ -5,6 +5,27 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Added
+
+- Token bucket implementation through the **Tokens** class.
+- Parameterized database (PostgreSQL) connection management in the authentication hub.
+- Hash map (**Kmap**) and hash set (**Kset**) specializations of the generic hash table (**Khash**).
+
+### Changed
+
+- **SecurityException::errorCode()** method now always returns zero (0).
+
+### Fixed
+
+- **Configuration::map()** method should have **const** modifier.
+
+### Removed
+
+- Default template arguments of the hash table (**Khash**).
+- **TokenBucket** class (the old token bucket implementation).
+
 ## [11.0.2] - 2024-07-26
 
 ### Fixed
