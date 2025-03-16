@@ -91,7 +91,7 @@ private:
 	//Lists of watchers organized by topics
 	ReadyList<const Watcher*> topics[Topic::COUNT];
 	//Index lookup table for fast insertion and deletion
-	Khash<Key, unsigned int, true, HFN, EQFN> indexes;
+	Kmap<Key, unsigned int, HFN, EQFN> indexes;
 };
 
 } /* namespace wanhive */

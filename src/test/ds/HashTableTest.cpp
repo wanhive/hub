@@ -81,7 +81,7 @@ void HashTableTest::destroyData() noexcept {
 }
 
 void HashTableTest::intTest() noexcept {
-	Khash<int, unsigned char> h;
+	Kmap<int, unsigned char> h;
 	unsigned *data = intData;
 	unsigned int collisions = 0;
 	unsigned int insertions = 0;
@@ -101,7 +101,7 @@ void HashTableTest::intTest() noexcept {
 }
 
 void HashTableTest::strTest() noexcept {
-	Khash<const char*, char, false> h;
+	Kset<const char*> h;
 	char **data = strData;
 	unsigned int collisions = 0;
 	unsigned int insertions = 0;
@@ -120,7 +120,7 @@ void HashTableTest::strTest() noexcept {
 }
 
 void HashTableTest::packedTest() noexcept {
-	Khash<packed_t, char, false, customhash, customcmp> h;
+	Kset<packed_t, customhash, customcmp> h;
 	unsigned *data = intData;
 	unsigned int collisions = 0;
 	unsigned int insertions = 0;

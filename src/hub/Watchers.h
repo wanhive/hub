@@ -109,7 +109,7 @@ private:
 	//Iteration's entry point
 	static int _iterator(unsigned int index, void *arg);
 private:
-	Khash<unsigned long long, Watcher*> watchers; //Hash table
+	Kmap<unsigned long long, Watcher*> watchers; //Hash table
 	int (*itfn)(Watcher*, void*) {nullptr}; //Actual iterator
 	void *itfnarg { nullptr }; //Iterator's argument
 };

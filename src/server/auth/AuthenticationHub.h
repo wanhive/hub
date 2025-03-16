@@ -59,7 +59,7 @@ private:
 	static int deleteAuthenticators(unsigned int index, void *arg) noexcept;
 private:
 	//Hash table of pending authentication requests
-	Khash<unsigned long long, Authenticator*> waitlist;
+	Kmap<unsigned long long, Authenticator*> waitlist;
 	//For obfuscation of failed identification requests
 	Authenticator fake;
 	//Database connection

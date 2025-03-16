@@ -52,8 +52,7 @@ namespace wanhive {
  * @tparam HFN hash functor (returns unsigned int hash value of a key)
  * @tparam EQFN equality functor (returns true on equal keys, false otherwise)
  */
-template<typename KEY = int, typename VALUE = char, bool ISMAP = true,
-		typename HFN = wh_hash_fn, typename EQFN = wh_eq_fn> class Khash: private NonCopyable {
+template<typename KEY, typename VALUE, bool ISMAP, typename HFN, typename EQFN> class Khash: private NonCopyable {
 public:
 	/**
 	 * Default constructor: creates an empty hash table.
@@ -405,6 +404,16 @@ private:
 	//VALUE must be POD
 	WH_POD_ASSERT(VALUE);
 };
+
+/**
+ * Hash map specialization
+ */
+template<typename KEY, typename VALUE, typename HFN = wh_hash_fn,
+		typename EQFN = wh_eq_fn> using Kmap = Khash<KEY, VALUE, true, HFN, EQFN>;
+/**
+ * Hash set specialization
+ */
+template<typename KEY, typename HFN = wh_hash_fn, typename EQFN = wh_eq_fn> using Kset = Khash<KEY, char, false, HFN, EQFN>;
 
 } /* namespace wanhive */
 
