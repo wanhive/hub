@@ -307,7 +307,7 @@ void AuthenticationHub::closeDatabaseConnection() noexcept {
 int AuthenticationHub::loadDatabaseParams(const char *option, const char *value,
 		void *arg) noexcept {
 	auto &params = (static_cast<DbConnection*>(arg))->params;
-	if (params.index < 31) {
+	if (params.index < 63) {
 		params.keys[params.index] = option;
 		params.values[params.index] = value;
 		params.index += 1;

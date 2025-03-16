@@ -75,8 +75,8 @@ private:
 		const char *name;
 		const char *query;
 		struct {
-			const char *keys[32];
-			const char *values[32];
+			const char *keys[64];
+			const char *values[64];
 			unsigned int index;
 		} params;
 	};
