@@ -115,7 +115,7 @@ bool Hub::attached(unsigned long long id) const noexcept {
 	return watchers.contains(id);
 }
 
-Watcher* Hub::fetch(unsigned long long id) const noexcept {
+Watcher* Hub::find(unsigned long long id) const noexcept {
 	return watchers.select(id);
 }
 
@@ -130,7 +130,7 @@ void Hub::attach(Watcher *w, uint32_t events, uint32_t flags) {
 }
 
 bool Hub::detach(unsigned long long id) noexcept {
-	return disable(fetch(id));
+	return disable(find(id));
 }
 
 Watcher* Hub::shift(unsigned long long from, unsigned long long to,
@@ -164,7 +164,7 @@ unsigned int Hub::purgeTemporaryConnections(unsigned int target,
 	unsigned int count = 0;
 	unsigned long long id;
 	while (temporaryConnections.get(id)) {
-		auto conn = fetch(id);
+		auto conn = find(id);
 		if (!conn) {
 			continue;
 		} else if (conn->hasTimedOut(timeout)) {
@@ -380,7 +380,7 @@ void Hub::cleanup() noexcept {
 	 */
 }
 
-bool Hub::trapMessage(Message *message) noexcept {
+bool Hub::trap(Message *message) noexcept {
 	return false;
 }
 
@@ -787,7 +787,7 @@ void Hub::publish() noexcept {
 		}
 
 		//Trap the message (e.g. registration request)
-		if (msg->testFlags(MSG_TRAP) && trapMessage(msg)) {
+		if (msg->testFlags(MSG_TRAP) && trap(msg)) {
 			//Do not forward
 			Message::recycle(msg);
 			continue;
@@ -795,7 +795,7 @@ void Hub::publish() noexcept {
 
 		//Verify the destination
 		if (msg->getDestination() == getUid()
-				|| !(w = fetch(msg->getDestination()))
+				|| !(w = find(msg->getDestination()))
 				|| w->testGroup(msg->getGroup())) {
 			//Destination is sink or not found or group conflict
 			Message::recycle(msg);

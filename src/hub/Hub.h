@@ -118,7 +118,7 @@ protected:
 	 * @param id key's value
 	 * @return associated watcher if the key exists, nullptr otherwise
 	 */
-	Watcher* fetch(unsigned long long id) const noexcept;
+	Watcher* find(unsigned long long id) const noexcept;
 	/**
 	 * Watcher management: registers a watcher, watcher's unique identifier is
 	 * used as its key.
@@ -206,7 +206,7 @@ private:
 	 * @param message the message to process
 	 * @return true to discard (recycle) the message, false otherwise
 	 */
-	virtual bool trapMessage(Message *message) noexcept;
+	virtual bool trap(Message *message) noexcept;
 	/**
 	 * Adapter: processes an incoming message and creates a route for it.
 	 * @param message the message to process

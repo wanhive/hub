@@ -105,7 +105,7 @@ void OverlayHub::configure(void *arg) {
 
 void OverlayHub::cleanup() noexcept {
 	Watcher *w = nullptr;
-	if (!isHostId(getWorkerId()) && (w = fetch(getWorkerId()))) {
+	if (!isHostId(getWorkerId()) && (w = find(getWorkerId()))) {
 		//Shut down hub's end of the socket pair
 		w->stop();
 		stabilizer.notify();
@@ -116,7 +116,7 @@ void OverlayHub::cleanup() noexcept {
 	Hub::cleanup();
 }
 
-bool OverlayHub::trapMessage(Message *message) noexcept {
+bool OverlayHub::trap(Message *message) noexcept {
 	return (bool) processRegistrationRequest(message);
 }
 
@@ -376,7 +376,7 @@ bool OverlayHub::fixRoutingTable() noexcept {
 		if (!isConsistent(i)) {
 			auto old = commit(i);
 			if (!isInRoute(old)) {
-				auto conn = fetch(old);
+				auto conn = find(old);
 				//Take care of the reference asymmetry
 				if (conn && conn->isType(SOCKET_PROXY)) {
 					disable(conn);
@@ -1115,7 +1115,7 @@ bool OverlayHub::handleSubscribeRequest(Message *msg) noexcept {
 	msg->writeSource(0); //Obfuscate the source (this hub)
 
 	auto topic = msg->getSession();
-	auto conn = fetch(msg->getOrigin());
+	auto conn = find(msg->getOrigin());
 
 	if (!conn) {
 		return handleInvalidRequest(msg);
@@ -1141,7 +1141,7 @@ bool OverlayHub::handleUnsubscribeRequest(Message *msg) noexcept {
 	}
 
 	auto topic = msg->getSession();
-	auto conn = fetch(msg->getOrigin());
+	auto conn = find(msg->getOrigin());
 
 	if (conn && conn->testTopic(topic)) {
 		conn->clearTopic(topic);
@@ -1537,7 +1537,7 @@ Watcher* OverlayHub::connect(int &sfd, bool blocking, int timeout) {
 }
 
 Watcher* OverlayHub::connect(unsigned long long id, Digest *hc) {
-	auto conn = fetch(id);
+	auto conn = find(id);
 	if (!conn) {
 		WH_LOG_DEBUG("Connecting to %llu", id);
 		createProxyConnection(id, hc);

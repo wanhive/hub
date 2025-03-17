@@ -38,7 +38,7 @@ private:
 	void stop(Watcher *w) noexcept override;
 	void configure(void *arg) override;
 	void cleanup() noexcept override;
-	bool trapMessage(Message *message) noexcept override;
+	bool trap(Message *message) noexcept override;
 	void route(Message *message) noexcept override;
 	void maintain() noexcept override;
 	void processAlarm(unsigned long long uid, unsigned long long ticks) noexcept
