@@ -18,6 +18,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **SecurityException::errorCode()** method now always returns zero (0).
 - Rename the **Hub::fetch()** method to **Hub::find()**.
 - Rename the **Hub::trapMessage()** method to **Hub::trap()**.
+- Rename the **Hub::retainMessage()** method to **Hub::collect()**.
+- Rename the **Hub::sendMessage()** method to **Hub::forward()**.
 
 ### Fixed
 
