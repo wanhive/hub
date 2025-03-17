@@ -166,8 +166,7 @@ protected:
 	 * connections, false otherwise.
 	 * @return number of purged connections
 	 */
-	unsigned int purgeTemporaryConnections(unsigned int target = 0, bool force =
-			false) noexcept;
+	unsigned int evict(unsigned int target = 0, bool force = false) noexcept;
 	//-----------------------------------------------------------------
 	/**
 	 * Message queuing: inserts a message directly into the incoming queue.

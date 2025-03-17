@@ -155,8 +155,7 @@ void Hub::iterate(int (*fn)(Watcher *w, void *arg), void *arg) {
 	watchers.iterate(fn, arg);
 }
 
-unsigned int Hub::purgeTemporaryConnections(unsigned int target,
-		bool force) noexcept {
+unsigned int Hub::evict(unsigned int target, bool force) noexcept {
 	//Prepare the buffer for reading
 	temporary.rewind();
 	auto timeout = force ? 0 : ctx.connectionTimeOut;
@@ -841,7 +840,7 @@ bool Hub::acceptConnection(Socket *listener) noexcept {
 	//Limited protection against flooding of new connections
 	if (!temporary.hasSpace()) {
 		//Clean up timed out temporary connections
-		purgeTemporaryConnections();
+		evict();
 	}
 	//-----------------------------------------------------------------
 	Socket *newConn = nullptr;

@@ -1589,7 +1589,7 @@ unsigned int OverlayHub::purgeConnections(int mode,
 	PurgeControl pc { target, 0, this };
 	switch (mode) {
 	case PURGE_TEMPORARY:
-		return purgeTemporaryConnections(target);
+		return evict(target);
 	case PURGE_INVALID:
 		iterate(removeIfInvalid, &pc);
 		return pc.count;
