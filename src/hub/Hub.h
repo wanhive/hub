@@ -174,13 +174,13 @@ protected:
 	 * @param message the message to insert
 	 * @return true on success, false otherwise
 	 */
-	bool retainMessage(Message *message) noexcept;
+	bool collect(Message *message) noexcept;
 	/**
 	 * Message queuing: inserts a message directly into the outgoing queue.
 	 * @param message the message to insert
 	 * @return true on success, false otherwise
 	 */
-	bool sendMessage(Message *message) noexcept;
+	bool forward(Message *message) noexcept;
 	//-----------------------------------------------------------------
 	/*
 	 * Reactor interface implementation

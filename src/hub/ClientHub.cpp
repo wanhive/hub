@@ -294,7 +294,7 @@ void ClientHub::initAuthentication() noexcept {
 			throw Exception(EX_STATE);
 		} else {
 			//Message destination is correctly set
-			Hub::sendMessage(createAuthenticationRequest());
+			Hub::forward(createAuthenticationRequest());
 			WH_LOG_DEBUG("Authentication initiated");
 		}
 
@@ -340,7 +340,7 @@ void ClientHub::findRoot() noexcept {
 			disable(w);
 		} else {
 			msg->setDestination(bs.node->getUid());
-			Hub::sendMessage(msg);
+			Hub::forward(msg);
 		}
 		//-----------------------------------------------------------------
 		setStage(WHC_GETKEY);
@@ -360,12 +360,12 @@ void ClientHub::initAuthorization() noexcept {
 		} else if (bs.auth) {
 			auto msg = createRegistrationRequest(false);
 			msg->setDestination(bs.auth->getUid());
-			Hub::sendMessage(msg);
+			Hub::forward(msg);
 			WH_LOG_DEBUG("Initiating authorization");
 		} else {
 			auto msg = createRegistrationRequest(true);
 			msg->setDestination(bs.node->getUid());
-			Hub::sendMessage(msg);
+			Hub::forward(msg);
 			WH_LOG_DEBUG("Initiating registration");
 		}
 	} catch (const BaseException &e) {

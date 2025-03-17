@@ -188,7 +188,7 @@ unsigned int Hub::purgeTemporaryConnections(unsigned int target,
 	return count;
 }
 
-bool Hub::retainMessage(Message *message) noexcept {
+bool Hub::collect(Message *message) noexcept {
 	if (message && !message->isMarked() && message->validate()
 			&& incoming.put(message)) {
 		message->putFlags(MSG_WAIT_PROCESSING);
@@ -199,7 +199,7 @@ bool Hub::retainMessage(Message *message) noexcept {
 	}
 }
 
-bool Hub::sendMessage(Message *message) noexcept {
+bool Hub::forward(Message *message) noexcept {
 	if (message && !message->isMarked() && outgoing.put(message)) {
 		message->putFlags(MSG_PROCESSED);
 		message->setMarked();
