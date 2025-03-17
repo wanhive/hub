@@ -158,12 +158,12 @@ void Hub::iterate(int (*fn)(Watcher *w, void *arg), void *arg) {
 unsigned int Hub::purgeTemporaryConnections(unsigned int target,
 		bool force) noexcept {
 	//Prepare the buffer for reading
-	temporaryConnections.rewind();
+	temporary.rewind();
 	auto timeout = force ? 0 : ctx.connectionTimeOut;
 
 	unsigned int count = 0;
 	unsigned long long id;
-	while (temporaryConnections.get(id)) {
+	while (temporary.get(id)) {
 		auto conn = find(id);
 		if (!conn) {
 			continue;
@@ -179,18 +179,18 @@ unsigned int Hub::purgeTemporaryConnections(unsigned int target,
 			 * order, hence if this connection hasn't timed-out then neither
 			 * have the successors.
 			 */
-			temporaryConnections.setIndex(temporaryConnections.getIndex() - 1);
+			temporary.setIndex(temporary.getIndex() - 1);
 			break;
 		}
 	}
 	//Prepare the buffer for adding more data towards rear
-	temporaryConnections.pack();
+	temporary.pack();
 	return count;
 }
 
 bool Hub::retainMessage(Message *message) noexcept {
 	if (message && !message->isMarked() && message->validate()
-			&& incomingMessages.put(message)) {
+			&& incoming.put(message)) {
 		message->putFlags(MSG_WAIT_PROCESSING);
 		message->setMarked();
 		return true;
@@ -200,7 +200,7 @@ bool Hub::retainMessage(Message *message) noexcept {
 }
 
 bool Hub::sendMessage(Message *message) noexcept {
-	if (message && !message->isMarked() && outgoingMessages.put(message)) {
+	if (message && !message->isMarked() && outgoing.put(message)) {
 		message->putFlags(MSG_PROCESSED);
 		message->setMarked();
 		return true;
@@ -345,12 +345,12 @@ void Hub::cleanup() noexcept {
 		iterate(deleteWatchers, nullptr);
 		//-----------------------------------------------------------------
 		//3. Clean up all the containers
-		temporaryConnections.clear();
+		temporary.clear();
 		Message *msg;
-		while (outgoingMessages.get(msg)) {
+		while (outgoing.get(msg)) {
 			Message::recycle(msg);
 		}
-		while (incomingMessages.get(msg)) {
+		while (incoming.get(msg)) {
 			Message::recycle(msg);
 		}
 		//-----------------------------------------------------------------
@@ -581,7 +581,7 @@ void Hub::setup(void *arg) {
 
 void Hub::loop() {
 	while (running) {
-		poll(outgoingMessages.isEmpty());
+		poll(outgoing.isEmpty());
 		publish();
 		dispatch();
 		processMessages();
@@ -598,11 +598,11 @@ void Hub::initBuffers() {
 		//Initialize the message Pool
 		Message::initPool(ctx.messagePoolSize);
 		//Stores incoming messages for processing
-		incomingMessages.initialize(ctx.messagePoolSize);
+		incoming.initialize(ctx.messagePoolSize);
 		//Stores messages ready for publishing
-		outgoingMessages.initialize(ctx.messagePoolSize);
+		outgoing.initialize(ctx.messagePoolSize);
 		//Stores temporary connection identifiers
-		temporaryConnections.initialize(ctx.maxNewConnnections);
+		temporary.initialize(ctx.maxNewConnnections);
 	} catch (const BaseException &e) {
 		WH_LOG_EXCEPTION(e);
 		throw;
@@ -770,7 +770,7 @@ void Hub::publish() noexcept {
 	/*
 	 * Incoming Allocation Strategy (IAS)
 	 */
-	auto capacity = Message::unallocated() + outgoingMessages.readSpace();
+	auto capacity = Message::unallocated() + outgoing.readSpace();
 	//Limit on the number of queries that can be answered
 	auto answerCapacity = (unsigned int) (capacity * ctx.answerRatio);
 	//Limit on the number of queries that can be forwarded
@@ -778,7 +778,7 @@ void Hub::publish() noexcept {
 	//-----------------------------------------------------------------
 	Message *msg = nullptr;
 	Watcher *w = nullptr;
-	while (outgoingMessages.get(msg)) {
+	while (outgoing.get(msg)) {
 		//-----------------------------------------------------------------
 		//Sanity check
 		if (!msg->validate()) {
@@ -818,7 +818,7 @@ void Hub::publish() noexcept {
 		//-----------------------------------------------------------------
 		if (!w->publish(msg)) {
 			//Recipient's queue is full, retry later
-			incomingMessages.put(msg);
+			incoming.put(msg);
 		} else if (w->testEvents(IO_WRITE)) {
 			retain(w);
 		}
@@ -827,19 +827,19 @@ void Hub::publish() noexcept {
 
 void Hub::processMessages() noexcept {
 	Message *message;
-	while (incomingMessages.get(message)) {
+	while (incoming.get(message)) {
 		if (!message->testFlags(MSG_PROCESSED)) {
 			//All the other flags are cleared
 			message->putFlags(MSG_PROCESSED);
 			route(message);
 		}
-		outgoingMessages.put(message);
+		outgoing.put(message);
 	}
 }
 
 bool Hub::acceptConnection(Socket *listener) noexcept {
 	//Limited protection against flooding of new connections
-	if (!temporaryConnections.hasSpace()) {
+	if (!temporary.hasSpace()) {
 		//Clean up timed out temporary connections
 		purgeTemporaryConnections();
 	}
@@ -859,7 +859,7 @@ bool Hub::acceptConnection(Socket *listener) noexcept {
 		 * and other unknown issues.
 		 */
 		//Activate the Connection
-		if (temporaryConnections.put(newConn->getUid())) {
+		if (temporary.put(newConn->getUid())) {
 			attach(newConn, IO_WR, 0);
 			newConn->setOption(WATCHER_WRITE_BUFFER_MAX, ctx.outputQueueLimit);
 		} else {
@@ -909,7 +909,7 @@ bool Hub::processConnection(Socket *connection) noexcept {
 		while (msgCount < cycleLimit) {
 			Message *message = connection->getMessage();
 			if (message) {
-				incomingMessages.put(message);
+				incoming.put(message);
 				countReceived(message->getLength());
 				msgCount++;
 			} else {

@@ -349,11 +349,11 @@ private:
 	//Collection of watchers currently being monitored
 	Watchers watchers;
 	//List of all incoming messages waiting for processing by the hub
-	CircularBuffer<Message*> incomingMessages;
+	CircularBuffer<Message*> incoming;
 	//List of outgoing messages ready for dispatch to their respective destinations
-	CircularBuffer<Message*> outgoingMessages;
+	CircularBuffer<Message*> outgoing;
 	//List of incoming temporary connections
-	Buffer<unsigned long long> temporaryConnections;
+	Buffer<unsigned long long> temporary;
 	//-----------------------------------------------------------------
 	/*
 	 * Hub statistics
