@@ -44,7 +44,8 @@ public:
 	 */
 	unsigned int drain() noexcept;
 	/**
-	 * Acquires the given number of tokens.
+	 * Acquires the given number of tokens. The call always succeeds for an
+	 * inactive token bucket.
 	 * @param count number of tokens to acquire
 	 * @return true on success, false on failure (insufficient tokens)
 	 */
