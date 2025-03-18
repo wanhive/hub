@@ -1,3 +1,7 @@
+## 2025-03-18
+
+- Version 12.0.0 release.
+
 ## 2024-07-26
 
 - Version 11.0.2 release.
