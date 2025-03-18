@@ -21,6 +21,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Rename the **Hub::retainMessage()** method to **Hub::collect()**.
 - Rename the **Hub::sendMessage()** method to **Hub::forward()**.
 - Rename the **Hub::purgeTemporaryConnections()** method to **Hub::evict()**.
+- Rename the **Hub::getAlarmSettings()** method to **Hub::periodic()**.
+- Rename the **Hub::reportEvents()** method to **Hub::alert()**.
+- Rename the **Hub::addToInotifier()** method to **Hub::track()**.
+- Rename the **Hub::removeFromInotifier()** method to **Hub::untrack()**.
 
 ### Fixed
 

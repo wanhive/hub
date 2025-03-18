@@ -64,8 +64,7 @@ void Hub::cancel() noexcept {
 	setStatus(0);
 }
 
-void Hub::getAlarmSettings(unsigned int &expiration,
-		unsigned int &interval) noexcept {
+void Hub::periodic(unsigned int &expiration, unsigned int &interval) noexcept {
 	if (notifiers.alarm) {
 		expiration = notifiers.alarm->getExpiration();
 		interval = notifiers.alarm->getInterval();
@@ -75,7 +74,7 @@ void Hub::getAlarmSettings(unsigned int &expiration,
 	}
 }
 
-void Hub::reportEvents(unsigned long long events) {
+void Hub::alert(unsigned long long events) {
 	if (notifiers.event) {
 		notifiers.event->write(events);
 	} else {
@@ -83,7 +82,7 @@ void Hub::reportEvents(unsigned long long events) {
 	}
 }
 
-int Hub::addToInotifier(const char *path, uint32_t mask) {
+int Hub::track(const char *path, uint32_t mask) {
 	if (notifiers.inotifier) {
 		return notifiers.inotifier->add(path, mask);
 	} else {
@@ -91,7 +90,7 @@ int Hub::addToInotifier(const char *path, uint32_t mask) {
 	}
 }
 
-void Hub::removeFromInotifier(int identifier) noexcept {
+void Hub::untrack(int identifier) noexcept {
 	try {
 		if (notifiers.inotifier) {
 			notifiers.inotifier->remove(identifier);

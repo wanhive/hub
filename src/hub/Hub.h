@@ -74,31 +74,30 @@ protected:
 	/**
 	 * Returns the periodic timer settings with milliseconds resolution. This
 	 * method can be safely called by the worker thread.
-	 * @param expiration object for storing the initial expiration
-	 * @param interval object for storing the interval of periodic timer
+	 * @param expiration stores the initial expiration
+	 * @param interval stores the periodic timer's interval
 	 */
-	void getAlarmSettings(unsigned int &expiration,
-			unsigned int &interval) noexcept;
+	void periodic(unsigned int &expiration, unsigned int &interval) noexcept;
 	/**
-	 * Adds the given value to the events counter. This method can be safely
-	 * called by the worker thread.
-	 * @param events the value to add to the events counter
+	 * Reports the given number of events to the events counter. This method
+	 * can be safely called by the worker thread.
+	 * @param events events count
 	 */
-	void reportEvents(unsigned long long events);
+	void alert(unsigned long long events);
 	/**
 	 * Starts monitoring of the given file or directory. This method can be
 	 * safely called by the worker thread.
 	 * @param path pathname of a file or directory
-	 * @param mask events of interest
-	 * @return a unique identifier (watch descriptor)
+	 * @param mask events of interest (inotify(7))
+	 * @return unique watch descriptor
 	 */
-	int addToInotifier(const char *path, uint32_t mask);
+	int track(const char *path, uint32_t mask);
 	/**
 	 * Stops monitoring of the given file or directory. This method can be
 	 * safely called by the worker thread.
-	 * @param identifier the watch descriptor (see Hub::addToInotifier())
+	 * @param identifier the watch descriptor (see Hub::track())
 	 */
-	void removeFromInotifier(int identifier) noexcept;
+	void untrack(int identifier) noexcept;
 	//-----------------------------------------------------------------
 	/**
 	 * Returns the runtime metrics.

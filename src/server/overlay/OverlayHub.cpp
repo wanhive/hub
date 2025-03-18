@@ -224,42 +224,42 @@ void OverlayHub::installSettingsMonitor() {
 		//Events we are interested in: modify-> close
 		const uint32_t events = IN_MODIFY | IN_ATTRIB | IN_CLOSE_WRITE;
 		if (auto path = dataPathName(Identity::CTX_CONFIGURATION); path) {
-			watchlist[0].identifier = addToInotifier(path, events);
+			watchlist[0].identifier = track(path, events);
 			watchlist[0].context = Identity::CTX_CONFIGURATION;
 		}
 
 		if (auto path = dataPathName(Identity::CTX_HOSTS_DB); path) {
-			watchlist[1].identifier = addToInotifier(path, events);
+			watchlist[1].identifier = track(path, events);
 			watchlist[1].context = Identity::CTX_HOSTS_DB;
 		}
 
 		if (auto path = dataPathName(Identity::CTX_HOSTS_FILE); path) {
-			watchlist[2].identifier = addToInotifier(path, events);
+			watchlist[2].identifier = track(path, events);
 			watchlist[2].context = Identity::CTX_HOSTS_FILE;
 		}
 
 		if (auto path = dataPathName(Identity::CTX_PKI_PRIVATE); path) {
-			watchlist[3].identifier = addToInotifier(path, events);
+			watchlist[3].identifier = track(path, events);
 			watchlist[3].context = Identity::CTX_PKI_PRIVATE;
 		}
 
 		if (auto path = dataPathName(Identity::CTX_PKI_PUBLIC); path) {
-			watchlist[4].identifier = addToInotifier(path, events);
+			watchlist[4].identifier = track(path, events);
 			watchlist[4].context = Identity::CTX_PKI_PUBLIC;
 		}
 
 		if (auto path = dataPathName(Identity::CTX_SSL_ROOT); path) {
-			watchlist[5].identifier = addToInotifier(path, events);
+			watchlist[5].identifier = track(path, events);
 			watchlist[5].context = Identity::CTX_SSL_ROOT;
 		}
 
 		if (auto path = dataPathName(Identity::CTX_SSL_CERTIFICATE); path) {
-			watchlist[6].identifier = addToInotifier(path, events);
+			watchlist[6].identifier = track(path, events);
 			watchlist[6].context = Identity::CTX_SSL_CERTIFICATE;
 		}
 
 		if (auto path = dataPathName(Identity::CTX_SSL_PRIVATE); path) {
-			watchlist[7].identifier = addToInotifier(path, events);
+			watchlist[7].identifier = track(path, events);
 			watchlist[7].context = Identity::CTX_SSL_PRIVATE;
 		}
 
