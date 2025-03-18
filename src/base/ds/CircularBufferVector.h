@@ -21,7 +21,8 @@ namespace wanhive {
  * @tparam X storage type
  */
 template<typename X> struct CircularBufferVector {
-	BufferVector<X> part[2]; //Two segments
+	/*! Two segments */
+	BufferVector<X> part[2];
 };
 
 }  // namespace wanhive

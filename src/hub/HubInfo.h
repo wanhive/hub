@@ -19,15 +19,19 @@ namespace wanhive {
  * Resource usage metrics
  */
 struct ResourceInfo {
-	unsigned int max; //Limit
-	unsigned int used; //In use
+	/*! Maximum allocation  */
+	unsigned int max;
+	/*! Current usage */
+	unsigned int used;
 };
 /**
  * Traffic metrics
  */
 struct TrafficInfo {
-	unsigned long long units; //Number of data units
-	unsigned long long bytes; //Number of bytes
+	/*! Number of units */
+	unsigned long long units;
+	/*! Number of bytes */
+	unsigned long long bytes;
 };
 //-----------------------------------------------------------------
 /**
