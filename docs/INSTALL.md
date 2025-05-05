@@ -449,10 +449,20 @@ An authentication hub acts as a *trusted third party* during the authentication 
 2. Update the configuration file to adjust the database connection parameters.
 
 ```
+## Old deprecated method (still works)
 [AUTH]
 .
 .
-connInfo= user=<user-name> dbname=<database-name>
+connInfo = user=<user-name> dbname=<database-name>
+```
+
+```
+## New enhanced method (offers greater flexibility)
+[RDBMS]
+#PostgreSQL parameters of the form <keyword=value>
+#REF: https://www.postgresql.org/docs/current/libpq-connect.html#LIBPQ-PARAMKEYWORDS
+user = <user-name>
+dbname = <database-name>
 ```
 
 Start the authentication hub:
