@@ -10,8 +10,8 @@
  *
  */
 
-#ifndef WH_APP_VERSION_H_
-#define WH_APP_VERSION_H_
+#ifndef WH_BASE_VERSION_H_
+#define WH_BASE_VERSION_H_
 
 #undef WH_PRODUCT_NAME
 #undef WH_RELEASE_NAME
@@ -41,4 +41,4 @@
 #define WH_RELEASE_URL "URL"
 #endif
 
-#endif /* WH_APP_VERSION_H_ */
+#endif /* WH_BASE_VERSION_H_ */

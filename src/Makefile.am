@@ -52,6 +52,8 @@ WH_BASEUNIXSOURCES = base/unix/Config.cpp base/unix/Directory.cpp \
 	base/unix/WorkingDirectory.cpp
 
 ## src/base
+WH_VERHEADERS = base/version.h
+WH_VERSOURCES = base/version.cpp
 WH_BASE_TOPHEADERS = base/Configuration.h base/Network.h base/Selector.h \
 	base/Signal.h base/Storage.h base/System.h base/Thread.h base/Timer.h \
 	base/TurnGate.h
@@ -111,7 +113,7 @@ WH_TESTSOURCES = test/ds/BufferTest.cpp test/ds/HashTableTest.cpp \
 	test/multicast/MulticastConsumer.cpp
 
 ## src/app collection
-WH_APPHEADERS = app/AppManager.h app/ConfigTool.h app/version.h
+WH_APPHEADERS = app/AppManager.h app/ConfigTool.h
 WH_APPSOURCES = app/AppManager.cpp app/ConfigTool.cpp wanhive.cpp
 
 ## src/ collection
@@ -124,7 +126,7 @@ AM_CXXFLAGS = -Wall
 if WH_WITH_EXECUTABLES
 bin_PROGRAMS = wanhive
 wanhive_SOURCES = $(WH_SERVERHEADERS) $(WH_SERVERSOURCES) $(WH_TESTHEADERS) \
-	$(WH_TESTSOURCES) $(WH_APPHEADERS) $(WH_APPSOURCES)
+	$(WH_TESTSOURCES) $(WH_VERHEADERS) $(WH_APPHEADERS) $(WH_APPSOURCES)
 wahhive_CXXFLAGS = -Wall
 wanhive_LDADD = libwanhive.la
 endif
@@ -135,7 +137,7 @@ libwanhive_la_CXXFLAGS = -Wall -DWH_CONF_SYSTEM_BASE='"@sysconfdir@"'
 libwanhive_la_LDFLAGS = -version-info @WH_LIB_VERSION@
 libwanhive_la_SOURCES = $(WH_BASEHEADERS) $(WH_BASESOURCES) $(WH_REACTORHEADERS) \
 	$(WH_REACTORSOURCES) $(WH_UTILHEADERS) $(WH_UTILSOURCES) $(WH_HUBHEADERS) \
-	$(WH_HUBSOURCES) $(WH_TOPHEADERS)
+	$(WH_HUBSOURCES) $(WH_TOPHEADERS) $(WH_VERHEADERS) $(WH_VERSOURCES)
 
 # https://www.gnu.org/software/automake/manual/html_node/Uniform.html
 topincludedir = $(pkgincludedir)

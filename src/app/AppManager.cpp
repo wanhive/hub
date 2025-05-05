@@ -12,7 +12,7 @@
 
 #include "AppManager.h"
 #include "ConfigTool.h"
-#include "version.h"
+#include "../base/version.h"
 
 #include "../server/auth/AuthenticationHub.h"
 #include "../server/overlay/OverlayHub.h"
