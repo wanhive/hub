@@ -20,7 +20,7 @@ extern "C" const char* wh_pkg_version() {
 #endif
 }
 
-extern "C" const char* wh_lib_version() {
+extern "C" const char* wh_api_version() {
 #ifdef WH_LIB_VERSION
 	return WH_LIB_VERSION;
 #else

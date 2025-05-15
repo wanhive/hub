@@ -72,10 +72,10 @@ public:
 	void cancel() noexcept;
 protected:
 	/**
-	 * Returns the periodic timer settings with milliseconds resolution. This
-	 * method can be safely called by the worker thread.
-	 * @param expiration stores the initial expiration
-	 * @param interval stores the periodic timer's interval
+	 * Reads the periodic timer settings (milliseconds). This method can be
+	 * safely called by the worker thread.
+	 * @param expiration periodic timer's initial expiration
+	 * @param interval periodic timer's interval
 	 */
 	void periodic(unsigned int &expiration, unsigned int &interval) noexcept;
 	/**
@@ -220,41 +220,41 @@ private:
 	 * @param uid the source identifier
 	 * @param ticks timer expiration count
 	 */
-	virtual void processAlarm(unsigned long long uid,
+	virtual void onAlarm(unsigned long long uid,
 			unsigned long long ticks) noexcept;
 	/**
 	 * Adapter: callback for user-space events.
 	 * @param uid the source identifier
 	 * @param events the events count
 	 */
-	virtual void processEvent(unsigned long long uid,
+	virtual void onEvent(unsigned long long uid,
 			unsigned long long events) noexcept;
 	/**
 	 * Adapter: callback for file system events.
 	 * @param uid the source identifier
 	 * @param event the file system event
 	 */
-	virtual void processInotification(unsigned long long uid,
+	virtual void onInotification(unsigned long long uid,
 			const InotifyEvent *event) noexcept;
 	/**
 	 * Adapter: callback for software interrupt.
 	 * @param uid the source identifier
 	 * @param signum signal's number
 	 */
-	virtual void processInterrupt(unsigned long long uid, int signum) noexcept;
+	virtual void onInterrupt(unsigned long long uid, int signum) noexcept;
 	/**
 	 * Adapter: callback for digital logic.
 	 * @param uid the source identifier
 	 * @param event the edge transition
 	 */
-	virtual void processLogic(unsigned long long uid,
+	virtual void onLogic(unsigned long long uid,
 			const LogicEvent &event) noexcept;
 	//-----------------------------------------------------------------
 	/**
-	 * Adapter: allow worker thread creation.
+	 * Adapter: allow/disallow worker thread creation.
 	 * @return true to create a worker thread, false otherwise
 	 */
-	virtual bool enableWorker() const noexcept;
+	virtual bool hasWorker() const noexcept;
 	/**
 	 * Adapter: the worker thread's entry point.
 	 * @param arg the additional argument for the worker thread
@@ -308,11 +308,8 @@ private:
 	//-----------------------------------------------------------------
 	//Publish the outgoing messages to their intended destinations
 	void publish() noexcept;
-	/*
-	 * Process all incoming messages, calls worker.run() if worker is installed,
-	 * otherwise calls <route>.
-	 */
-	void processMessages() noexcept;
+	//Process all the incoming messages
+	void process() noexcept;
 	//-----------------------------------------------------------------
 	/*
 	 * Connection management
@@ -326,7 +323,7 @@ private:
 	 * Traffic limiting, shaping and policing
 	 */
 	//Returns true if the <message> outlived it's TTL, false otherwise
-	bool dropMessage(Message *message) const noexcept;
+	bool drop(Message *message) const noexcept;
 	//Sets admission limit (congestion control)
 	unsigned int throttle(const Socket *connection) const noexcept;
 	void countReceived(unsigned int bytes) noexcept;

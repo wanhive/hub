@@ -16,33 +16,25 @@
 #include <cinttypes>
 
 namespace {
-/**
- * Connection types (for connections removal)
- */
+
+/* Connection purge types */
 enum PurgeType {
-	PURGE_TEMPORARY,/**< Temporary connections */
-	PURGE_INVALID, /**< Invalid/misplaced connections */
-	PURGE_CLIENT /**< Client connections */
+	PURGE_TEMPORARY, PURGE_INVALID, PURGE_CLIENT
 };
-/**
- * Control structure (for connections removal)
- */
+
+/* Connections purge control structure */
 struct PurgeControl {
 	unsigned int target { 0 };
 	unsigned int count { 0 };
 	wanhive::OverlayHub *hub { nullptr };
 };
 //-----------------------------------------------------------------
-/**
- * Message trace types
- */
+/* Message trace types */
 enum MessageTrace : uint32_t {
-	SESSION_TRACE = 1U /**< Session requests trace */
+	SESSION_TRACE = 1U
 };
 
-/**
- * Token bucket's default level (for the registration requests)
- */
+/* Token bucket's default level (for the registration requests) */
 constexpr unsigned long long DEF_TOKENS_COUNT = 200;
 
 //-----------------------------------------------------------------
@@ -168,12 +160,12 @@ void OverlayHub::maintain() noexcept {
 	}
 }
 
-void OverlayHub::processAlarm(unsigned long long uid,
+void OverlayHub::onAlarm(unsigned long long uid,
 		unsigned long long ticks) noexcept {
 	tokens.fill(DEF_TOKENS_COUNT);
 }
 
-void OverlayHub::processInotification(unsigned long long uid,
+void OverlayHub::onInotification(unsigned long long uid,
 		const InotifyEvent *event) noexcept {
 	if (event->wd == -1) { //overflow notification
 		return;
@@ -188,7 +180,7 @@ void OverlayHub::processInotification(unsigned long long uid,
 	}
 }
 
-bool OverlayHub::enableWorker() const noexcept {
+bool OverlayHub::hasWorker() const noexcept {
 	return isSupernode();
 }
 
@@ -207,7 +199,7 @@ void OverlayHub::stopWork() noexcept {
 }
 
 void OverlayHub::installService() {
-	if (!enableWorker()) {
+	if (!hasWorker()) {
 		return;
 	}
 

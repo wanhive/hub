@@ -390,30 +390,28 @@ void Hub::maintain() noexcept {
 
 }
 
-void Hub::processAlarm(unsigned long long uid,
-		unsigned long long ticks) noexcept {
+void Hub::onAlarm(unsigned long long uid, unsigned long long ticks) noexcept {
 
 }
 
-void Hub::processEvent(unsigned long long uid,
-		unsigned long long events) noexcept {
+void Hub::onEvent(unsigned long long uid, unsigned long long events) noexcept {
 
 }
 
-void Hub::processInotification(unsigned long long uid,
+void Hub::onInotification(unsigned long long uid,
 		const InotifyEvent *event) noexcept {
 
 }
 
-void Hub::processInterrupt(unsigned long long uid, int signum) noexcept {
+void Hub::onInterrupt(unsigned long long uid, int signum) noexcept {
 
 }
 
-void Hub::processLogic(unsigned long long uid, const LogicEvent &event) noexcept {
+void Hub::onLogic(unsigned long long uid, const LogicEvent &event) noexcept {
 
 }
 
-bool Hub::enableWorker() const noexcept {
+bool Hub::hasWorker() const noexcept {
 	return false;
 }
 
@@ -438,7 +436,7 @@ bool Hub::handle(Alarm *alarm) noexcept {
 		//-----------------------------------------------------------------
 		if (count) {
 			auto uid = (alarm == notifiers.alarm ? 0 : alarm->getUid());
-			processAlarm(uid, count);
+			onAlarm(uid, count);
 		}
 		return alarm->isReady();
 	} catch (const BaseException &e) {
@@ -460,7 +458,7 @@ bool Hub::handle(Event *event) noexcept {
 		//-----------------------------------------------------------------
 		if (count) {
 			auto uid = (event == notifiers.event ? 0 : event->getUid());
-			processEvent(uid, count);
+			onEvent(uid, count);
 		}
 		return event->isReady();
 	} catch (const BaseException &e) {
@@ -483,7 +481,7 @@ bool Hub::handle(Inotifier *inotifier) noexcept {
 		while ((event = inotifier->next())) {
 			auto uid = (
 					inotifier == notifiers.inotifier ? 0 : inotifier->getUid());
-			processInotification(uid, event);
+			onInotification(uid, event);
 		}
 		return inotifier->isReady();
 	} catch (const BaseException &e) {
@@ -507,7 +505,7 @@ bool Hub::handle(Interrupt *interrupt) noexcept {
 		if (signum > 0) {
 			auto uid = (
 					interrupt == notifiers.interrupt ? 0 : interrupt->getUid());
-			processInterrupt(uid, signum);
+			onInterrupt(uid, signum);
 		}
 		return interrupt->isReady();
 	} catch (const BaseException &e) {
@@ -528,7 +526,7 @@ bool Hub::handle(Logic *logic) noexcept {
 		}
 		//-----------------------------------------------------------------
 		if (event.type != LogicEdge::NONE) {
-			processLogic(logic->getUid(), event);
+			onLogic(logic->getUid(), event);
 		}
 		return logic->isReady();
 	} catch (const BaseException &e) {
@@ -582,7 +580,7 @@ void Hub::loop() {
 		poll(outgoing.isEmpty());
 		publish();
 		dispatch();
-		processMessages();
+		process();
 		maintain();
 	}
 }
@@ -732,7 +730,7 @@ void Hub::initInterrupt() {
 
 void Hub::startWorker(void *arg) {
 	try {
-		if (enableWorker() && !workerThread) {
+		if (hasWorker() && !workerThread) {
 			workerThread = new Thread(worker, arg);
 			WH_LOG_INFO("Worker thread started");
 		} else {
@@ -807,7 +805,7 @@ void Hub::publish() noexcept {
 			answerCapacity--;
 		} else if (forwardCapacity) {
 			forwardCapacity--;
-		} else if (dropMessage(msg)) {
+		} else if (drop(msg)) {
 			//Message can be dropped
 			countDropped(msg->getLength());
 			Message::recycle(msg);
@@ -823,7 +821,7 @@ void Hub::publish() noexcept {
 	}
 }
 
-void Hub::processMessages() noexcept {
+void Hub::process() noexcept {
 	Message *message;
 	while (incoming.get(message)) {
 		if (!message->testFlags(MSG_PROCESSED)) {
@@ -924,7 +922,7 @@ bool Hub::processConnection(Socket *connection) noexcept {
 	return false;
 }
 
-bool Hub::dropMessage(Message *message) const noexcept {
+bool Hub::drop(Message *message) const noexcept {
 	return ctx.allowPacketDrop && !message->testFlags(MSG_PRIORITY)
 			&& (message->addHopCount() > ctx.messageTTL);
 }

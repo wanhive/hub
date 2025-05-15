@@ -14,8 +14,8 @@
 #include "../../base/common/Logger.h"
 #include "../../util/commands.h"
 #include "../../util/Endpoint.h"
-#include <new>
 #include <postgresql/libpq-fe.h>
+#include <new>
 
 namespace wanhive {
 

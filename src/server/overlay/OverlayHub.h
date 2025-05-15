@@ -41,11 +41,11 @@ private:
 	bool trap(Message *message) noexcept override;
 	void route(Message *message) noexcept override;
 	void maintain() noexcept override;
-	void processAlarm(unsigned long long uid, unsigned long long ticks) noexcept
+	void onAlarm(unsigned long long uid, unsigned long long ticks) noexcept
 			override;
-	void processInotification(unsigned long long uid,
+	void onInotification(unsigned long long uid,
 			const InotifyEvent *event) noexcept override;
-	bool enableWorker() const noexcept override;
+	bool hasWorker() const noexcept override;
 	void doWork(void *arg) noexcept override;
 	void stopWork() noexcept override;
 	//-----------------------------------------------------------------
