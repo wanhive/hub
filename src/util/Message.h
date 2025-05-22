@@ -425,6 +425,39 @@ public:
 	bool appendData8(uint8_t data) noexcept;
 	//-----------------------------------------------------------------
 	/**
+	 * Reads a float value from the payload.
+	 * @param index data's offset inside the payload, this value should not
+	 * exceed (Frame::PAYLOAD_SIZE - 4).
+	 * @return float value on success, 0 on failure (overflow)
+	 */
+	float getFloat(unsigned int index) const noexcept;
+	/**
+	 * Reads a float value from the payload.
+	 * @param index data's offset inside the payload, this value should not
+	 * exceed (Frame::PAYLOAD_SIZE - 4).
+	 * @param data stores the float value
+	 * @return true on success, false on failure (overflow)
+	 */
+	bool getFloat(unsigned int index, float &data) const noexcept;
+	/**
+	 * Writes a float value into the payload.
+	 * @param index data's offset inside the payload, this value should not
+	 * exceed (Frame::PAYLOAD_SIZE - 4).
+	 * @param data float value
+	 * @return true on success, false on failure (overflow)
+	 */
+	bool setFloat(unsigned int index, float data) noexcept;
+	/**
+	 * Appends a float value to the payload.  On success, frame buffer's length
+	 * and routing header's length field are updated. This call will fail if the
+	 * frame buffer is invalid (see Packet::validate()), or if the operation
+	 * will result in buffer overflow.
+	 * @param data float value
+	 * @return true on success, false otherwise
+	 */
+	bool appendFloat(float data) noexcept;
+	//-----------------------------------------------------------------
+	/**
 	 * Reads a double value from the payload.
 	 * @param index data's offset inside the payload, this value should not
 	 * exceed (Frame::PAYLOAD_SIZE - 8).

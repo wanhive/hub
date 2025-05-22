@@ -386,6 +386,42 @@ bool Message::appendData8(uint8_t data) noexcept {
 	}
 }
 
+float Message::getFloat(unsigned int index) const noexcept {
+	float data = 0;
+	getFloat(index, data);
+	return data;
+}
+
+bool Message::getFloat(unsigned int index, float &data) const noexcept {
+	if (index <= (PAYLOAD_SIZE - sizeof(uint32_t))) {
+		auto offset = HEADER_SIZE + index;
+		data = Serializer::unpackf32(frame().array() + offset);
+		return true;
+	} else {
+		return false;
+	}
+}
+
+bool Message::setFloat(unsigned int index, float data) noexcept {
+	if (index <= (PAYLOAD_SIZE - sizeof(uint32_t))) {
+		auto offset = HEADER_SIZE + index;
+		Serializer::packf32((frame().array() + offset), data);
+		return true;
+	} else {
+		return false;
+	}
+}
+
+bool Message::appendFloat(float data) noexcept {
+	auto offset = getLength();
+	if (validate() && putLength(offset + sizeof(uint32_t))) {
+		Serializer::packf32((frame().array() + offset), data);
+		return true;
+	} else {
+		return false;
+	}
+}
+
 double Message::getDouble(unsigned int index) const noexcept {
 	double data = 0;
 	getDouble(index, data);
