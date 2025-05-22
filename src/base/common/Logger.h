@@ -121,22 +121,22 @@ private:
  * compilers (gcc, llvm/clang and VS).
  */
 
-#define WH_DEFAULT_LOGGER Logger::getDefault()
-#define WH_LOG_LEVEL_STR(l) Logger::levelString(l)
+#define WH_DEFAULT_LOGGER wanhive::Logger::getDefault()
+#define WH_LOG_LEVEL_STR(l) wanhive::Logger::levelString(l)
 
 #define WH_LOG(l, format, ...) WH_DEFAULT_LOGGER.log(l, format "\n", ##__VA_ARGS__)
 #define WH_LOGL(l, format, ...) WH_LOG(l, "[%s]: " format, WH_LOG_LEVEL_STR(l), ##__VA_ARGS__)
 #define WH_LOGLF(l, format, ...) WH_LOG(l, "[%s] [%s]: " format, WH_LOG_LEVEL_STR(l), WH_FUNCTION, ##__VA_ARGS__)
 //-----------------------------------------------------------------
 //For general logging
-#define WH_LOG_DEBUG(format, ...) WH_LOGLF(WH_LOGLEVEL_DEBUG, format, ##__VA_ARGS__)
-#define WH_LOG_INFO(format, ...) WH_LOGL(WH_LOGLEVEL_INFO, format, ##__VA_ARGS__)
-#define WH_LOG_NOTICE(format, ...) WH_LOGL(WH_LOGLEVEL_NOTICE, format, ##__VA_ARGS__)
-#define WH_LOG_WARNING(format, ...) WH_LOGL(WH_LOGLEVEL_WARNING, format, ##__VA_ARGS__)
-#define WH_LOG_ERROR(format, ...) WH_LOGL(WH_LOGLEVEL_ERROR, format, ##__VA_ARGS__)
-#define WH_LOG_CRITICAL(format, ...) WH_LOGL(WH_LOGLEVEL_CRITICAL, format, ##__VA_ARGS__)
-#define WH_LOG_ALERT(format, ...) WH_LOGL(WH_LOGLEVEL_ALERT, format, ##__VA_ARGS__)
-#define WH_LOG_EMERGENCY(format, ...) WH_LOGL(WH_LOGLEVEL_EMERGENCY, format, ##__VA_ARGS__)
+#define WH_LOG_DEBUG(format, ...) WH_LOGLF(wanhive::WH_LOGLEVEL_DEBUG, format, ##__VA_ARGS__)
+#define WH_LOG_INFO(format, ...) WH_LOGL(wanhive::WH_LOGLEVEL_INFO, format, ##__VA_ARGS__)
+#define WH_LOG_NOTICE(format, ...) WH_LOGL(wanhive::WH_LOGLEVEL_NOTICE, format, ##__VA_ARGS__)
+#define WH_LOG_WARNING(format, ...) WH_LOGL(wanhive::WH_LOGLEVEL_WARNING, format, ##__VA_ARGS__)
+#define WH_LOG_ERROR(format, ...) WH_LOGL(wanhive::WH_LOGLEVEL_ERROR, format, ##__VA_ARGS__)
+#define WH_LOG_CRITICAL(format, ...) WH_LOGL(wanhive::WH_LOGLEVEL_CRITICAL, format, ##__VA_ARGS__)
+#define WH_LOG_ALERT(format, ...) WH_LOGL(wanhive::WH_LOGLEVEL_ALERT, format, ##__VA_ARGS__)
+#define WH_LOG_EMERGENCY(format, ...) WH_LOGL(wanhive::WH_LOGLEVEL_EMERGENCY, format, ##__VA_ARGS__)
 //-----------------------------------------------------------------
 //For exception logging
 #define WH_LOG_EXCEPTION(e) WH_LOG_DEBUG("%s", e.what())
