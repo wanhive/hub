@@ -165,19 +165,19 @@ public:
 	 * @param buf the output buffer
 	 * @param i the decimal value
 	 */
-	static void packf16(unsigned char *buf, long double f) noexcept;
+	static void packf16(unsigned char *buf, float f) noexcept;
 	/**
 	 * Packs a 32-bit single precision floating point number into a buffer.
 	 * @param buf the output buffer
 	 * @param i the decimal value
 	 */
-	static void packf32(unsigned char *buf, long double f) noexcept;
+	static void packf32(unsigned char *buf, float f) noexcept;
 	/**
 	 * Packs a 64-bit double precision floating point number into a buffer.
 	 * @param buf the output buffer
 	 * @param i the decimal value
 	 */
-	static void packf64(unsigned char *buf, long double f) noexcept;
+	static void packf64(unsigned char *buf, double f) noexcept;
 	//-----------------------------------------------------------------
 	/**
 	 * Reverse of Serializer()::packib(). Copies a sequence of bytes into
@@ -291,8 +291,8 @@ public:
 	 */
 	static void test() noexcept;
 private:
-	static_assert(sizeof(float) == 4, "Platform is not IEEE-754 compliant");
-	static_assert(sizeof(double) == 8, "Platform is not IEEE-754 compliant");
+	static_assert(sizeof(float) == sizeof(uint32_t), "Platform is not IEEE-754 compliant");
+	static_assert(sizeof(double) == sizeof(uint64_t), "Platform is not IEEE-754 compliant");
 };
 
 } /* namespace wanhive */

@@ -730,18 +730,20 @@ void Serializer::packi64(unsigned char *buf, uint64_t i) noexcept {
 	memcpy(buf, &i, sizeof(uint64_t));
 }
 
-void Serializer::packf16(unsigned char *buf, long double f) noexcept {
+void Serializer::packf16(unsigned char *buf, float f) noexcept {
 	auto value = pack754(f, 16, 5);
 	packi16(buf, value);
 }
 
-void Serializer::packf32(unsigned char *buf, long double f) noexcept {
-	auto value = pack754(f, 32, 8);
+void Serializer::packf32(unsigned char *buf, float f) noexcept {
+	uint32_t value;
+	memcpy(&value, &f, sizeof(f));
 	packi32(buf, value);
 }
 
-void Serializer::packf64(unsigned char *buf, long double f) noexcept {
-	auto value = pack754(f, 64, 11);
+void Serializer::packf64(unsigned char *buf, double f) noexcept {
+	uint64_t value;
+	memcpy(&value, &f, sizeof(f));
 	packi64(buf, value);
 }
 
@@ -829,12 +831,16 @@ float Serializer::unpackf16(const unsigned char *buf) noexcept {
 
 float Serializer::unpackf32(const unsigned char *buf) noexcept {
 	auto value = unpacku32(buf);
-	return unpack754(value, 32, 8);
+	float ret;
+	memcpy(&ret, &value, sizeof(value));
+	return ret;
 }
 
 double Serializer::unpackf64(const unsigned char *buf) noexcept {
 	auto value = unpacku64(buf);
-	return unpack754(value, 64, 11);
+	double ret;
+	memcpy(&ret, &value, sizeof(value));
+	return ret;
 }
 
 unsigned long long Serializer::pack754(long double f, unsigned bits,
