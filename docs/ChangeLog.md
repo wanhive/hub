@@ -9,15 +9,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-- **Message** class can explicitly work with the single precision floating point data type.
+- Single precision floating point support in the **Message** class.
 
 ### Changed
 
-- Floating point data type handling in **Serializer**.
+- Return **Message::recycle** function's execution status as a boolean value.
+- Simplify floating point type serialization/de-serialization.
 
 ### Fixed
 
-- Explicitly specify the namespace in the **Logger** macros.
+- Explicitly specify namespace in the **Logger** macros.
 
 ## [13.0.0] - 2025-05-15
 
