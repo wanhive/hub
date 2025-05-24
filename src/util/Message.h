@@ -54,9 +54,10 @@ public:
 	static Message* create(uint64_t origin = 0) noexcept;
 	/**
 	 * Recycles a message.
-	 * @param m message's pointer (can be nullptr)
+	 * @param message message's pointer (can be nullptr)
+	 * @return true on success, false on failure (reference counted only)
 	 */
-	static void recycle(Message *m) noexcept;
+	static bool recycle(Message *message) noexcept;
 	//-----------------------------------------------------------------
 	/**
 	 * Clears the message: preserves message's origin, mark, reference-count,
