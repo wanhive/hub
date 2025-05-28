@@ -28,6 +28,8 @@
 #include "base/ds/Buffer.h"
 #include "base/ds/CircularBuffer.h"
 #include "base/ds/Encoding.h"
+#include "base/ds/Feature.h"
+#include "base/ds/Gradient.h"
 #include "base/ds/Handle.h"
 #include "base/ds/Khash.h"
 #include "base/ds/MersenneTwister.h"
