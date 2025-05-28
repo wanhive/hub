@@ -293,8 +293,7 @@ public:
 		return __atomic_is_lock_free(sizeof(X), P);
 	}
 private:
-	WH_SCALAR_ASSERT(X);
-	static_assert(sizeof(X) <= 16, "Invalid object size");
+	WH_ATOMIC_ASSERT(X);
 };
 
 } /* namespace wanhive */
