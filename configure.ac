@@ -63,7 +63,6 @@ AC_FUNC_ERROR_AT_LINE
 AC_FUNC_FORK
 AC_FUNC_LSTAT_FOLLOWS_SLASHED_SYMLINK
 AC_HEADER_MAJOR
-AC_FUNC_MALLOC
 AC_FUNC_REALLOC
 AC_FUNC_STRERROR_R
 AC_CHECK_FUNCS([alarm atexit clock_gettime fchdir ftruncate getcwd gethostname lchown localtime_r memmove memset mkdir pathconf putenv realpath rmdir select setenv socket strcasecmp strchr strdup strrchr uname])
