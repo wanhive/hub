@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 - Single precision floating point support in the **Message** class.
+- Basic data pre-processing and visualization routines.
 
 ### Changed
 
