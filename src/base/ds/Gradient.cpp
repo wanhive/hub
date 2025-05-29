@@ -11,11 +11,12 @@
  */
 
 #include "Gradient.h"
+#include <cmath>
 
 namespace {
 
 void grayscale(double data, wanhive::Color &color) noexcept {
-	if (data <= 0) {
+	if (std::isnan(data) || data <= 0) {
 		color = { 0, 0, 0 };
 	} else if (data >= 1) {
 		color = { 255, 255, 255 };
@@ -34,7 +35,7 @@ void colored(double data, wanhive::Color &color) noexcept {
 	unsigned idx2 { 0 };
 	double fractBetween { 0 };
 
-	if (data <= 0) {
+	if (std::isnan(data) || data <= 0) {
 		idx1 = idx2 = 0;
 	} else if (data >= 1) {
 		idx1 = idx2 = NUM_COLORS - 1;
