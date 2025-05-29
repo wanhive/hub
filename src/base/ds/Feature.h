@@ -54,7 +54,7 @@ public:
 		auto min = data[0];
 
 		for (size_t i = 0; i < count; ++i) {
-			if (std::isnan(data[i])) {
+			if (!std::isfinite(data[i])) {
 				return false;
 			}
 
