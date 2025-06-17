@@ -71,7 +71,7 @@ void ClientHub::configure(void *arg) {
 		WH_LOG_DEBUG(
 				"Client hub settings:\nPASSWORD='%s', HASH_ROUNDS=%u,\n" "IO_TIMEOUT=%ums, RETRY_INTERVAL=%ums\n",
 				WH_MASK_STR(mask, (const char *)ctx.password),
-				WH_MASK_VAL(mask, ctx.passwordHashRounds), ctx.timeOut,
+				WH_MASK_NUM(mask, ctx.passwordHashRounds), ctx.timeOut,
 				ctx.retryInterval);
 	} catch (const BaseException &e) {
 		WH_LOG_EXCEPTION(e);

@@ -29,6 +29,15 @@
 #define WH_GCC_VERSION (__GNUC__ * 10000 + __GNUC_MINOR__ * 100 + __GNUC_PATCHLEVEL__)
 #endif
 
+/**
+ * Detect CLANG
+ */
+
+#ifdef __clang__
+#define WH_CLANG
+#define WH_CLANG_VERSION (__clang_major__ * 10000 + __clang_minor__ * 100 + __clang_patchlevel__)
+#endif
+
 //-----------------------------------------------------------------
 /**
  * Detect CPU (X86, X86-64 and Arm-32/64 are supported)
@@ -75,7 +84,7 @@
 #define WH_LINE 0
 #endif
 
-#ifdef WH_GCC
+#if defined(WH_GCC) || defined(WH_CLANG)
 #define WH_FUNCTION __PRETTY_FUNCTION__
 #else
 #define WH_FUNCTION __func__
@@ -112,14 +121,14 @@
 #endif
 
 #if WH_LOG_SAFE
-#define WH_SEC_VAL(x) ((decltype(x))(0))
+#define WH_SEC_NUM(x) ((decltype(x))(0))
 #define WH_SEC_STR(x) "***"
-#define WH_MASK_VAL(p, x) ((p) ? WH_SEC_VAL(x) : (x))
+#define WH_MASK_NUM(p, x) ((p) ? WH_SEC_NUM(x) : (x))
 #define WH_MASK_STR(p, x) ((p) ? WH_SEC_STR(x) : (x))
 #else
-#define WH_SEC_VAL(x) (x)
+#define WH_SEC_NUM(x) (x)
 #define WH_SEC_STR(x) (x)
-#define WH_MASK_VAL(p, x) (x)
+#define WH_MASK_NUM(p, x) (x)
 #define WH_MASK_STR(p, x) (x)
 #endif
 //-----------------------------------------------------------------
