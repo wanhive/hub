@@ -17,6 +17,7 @@
 #include <type_traits>
 
 //-----------------------------------------------------------------
+#define WH_IS_VOID(X) (std::is_void_v<X>)
 #define WH_IS_POD(X) (std::is_trivial_v<X> && std::is_standard_layout_v<X>)
 #define WH_IS_INTEGRAL(X) (std::is_integral_v<X>)
 #define WH_IS_POINTER(X) (std::is_pointer_v<X>)
