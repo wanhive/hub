@@ -15,7 +15,19 @@
 
 namespace wanhive {
 /**
+ * Two dimensional planar data type.
+ * @tparam T component type
+ */
+template<typename T> struct Planar {
+	/*! X component */
+	T x;
+	/*! Y component */
+	T y;
+};
+
+/**
  * Three-dimensional spatial data type.
+ * @tparam T component type
  */
 template<typename T> struct Spatial {
 	/*! X component */
@@ -27,7 +39,7 @@ template<typename T> struct Spatial {
 };
 
 /**
- * Standard color space data type.
+ * RGB (additive) color model.
  */
 struct Color {
 	/*! Red channel */
