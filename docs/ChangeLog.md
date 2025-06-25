@@ -14,6 +14,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- **Sink** and **Source** interfaces.
 - Return **Message::recycle** function's execution status as a boolean value.
 - Simplify floating point type serialization/de-serialization.
 
