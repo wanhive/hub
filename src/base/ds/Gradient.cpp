@@ -79,4 +79,21 @@ void Gradient::map(double data, Color &color) const noexcept {
 	}
 }
 
+void Gradient::replicate(unsigned char *out, Color color,
+		Planar<unsigned> pixel, Planar<unsigned> limits,
+		unsigned scale) noexcept {
+	size_t newWidth = limits.x * scale;
+	for (unsigned repY = 0; repY < scale; ++repY) {
+		for (unsigned repX = 0; repX < scale; ++repX) {
+			size_t newX = pixel.x * scale + repX;
+			size_t newY = pixel.y * scale + repY;
+
+			size_t idx = (newY * newWidth + newX) * 3;
+			out[idx] = color.red;
+			out[idx + 1] = color.green;
+			out[idx + 2] = color.blue;
+		}
+	}
+}
+
 } /* namespace wanhive */
