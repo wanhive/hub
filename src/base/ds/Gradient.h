@@ -36,17 +36,6 @@ public:
 	 * @param color output color code
 	 */
 	void map(double data, Color &color) const noexcept;
-	/**
-	 * Performs pixel replication.
-	 * @param out output buffer of sufficient size
-	 * @param color pixel's color map
-	 * @param pixel pixel's coordinates
-	 * @param limits original image's size
-	 * @param scale desired scale multiplier
-	 */
-	static void replicate(unsigned char *out, Color color,
-			Planar<unsigned> pixel, Planar<unsigned> limits,
-			unsigned scale = 4) noexcept;
 private:
 	const bool _colored;
 };
