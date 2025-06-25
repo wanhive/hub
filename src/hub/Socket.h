@@ -89,7 +89,7 @@ public:
 	/*
 	 * Source interface implementation
 	 */
-	size_t take(unsigned char *buffer, size_t count) override;
+	size_t emit(unsigned char *buffer, size_t count) override;
 	size_t available() const noexcept override;
 	//-----------------------------------------------------------------
 	/*

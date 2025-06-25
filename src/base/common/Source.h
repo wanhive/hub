@@ -26,12 +26,12 @@ public:
 	 */
 	virtual ~Source() = default;
 	/**
-	 * Transfers data into the given buffer.
-	 * @param buffer stores incoming data
+	 * Transfers data into a given buffer.
+	 * @param buffer output buffer
 	 * @param count buffer's capacity
 	 * @return number of elements transferred to the buffer
 	 */
-	virtual size_t take(X *buffer, size_t count) = 0;
+	virtual size_t emit(X *buffer, size_t count) = 0;
 	/**
 	 * Returns the maximum number of elements available for transfer.
 	 * @return available elements count

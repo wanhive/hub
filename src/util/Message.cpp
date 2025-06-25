@@ -63,7 +63,7 @@ bool Message::build(Source<unsigned char> &in) {
 	case MSG_WAIT_HEADER:
 		if (in.available() >= Message::HEADER_SIZE) {
 			frame().clear();
-			in.take(frame().offset(), Message::HEADER_SIZE);
+			in.emit(frame().offset(), Message::HEADER_SIZE);
 			//Prepare the routing header
 			header().read(frame().array());
 			frame().setIndex(HEADER_SIZE);
@@ -76,7 +76,7 @@ bool Message::build(Source<unsigned char> &in) {
 		if (testLength()) {
 			auto payLoadLength = header().getLength() - HEADER_SIZE;
 			if (in.available() >= payLoadLength) {
-				in.take(frame().offset(), payLoadLength);
+				in.emit(frame().offset(), payLoadLength);
 				//Set the correct limit and index
 				frame().setIndex(header().getLength());
 				frame().rewind();
