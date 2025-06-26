@@ -1,7 +1,7 @@
 /*
  * Feature.h
  *
- * Feature scaling routines
+ * Feature scaling and bitmap routines
  *
  *
  * Copyright (C) 2025 Amit Kumar (amitkriit@gmail.com)
@@ -18,7 +18,7 @@
 
 namespace wanhive {
 /**
- * Feature scaling routines.
+ * Feature scaling and bitmap routines.
  */
 class Feature {
 public:
@@ -150,6 +150,21 @@ public:
 
 		return true;
 	}
+	//-----------------------------------------------------------------
+	/**
+	 * Sets pixel's RGB color in a buffer.
+	 * @param out valid output buffer
+	 * @param width image's width
+	 * @param pixel pixel's coordinates
+	 * @param color desired color
+	 */
+	static void draw(unsigned char *out, unsigned width,
+			Planar<unsigned> pixel, Color color) noexcept {
+		auto index = (pixel.y * width + pixel.x) * 3;
+		out[index] = color.red;
+		out[index + 1] = color.green;
+		out[index + 2] = color.blue;
+	}
 	/**
 	 * Performs pixel replication.
 	 * @param out output buffer of sufficient size
@@ -161,16 +176,12 @@ public:
 	static void replicate(unsigned char *out, Color color,
 			Planar<unsigned> pixel, Planar<unsigned> limits,
 			unsigned scale = 4) noexcept {
-		size_t newWidth = limits.x * scale;
+		auto newWidth = limits.x * scale;
 		for (unsigned repY = 0; repY < scale; ++repY) {
 			for (unsigned repX = 0; repX < scale; ++repX) {
-				size_t newX = pixel.x * scale + repX;
-				size_t newY = pixel.y * scale + repY;
-
-				size_t idx = (newY * newWidth + newX) * 3;
-				out[idx] = color.red;
-				out[idx + 1] = color.green;
-				out[idx + 2] = color.blue;
+				auto newX = pixel.x * scale + repX;
+				auto newY = pixel.y * scale + repY;
+				draw(out, newWidth, { newX, newY }, color);
 			}
 		}
 	}
