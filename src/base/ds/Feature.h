@@ -158,7 +158,7 @@ public:
 	 * @param pixel pixel's coordinates
 	 * @param color desired color
 	 */
-	static void draw(unsigned char *out, unsigned width,
+	static void paint(unsigned char *out, unsigned width,
 			Planar<unsigned> pixel, Color color) noexcept {
 		auto index = (pixel.y * width + pixel.x) * 3;
 		out[index] = color.red;
@@ -168,9 +168,9 @@ public:
 	/**
 	 * Performs pixel replication.
 	 * @param out output buffer of sufficient size
-	 * @param color pixel's color map
-	 * @param pixel pixel's coordinates
-	 * @param limits original image's size
+	 * @param color original pixel's color
+	 * @param pixel original pixel's coordinates
+	 * @param limits original image's dimensions
 	 * @param scale desired scale multiplier
 	 */
 	static void replicate(unsigned char *out, Color color,
@@ -181,7 +181,7 @@ public:
 			for (unsigned repX = 0; repX < scale; ++repX) {
 				auto newX = pixel.x * scale + repX;
 				auto newY = pixel.y * scale + repY;
-				draw(out, newWidth, { newX, newY }, color);
+				paint(out, newWidth, { newX, newY }, color);
 			}
 		}
 	}
