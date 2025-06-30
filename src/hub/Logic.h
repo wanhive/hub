@@ -20,28 +20,30 @@ namespace wanhive {
  * Possible digital logic transitions
  */
 enum class LogicEdge {
-	RISING, /**< Rising edge */
-	FALLING,/**< Falling edge */
+	RISING, /**< Low-to-High */
+	FALLING,/**< High-to-Low */
 	NONE /**< Neither */
 };
 /**
  * Structure for reporting digital logic transitions
  */
 struct LogicEvent {
+	/*! Logic transition type */
 	LogicEdge type { LogicEdge::NONE };
+	/*! Event's time-stamp */
 	unsigned long long timestamp { 0 };
 };
 //-----------------------------------------------------------------
 /**
  * Digital logic watcher abstraction
- * @note Doesn't provide a concrete implementation
+ * @note Doesn't provide concrete implementation
  */
 class Logic: public Watcher {
 public:
 	/**
 	 * Default constructor
 	 */
-	Logic();
+	Logic() noexcept;
 	/**
 	 * Destructor
 	 */
@@ -55,7 +57,7 @@ public:
 	/**
 	 * Reads the next event.
 	 * @param event object for storing the event
-	 * @return the number of bytes read on success, 0 on temporary error, -1 on
+	 * @return number of bytes read on success, 0 on non-fatal error, -1 on
 	 * fatal error.
 	 */
 	virtual ssize_t update(LogicEvent &event);

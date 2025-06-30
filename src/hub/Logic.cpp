@@ -15,7 +15,7 @@
 
 namespace wanhive {
 
-Logic::Logic() {
+Logic::Logic() noexcept {
 
 }
 
