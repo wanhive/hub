@@ -270,7 +270,9 @@ ssize_t Socket::socketRead() {
 	//Receive data into the read buffer
 	if (in.getWritable(vector)) {
 		auto count = (vector.part[1].length) ? 2 : 1;
-		if ((nRecv = Descriptor::readv((const iovec*) &vector, count)) > 0) {
+		iovec iovs[2] = { { vector.part[0].base, vector.part[0].length }, {
+				vector.part[1].base, vector.part[1].length } };
+		if ((nRecv = Descriptor::readv(iovs, count)) > 0) {
 			in.skipWrite(nRecv);
 		}
 	}
