@@ -27,11 +27,17 @@ public:
 	virtual ~Sink() = default;
 	/**
 	 * Consumes data from a given buffer.
-	 * @param buffer input buffer
+	 * @param src input buffer
 	 * @param count number of elements to consume
 	 * @return number of elements consumed from the buffer
 	 */
-	virtual size_t ingest(X *buffer, size_t count) = 0;
+	virtual size_t ingest(const X *src, size_t count) = 0;
+	/**
+	 * Consumes a single element.
+	 * @param src value to consume
+	 * @return true on success, false otherwise
+	 */
+	virtual bool ingest(const X &src) = 0;
 	/**
 	 * Returns the maximum number of elements which can be consumed.
 	 * @return remaining consumption capacity

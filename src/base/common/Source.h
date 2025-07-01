@@ -27,11 +27,17 @@ public:
 	virtual ~Source() = default;
 	/**
 	 * Transfers data into a given buffer.
-	 * @param buffer output buffer
-	 * @param count buffer's capacity
+	 * @param dest output buffer
+	 * @param count output buffer's capacity
 	 * @return number of elements transferred to the buffer
 	 */
-	virtual size_t emit(X *buffer, size_t count) = 0;
+	virtual size_t emit(X *dest, size_t count) = 0;
+	/**
+	 * Transfers a single element.
+	 * @param dest object for storing the value
+	 * @return true on success, false otherwise
+	 */
+	virtual bool emit(X &dest) = 0;
 	/**
 	 * Returns the maximum number of elements available for transfer.
 	 * @return available elements count

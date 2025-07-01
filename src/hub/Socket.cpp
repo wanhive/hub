@@ -97,8 +97,12 @@ void Socket::operator delete(void *p) noexcept {
 	Pooled::operator delete(p);
 }
 
-size_t Socket::emit(unsigned char *buffer, size_t count) {
-	return in.read(buffer, count);
+size_t Socket::emit(unsigned char *dest, size_t count) noexcept {
+	return in.read(dest, count);
+}
+
+bool Socket::emit(unsigned char &dest) noexcept {
+	return in.get(dest);
 }
 
 size_t Socket::available() const noexcept {

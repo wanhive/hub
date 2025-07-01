@@ -83,13 +83,17 @@ public:
 	 */
 	~Socket();
 	//-----------------------------------------------------------------
+	/*
+	 * Custom allocator and deallocator
+	 */
 	void* operator new(size_t size);
 	void operator delete(void *p) noexcept;
 	//-----------------------------------------------------------------
 	/*
 	 * Source interface implementation
 	 */
-	size_t emit(unsigned char *buffer, size_t count) override;
+	size_t emit(unsigned char *dest, size_t count) noexcept override;
+	bool emit(unsigned char &dest) noexcept override;
 	size_t available() const noexcept override;
 	//-----------------------------------------------------------------
 	/*
