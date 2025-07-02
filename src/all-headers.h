@@ -101,6 +101,7 @@
 #include "hub/Logic.h"
 #include "hub/Protocol.h"
 #include "hub/Socket.h"
+#include "hub/Stream.h"
 #include "hub/Topic.h"
 #include "hub/Watchers.h"
 #include "reactor/Descriptor.h"

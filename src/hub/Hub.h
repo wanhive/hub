@@ -20,6 +20,7 @@
 #include "Interrupt.h"
 #include "Logic.h"
 #include "Socket.h"
+#include "Stream.h"
 #include "Watchers.h"
 #include "../base/Timer.h"
 #include "../base/Thread.h"
@@ -38,6 +39,7 @@ class Hub: public Handler<Alarm>,
 		public Handler<Interrupt>,
 		public Handler<Logic>,
 		public Handler<Socket>,
+		public Handler<Stream>,
 		protected Identity,
 		protected Reactor,
 		private Task {
@@ -249,6 +251,14 @@ private:
 	 */
 	virtual void onLogic(unsigned long long uid,
 			const LogicEvent &event) noexcept;
+	/**
+	 * Adapter: callback for byte stream.
+	 * @param id stream's identifier
+	 * @param sink stream's sink
+	 * @param source stream's source
+	 */
+	virtual void onStream(unsigned long long id, Sink<unsigned char> &sink,
+			Source<unsigned char> &source) noexcept;
 	//-----------------------------------------------------------------
 	/**
 	 * Adapter: allow/disallow worker thread creation.
@@ -274,6 +284,7 @@ private:
 	bool handle(Interrupt *interrupt) noexcept final;
 	bool handle(Logic *logic) noexcept final;
 	bool handle(Socket *socket) noexcept final;
+	bool handle(Stream *stream) noexcept final;
 	//-----------------------------------------------------------------
 	/*
 	 * Task interface implementation
@@ -318,6 +329,8 @@ private:
 	bool acceptConnection(Socket *listener) noexcept;
 	//Read/write data to and from a connected Socket
 	bool processConnection(Socket *connection) noexcept;
+	//Read/write data to and from a byte stream
+	bool processStream(Stream *stream) noexcept;
 	//-----------------------------------------------------------------
 	/*
 	 * Traffic limiting, shaping and policing

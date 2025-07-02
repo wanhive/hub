@@ -411,6 +411,11 @@ void Hub::onLogic(unsigned long long uid, const LogicEvent &event) noexcept {
 
 }
 
+void Hub::onStream(unsigned long long id, Sink<unsigned char> &sink,
+		Source<unsigned char> &source) noexcept {
+
+}
+
 bool Hub::hasWorker() const noexcept {
 	return false;
 }
@@ -544,6 +549,16 @@ bool Hub::handle(Socket *socket) noexcept {
 		return acceptConnection(socket);
 	} else {
 		return processConnection(socket);
+	}
+}
+
+bool Hub::handle(Stream *stream) noexcept {
+	if (stream == nullptr) {
+		return false;
+	} else if (stream->testEvents(IO_CLOSE)) {
+		return disable(stream);
+	} else {
+		return processStream(stream);
 	}
 }
 
@@ -919,7 +934,26 @@ bool Hub::processConnection(Socket *connection) noexcept {
 		WH_LOG_EXCEPTION(e);
 		return disable(connection);
 	}
-	return false;
+}
+
+bool Hub::processStream(Stream *stream) noexcept {
+	try {
+		//First drain out all the data
+		if (stream->testEvents(IO_WRITE) && stream->testFlags(WATCHER_OUT)) {
+			stream->write();
+		}
+
+		//Read from the stream
+		if (stream->testEvents(IO_READ) && (stream->read() == -1)) {
+			return disable(stream);
+		}
+
+		onStream(stream->getUid(), *stream, *stream);
+		return stream->isReady();
+	} catch (const BaseException &e) {
+		WH_LOG_EXCEPTION(e);
+		return disable(stream);
+	}
 }
 
 bool Hub::drop(Message *message) const noexcept {
