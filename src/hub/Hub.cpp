@@ -894,10 +894,8 @@ bool Hub::processConnection(Socket *connection) noexcept {
 		}
 
 		//Read from the socket
-		if (connection->testEvents(IO_READ)) {
-			if (connection->read() == -1) {
-				return disable(connection);
-			}
+		if (connection->testEvents(IO_READ) && (connection->read() == -1)) {
+			return disable(connection);
 		}
 		//-----------------------------------------------------------------
 		/*
@@ -938,7 +936,8 @@ bool Hub::processConnection(Socket *connection) noexcept {
 
 bool Hub::processStream(Stream *stream) noexcept {
 	try {
-		//First drain out all the data
+		//-----------------------------------------------------------------
+		//Write to the stream
 		if (stream->testEvents(IO_WRITE) && stream->testFlags(WATCHER_OUT)) {
 			stream->write();
 		}
@@ -947,7 +946,7 @@ bool Hub::processStream(Stream *stream) noexcept {
 		if (stream->testEvents(IO_READ) && (stream->read() == -1)) {
 			return disable(stream);
 		}
-
+		//-----------------------------------------------------------------
 		onStream(stream->getUid(), *stream, *stream);
 		return stream->isReady();
 	} catch (const BaseException &e) {
