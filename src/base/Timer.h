@@ -51,12 +51,22 @@ public:
 	static void sleep(unsigned int milliseconds,
 			unsigned int nanoseconds = 0) noexcept;
 	/**
-	 * Converts the current wall-clock time to human readable text.
-	 * @param buffer buffer for storing the text
-	 * @param size buffer's size in bytes (32 bytes is sufficient).
-	 * @return output text's size in bytes on success, 0 on failure
+	 * Converts the current wall-clock time (UTC) to human readable string.
+	 * @param buffer output buffer for storing the formatted string
+	 * @param size buffer's size in bytes
+	 * @param format date and time representation format
+	 * @return formatted string's size in bytes on success, 0 on failure
 	 */
-	static size_t print(char *buffer, size_t size) noexcept;
+	static size_t print(char *buffer, size_t size,
+			const char *format = nullptr) noexcept;
+	/**
+	 * Converts unix timestamp to an ISO 8601 formatted string.
+	 * @param timestamp unix timestamp with fractional seconds
+	 * @param buffer output buffer for storing the formatted string
+	 * @param size buffer's size in bytes
+	 * @return formatted string's size in bytes on success, 0 on failure
+	 */
+	static size_t print(double timestamp, char *buffer, size_t size) noexcept;
 	/**
 	 * Generate a 64-bit value for seeding the non-cryptographic RNGs.
 	 * @return 64-byte value based on the current time-stamp.
@@ -79,6 +89,8 @@ public:
 	static constexpr long NS_IN_MILS = (NS_IN_SEC / MILS_IN_SEC);
 	/** Microseconds in a Millisecond */
 	static constexpr long MS_IN_MILS = (MS_IN_SEC / MILS_IN_SEC);
+	/*! ISO8601 (UTC) format for date and time representation */
+	static constexpr const char *ISO8601_UTC_FMT = "%Y-%m-%dT%H:%M:%SZ";
 private:
 	//Time in microseconds, sufficient for 300,000 years
 	unsigned long long t;

@@ -14,6 +14,7 @@
 #include "ds/Twiddler.h"
 #include "unix/Time.h"
 #include <cerrno>
+#include <cstdio>
 
 namespace wanhive {
 
@@ -60,13 +61,39 @@ void Timer::sleep(unsigned int milliseconds, unsigned int nanoseconds) noexcept 
 	}
 }
 
-size_t Timer::print(char *buffer, size_t size) noexcept {
+size_t Timer::print(char *buffer, size_t size, const char *format) noexcept {
 	try {
 		Time t(CLOCK_REALTIME); //Cannot fail
-		auto format = "%Y_%m_%d-%H_%M_%S-%Z";
+		format = (format == nullptr) ? "%Y_%m_%d-%H_%M_%S-%Z" : format;
 		return t.convert(buffer, size, format); //Can fail
 	} catch (...) {
 		return 0;
+	}
+}
+
+size_t Timer::print(double timestamp, char *buffer, size_t size) noexcept {
+	if (!buffer || !size) {
+		return 0;
+	}
+
+	auto seconds = static_cast<time_t>(timestamp);
+	auto milliseconds = static_cast<long>((timestamp - seconds) * 1000);
+
+	tm ct;
+	if (gmtime_r(&seconds, &ct) == nullptr) {
+		return 0;
+	}
+
+	char tmp[64];
+	if (strftime(tmp, sizeof(tmp), "%Y-%m-%dT%H:%M:%S", &ct) == 0) {
+		return 0;
+	}
+
+	auto n = snprintf(buffer, size, "%s.%03ldZ", tmp, milliseconds);
+	if (n < 0 || ((size_t) n) >= size) {
+		return 0;
+	} else {
+		return n;
 	}
 }
 
