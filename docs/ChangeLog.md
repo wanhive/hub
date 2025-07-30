@@ -5,6 +5,13 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Added
+
+- Unix timestamp to ISO 8601 formatted string conversion function in the **Timer** class.
+- Optional **format** parameter in the Wall clock to date/time formatter function of the **Timer** class.
+
 ## [14.0.0] - 2025-07-03
 
 ### Added
