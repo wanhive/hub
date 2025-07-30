@@ -79,21 +79,22 @@ size_t Timer::print(double timestamp, char *buffer, size_t size) noexcept {
 	auto seconds = static_cast<time_t>(timestamp);
 	auto milliseconds = static_cast<long>((timestamp - seconds) * 1000);
 
-	tm ct;
-	if (gmtime_r(&seconds, &ct) == nullptr) {
+	tm utc;
+	if (gmtime_r(&seconds, &utc) == nullptr) {
 		return 0;
 	}
 
-	char tmp[64];
-	if (strftime(tmp, sizeof(tmp), "%Y-%m-%dT%H:%M:%S", &ct) == 0) {
+	auto offset = strftime(buffer, size, "%Y-%m-%dT%H:%M:%S", &utc);
+	if (offset == 0) {
 		return 0;
 	}
 
-	auto n = snprintf(buffer, size, "%s.%03ldZ", tmp, milliseconds);
+	size = (size - offset);
+	auto n = snprintf((buffer + offset), size, ".%03ldZ", milliseconds);
 	if (n < 0 || ((size_t) n) >= size) {
 		return 0;
 	} else {
-		return n;
+		return (offset + n);
 	}
 }
 
