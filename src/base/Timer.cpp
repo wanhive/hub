@@ -14,6 +14,7 @@
 #include "ds/Twiddler.h"
 #include "unix/Time.h"
 #include <cerrno>
+#include <cmath>
 #include <cstdio>
 
 namespace wanhive {
@@ -72,7 +73,7 @@ size_t Timer::print(char *buffer, size_t size, const char *format) noexcept {
 }
 
 size_t Timer::print(double timestamp, char *buffer, size_t size) noexcept {
-	if (!buffer || !size) {
+	if (!buffer || !size || !std::isfinite(timestamp)) {
 		return 0;
 	}
 
