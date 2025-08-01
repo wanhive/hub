@@ -131,6 +131,12 @@ off_t Storage::seek(int fd, off_t offset, int whence) {
 	}
 }
 
+void Storage::truncate(int fd, off_t length) {
+	if (::ftruncate(fd, length) == -1) {
+		throw SystemException();
+	}
+}
+
 void Storage::fill(int fd, size_t size, unsigned char c) {
 	unsigned char buffer[4096];
 	auto bytesleft = size;

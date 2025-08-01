@@ -83,6 +83,12 @@ public:
 	 */
 	static off_t seek(int fd, off_t offset, int whence);
 	/**
+	 * Truncates a file to a given length: wrapper for ftruncate(2) system call.
+	 * @param fd file descriptor
+	 * @param length truncated size (bytes)
+	 */
+	static void truncate(int fd, off_t length);
+	/**
 	 * Fills up a file with the given character.
 	 * @param fd file descriptor
 	 * @param size number of characters to write
