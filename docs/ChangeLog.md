@@ -11,6 +11,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Unix timestamp to ISO 8601 formatted string conversion function in the **Timer** class.
 - Optional **format** parameter in the Wall clock to date/time formatter function of the **Timer** class.
+- **Storage::truncate** function for file truncation.
 
 ## [14.0.0] - 2025-07-03
 
