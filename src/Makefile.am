@@ -37,17 +37,18 @@ WH_BASE_SECURITYSOURCES = base/security/CryptoUtils.cpp base/security/CSPRNG.cpp
 ## src/base/unix
 WH_BASEUNIXHEADERS = base/unix/Config.h base/unix/Directory.h base/unix/Environment.h \
 	base/unix/Fcntl.h base/unix/File.h base/unix/FileStream.h base/unix/FileSystem.h \
-	base/unix/FStat.h base/unix/Group.h base/unix/OS.h base/unix/PGroup.h \
-	base/unix/Process.h base/unix/PSession.h base/unix/PSignal.h base/unix/PThread.h \
-	base/unix/SignalAction.h base/unix/SignalSet.h base/unix/SystemException.h \
-	base/unix/Time.h base/unix/TSignal.h base/unix/User.h \
-	base/unix/WorkingDirectory.h
+	base/unix/FStat.h base/unix/Group.h base/unix/Mounts.h base/unix/OS.h \
+	base/unix/PGroup.h base/unix/Process.h base/unix/PSession.h \
+	base/unix/PSignal.h base/unix/PThread.h base/unix/SignalAction.h \
+	base/unix/SignalSet.h base/unix/SystemException.h base/unix/Time.h \
+	base/unix/TSignal.h base/unix/User.h base/unix/WorkingDirectory.h
 WH_BASEUNIXSOURCES = base/unix/Config.cpp base/unix/Directory.cpp \
 	base/unix/Environment.cpp base/unix/Fcntl.cpp base/unix/File.cpp \
 	base/unix/FileStream.cpp base/unix/FileSystem.cpp base/unix/FStat.cpp \
-	base/unix/Group.cpp base/unix/OS.cpp base/unix/PGroup.cpp base/unix/Process.cpp \
-	base/unix/PSession.cpp base/unix/PSignal.cpp base/unix/PThread.cpp \
-	base/unix/SignalAction.cpp base/unix/SignalSet.cpp base/unix/SystemException.cpp \
+	base/unix/Group.cpp base/unix/Mounts.cpp base/unix/OS.cpp \
+	base/unix/PGroup.cpp base/unix/Process.cpp base/unix/PSession.cpp \
+	base/unix/PSignal.cpp base/unix/PThread.cpp base/unix/SignalAction.cpp \
+	base/unix/SignalSet.cpp base/unix/SystemException.cpp \
 	base/unix/Time.cpp base/unix/TSignal.cpp base/unix/User.cpp \
 	base/unix/WorkingDirectory.cpp
 

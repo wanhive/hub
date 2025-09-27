@@ -77,6 +77,7 @@
 #include "base/unix/FileSystem.h"
 #include "base/unix/FStat.h"
 #include "base/unix/Group.h"
+#include "base/unix/Mounts.h"
 #include "base/unix/OS.h"
 #include "base/unix/PGroup.h"
 #include "base/unix/Process.h"

@@ -35,7 +35,7 @@ AC_CHECK_LIB([sqlite3], [sqlite3_open_v2], , [AC_MSG_ERROR([libsqlite3 not found
 AC_CHECK_LIB([ssl], [OPENSSL_init_ssl], , [AC_MSG_ERROR([libssl not found.])])
 
 # Checks for header files.
-AC_CHECK_HEADERS([fcntl.h netdb.h sys/file.h sys/time.h syslog.h termios.h unistd.h], , [AC_MSG_ERROR([Header files missing.])])
+AC_CHECK_HEADERS([fcntl.h mntent.h netdb.h sys/file.h sys/time.h syslog.h termios.h unistd.h], ,[AC_MSG_ERROR([Header files missing.])])
 
 # Checks for typedefs, structures, and compiler characteristics.
 AC_CHECK_HEADER_STDBOOL
@@ -61,11 +61,12 @@ AC_TYPE_UINT8_T
 AC_FUNC_CHOWN
 AC_FUNC_ERROR_AT_LINE
 AC_FUNC_FORK
+AC_FUNC_GETMNTENT
 AC_FUNC_LSTAT_FOLLOWS_SLASHED_SYMLINK
 AC_HEADER_MAJOR
 AC_FUNC_REALLOC
 AC_FUNC_STRERROR_R
-AC_CHECK_FUNCS([alarm atexit clock_gettime fchdir ftruncate getcwd gethostname lchown localtime_r memmove memset mkdir pathconf putenv realpath rmdir select setenv socket strcasecmp strchr strdup strrchr uname])
+AC_CHECK_FUNCS([alarm atexit clock_gettime fchdir ftruncate getcwd gethostname getmntent lchown localtime_r memmove memset mkdir pathconf putenv realpath rmdir select setenv socket strcasecmp strchr strdup strrchr uname])
 
 # Conditionally build the additional packages
 AC_ARG_WITH([executables], [AS_HELP_STRING([--without-executables], [Do not build executable programs.])])
