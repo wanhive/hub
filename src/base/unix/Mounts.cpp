@@ -1,7 +1,7 @@
 /*
  * Mounts.cpp
  *
- * Mounted file systems scanner
+ * Mounted file systems information
  *
  *
  * Copyright (C) 2025 Amit Kumar (amitkriit@gmail.com)

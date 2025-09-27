@@ -39,7 +39,7 @@ public:
 	 */
 	File(const char *path, int flags);
 	/**
-	 * COnstructor: opens or creates a file.
+	 * Constructor: opens or creates a file.
 	 * @param path file's pathname
 	 * @param flags operation flags
 	 * @param mode file mode bitmap

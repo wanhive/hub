@@ -1,7 +1,7 @@
 /*
  * Mounts.h
  *
- * Mounted file systems scanner
+ * Mounted file systems information
  *
  *
  * Copyright (C) 2025 Amit Kumar (amitkriit@gmail.com)
@@ -22,7 +22,7 @@ namespace wanhive {
 class Mounts {
 public:
 	/**
-	 * Constructor: opens the /proc/mounts file stream for reading.
+	 * Constructor: opens the /proc/mounts special file stream for reading.
 	 */
 	Mounts();
 	/**
