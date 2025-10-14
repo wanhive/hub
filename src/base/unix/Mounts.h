@@ -34,7 +34,7 @@ public:
 	 * function overwrites a static memory area on subsequent calls.
 	 * @return pointer to description structure on success, nullptr on failure
 	 */
-	mntent* next();
+	mntent* next() noexcept;
 private:
 	void open();
 	void close() noexcept;

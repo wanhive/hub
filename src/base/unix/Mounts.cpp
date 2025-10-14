@@ -23,7 +23,7 @@ Mounts::~Mounts() {
 	close();
 }
 
-mntent* Mounts::next() {
+mntent* Mounts::next() noexcept {
 	return getmntent(fp);
 }
 
