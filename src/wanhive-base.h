@@ -31,6 +31,7 @@
 #include "base/ds/Feature.h"
 #include "base/ds/Gradient.h"
 #include "base/ds/Handle.h"
+#include "base/ds/Mean.h"
 #include "base/ds/Khash.h"
 #include "base/ds/MersenneTwister.h"
 #include "base/ds/Pooled.h"
