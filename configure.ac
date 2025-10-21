@@ -2,7 +2,7 @@
 # Process this file with autoconf to produce a configure script.
 
 AC_PREREQ([2.71])
-AC_INIT([wanhive], [14.0.0], [info@wanhive.com], , [www.wanhive.com])
+AC_INIT([wanhive], [15.0.0], [info@wanhive.com], , [www.wanhive.com])
 AC_CONFIG_AUX_DIR([config])
 AM_INIT_AUTOMAKE([foreign subdir-objects])
 AC_CONFIG_SRCDIR([src/wanhive-reactor.h])
@@ -17,7 +17,7 @@ AC_DEFINE_UNQUOTED([INCEPTION_YEAR], ["${INCEPTION_YEAR}"], [Release year])
 
 # Library version
 # https://www.gnu.org/software/libtool/manual/html_node/Updating-version-info.html
-WH_LIB_VERSION='15:0:0'
+WH_LIB_VERSION='16:0:0'
 AC_SUBST([WH_LIB_VERSION])
 AC_DEFINE_UNQUOTED([WH_LIB_VERSION], ["${WH_LIB_VERSION}"], [Version number of library])
 
