@@ -1,5 +1,5 @@
 /*
- * AppManager.h
+ * Manager.h
  *
  * Real stuff happens here
  *
@@ -10,25 +10,24 @@
  *
  */
 
-#ifndef WH_APP_APPMANAGER_H_
-#define WH_APP_APPMANAGER_H_
+#ifndef WH_APP_MANAGER_H_
+#define WH_APP_MANAGER_H_
 #include "../wanhive.h"
-#include <cstdio>
 
 namespace wanhive {
 /**
  * Real stuff happens here
  */
-class AppManager {
+class Manager {
 public:
 	/**
 	 * Default constructor: does nothing
 	 */
-	AppManager() noexcept;
+	Manager() noexcept;
 	/**
 	 * Destructor
 	 */
-	~AppManager();
+	~Manager();
 	/**
 	 * Interactively executes the main application.
 	 * @param argc command line arguments count
@@ -54,15 +53,19 @@ private:
 	static void printUsage(FILE *stream) noexcept;
 	static void printContact(FILE *stream) noexcept;
 	static void clear() noexcept;
+public:
+	struct Context {
+		const char *program;
+		bool menu;
+		char type;
+		unsigned long long uid;
+		const char *config;
+		Hub *hub;
+	};
 private:
-	static const char *programName;
-	static bool menu;
-	static char hubType;
-	static unsigned long long hubId;
-	static const char *configPath;
-	static Hub *hub;
+	static Context ctx;
 };
 
 } /* namespace wanhive */
 
-#endif /* WH_APP_APPMANAGER_H_ */
+#endif /* WH_APP_MANAGER_H_ */

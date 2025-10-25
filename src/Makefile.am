@@ -115,8 +115,8 @@ WH_TESTSOURCES = test/ds/BufferTest.cpp test/ds/HashTableTest.cpp \
 	test/multicast/MulticastConsumer.cpp
 
 ## src/app collection
-WH_APPHEADERS = app/AppManager.h app/ConfigTool.h
-WH_APPSOURCES = app/AppManager.cpp app/ConfigTool.cpp wanhive.cpp
+WH_APPHEADERS = app/ConfigTool.h app/Manager.h
+WH_APPSOURCES = app/ConfigTool.cpp app/Manager.cpp wanhive.cpp
 
 ## src/ collection
 WH_TOPHEADERS = wanhive-base.h wanhive-reactor.h wanhive-util.h wanhive-hub.h wanhive.h

@@ -1,5 +1,5 @@
 /*
- * AppManager.cpp
+ * Manager.cpp
  *
  * Real stuff happens here
  *
@@ -10,50 +10,48 @@
  *
  */
 
-#include "AppManager.h"
+#include "Manager.h"
 #include "ConfigTool.h"
 #include "../base/version.h"
-
 #include "../server/auth/AuthenticationHub.h"
 #include "../server/overlay/OverlayHub.h"
 #include "../server/overlay/OverlayTool.h"
-
 #include "../test/ds/BufferTest.h"
 #include "../test/ds/HashTableTest.h"
 #include "../test/flood/NetworkTest.h"
 #include "../test/multicast/MulticastConsumer.h"
-
 #include <iostream>
 #include <getopt.h>
 
+namespace {
+
+constexpr unsigned long long INVALID_UID = static_cast<unsigned long long>(-1);
+
+}  // namespace
+
 namespace wanhive {
 
-const char *AppManager::programName = nullptr;
-bool AppManager::menu = false;
-unsigned long long AppManager::hubId = (unsigned long long) -1;
-char AppManager::hubType = '\0';
-const char *AppManager::configPath = nullptr;
-Hub *AppManager::hub = nullptr;
+Manager::Context Manager::ctx;
 
-AppManager::AppManager() noexcept {
+Manager::Manager() noexcept {
 
 }
 
-AppManager::~AppManager() {
+Manager::~Manager() {
 
 }
 
-void AppManager::execute(int argc, char *argv[]) noexcept {
+void Manager::execute(int argc, char *argv[]) noexcept {
 	if (parseOptions(argc, argv) == 0) {
 		processOptions();
 	}
 }
 
-int AppManager::parseOptions(int argc, char *argv[]) noexcept {
+int Manager::parseOptions(int argc, char *argv[]) noexcept {
 	clear();
 	//-----------------------------------------------------------------
-	programName = strrchr(argv[0], Storage::PATH_SEPARATOR);
-	programName = programName ? (programName + 1) : argv[0];
+	ctx.program = strrchr(argv[0], Storage::PATH_SEPARATOR);
+	ctx.program = ctx.program ? (ctx.program + 1) : argv[0];
 	//-----------------------------------------------------------------
 	auto shortOptions = "c:hmn:St:v";
 	const struct option longOptions[] = { { "config", 1, nullptr, 'c' }, {
@@ -66,22 +64,22 @@ int AppManager::parseOptions(int argc, char *argv[]) noexcept {
 				nullptr);
 		switch (nextOption) {
 		case 'c':
-			configPath = optarg;
+			ctx.config = optarg;
 			break;
 		case 'h':
 			printHelp(stdout);
 			return 1;
 		case 'm':
-			menu = true;
+			ctx.menu = true;
 			break;
 		case 'n':
-			sscanf(optarg, "%llu", &hubId);
+			sscanf(optarg, "%llu", &ctx.uid);
 			break;
 		case 'S':
 			Logger::getDefault().setTarget(WH_LOG_SYS);
 			break;
 		case 't':
-			sscanf(optarg, "%c", &hubType);
+			sscanf(optarg, "%c", &ctx.type);
 			break;
 		case 'v':
 			printVersion(stdout);
@@ -100,9 +98,9 @@ int AppManager::parseOptions(int argc, char *argv[]) noexcept {
 	}
 }
 
-void AppManager::processOptions() noexcept {
+void Manager::processOptions() noexcept {
 	int option = 1; //Default option
-	if (menu) {
+	if (ctx.menu) {
 		std::cout << "Select an option\n" << "1. WANHIVE HUB\n"
 				<< "2. UTILITIES\n" << "3. PROTOCOL TEST\n"
 				<< "4. NETWORK TEST\n" << "5. COMPONENTS TEST\n" << "6. ABOUT\n"
@@ -138,16 +136,16 @@ void AppManager::processOptions() noexcept {
 	}
 }
 
-void AppManager::executeHub() noexcept {
-	hub = nullptr;
+void Manager::executeHub() noexcept {
+	ctx.hub = nullptr;
 	int mode = 0;
-	if (hubType == 'o') {
+	if (ctx.type == 'o') {
 		mode = 1;
-	} else if (hubType == 'a') {
+	} else if (ctx.type == 'a') {
 		mode = 2;
-	} else if (hubType == 'm') {
+	} else if (ctx.type == 'm') {
 		mode = 3;
-	} else if (hubType == '\0') {
+	} else if (ctx.type == '\0') {
 		std::cout << "Select an option\n" << "1: Overlay server (-to)\n"
 				<< "2: Authentication server (-ta)\n"
 				<< "3: Multicast consumer for testing (-tm)\n" << ":: ";
@@ -160,9 +158,9 @@ void AppManager::executeHub() noexcept {
 		return;
 	}
 
-	if (hubId == (unsigned long long) -1) {
+	if (ctx.uid == INVALID_UID) {
 		std::cout << "Hub's identity: ";
-		std::cin >> hubId;
+		std::cin >> ctx.uid;
 		if (CommandLine::inputError()) {
 			return;
 		}
@@ -170,9 +168,9 @@ void AppManager::executeHub() noexcept {
 
 	try {
 		if (mode == 1) {
-			hub = new OverlayHub(hubId, configPath);
+			ctx.hub = new OverlayHub(ctx.uid, ctx.config);
 		} else if (mode == 2) {
-			hub = new AuthenticationHub(hubId, configPath);
+			ctx.hub = new AuthenticationHub(ctx.uid, ctx.config);
 		} else if (mode == 3) {
 			unsigned int topic;
 			std::cout << "Topic [" << Topic::MIN_ID << "-" << Topic::MAX_ID
@@ -187,7 +185,7 @@ void AppManager::executeHub() noexcept {
 				return;
 			}
 
-			hub = new MulticastConsumer(hubId, topic, configPath);
+			ctx.hub = new MulticastConsumer(ctx.uid, topic, ctx.config);
 		} else {
 			std::cerr << "Invalid option" << std::endl;
 			return;
@@ -198,7 +196,7 @@ void AppManager::executeHub() noexcept {
 		 * calling Hub::execute()
 		 */
 		installSignals();
-		if (hub->execute(nullptr)) {
+		if (ctx.hub->execute(nullptr)) {
 			WH_LOG_INFO("Hub was terminated normally.");
 		} else {
 			WH_LOG_ERROR("Hub was terminated due to error.");
@@ -209,25 +207,25 @@ void AppManager::executeHub() noexcept {
 	} catch (...) {
 		WH_LOG_EXCEPTION_U();
 	}
-	delete hub;
-	hub = nullptr;
+	delete ctx.hub;
+	ctx.hub = nullptr;
 }
 
-void AppManager::runSettingsManager() noexcept {
+void Manager::runSettingsManager() noexcept {
 	ConfigTool cft;
 	cft.execute();
 }
 
-void AppManager::runCommandTest() noexcept {
-	OverlayTool n(configPath, 2000);
+void Manager::runCommandTest() noexcept {
+	OverlayTool n(ctx.config, 2000);
 	n.run();
 }
 
-void AppManager::runNetworkTest() noexcept {
-	NetworkTest::test(configPath);
+void Manager::runNetworkTest() noexcept {
+	NetworkTest::test(ctx.config);
 }
 
-void AppManager::runComponentsTest() noexcept {
+void Manager::runComponentsTest() noexcept {
 	//Maintaining the scopes to free up the memory immediately
 	{
 		std::cout << "\n-----RING BUFFER TEST BEGIN-----\n";
@@ -276,7 +274,7 @@ void AppManager::runComponentsTest() noexcept {
 	}
 }
 
-void AppManager::installSignals() {
+void Manager::installSignals() {
 	//Block all signals
 	Signal::blockAll();
 	//Suppress SIGPIPE
@@ -291,7 +289,7 @@ void AppManager::installSignals() {
 	//Rest of the signals not handled
 }
 
-void AppManager::restoreSignals() {
+void Manager::restoreSignals() {
 	//Unblock all signals
 	Signal::unblockAll();
 	//Restore SIGPIPE
@@ -306,25 +304,25 @@ void AppManager::restoreSignals() {
 	//Rest of the signals not handled
 }
 
-void AppManager::shutdown(int signum) noexcept {
-	hub->cancel();
+void Manager::shutdown(int signum) noexcept {
+	ctx.hub->cancel();
 }
 
-void AppManager::printHelp(FILE *stream) noexcept {
+void Manager::printHelp(FILE *stream) noexcept {
 	printVersion(stream);
 	printUsage(stream);
 	printContact(stream);
 }
 
-void AppManager::printVersion(FILE *stream) noexcept {
+void Manager::printVersion(FILE *stream) noexcept {
 	fprintf(stream, "\n%s %s version %s\nCopyright (C) %s %s.\n",
 	WH_PRODUCT_NAME, WH_RELEASE_NAME, WH_RELEASE_VERSION,
 	WH_RELEASE_YEAR, WH_RELEASE_AUTHOR);
 	fprintf(stream, "LICENSE %s\n\n", WH_LICENSE_TEXT);
 }
 
-void AppManager::printUsage(FILE *stream) noexcept {
-	fprintf(stream, "Usage: %s [OPTIONS]\n", programName);
+void Manager::printUsage(FILE *stream) noexcept {
+	fprintf(stream, "Usage: %s [OPTIONS]\n", ctx.program);
 	fprintf(stream, "OPTIONS\n");
 	fprintf(stream, "-c --config   <path>      \tConfiguration file's path.\n");
 	fprintf(stream, "-h --help                 \tDisplay usage information.\n");
@@ -342,19 +340,18 @@ void AppManager::printUsage(FILE *stream) noexcept {
 			Identity::CONF_PATH, Identity::CONF_SYSTEM_PATH);
 }
 
-void AppManager::printContact(FILE *stream) noexcept {
+void Manager::printContact(FILE *stream) noexcept {
 	fprintf(stream, "\nurl: %s   email: %s\n\n", WH_RELEASE_URL,
 	WH_RELEASE_EMAIL);
 }
 
-void AppManager::clear() noexcept {
-	programName = nullptr;
-	menu = false;
-	hubId = (unsigned long long) -1;
-	hubType = '\0';
-	configPath = nullptr;
-	hub = nullptr;
+void Manager::clear() noexcept {
+	ctx.program = nullptr;
+	ctx.menu = false;
+	ctx.uid = INVALID_UID;
+	ctx.type = '\0';
+	ctx.config = nullptr;
+	ctx.hub = nullptr;
 }
 
-}
-/* namespace wanhive */
+} /* namespace wanhive */

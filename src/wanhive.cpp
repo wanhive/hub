@@ -7,9 +7,9 @@
 // Description : The main function
 //============================================================================
 
-#include "app/AppManager.h"
+#include "app/Manager.h"
 
 int main(int argc, char *argv[]) {
-	wanhive::AppManager::execute(argc, argv);
+	wanhive::Manager::execute(argc, argv);
 	return 0;
 }
