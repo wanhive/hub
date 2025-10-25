@@ -109,6 +109,11 @@ size_t Socket::available() const noexcept {
 	return in.readSpace();
 }
 
+bool Socket::drain() noexcept {
+	in.clear();
+	return true;
+}
+
 void Socket::start() {
 
 }

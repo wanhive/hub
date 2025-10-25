@@ -42,6 +42,7 @@ public:
 	size_t ingest(const unsigned char *src, size_t count) noexcept override;
 	bool ingest(const unsigned char &src) noexcept override;
 	size_t space() const noexcept override;
+	bool flush() noexcept override;
 	//-----------------------------------------------------------------
 	/*
 	 * Source interface implementation
@@ -49,6 +50,7 @@ public:
 	size_t emit(unsigned char *dest, size_t count) noexcept override;
 	bool emit(unsigned char &dest) noexcept override;
 	size_t available() const noexcept override;
+	bool drain() noexcept override;
 	//-----------------------------------------------------------------
 	/*
 	 * Watcher interface implementation

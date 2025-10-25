@@ -46,6 +46,11 @@ size_t Stream::space() const noexcept {
 	return out.writeSpace();
 }
 
+bool Stream::flush() noexcept {
+	out.clear();
+	return true;
+}
+
 size_t Stream::emit(unsigned char *dest, size_t count) noexcept {
 	return in.read(dest, count);
 }
@@ -56,6 +61,11 @@ bool Stream::emit(unsigned char &dest) noexcept {
 
 size_t Stream::available() const noexcept {
 	return in.readSpace();
+}
+
+bool Stream::drain() noexcept {
+	in.clear();
+	return true;
 }
 
 void Stream::start() {

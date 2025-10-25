@@ -95,6 +95,7 @@ public:
 	size_t emit(unsigned char *dest, size_t count) noexcept override;
 	bool emit(unsigned char &dest) noexcept override;
 	size_t available() const noexcept override;
+	bool drain() noexcept override;
 	//-----------------------------------------------------------------
 	/*
 	 * Watcher interface implementation

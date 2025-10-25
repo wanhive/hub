@@ -34,15 +34,20 @@ public:
 	virtual size_t emit(X *dest, size_t count) = 0;
 	/**
 	 * Transfers a single element.
-	 * @param dest object for storing the value
-	 * @return true on success, false otherwise
+	 * @param dest value store
+	 * @return true on success, false on failure
 	 */
 	virtual bool emit(X &dest) = 0;
 	/**
-	 * Returns the maximum number of elements available for transfer.
+	 * Returns the available transfer capacity.
 	 * @return available elements count
 	 */
 	virtual size_t available() const noexcept = 0;
+	/**
+	 * Empties the container and discards the content.
+	 * @return true on success, false on failure
+	 */
+	virtual bool drain() noexcept = 0;
 };
 
 } /* namespace wanhive */
