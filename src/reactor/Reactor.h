@@ -1,7 +1,7 @@
 /*
  * Reactor.h
  *
- * Synchronous event demultiplexer and dispatcher
+ * Synchronous event selector and dispatcher
  *
  *
  * Copyright (C) 2018 Amit Kumar (amitkriit@gmail.com)
@@ -18,144 +18,127 @@
 
 namespace wanhive {
 /**
- * Reactor pattern implementation (synchronous event demultiplexer and dispatcher)
+ * Reactor pattern implementation (synchronous event selector and dispatcher)
  * @ref http://www.dre.vanderbilt.edu/~schmidt/PDF/reactor-siemens.pdf
  */
 class Reactor {
 public:
 	/**
-	 * Default constructor: creates a new reactor (call  Reactor::initialize() to
-	 * completely initialize the reactor).
+	 * Constructor: creates a reactor.
 	 */
 	Reactor() noexcept;
 	/**
-	 * Constructor: creates an initialized reactor.
-	 * @param maxEvents the maximum number of IO events to report in each call
-	 * to Reactor::poll().
+	 * Constructor: creates and initializes a reactor.
+	 * @param maxEvents maximum number of IO events to report in each poll
 	 * @param signal set to true for handling the asynchronous signal delivery
-	 * atomically, i.e. Reactor::poll() can be reliably interrupted by a signal.
+	 * atomically, i.e. a poll can be reliably interrupted by signals.
 	 */
 	Reactor(unsigned int maxEvents, bool signal);
 	/**
-	 * Destructor: cleans up the internal resources.
+	 * Destructor: releases the managed resources.
 	 */
 	virtual ~Reactor();
 	/**
-	 * Initializes the reactor after performing any necessary clean-up (if the
-	 * object was previously initialized).
-	 * @param maxEvents the maximum number of IO events to report in each call
-	 * to Reactor::poll().
+	 * Initializes the reactor (performs necessary clean-up if the object was
+	 * previously initialized).
+	 * @param maxEvents maximum number of IO events to report in each poll
 	 * @param signal set to true for handling the asynchronous signal delivery
-	 * atomically, i.e. Reactor::poll() can be reliably interrupted by a signal.
+	 * atomically, i.e. a poll can be reliably interrupted by signals.
 	 */
 	void initialize(unsigned int maxEvents, bool signal);
 	//-----------------------------------------------------------------
 	/**
-	 * Adds a watcher to this reactor. A watcher must be added only once, and to
-	 * only one reactor.
-	 * @param w the watcher to monitor
-	 * @param events the IO events of interest
+	 * Adds a watcher: a watcher must be added only once to only one reactor.
+	 * @param w a watcher to monitor
+	 * @param events IO events of interest
 	 */
 	void add(Watcher *w, uint32_t events);
 	/**
-	 * Modifies the IO events of interest for the given watcher. Can be used to
+	 * Modifies the IO events of interest for a given watcher. Can be used to
 	 * re-arm the watcher if the TRIGGER_ONCE flag was specified in the events
 	 * previously.
-	 * @param w a watcher already being monitored by this reactor
-	 * @param events the new IO events
+	 * @param w a watcher being monitored
+	 * @param events IO events of interest
 	 */
 	void modify(Watcher *w, uint32_t events);
 	/**
-	 * Invalidates and removes a watcher from the event loop, the removed watcher
-	 * will no longer be monitored by this reactor.
-	 * @param w a watcher currently being monitored by this reactor
+	 * Invalidates and removes a watcher from the event loop.
+	 * @param w a watcher being monitored
 	 * @return true if the watcher got invalidated but could not be removed from
 	 * the event loop immediately, false otherwise. An invalidated watcher will
-	 * be removed synchronously in the next iteration (event loop) if it could
-	 * not be removed immediately.
+	 * be removed synchronously in the next iteration (event loop).
 	 */
 	bool disable(Watcher *w) noexcept;
 	//-----------------------------------------------------------------
 	/**
-	 * The first step of an event loop: waits for IO events on the registered
-	 * watchers, signal-delivery, or timeout (see Reactor::setTimeout()).
-	 * @param block if true then the call will block until the timeout or signal
-	 * delivery. if false then the call will return immediately even if no IO
-	 * event got reported.
+	 * EVENT LOOP: waits for IO events on watchers, signal-delivery, or timeout.
+	 * @param block set true to block until timeout or signal delivery. Set
+	 * false to return immediately even if no IO event got reported.
 	 */
 	void poll(bool block);
 	/**
-	 * The last step of an event loop: processes the ready list of watchers that
-	 * have some events available and removes the invalid watchers.
+	 * EVENT LOOP: processes the ready list of watchers that have some events
+	 * available and removes the invalid watchers.
 	 */
 	void dispatch() noexcept;
 	/**
-	 * Adds a watcher back to the ready-list of watchers which are ready for
-	 * dispatch (see Reactor::dispatch()).
-	 * @param w a watcher being monitored by this reactor
+	 * Adds a watcher back to the list of watchers ready for IO (ready list).
+	 * @param w a watcher being monitored
 	 */
 	void retain(Watcher *w) noexcept;
+	//-----------------------------------------------------------------
 	/**
-	 * Checks whether the last call to Reactor::poll() got interrupted by a
-	 * signal.
-	 * @return true on signal delivery, false otherwise
+	 * Checks whether the last poll got interrupted by a signal.
+	 * @return true if interrupted, false otherwise
 	 */
 	bool interrupted() const noexcept;
 	/**
-	 * Checks whether the last call to Reactor::poll() got timed out.
-	 * @return true on timeout, false otherwise
+	 * Checks whether the last poll got timed out.
+	 * @return true if timeout expired, false otherwise
 	 */
 	bool timedOut() const noexcept;
 	/**
-	 * Returns the timeout value (see Reactor::poll()).
-	 * @return the timeout value
+	 * Returns the current timeout value for poll.
+	 * @return timeout value in milliseconds
 	 */
 	int getTimeout() const noexcept;
 	/**
-	 * Sets a new timeout value in milliseconds (see Reactor::poll()).
-	 * @param milliseconds the timeout value in milliseconds. Set this value to
-	 * -1 (default) to block indefinitely, setting it to zero (0) will result in
-	 * non-blocking operation.
+	 * Sets the number of milliseconds that a poll will block.
+	 * @param milliseconds timeout value in milliseconds. Set to -1 (default)
+	 * to block indefinitely, set to zero (0) for non-blocking operation.
 	 */
 	void setTimeout(int milliseconds) noexcept;
 private:
 	/**
-	 * Customizes a watcher before adding it to this reactor's event loop. This
-	 * method is called internally by Reactor::add().
-	 * @param w a watcher being added to this reactor
+	 * Customizes a watcher before adding it to the event loop.
+	 * @param w watcher to monitor
 	 */
 	virtual void adapt(Watcher *w) = 0;
 	/**
-	 * Reacts to the IO events reported on a watcher being monitored by this
-	 * reactor. This method is called internally by Reactor::dispatch().
-	 * @param w a watcher which has reported IO events
-	 * @return true if further processing is required (e.g. IO events are still
-	 * pending), false otherwise.
+	 * Reacts to the IO events available on a watcher.
+	 * @param w watcher ready for IO operation
+	 * @return true if further processing is required, false otherwise.
 	 */
 	virtual bool react(Watcher *w) noexcept = 0;
 	/**
-	 * Cleans up a watcher and the associated records after removing it from the
-	 * event loop (see Reactor::disable() and Reactor::dispatch()).
-	 * @param w the watcher being removed
+	 * Cleans up a watcher after removing it from the event loop.
+	 * @param w watcher being removed
 	 */
 	virtual void stop(Watcher *w) noexcept = 0;
 private:
 	/**
-	 * Returns the next watcher from the ready-list.
-	 * @return a watcher which requires processing
+	 * Returns the next watcher from the ready list.
+	 * @return next watcher
 	 */
 	Watcher* release() noexcept;
 	/**
 	 * Removes a watcher permanently from the event loop.
-	 * @param w a watcher currently being monitored by this reactor
+	 * @param w watcher being removed
 	 */
 	void remove(Watcher *w) noexcept;
 private:
-	//Selector timeout in milliseconds (default value: -1)
 	int timeout { -1 };
-	//The selector (event demultiplexer)
 	Selector selector;
-	//The ready list of watchers
 	ReadyList<Watcher*> readyList;
 };
 

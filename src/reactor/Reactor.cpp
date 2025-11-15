@@ -1,7 +1,7 @@
 /*
  * Reactor.cpp
  *
- * Synchronous event demultiplexer and dispatcher
+ * Synchronous event selector and dispatcher
  *
  *
  * Copyright (C) 2018 Amit Kumar (amitkriit@gmail.com)

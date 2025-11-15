@@ -25,7 +25,7 @@ namespace wanhive {
 class Descriptor: public State, private File {
 public:
 	/**
-	 * Default constructor: assigns an invalid file descriptor.
+	 * Constructor: assigns an invalid file descriptor.
 	 */
 	Descriptor() noexcept;
 	/**
@@ -79,12 +79,12 @@ protected:
 	bool closeHandle() noexcept;
 	//-----------------------------------------------------------------
 	/**
-	 * Checks whether an IO operation is pending on this object. Checks the
-	 * following conditions:
-	 * 1. IO error or peer shutdown reported
-	 * 2. Read event reported
-	 * 3. Write event reported and outgoing data is queued up
-	 * @param outgoing true if the object has outgoing data, false otherwise.
+	 * Checks whether an IO operation is pending on this object. Checks for
+	 * the following conditions:
+	 * 1. IO error or peer shutdown
+	 * 2. Read event
+	 * 3. Write event and outgoing data available
+	 * @param outgoing true if outgoing data is available, false otherwise.
 	 * @return true if an IO operation is pending, false otherwise
 	 */
 	bool isReady(bool outgoing) const noexcept;
@@ -104,7 +104,7 @@ protected:
 	 * Scatter read operation.
 	 * @param vectors scatter input buffers
 	 * @param count input buffers count
-	 * @return the number of bytes read on success (possibly 0), -1 on EOF (end
+	 * @return number of bytes read on success (possibly 0), -1 on EOF (end
 	 * of file) and 0 if the file descriptor is non-blocking and the operation
 	 * would block.
 	 */
@@ -113,8 +113,8 @@ protected:
 	 * Reads from the managed file descriptor.
 	 * @param buffer input buffer
 	 * @param count the maximum number of bytes to read
-	 * @return the number of bytes read on success (possibly 0), -1 on EOF (end
-	 * of file) and 0 if the file descriptor is non-blocking and the operation
+	 * @return number of bytes read on success (possibly 0), -1 on EOF (end of
+	 * file) and 0 if the file descriptor is non-blocking and the operation
 	 * would block.
 	 */
 	ssize_t read(void *buffer, size_t count);
@@ -122,7 +122,7 @@ protected:
 	 * Gather write operation.
 	 * @param vectors gather output buffers
 	 * @param count output buffers count
-	 * @return the number of bytes written on success (possibly 0), and 0 if the
+	 * @return number of bytes written on success (possibly 0), and 0 if the
 	 * file descriptor is non-blocking and the operation would block.
 	 */
 	ssize_t writev(const iovec *vectors, unsigned int count);
@@ -130,7 +130,7 @@ protected:
 	 * Writes to the managed file descriptor.
 	 * @param buffer output buffer
 	 * @param count the maximum number of bytes to write
-	 * @return the number of bytes written on success (possibly 0), and 0 if the
+	 * @return number of bytes written on success (possibly 0), and 0 if the
 	 * file descriptor is non-blocking and the operation would block.
 	 */
 	ssize_t write(const void *buffer, size_t count);

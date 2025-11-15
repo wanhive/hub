@@ -51,24 +51,24 @@ using WatcherHandle=Handle<Reactor>;
 class Watcher: public Descriptor {
 public:
 	/**
-	 * Default constructor: doesn't assign valid file descriptor
+	 * Constructor: creates a watcher.
 	 */
 	Watcher() noexcept;
 	/**
-	 * Constructor: assigns a file descriptor
-	 * @param fd the file descriptor to associate with this object
+	 * Constructor: creates a watcher and assigns a file descriptor.
+	 * @param fd file descriptor
 	 */
 	Watcher(int fd) noexcept;
 	/**
-	 * Destructor
+	 * Destructor: releases the managed resources.
 	 */
 	virtual ~Watcher();
 	//-----------------------------------------------------------------
 	/**
-	 * Arms the watcher, it usually involves enabling and configuring the IO
-	 * capabilities of the associated file descriptor.
+	 * Arms the watcher, it usually involves setting up and configuring the
+	 * associated file descriptor.
 	 */
-	virtual void start()=0;
+	virtual void start() = 0;
 	/**
 	 * Disarms the watcher, it usually involves temporarily suspending the IO
 	 * capabilities of the associated file descriptor.
@@ -88,17 +88,17 @@ public:
 	virtual bool publish(void *arg) noexcept = 0;
 	//-----------------------------------------------------------------
 	/**
-	 * Multicasting: adds subscription to a given topic.
+	 * Group communication: adds subscription to a given topic.
 	 * @param index topic's identifier
 	 */
 	virtual void setTopic(unsigned int index) noexcept;
 	/**
-	 * Multicasting: removes subscription from a given topic.
+	 * Group communication: removes subscription from a given topic.
 	 * @param index topic's identifier
 	 */
 	virtual void clearTopic(unsigned int index) noexcept;
 	/**
-	 * Multicasting: tests subscription to a given topic.
+	 * Group communication: tests subscription to a given topic.
 	 * @param index topic's identifier
 	 * @return true if a subscription exists, false otherwise
 	 */
@@ -118,7 +118,7 @@ public:
 	virtual void setOption(int name, unsigned long long value) noexcept;
 	//-----------------------------------------------------------------
 	/**
-	 * Checks whether the watcher has pending jobs (see Descriptor::isReady()).
+	 * Checks whether the watcher has pending jobs.
 	 * @return true if the watcher has pending jobs, false otherwise
 	 */
 	bool isReady() const noexcept;
