@@ -29,7 +29,7 @@ AuthenticationHub::~AuthenticationHub() {
 
 }
 
-void AuthenticationHub::stop(Watcher *w) noexcept {
+void AuthenticationHub::expel(Watcher *w) noexcept {
 	Authenticator *authenticator = nullptr;
 	auto index = waitlist.get(w->getUid());
 	if (index != waitlist.end()) {
@@ -37,7 +37,7 @@ void AuthenticationHub::stop(Watcher *w) noexcept {
 		waitlist.remove(index);
 	}
 	delete authenticator;
-	Hub::stop(w);
+	Hub::expel(w);
 }
 
 void AuthenticationHub::configure(void *arg) {

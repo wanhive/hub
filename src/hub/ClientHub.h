@@ -33,7 +33,7 @@ public:
 	~ClientHub();
 protected:
 	//-----------------------------------------------------------------
-	void stop(Watcher *w) noexcept override;
+	void expel(Watcher *w) noexcept override;
 	void configure(void *arg) override;
 	void cleanup() noexcept override;
 	void route(Message *message) noexcept override;

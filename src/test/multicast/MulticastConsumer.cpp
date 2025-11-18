@@ -32,13 +32,13 @@ void MulticastConsumer::cleanup() noexcept {
 	ClientHub::cleanup();
 }
 
-void MulticastConsumer::stop(Watcher *w) noexcept {
+void MulticastConsumer::expel(Watcher *w) noexcept {
 	if (w->getUid() == 0) {
 		//Subscriptions are lost on disconnection
 		subscribed = false;
 	}
 
-	ClientHub::stop(w);
+	ClientHub::expel(w);
 }
 
 void MulticastConsumer::configure(void *arg) {

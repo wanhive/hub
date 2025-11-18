@@ -135,15 +135,15 @@ protected:
 	 */
 	bool detach(unsigned long long id) noexcept;
 	/**
-	 * Watcher management: shifts a watcher from it's old key to a new key. If
-	 * a watcher is associated with the new key and replacement is allowed then
-	 * the conflicting watcher is disabled. On success, the watcher being moved
-	 * has it's WATCHER_ACTIVE flag set and it's UID is updated to match the new
-	 * key. On failure, watcher associated with the old key is disabled.
+	 * Watcher management: moves a watcher from its old key to a new key. If a
+	 * watcher already exists at the new key and replacement is allowed, the
+	 * conflicting watcher is disabled. On success, the moving watcher's
+	 * WATCHER_ACTIVE flag is set and its UID is updated to match the new key.
+	 * On failure, the old key's watcher is disabled.
 	 * @param from old key's value
 	 * @param to new key's value
 	 * @param replace true to replace on conflict, false to fail on conflict
-	 * @return watcher assigned to the new key on success, nullptr on failure
+	 * @return the watcher at the new key on success, nullptr on failure.
 	 */
 	Watcher* shift(unsigned long long from, unsigned long long to,
 			bool replace = false) noexcept;
@@ -160,13 +160,13 @@ protected:
 	 */
 	void iterate(int (*fn)(Watcher *w, void *arg), void *arg);
 	/**
-	 * Watcher management: purge (remove) the timed-out temporary connections.
-	 * @param target the maximum number of connections to purge (0 for no limit)
-	 * @param force true to treat all the temporary connection as timed-out
-	 * connections, false otherwise.
-	 * @return number of purged connections
+	 * Watcher management: purges temporary connections that have timed out.
+	 * @param target maximum connections to purge (0 for no limit)
+	 * @param force true to expire all temporary connections; false for the
+	 * normal operation.
+	 * @return number of connections purged
 	 */
-	unsigned int evict(unsigned int target = 0, bool force = false) noexcept;
+	unsigned int reap(unsigned int target = 0, bool force = false) noexcept;
 	//-----------------------------------------------------------------
 	/**
 	 * Message queuing: inserts a message directly into the incoming queue.
@@ -184,9 +184,9 @@ protected:
 	/*
 	 * Reactor interface implementation
 	 */
-	void adapt(Watcher *w) override;
+	void admit(Watcher *w) override;
 	bool react(Watcher *w) noexcept override;
-	void stop(Watcher *w) noexcept override;
+	void expel(Watcher *w) noexcept override;
 	//-----------------------------------------------------------------
 	/**
 	 * Configuration: configures the hub before entering the event loop. Invoke

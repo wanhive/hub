@@ -51,9 +51,9 @@ OverlayHub::~OverlayHub() {
 
 }
 
-void OverlayHub::stop(Watcher *w) noexcept {
+void OverlayHub::expel(Watcher *w) noexcept {
 	onRecycle(w);
-	Hub::stop(w);
+	Hub::expel(w);
 }
 
 void OverlayHub::configure(void *arg) {
@@ -1581,7 +1581,7 @@ unsigned int OverlayHub::purgeConnections(int mode,
 	PurgeControl pc { target, 0, this };
 	switch (mode) {
 	case PURGE_TEMPORARY:
-		return evict(target);
+		return reap(target);
 	case PURGE_INVALID:
 		iterate(removeIfInvalid, &pc);
 		return pc.count;

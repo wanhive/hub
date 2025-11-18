@@ -43,7 +43,7 @@ ClientHub::~ClientHub() {
 
 }
 
-void ClientHub::stop(Watcher *w) noexcept {
+void ClientHub::expel(Watcher *w) noexcept {
 	if (w == bs.auth) {
 		bs.auth = nullptr;
 	} else if (w == bs.node) {
@@ -51,7 +51,7 @@ void ClientHub::stop(Watcher *w) noexcept {
 		bs.connected = false;
 	}
 
-	Hub::stop(w);
+	Hub::expel(w);
 }
 
 void ClientHub::configure(void *arg) {

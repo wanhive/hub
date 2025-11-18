@@ -34,7 +34,7 @@ void Reactor::initialize(unsigned int maxEvents, bool signal) {
 
 void Reactor::add(Watcher *w, uint32_t events) {
 	if (w && !w->testFlags(WATCHER_RUNNING)) {
-		adapt(w);
+		admit(w);
 
 		events |= (IO_CLOSE | TRIGGER_EDGE);
 		selector.add(w->getHandle(), events, w);
@@ -92,7 +92,7 @@ void Reactor::dispatch() noexcept {
 	//Need <count> because the list is modified inside the while loop
 	auto count = readyList.readSpace();
 	while (count--) { //postfix --
-		Watcher *watcher = release();
+		Watcher *watcher = ready();
 		if (watcher->testFlags(WATCHER_INVALID)) {
 			remove(watcher);
 		} else if (react(watcher)) {
@@ -124,7 +124,7 @@ void Reactor::setTimeout(int milliseconds) noexcept {
 	this->timeout = milliseconds;
 }
 
-Watcher* Reactor::release() noexcept {
+Watcher* Reactor::ready() noexcept {
 	Watcher *w = nullptr;
 	if (readyList.get(w)) {
 		w->clearFlags(WATCHER_READY);
@@ -136,7 +136,7 @@ void Reactor::remove(Watcher *w) noexcept {
 	try {
 		selector.remove(w->getHandle());
 		w->clearFlags(WATCHER_RUNNING);
-		stop(w);
+		expel(w);
 	} catch (const BaseException &e) {
 		abort();
 	}

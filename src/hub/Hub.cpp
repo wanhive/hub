@@ -154,7 +154,7 @@ void Hub::iterate(int (*fn)(Watcher *w, void *arg), void *arg) {
 	watchers.iterate(fn, arg);
 }
 
-unsigned int Hub::evict(unsigned int target, bool force) noexcept {
+unsigned int Hub::reap(unsigned int target, bool force) noexcept {
 	//Prepare the buffer for reading
 	temporary.rewind();
 	auto timeout = force ? 0 : ctx.connectionTimeOut;
@@ -207,7 +207,7 @@ bool Hub::forward(Message *message) noexcept {
 	}
 }
 
-void Hub::adapt(Watcher *w) {
+void Hub::admit(Watcher *w) {
 	if (w->getReference() == nullptr) {
 		w->start();
 		w->setReference(static_cast<Hub*>(this)); //:-)
@@ -224,7 +224,7 @@ bool Hub::react(Watcher *w) noexcept {
 	}
 }
 
-void Hub::stop(Watcher *w) noexcept {
+void Hub::expel(Watcher *w) noexcept {
 	if (!w->testFlags(WATCHER_CRITICAL)) {
 		auto id = w->getUid();
 		watchers.remove(id);
@@ -852,7 +852,7 @@ bool Hub::acceptConnection(Socket *listener) noexcept {
 	//Limited protection against flooding of new connections
 	if (!temporary.hasSpace()) {
 		//Clean up timed out temporary connections
-		evict();
+		reap();
 	}
 	//-----------------------------------------------------------------
 	Socket *newConn = nullptr;

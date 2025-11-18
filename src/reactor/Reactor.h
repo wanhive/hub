@@ -54,9 +54,9 @@ public:
 	 */
 	void add(Watcher *w, uint32_t events);
 	/**
-	 * Modifies the IO events of interest for a given watcher. Can be used to
-	 * re-arm the watcher if the TRIGGER_ONCE flag was specified in the events
-	 * previously.
+	 * Updates the I/O events of interest for a specified watcher. This can be
+	 * used to re-arm the watcher if the TRIGGER_ONCE flag was previously set
+	 * for the events.
 	 * @param w a watcher being monitored
 	 * @param events IO events of interest
 	 */
@@ -64,9 +64,9 @@ public:
 	/**
 	 * Invalidates and removes a watcher from the event loop.
 	 * @param w a watcher being monitored
-	 * @return true if the watcher got invalidated but could not be removed from
-	 * the event loop immediately, false otherwise. An invalidated watcher will
-	 * be removed synchronously in the next iteration (event loop).
+	 * @return true if the watcher was invalidated but not removed, false if it
+	 * was successfully removed. An invalidated watcher will be removed in the
+	 * next event loop iteration.
 	 */
 	bool disable(Watcher *w) noexcept;
 	//-----------------------------------------------------------------
@@ -77,8 +77,8 @@ public:
 	 */
 	void poll(bool block);
 	/**
-	 * EVENT LOOP: processes the ready list of watchers that have some events
-	 * available and removes the invalid watchers.
+	 * EVENT LOOP: processes the ready list of watchers with available events
+	 * and removes invalid ones.
 	 */
 	void dispatch() noexcept;
 	/**
@@ -110,27 +110,27 @@ public:
 	void setTimeout(int milliseconds) noexcept;
 private:
 	/**
-	 * Customizes a watcher before adding it to the event loop.
-	 * @param w watcher to monitor
+	 * Processes a watcher before adding it to the event loop.
+	 * @param w a watcher to monitor
 	 */
-	virtual void adapt(Watcher *w) = 0;
+	virtual void admit(Watcher *w) = 0;
 	/**
 	 * Reacts to the IO events available on a watcher.
-	 * @param w watcher ready for IO operation
+	 * @param w a watcher ready for IO operation
 	 * @return true if further processing is required, false otherwise.
 	 */
 	virtual bool react(Watcher *w) noexcept = 0;
 	/**
-	 * Cleans up a watcher after removing it from the event loop.
-	 * @param w watcher being removed
+	 * Processes a watcher after removing it from the event loop.
+	 * @param w a watcher being removed
 	 */
-	virtual void stop(Watcher *w) noexcept = 0;
+	virtual void expel(Watcher *w) noexcept = 0;
 private:
 	/**
 	 * Returns the next watcher from the ready list.
 	 * @return next watcher
 	 */
-	Watcher* release() noexcept;
+	Watcher* ready() noexcept;
 	/**
 	 * Removes a watcher permanently from the event loop.
 	 * @param w watcher being removed
