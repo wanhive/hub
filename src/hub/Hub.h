@@ -74,55 +74,54 @@ public:
 	void cancel() noexcept;
 protected:
 	/**
-	 * Reads the periodic timer settings (milliseconds). This method can be
-	 * safely called by the worker thread.
-	 * @param expiration periodic timer's initial expiration
-	 * @param interval periodic timer's interval
+	 * Reads the default periodic timer's settings. This method can be safely
+	 * called by the worker thread.
+	 * @param expiration initial expiration in milliseconds
+	 * @param interval interval in milliseconds
 	 */
 	void periodic(unsigned int &expiration, unsigned int &interval) noexcept;
 	/**
-	 * Reports the given number of events to the events counter. This method
-	 * can be safely called by the worker thread.
+	 * Reports events to the events counter. This method can be safely called
+	 * by the worker thread.
 	 * @param events events count
 	 */
 	void alert(unsigned long long events);
 	/**
-	 * Starts monitoring of the given file or directory. This method can be
-	 * safely called by the worker thread.
-	 * @param path pathname of a file or directory
+	 * Starts monitoring the file system events. This method can be safely
+	 * called by the worker thread.
+	 * @param path file or directory to monitor
 	 * @param mask events of interest (inotify(7))
 	 * @return unique watch descriptor
 	 */
 	int track(const char *path, uint32_t mask);
 	/**
-	 * Stops monitoring of the given file or directory. This method can be
-	 * safely called by the worker thread.
-	 * @param identifier the watch descriptor (see Hub::track())
+	 * Stops monitoring the file system events. This method can be safely
+	 * called by the worker thread.
+	 * @param identifier watch descriptor
 	 */
 	void untrack(int identifier) noexcept;
 	//-----------------------------------------------------------------
 	/**
-	 * Returns the runtime metrics.
-	 * @param info object for storing the runtime metrics
+	 * Reads the runtime metrics.
+	 * @param info stores the runtime metrics
 	 */
 	void metrics(HubInfo &info) const noexcept;
 	//-----------------------------------------------------------------
 	/**
-	 * Watcher management: checks whether a watcher is associated with a
-	 * given key.
+	 * Watcher management: checks whether a key is associated with a watcher.
 	 * @param id key's value
 	 * @return true if the key exists, false otherwise
 	 */
 	bool attached(unsigned long long id) const noexcept;
 	/**
-	 * Watcher management: returns watcher associated with a given key.
+	 * Watcher management: returns the watcher associated with a key.
 	 * @param id key's value
 	 * @return associated watcher if the key exists, nullptr otherwise
 	 */
 	Watcher* find(unsigned long long id) const noexcept;
 	/**
 	 * Watcher management: registers a watcher, watcher's unique identifier is
-	 * used as its key.
+	 * set as its key.
 	 * @param w watcher to register
 	 * @param events events of interest
 	 * @param flags watcher's flags to set on success
