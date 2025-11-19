@@ -5,6 +5,18 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Added
+
+- **Worker** class for asynchronous task handling.
+
+### Changed
+
+- Allow **Source** And **Sink** to discard the stored content.
+- Fresh implementation of application manager.
+- Major API changes in **Reactor** and **Hub**.
+
 ## [15.0.0] - 2025-10-21
 
 ### Added
