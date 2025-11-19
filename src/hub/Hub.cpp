@@ -17,32 +17,8 @@
 
 namespace wanhive {
 
-Hub::Worker::Worker(Hub *hub) noexcept :
-		hub(hub) {
-}
-
-Hub::Worker::~Worker() {
-
-}
-
-void Hub::Worker::run(void *arg) noexcept {
-	hub->doWork(arg);
-}
-
-int Hub::Worker::getStatus() const noexcept {
-	return 0;
-}
-
-void Hub::Worker::setStatus(int status) noexcept {
-
-}
-
-}  // namespace wanhive
-
-namespace wanhive {
-
 Hub::Hub(unsigned long long uid, const char *path) noexcept :
-		Identity(path), uid(uid), healthy(true), worker(this) {
+		Identity { path }, uid { uid }, healthy { true } {
 	clear();
 }
 
@@ -65,9 +41,9 @@ void Hub::cancel() noexcept {
 }
 
 void Hub::periodic(unsigned int &expiration, unsigned int &interval) noexcept {
-	if (notifiers.alarm) {
-		expiration = notifiers.alarm->getExpiration();
-		interval = notifiers.alarm->getInterval();
+	if (prime.alarm) {
+		expiration = prime.alarm->getExpiration();
+		interval = prime.alarm->getInterval();
 	} else {
 		expiration = 0;
 		interval = 0;
@@ -75,16 +51,16 @@ void Hub::periodic(unsigned int &expiration, unsigned int &interval) noexcept {
 }
 
 void Hub::alert(unsigned long long events) {
-	if (notifiers.event) {
-		notifiers.event->write(events);
+	if (prime.event) {
+		prime.event->write(events);
 	} else {
 		throw Exception(EX_RESOURCE);
 	}
 }
 
 int Hub::track(const char *path, uint32_t mask) {
-	if (notifiers.inotifier) {
-		return notifiers.inotifier->add(path, mask);
+	if (prime.inotifier) {
+		return prime.inotifier->add(path, mask);
 	} else {
 		throw Exception(EX_RESOURCE);
 	}
@@ -92,8 +68,8 @@ int Hub::track(const char *path, uint32_t mask) {
 
 void Hub::untrack(int identifier) noexcept {
 	try {
-		if (notifiers.inotifier) {
-			notifiers.inotifier->remove(identifier);
+		if (prime.inotifier) {
+			prime.inotifier->remove(identifier);
 		}
 	} catch (const BaseException &e) {
 		WH_LOG_EXCEPTION(e);
@@ -360,16 +336,16 @@ void Hub::cleanup() noexcept {
 		clear();
 		//-----------------------------------------------------------------
 		//6. Print goodbye message
-		WH_LOG_INFO("Shutdown completed.\n\n");
+		WH_LOG_INFO("Shutdown complete.\n\n");
 	} catch (const BaseException &e) {
-		//Memory leak, do not try to recover
+		//Resource leak, do not try to recover
 		WH_LOG_EXCEPTION(e);
-		WH_LOG_ERROR("Resource leaked, aborting.");
+		WH_LOG_ERROR("Resource leak, aborting.");
 		abort();
 	} catch (...) {
-		//Memory leak, do not try to recover
+		//Resource leak, do not try to recover
 		WH_LOG_EXCEPTION_U();
-		WH_LOG_ERROR("Resource leaked, aborting.");
+		WH_LOG_ERROR("Resource leak, aborting.");
 		abort();
 	}
 
@@ -416,18 +392,6 @@ void Hub::onStream(unsigned long long id, Sink<unsigned char> &sink,
 
 }
 
-bool Hub::hasWorker() const noexcept {
-	return false;
-}
-
-void Hub::doWork(void *arg) noexcept {
-
-}
-
-void Hub::stopWork() noexcept {
-
-}
-
 bool Hub::handle(Alarm *alarm) noexcept {
 	try {
 		unsigned long long count = 0;
@@ -440,7 +404,7 @@ bool Hub::handle(Alarm *alarm) noexcept {
 		}
 		//-----------------------------------------------------------------
 		if (count) {
-			auto uid = (alarm == notifiers.alarm ? 0 : alarm->getUid());
+			auto uid = (alarm == prime.alarm ? 0 : alarm->getUid());
 			onAlarm(uid, count);
 		}
 		return alarm->isReady();
@@ -462,7 +426,7 @@ bool Hub::handle(Event *event) noexcept {
 		}
 		//-----------------------------------------------------------------
 		if (count) {
-			auto uid = (event == notifiers.event ? 0 : event->getUid());
+			auto uid = (event == prime.event ? 0 : event->getUid());
 			onEvent(uid, count);
 		}
 		return event->isReady();
@@ -484,8 +448,7 @@ bool Hub::handle(Inotifier *inotifier) noexcept {
 		//-----------------------------------------------------------------
 		const InotifyEvent *event = nullptr;
 		while ((event = inotifier->next())) {
-			auto uid = (
-					inotifier == notifiers.inotifier ? 0 : inotifier->getUid());
+			auto uid = (inotifier == prime.inotifier ? 0 : inotifier->getUid());
 			onInotification(uid, event);
 		}
 		return inotifier->isReady();
@@ -508,8 +471,7 @@ bool Hub::handle(Interrupt *interrupt) noexcept {
 		}
 		//-----------------------------------------------------------------
 		if (signum > 0) {
-			auto uid = (
-					interrupt == notifiers.interrupt ? 0 : interrupt->getUid());
+			auto uid = (interrupt == prime.interrupt ? 0 : interrupt->getUid());
 			onInterrupt(uid, signum);
 		}
 		return interrupt->isReady();
@@ -650,7 +612,7 @@ void Hub::initListener() {
 		listener = new Socket(serviceName, ctx.backlog, isUnixSocket);
 		listener->setUid(getUid());
 		attach(listener, IO_READ, (WATCHER_ACTIVE | WATCHER_CRITICAL));
-		notifiers.listener = listener;
+		prime.listener = listener;
 		WH_LOG_INFO("Hub %llu listening on port: %s", getUid(), serviceName);
 	} catch (const BaseException &e) {
 		WH_LOG_EXCEPTION(e);
@@ -669,10 +631,10 @@ void Hub::initAlarm() {
 		if (ctx.timerExpiration) {
 			alarm = new Alarm(ctx.timerExpiration, ctx.timerInterval);
 			attach(alarm, IO_READ, (WATCHER_ACTIVE | WATCHER_CRITICAL));
-			notifiers.alarm = alarm;
+			prime.alarm = alarm;
 		} else {
 			WH_LOG_DEBUG("Internal alarm disabled");
-			notifiers.alarm = nullptr;
+			prime.alarm = nullptr;
 			return;
 		}
 	} catch (const BaseException &e) {
@@ -691,7 +653,7 @@ void Hub::initEvent() {
 	try {
 		event = new Event(ctx.semaphore);
 		attach(event, IO_READ, (WATCHER_ACTIVE | WATCHER_CRITICAL));
-		notifiers.event = event;
+		prime.event = event;
 	} catch (const BaseException &e) {
 		WH_LOG_EXCEPTION(e);
 		delete event;
@@ -708,7 +670,7 @@ void Hub::initInotifier() {
 	try {
 		inotifier = new Inotifier();
 		attach(inotifier, IO_READ, (WATCHER_ACTIVE | WATCHER_CRITICAL));
-		notifiers.inotifier = inotifier;
+		prime.inotifier = inotifier;
 	} catch (const BaseException &e) {
 		WH_LOG_EXCEPTION(e);
 		delete inotifier;
@@ -726,10 +688,10 @@ void Hub::initInterrupt() {
 		if (ctx.signal) {
 			interrupt = new Interrupt();
 			attach(interrupt, IO_READ, (WATCHER_ACTIVE | WATCHER_CRITICAL));
-			notifiers.interrupt = interrupt;
+			prime.interrupt = interrupt;
 		} else {
 			WH_LOG_DEBUG("Synchronous signal disabled");
-			notifiers.interrupt = nullptr;
+			prime.interrupt = nullptr;
 			return;
 		}
 	} catch (const BaseException &e) {
@@ -745,31 +707,22 @@ void Hub::initInterrupt() {
 
 void Hub::startWorker(void *arg) {
 	try {
-		if (hasWorker() && !workerThread) {
-			workerThread = new Thread(worker, arg);
-			WH_LOG_INFO("Worker thread started");
+		if (Worker::start(arg)) {
+			WH_LOG_INFO("Worker started");
 		} else {
-			WH_LOG_DEBUG("No worker thread");
+			WH_LOG_DEBUG("No worker");
 		}
 	} catch (const BaseException &e) {
 		WH_LOG_EXCEPTION(e);
 		throw;
-	} catch (...) {
-		WH_LOG_EXCEPTION_U();
-		throw Exception(EX_MEMORY);
 	}
 }
 
 void Hub::stopWorker() {
 	try {
-		if (workerThread) {
-			WH_LOG_INFO("Waiting for the worker thread to finish....");
-			workerThread->join();
-			delete workerThread;
-			workerThread = nullptr;
-			stopWork();
-			WH_LOG_INFO("Worker thread stopped");
-		}
+		WH_LOG_INFO("Waiting for the worker to finish....");
+		Worker::stop();
+		WH_LOG_INFO("Worker stopped");
 	} catch (const BaseException &e) {
 		WH_LOG_EXCEPTION(e);
 		throw;
@@ -1000,9 +953,8 @@ void Hub::countDropped(unsigned int bytes) noexcept {
 void Hub::clear() noexcept {
 	running = 0;
 	memset(&traffic, 0, sizeof(traffic));
-	memset(&notifiers, 0, sizeof(notifiers));
+	memset(&prime, 0, sizeof(prime));
 	memset(&ctx, 0, sizeof(ctx));
-	workerThread = nullptr;
 }
 
 int Hub::deleteWatchers(Watcher *w, void *arg) noexcept {

@@ -180,16 +180,16 @@ void OverlayHub::onInotification(unsigned long long uid,
 	}
 }
 
-bool OverlayHub::hasWorker() const noexcept {
+bool OverlayHub::doable() const noexcept {
 	return isSupernode();
 }
 
-void OverlayHub::doWork(void *arg) noexcept {
+void OverlayHub::act(void *arg) noexcept {
 	//Execute the stabilization loop
 	stabilizer.periodic();
 }
 
-void OverlayHub::stopWork() noexcept {
+void OverlayHub::cease() noexcept {
 	/*
 	 * Just in case the worker thread failed to start and hence did
 	 * not perform a cleanup on exit. No race condition because the
@@ -199,7 +199,7 @@ void OverlayHub::stopWork() noexcept {
 }
 
 void OverlayHub::installService() {
-	if (!hasWorker()) {
+	if (!doable()) {
 		return;
 	}
 

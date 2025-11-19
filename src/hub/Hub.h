@@ -22,6 +22,7 @@
 #include "Socket.h"
 #include "Stream.h"
 #include "Watchers.h"
+#include "Worker.h"
 #include "../base/Timer.h"
 #include "../base/Thread.h"
 #include "../base/ds/Buffer.h"
@@ -42,7 +43,8 @@ class Hub: public Handler<Alarm>,
 		public Handler<Stream>,
 		protected Identity,
 		protected Reactor,
-		private Task {
+		private Task,
+		private Worker {
 public:
 	/**
 	 * Constructor: creates a new hub.
@@ -259,21 +261,6 @@ private:
 	virtual void onStream(unsigned long long id, Sink<unsigned char> &sink,
 			Source<unsigned char> &source) noexcept;
 	//-----------------------------------------------------------------
-	/**
-	 * Adapter: allow/disallow worker thread creation.
-	 * @return true to create a worker thread, false otherwise
-	 */
-	virtual bool hasWorker() const noexcept;
-	/**
-	 * Adapter: the worker thread's entry point.
-	 * @param arg the additional argument for the worker thread
-	 */
-	virtual void doWork(void *arg) noexcept;
-	/**
-	 * Adapter: worker thread's cleanup routine (after exit).
-	 */
-	virtual void stopWork() noexcept;
-	//-----------------------------------------------------------------
 	/*
 	 * Handler interface implementations
 	 */
@@ -309,11 +296,11 @@ private:
 	void initInterrupt();
 	//-----------------------------------------------------------------
 	/*
-	 * Worker thread management
+	 * Worker management
 	 */
-	//Starts the worker thread
+	//Starts the worker
 	void startWorker(void *arg);
-	//Stops the worker thread
+	//Stops the worker
 	void stopWorker();
 	//-----------------------------------------------------------------
 	//Publish the outgoing messages to their intended destinations
@@ -372,15 +359,15 @@ private:
 	} traffic;
 	//-----------------------------------------------------------------
 	/*
-	 * Special watchers, single instance of each type for each hub
+	 * Special watchers, first among equals
 	 */
 	struct {
-		Socket *listener; //The listener
-		Alarm *alarm; //Clock watcher
-		Event *event; //Events watcher
-		Inotifier *inotifier;	//File system watcher
-		Interrupt *interrupt; //Signal watcher
-	} notifiers;
+		Socket *listener;
+		Alarm *alarm;
+		Event *event;
+		Inotifier *inotifier;
+		Interrupt *interrupt;
+	} prime;
 	//-----------------------------------------------------------------
 	/*
 	 * Hub configuration
@@ -431,24 +418,6 @@ private:
 		//Log verbosity
 		unsigned int verbosity;
 	} ctx;
-	//-----------------------------------------------------------------
-	/*
-	 * Worker thread
-	 */
-	class Worker final: public Task {
-	public:
-		Worker(Hub *hub) noexcept;
-		~Worker();
-
-		void run(void *arg) noexcept override;
-		int getStatus() const noexcept override;
-		void setStatus(int status) noexcept override;
-	private:
-		Hub *hub;
-	};
-
-	Worker worker;
-	Thread *workerThread;
 };
 
 } /* namespace wanhive */

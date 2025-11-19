@@ -35,6 +35,10 @@ void Worker::Job::setStatus(int status) noexcept {
 
 }
 
+}  // namespace wanhive
+
+namespace wanhive {
+
 Worker::Worker() noexcept :
 		job { *this } {
 
@@ -68,8 +72,9 @@ void Worker::stop() {
 		thread->join();
 		delete thread;
 		thread = nullptr;
-		cease();
 	}
+
+	cease();
 }
 
 bool Worker::doable() const noexcept {
@@ -77,9 +82,11 @@ bool Worker::doable() const noexcept {
 }
 
 void Worker::act(void *arg) noexcept {
+
 }
 
 void Worker::cease() noexcept {
+
 }
 
 } /* namespace wanhive */

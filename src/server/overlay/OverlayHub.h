@@ -45,9 +45,9 @@ private:
 			override;
 	void onInotification(unsigned long long uid,
 			const InotifyEvent *event) noexcept override;
-	bool hasWorker() const noexcept override;
-	void doWork(void *arg) noexcept override;
-	void stopWork() noexcept override;
+	bool doable() const noexcept override;
+	void act(void *arg) noexcept override;
+	void cease() noexcept override;
 	//-----------------------------------------------------------------
 	void installService();
 	void installSettingsMonitor();
