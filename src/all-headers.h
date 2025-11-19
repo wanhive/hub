@@ -13,6 +13,7 @@
 #ifndef WH_ALL_HEADERS_H_
 #define WH_ALL_HEADERS_H_
 
+#include "base/common/Activity.h"
 #include "base/common/Atomic.h"
 #include "base/common/BaseException.h"
 #include "base/common/CommandLine.h"
@@ -106,6 +107,7 @@
 #include "hub/Stream.h"
 #include "hub/Topic.h"
 #include "hub/Watchers.h"
+#include "hub/Worker.h"
 #include "reactor/Descriptor.h"
 #include "reactor/Handler.h"
 #include "reactor/Reactor.h"

@@ -1,11 +1,11 @@
 # --- SOURCE FILES DECLARATIONS START ---
 
 ## src/base/common
-WH_BASE_COMMONHEADERS = base/common/Atomic.h base/common/BaseException.h \
-	base/common/CommandLine.h base/common/Exception.h base/common/Logger.h \
-	base/common/Memory.h base/common/NonCopyable.h base/common/Sink.h \
-	base/common/Source.h base/common/Task.h base/common/defines.h \
-	base/common/reflect.h
+WH_BASE_COMMONHEADERS = base/common/Activity.h base/common/Atomic.h \
+	base/common/BaseException.h base/common/CommandLine.h \
+	base/common/Exception.h base/common/Logger.h base/common/Memory.h \
+	base/common/NonCopyable.h base/common/Sink.h base/common/Source.h \
+	base/common/Task.h base/common/defines.h base/common/reflect.h
 WH_BASE_COMMONSOURCES = base/common/CommandLine.cpp base/common/Exception.cpp \
 	 base/common/Logger.cpp
 
@@ -87,12 +87,13 @@ WH_UTILSOURCES = util/Authenticator.cpp util/Endpoint.cpp util/FlowControl.cpp \
 
 ## src/hub collection
 WH_HUBHEADERS = hub/Alarm.h hub/ClientHub.h hub/Event.h hub/Hub.h \
-	hub/HubInfo.h hub/Identity.h hub/Inotifier.h hub/Interrupt.h hub/Logic.h \
-	hub/Protocol.h hub/Socket.h hub/Stream.h hub/Topic.h hub/Watchers.h
+	hub/HubInfo.h hub/Identity.h hub/Inotifier.h hub/Interrupt.h \
+	hub/Logic.h hub/Protocol.h hub/Socket.h hub/Stream.h hub/Topic.h \
+	hub/Watchers.h hub/Worker.h
 WH_HUBSOURCES = hub/Alarm.cpp hub/ClientHub.cpp hub/Event.cpp hub/Hub.cpp \
 	hub/HubInfo.cpp hub/Identity.cpp hub/Inotifier.cpp hub/Interrupt.cpp \
 	hub/Logic.cpp hub/Protocol.cpp hub/Socket.cpp hub/Stream.cpp \
-	hub/Topic.cpp hub/Watchers.cpp
+	hub/Topic.cpp hub/Watchers.cpp hub/Worker.cpp
 
 ## src/server collection
 WH_SERVERHEADERS = server/auth/AuthenticationHub.h server/overlay/commands.h \
