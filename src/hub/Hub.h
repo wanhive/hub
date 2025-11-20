@@ -108,6 +108,11 @@ protected:
 	 * @param info stores the runtime metrics
 	 */
 	void metrics(HubInfo &info) const noexcept;
+	/**
+	 * Remove sensitive information from logs.
+	 * @return true to remove, false otherwise
+	 */
+	bool redact() const noexcept;
 	//-----------------------------------------------------------------
 	/**
 	 * Watcher management: checks whether a key is associated with a watcher.
@@ -374,45 +379,47 @@ private:
 		//Listening backlog
 		int backlog;
 		//Default binding address (for listening socket)
-		char serviceName[128];
+		char name[128];
 		//Default binding address' type (unix/inet)
-		char serviceType[8];
+		char type[8];
 		//Maximum number of IO events to process in each event loop
-		unsigned int maxIOEvents;
+		unsigned int events;
 		//Timer settings: initial expiration in miliseconds
-		unsigned int timerExpiration;
+		unsigned int expiration;
 		//Timer settings: periodic expiration in miliseconds
-		unsigned int timerInterval;
+		unsigned int interval;
 		//Enable/disable semaphore-like behavior for the event notifier
 		bool semaphore;
 		//Enable/disable synchronous signal handling
 		bool signal;
 		//Maximum number of Connections we can create
-		unsigned int connectionPoolSize;
+		unsigned int connections;
 		//Maximum number of Message Objects we can create
-		unsigned int messagePoolSize;
+		unsigned int messages;
 		//Maximum number of new connections the server can store
-		unsigned int maxNewConnnections;
-		//Time-out for temporary connections in miliseconds
-		unsigned int connectionTimeOut;
+		unsigned int guests;
+		//Time-out for temporary connections in milliseconds
+		unsigned int lease;
 
 		//Limit on incoming messages from each connection each cycle
-		unsigned int cycleInputLimit;
+		unsigned int input;
 		//Limit on outgoing messages a connection is allowed to hold on to
-		unsigned int outputQueueLimit;
+		unsigned int output;
 		//Throttle incoming packets under load
 		bool throttle;
 		//These number of messages will be reserved for internal purposes
-		unsigned int reservedMessages;
+		unsigned int reserved;
 		//Server may drop messages to reduce congestion
-		bool allowPacketDrop;
+		bool policing;
 		//Cycles to live for a message
-		unsigned int messageTTL;
+		unsigned int ttl;
 		//Reservation ratios
-		double answerRatio;		//Reserved for answering
-		double forwardRatio;	//Reserved for routing
+		double answer;		//Reserved for answering
+		double forward;	//Reserved for routing
 		//Log verbosity
-		unsigned int verbosity;
+		unsigned int logging;
+		//Remove/hide sensitive information
+		bool redact;
 	} ctx;
 };
 

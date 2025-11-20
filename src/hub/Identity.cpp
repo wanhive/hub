@@ -267,7 +267,7 @@ void Identity::loadConfiguration() {
 void Identity::loadHosts() {
 	free(paths.hostsDB);
 	free(paths.hostsFile);
-	paths.hostsDB = properties.getPathName("HOSTS", "hostsDb");
+	paths.hostsDB = properties.getPathName("HOSTS", "hostsDB");
 	if (!paths.hostsDB) {
 		paths.hostsFile = properties.getPathName("HOSTS", "hostsFile");
 	} else {
@@ -296,10 +296,10 @@ void Identity::loadHosts() {
 void Identity::loadKeys() {
 	free(paths.privateKey);
 	free(paths.publicKey);
-	paths.privateKey = properties.getPathName("KEYS", "privateKey");
-	paths.publicKey = properties.getPathName("KEYS", "publicKey");
+	paths.privateKey = properties.getPathName("KEYS", "private");
+	paths.publicKey = properties.getPathName("KEYS", "public");
 
-	auth.verify = properties.getBoolean("KEYS", "verifyHost");
+	auth.verify = properties.getBoolean("KEYS", "verify");
 	if (!auth.verify) {
 		WH_LOG_WARNING("Host verification disabled");
 	} else if (!paths.publicKey) {

@@ -60,19 +60,17 @@ void ClientHub::configure(void *arg) {
 		auto &conf = Identity::getConfiguration();
 
 		auto password = conf.getString("CLIENT", "password", "");
-		auto rounds = conf.getNumber("CLIENT", "passwordHashRounds");
+		auto rounds = conf.getNumber("CLIENT", "rounds");
 		setPassword((const unsigned char*) password, strlen(password), rounds);
 
-		ctx.timeOut = conf.getNumber("CLIENT", "timeOut", 5000);
-		ctx.retryInterval = conf.getNumber("CLIENT", "retryInterval", 10000);
+		ctx.timeout = conf.getNumber("CLIENT", "timeout", 5000);
+		ctx.pause = conf.getNumber("CLIENT", "pause", 10000);
 
-		auto mask = conf.getBoolean("OPT", "secureLog", true); //default: true
-
+		auto mask = Hub::redact();
 		WH_LOG_DEBUG(
 				"Client hub settings:\nPASSWORD='%s', HASH_ROUNDS=%u,\n" "IO_TIMEOUT=%ums, RETRY_INTERVAL=%ums\n",
 				WH_MASK_STR(mask, (const char *)ctx.password),
-				WH_MASK_NUM(mask, ctx.passwordHashRounds), ctx.timeOut,
-				ctx.retryInterval);
+				WH_MASK_NUM(mask, ctx.rounds), ctx.timeout, ctx.pause);
 	} catch (const BaseException &e) {
 		WH_LOG_EXCEPTION(e);
 		throw;
@@ -140,7 +138,7 @@ void ClientHub::maintain() noexcept {
 		connectToAuthenticator();
 		break;
 	case WHC_AUTHENTICATE:
-		if (checkStageTimeout(ctx.timeOut)) {
+		if (checkStageTimeout(ctx.timeout)) {
 			setStage(WHC_ERROR);
 		}
 		break;
@@ -150,12 +148,12 @@ void ClientHub::maintain() noexcept {
 	case WHC_ROOT:
 	case WHC_GETKEY:
 	case WHC_AUTHORIZE:
-		if (checkStageTimeout(ctx.timeOut)) {
+		if (checkStageTimeout(ctx.timeout)) {
 			setStage(WHC_ERROR);
 		}
 		break;
 	case WHC_ERROR:
-		if (checkStageTimeout(ctx.retryInterval)) {
+		if (checkStageTimeout(ctx.pause)) {
 			setStage(WHC_IDENTIFY);
 		}
 		break;
@@ -180,11 +178,11 @@ void ClientHub::setPassword(const unsigned char *password, unsigned int length,
 		length = Twiddler::min(length, sizeof(ctx.password)); //trim
 		::memcpy(ctx.password, password, length);
 		ctx.passwordLength = length;
-		ctx.passwordHashRounds = rounds;
+		ctx.rounds = rounds;
 	} else {
 		::memset(ctx.password, 0, sizeof(password));
 		ctx.passwordLength = 0;
-		ctx.passwordHashRounds = 0;
+		ctx.rounds = 0;
 	}
 }
 
@@ -205,7 +203,7 @@ void ClientHub::connectToAuthenticator() noexcept {
 		//-----------------------------------------------------------------
 		//Check for timed-out connection
 		if (bs.auth) {
-			if (bs.auth->hasTimedOut(ctx.timeOut)) {
+			if (bs.auth->hasTimedOut(ctx.timeout)) {
 				WH_LOG_DEBUG("Connection timed out");
 				disable(bs.auth);
 			}
@@ -250,7 +248,7 @@ void ClientHub::connectToOverlay() noexcept {
 		//-----------------------------------------------------------------
 		//Check for timed-out connection
 		if (bs.node) {
-			if (bs.node->hasTimedOut(ctx.timeOut)) {
+			if (bs.node->hasTimedOut(ctx.timeout)) {
 				WH_LOG_DEBUG("Connection timed out");
 				disable(bs.node);
 			}
@@ -404,7 +402,7 @@ void ClientHub::processIdentificationResponse(Message *msg) noexcept {
 	} else {
 		Data password { ctx.password, ctx.passwordLength };
 		auto f = bs.authenticator.createIdentity(getUid(), password, salt,
-				nonce, ctx.passwordHashRounds);
+				nonce, ctx.rounds);
 		if (!f) {
 			setStage(WHC_ERROR);
 		} else {

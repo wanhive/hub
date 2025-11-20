@@ -86,6 +86,10 @@ void Hub::metrics(HubInfo &info) const noexcept {
 	info.setMTU(Message::MTU);
 }
 
+bool Hub::redact() const noexcept {
+	return ctx.redact;
+}
+
 bool Hub::attached(unsigned long long id) const noexcept {
 	return watchers.contains(id);
 }
@@ -133,7 +137,7 @@ void Hub::iterate(int (*fn)(Watcher *w, void *arg), void *arg) {
 unsigned int Hub::reap(unsigned int target, bool force) noexcept {
 	//Prepare the buffer for reading
 	temporary.rewind();
-	auto timeout = force ? 0 : ctx.connectionTimeOut;
+	auto timeout = force ? 0 : ctx.lease;
 
 	unsigned int count = 0;
 	unsigned long long id;
@@ -222,71 +226,66 @@ void Hub::configure(void *arg) {
 		ctx.listen = conf.getBoolean("HUB", "listen");
 		ctx.backlog = conf.getNumber("HUB", "backlog");
 
-		::memset(ctx.serviceName, 0, sizeof(ctx.serviceName));
-		::strncpy(ctx.serviceName, conf.getString("HUB", "serviceName", ""),
-				sizeof(ctx.serviceName) - 1);
-		::memset(ctx.serviceType, 0, sizeof(ctx.serviceType));
-		::strncpy(ctx.serviceType, conf.getString("HUB", "serviceType", ""),
-				sizeof(ctx.serviceType) - 1);
+		::memset(ctx.name, 0, sizeof(ctx.name));
+		::strncpy(ctx.name, conf.getString("HUB", "name", ""),
+				sizeof(ctx.name) - 1);
+		::memset(ctx.type, 0, sizeof(ctx.type));
+		::strncpy(ctx.type, conf.getString("HUB", "type", ""),
+				sizeof(ctx.type) - 1);
 
-		ctx.maxIOEvents = conf.getNumber("HUB", "maxIOEvents", 4);
-		ctx.timerExpiration = conf.getNumber("HUB", "timerExpiration");
-		ctx.timerInterval = conf.getNumber("HUB", "timerInterval");
+		ctx.events = conf.getNumber("HUB", "events", 4);
+		ctx.expiration = conf.getNumber("HUB", "expiration");
+		ctx.interval = conf.getNumber("HUB", "interval");
 		ctx.semaphore = conf.getBoolean("HUB", "semaphore");
 		ctx.signal = conf.getBoolean("HUB", "signal");
 
-		ctx.connectionPoolSize = conf.getNumber("HUB", "connectionPoolSize");
-		ctx.messagePoolSize = conf.getNumber("HUB", "messagePoolSize");
+		ctx.connections = conf.getNumber("HUB", "connections");
+		ctx.messages = conf.getNumber("HUB", "messages");
 		//Take care of the "special" cases: [1, 2, power-of-two]
-		if (ctx.messagePoolSize == 1 || ctx.messagePoolSize == 2) {
-			ctx.messagePoolSize = 3;
-		} else if (Twiddler::isPower2(ctx.messagePoolSize)) { //false for 0
-			ctx.messagePoolSize -= 1;
+		if (ctx.messages == 1 || ctx.messages == 2) {
+			ctx.messages = 3;
+		} else if (Twiddler::isPower2(ctx.messages)) { //false for 0
+			ctx.messages -= 1;
 		}
 
-		ctx.maxNewConnnections = conf.getNumber("HUB", "maxNewConnnections");
+		ctx.guests = conf.getNumber("HUB", "guests");
 		//Take care of the special case: Hub not listening
 		if (ctx.listen) {
-			ctx.maxNewConnnections = Twiddler::min(ctx.maxNewConnnections,
-					ctx.connectionPoolSize);
+			ctx.guests = Twiddler::min(ctx.guests, ctx.connections);
 		} else {
-			ctx.maxNewConnnections = 0;
+			ctx.guests = 0;
 		}
-		ctx.connectionTimeOut = conf.getNumber("HUB", "connectionTimeOut",
-				2000);
+		ctx.lease = conf.getNumber("HUB", "lease");
 
-		ctx.cycleInputLimit = conf.getNumber("HUB", "cycleInputLimit");
-		ctx.outputQueueLimit = conf.getNumber("HUB", "outputQueueLimit");
-		ctx.outputQueueLimit = Twiddler::min(ctx.outputQueueLimit,
-				(Socket::OUT_QUEUE_SIZE - 1));
+		ctx.input = conf.getNumber("HUB", "input");
+		ctx.output = conf.getNumber("HUB", "output");
+		ctx.output = Twiddler::min(ctx.output, (Socket::OUT_QUEUE_SIZE - 1));
 
 		ctx.throttle = conf.getBoolean("HUB", "throttle");
-		ctx.reservedMessages = conf.getNumber("HUB", "reservedMessages");
-		ctx.reservedMessages = Twiddler::min(ctx.reservedMessages,
-				ctx.messagePoolSize);
+		ctx.reserved = conf.getNumber("HUB", "reserved");
+		ctx.reserved = Twiddler::min(ctx.reserved, ctx.messages);
 
-		ctx.allowPacketDrop = conf.getBoolean("HUB", "allowPacketDrop");
-		ctx.messageTTL = conf.getNumber("HUB", "messageTTL");
+		ctx.policing = conf.getBoolean("HUB", "policing");
+		ctx.ttl = conf.getNumber("HUB", "TTL");
 
-		ctx.answerRatio = conf.getDouble("HUB", "answerRatio", 0.5);
-		ctx.forwardRatio = conf.getDouble("HUB", "forwardRatio", 0);
+		ctx.answer = conf.getDouble("HUB", "answer", 0.5);
+		ctx.forward = conf.getDouble("HUB", "forward", 0);
 
-		ctx.verbosity = conf.getNumber("HUB", "verbosity", WH_LOGLEVEL_DEBUG);
-		Logger::getDefault().setLevel(ctx.verbosity);
-		ctx.verbosity = Logger::getDefault().getLevel();
+		ctx.logging = conf.getNumber("HUB", "logging", WH_LOGLEVEL_DEBUG);
+		Logger::getDefault().setLevel(ctx.logging);
+		ctx.logging = Logger::getDefault().getLevel();
+		ctx.redact = conf.getBoolean("OPT", "redact", true);
 		//-----------------------------------------------------------------
 		WH_LOG_DEBUG(
-				"Hub setings:\n" "LISTEN=%s, BACKLOG=%d, SERVICE_NAME='%s', SERVICE_TYPE='%s',\n" "MAX_IO_EVENTS=%u, TIMER_EXPIRATION=%ums, TIMER_INTERVAL=%ums, SEMAPHORE=%s,\n" "SYNCHRONOUS_SIGNAL=%s, CONNECTION_POOL_SIZE=%u, MESSAGE_POOL_SIZE=%u,\n" "MAX_NEW_CONNECTIONS=%u, TMP_CONNECTION_TIMEOUT=%ums, CYCLE_IN_LIMIT=%u,\n" "OUT_QUEUE_LIMIT=%u, THROTTLE=%s, RESERVED_MESSAGES=%u, ALLOW_PACKET_DROP=%s,\n" "MESSAGE_TTL=%u, ANSWER_RATIO=%f, FORWARD_RATIO=%f, LOG_LEVEL=%s\n",
-				WH_BOOLF(ctx.listen), ctx.backlog, ctx.serviceName,
-				ctx.serviceType, ctx.maxIOEvents, ctx.timerExpiration,
-				ctx.timerInterval, WH_BOOLF(ctx.semaphore),
-				WH_BOOLF(ctx.signal), ctx.connectionPoolSize,
-				ctx.messagePoolSize, ctx.maxNewConnnections,
-				ctx.connectionTimeOut, ctx.cycleInputLimit,
-				ctx.outputQueueLimit, WH_BOOLF(ctx.throttle),
-				ctx.reservedMessages, WH_BOOLF(ctx.allowPacketDrop),
-				ctx.messageTTL, ctx.answerRatio, ctx.forwardRatio,
-				Logger::levelString(Logger::getDefault().getLevel()));
+				"Hub setings:\n" "LISTEN=%s, BACKLOG=%d, SERVICE_NAME='%s', SERVICE_TYPE='%s',\n" "IO_EVENTS=%u, TIMER_EXPIRATION=%ums, TIMER_INTERVAL=%ums, SEMAPHORE=%s,\n" "SYNCHRONOUS_SIGNAL=%s, CONNECTIONS=%u, MESSAGES=%u,\n" "NEW_CONNECTIONS=%u, NEW_CONNECTION_TIMEOUT=%ums, CYCLE_IN_LIMIT=%u,\n" "OUT_QUEUE_LIMIT=%u, THROTTLE=%s, RESERVED_MESSAGES=%u, ALLOW_PACKET_DROP=%s,\n" "MESSAGE_TTL=%u, ANSWER_RATIO=%f, FORWARD_RATIO=%f, LOG_LEVEL=%s, REDACT=%s\n",
+				WH_BOOLF(ctx.listen), ctx.backlog, ctx.name, ctx.type,
+				ctx.events, ctx.expiration, ctx.interval,
+				WH_BOOLF(ctx.semaphore), WH_BOOLF(ctx.signal), ctx.connections,
+				ctx.messages, ctx.guests, ctx.lease, ctx.input, ctx.output,
+				WH_BOOLF(ctx.throttle), ctx.reserved, WH_BOOLF(ctx.policing),
+				ctx.ttl, ctx.answer, ctx.forward,
+				Logger::levelString(Logger::getDefault().getLevel()),
+				WH_BOOLF(ctx.redact));
 		//-----------------------------------------------------------------
 		/*
 		 * Initialization of the core data structures
@@ -567,15 +566,15 @@ void Hub::initBuffers() {
 		//Set up SSL/TLS
 		Socket::setSSLContext(getSSLContext());
 		//Initialize the connections pool
-		Socket::initPool(ctx.connectionPoolSize);
+		Socket::initPool(ctx.connections);
 		//Initialize the message Pool
-		Message::initPool(ctx.messagePoolSize);
+		Message::initPool(ctx.messages);
 		//Stores incoming messages for processing
-		incoming.initialize(ctx.messagePoolSize);
+		incoming.initialize(ctx.messages);
 		//Stores messages ready for publishing
-		outgoing.initialize(ctx.messagePoolSize);
+		outgoing.initialize(ctx.messages);
 		//Stores temporary connection identifiers
-		temporary.initialize(ctx.maxNewConnnections);
+		temporary.initialize(ctx.guests);
 	} catch (const BaseException &e) {
 		WH_LOG_EXCEPTION(e);
 		throw;
@@ -584,7 +583,7 @@ void Hub::initBuffers() {
 
 void Hub::initReactor() {
 	try {
-		Reactor::initialize(ctx.maxIOEvents, !ctx.signal);
+		Reactor::initialize(ctx.events, !ctx.signal);
 	} catch (const BaseException &e) {
 		WH_LOG_EXCEPTION(e);
 		throw;
@@ -598,7 +597,7 @@ void Hub::initListener() {
 			return;
 		}
 		//-----------------------------------------------------------------
-		auto serviceName = ctx.serviceName;
+		auto serviceName = ctx.name;
 		auto isUnixSocket = false;
 		NameInfo ni; //keep in scope
 		if (!serviceName[0]) {
@@ -606,7 +605,7 @@ void Hub::initListener() {
 			isUnixSocket = (::strcasecmp(ni.service, "unix") == 0);
 			serviceName = isUnixSocket ? ni.host : ni.service;
 		} else {
-			isUnixSocket = (::strcasecmp(ctx.serviceType, "unix") == 0);
+			isUnixSocket = (::strcasecmp(ctx.type, "unix") == 0);
 		}
 		//-----------------------------------------------------------------
 		listener = new Socket(serviceName, ctx.backlog, isUnixSocket);
@@ -628,8 +627,8 @@ void Hub::initListener() {
 void Hub::initAlarm() {
 	Alarm *alarm = nullptr;
 	try {
-		if (ctx.timerExpiration) {
-			alarm = new Alarm(ctx.timerExpiration, ctx.timerInterval);
+		if (ctx.expiration) {
+			alarm = new Alarm(ctx.expiration, ctx.interval);
 			attach(alarm, IO_READ, (WATCHER_ACTIVE | WATCHER_CRITICAL));
 			prime.alarm = alarm;
 		} else {
@@ -735,9 +734,9 @@ void Hub::publish() noexcept {
 	 */
 	auto capacity = Message::unallocated() + outgoing.readSpace();
 	//Limit on the number of queries that can be answered
-	auto answerCapacity = (unsigned int) (capacity * ctx.answerRatio);
+	auto answerCapacity = (unsigned int) (capacity * ctx.answer);
 	//Limit on the number of queries that can be forwarded
-	auto forwardCapacity = (unsigned int) (capacity * ctx.forwardRatio);
+	auto forwardCapacity = (unsigned int) (capacity * ctx.forward);
 	//-----------------------------------------------------------------
 	Message *msg = nullptr;
 	Watcher *w = nullptr;
@@ -824,7 +823,7 @@ bool Hub::acceptConnection(Socket *listener) noexcept {
 		//Activate the Connection
 		if (temporary.put(newConn->getUid())) {
 			attach(newConn, IO_WR, 0);
-			newConn->setOption(WATCHER_WRITE_BUFFER_MAX, ctx.outputQueueLimit);
+			newConn->setOption(WATCHER_WRITE_BUFFER_MAX, ctx.output);
 		} else {
 			throw Exception(EX_OVERFLOW);
 		}
@@ -858,8 +857,7 @@ bool Hub::processConnection(Socket *connection) noexcept {
 		if (ctx.throttle) {
 			cycleLimit = throttle(connection);
 		} else {
-			cycleLimit = Twiddler::min(ctx.cycleInputLimit,
-					Message::unallocated());
+			cycleLimit = Twiddler::min(ctx.input, Message::unallocated());
 		}
 
 		//-----------------------------------------------------------------
@@ -878,8 +876,7 @@ bool Hub::processConnection(Socket *connection) noexcept {
 			}
 		}
 		//-----------------------------------------------------------------
-		return connection->isReady()
-				|| (ctx.cycleInputLimit && (msgCount == cycleLimit));
+		return connection->isReady() || (ctx.input && (msgCount == cycleLimit));
 	} catch (const BaseException &e) {
 		WH_LOG_EXCEPTION(e);
 		return disable(connection);
@@ -908,8 +905,8 @@ bool Hub::processStream(Stream *stream) noexcept {
 }
 
 bool Hub::drop(Message *message) const noexcept {
-	return ctx.allowPacketDrop && !message->testFlags(MSG_PRIORITY)
-			&& (message->addHopCount() > ctx.messageTTL);
+	return ctx.policing && !message->testFlags(MSG_PRIORITY)
+			&& (message->addHopCount() > ctx.ttl);
 }
 
 unsigned int Hub::throttle(const Socket *connection) const noexcept {
@@ -919,20 +916,20 @@ unsigned int Hub::throttle(const Socket *connection) const noexcept {
 	 */
 	auto available = Message::unallocated();
 	//Few messages are reserved for overlay management
-	if (available > ctx.reservedMessages) {
-		available -= ctx.reservedMessages;
+	if (available > ctx.reserved) {
+		available -= ctx.reserved;
 		if (!connection->testFlags(SOCKET_OVERLAY | SOCKET_PRIORITY)) {
 			//A normal client connection
 			auto ratio = ((double) available) / Message::poolSize();
-			auto limit = (unsigned int) (ctx.cycleInputLimit * ratio);
+			auto limit = (unsigned int) (ctx.input * ratio);
 			return Twiddler::min(limit, available);
 		} else {
 			//An important connection
-			return Twiddler::min(ctx.cycleInputLimit, available);
+			return Twiddler::min(ctx.input, available);
 		}
 	} else if (connection->testFlags(SOCKET_PRIORITY)) {
 		//A priority connection
-		return Twiddler::min(ctx.reservedMessages, available);
+		return Twiddler::min(ctx.reserved, available);
 	} else {
 		//Everything else
 		return 0;

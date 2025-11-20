@@ -44,7 +44,7 @@ void AuthenticationHub::configure(void *arg) {
 	try {
 		Hub::configure(arg);
 		auto &conf = Identity::getConfiguration();
-		ctx.db.name = conf.getString("AUTH", "connInfo");
+		ctx.db.name = conf.getString("AUTH", "database");
 		ctx.db.query = conf.getString("AUTH", "query");
 		conf.map("RDBMS", loadDatabaseParams, &ctx.db);
 
@@ -55,10 +55,9 @@ void AuthenticationHub::configure(void *arg) {
 			ctx.saltLength = 0;
 		}
 
-		auto mask = conf.getBoolean("OPT", "secureLog", true); //default: true
-
+		auto mask = Hub::redact();
 		WH_LOG_DEBUG(
-				"Authentication hub settings:\nDATABASE= \"%s\"\nQUERY= \"%s\"\nSALT= \"%s\"\n",
+				"Authentication hub settings:\nDATABASE= '%s'\nQUERY= '%s'\nSALT= '%s'\n",
 				WH_MASK_STR(mask, ctx.db.name), WH_MASK_STR(mask, ctx.db.query),
 				WH_MASK_STR(mask, (const char *)ctx.salt));
 	} catch (const BaseException &e) {

@@ -96,11 +96,11 @@ private:
 		//Password length
 		unsigned int passwordLength;
 		//Password hash rounds
-		unsigned int passwordHashRounds;
+		unsigned int rounds;
 		//Communication timeout
-		unsigned int timeOut;
+		unsigned int timeout;
 		//Wait for these many milliseconds before reconnecting
-		unsigned int retryInterval;
+		unsigned int pause;
 	} ctx;
 
 	/*

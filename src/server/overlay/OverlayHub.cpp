@@ -60,33 +60,29 @@ void OverlayHub::configure(void *arg) {
 	try {
 		Hub::configure(arg);
 		auto &conf = Identity::getConfiguration();
-		ctx.enableRegistration = conf.getBoolean("OVERLAY",
-				"enableRegistration");
-		ctx.authenticateClient = conf.getBoolean("OVERLAY",
-				"authenticateClient");
-		ctx.connectToOverlay = conf.getBoolean("OVERLAY", "connectToOverlay");
-		ctx.updateCycle = conf.getNumber("OVERLAY", "updateCycle", 5000);
-		ctx.requestTimeout = conf.getNumber("OVERLAY", "timeOut", 5000);
-		ctx.retryInterval = conf.getNumber("OVERLAY", "retryInterval", 10000);
-		auto netmaskStr = conf.getString("OVERLAY", "netMask", "0x0");
-		sscanf(netmaskStr, "%llx", &ctx.netMask);
-		ctx.groupId = conf.getNumber("OVERLAY", "groupId");
+		ctx.enroll = conf.getBoolean("OVERLAY", "enroll");
+		ctx.authenticate = conf.getBoolean("OVERLAY", "authenticate");
+		ctx.join = conf.getBoolean("OVERLAY", "join");
+		ctx.period = conf.getNumber("OVERLAY", "period", 5000);
+		ctx.timeout = conf.getNumber("OVERLAY", "timeout", 5000);
+		ctx.pause = conf.getNumber("OVERLAY", "pause", 10000);
+		auto hex = conf.getString("OVERLAY", "netmask", "0x0");
+		sscanf(hex, "%llx", &ctx.netmask);
+		ctx.group = conf.getNumber("OVERLAY", "group");
 
-		auto n = Identity::getIdentifiers("BOOTSTRAP", "nodes",
-				ctx.bootstrapNodes, ArraySize(ctx.bootstrapNodes) - 1);
+		auto n = Identity::getIdentifiers("BOOTSTRAP", "nodes", ctx.nodes,
+				ArraySize(ctx.nodes) - 1);
 		if (!n) {
-			n = Identity::getIdentifiers(ctx.bootstrapNodes,
-					ArraySize(ctx.bootstrapNodes) - 1, Hosts::BOOTSTRAP);
+			n = Identity::getIdentifiers(ctx.nodes, ArraySize(ctx.nodes) - 1,
+					Hosts::BOOTSTRAP);
 		}
-		ctx.bootstrapNodes[n] = 0;
+		ctx.nodes[n] = 0;
 
 		WH_LOG_DEBUG(
-				"Overlay hub settings: \n" "ENABLE_REGISTRATION=%s, AUTHENTICATE_CLIENTS=%s, CONNECT_TO_OVERLAY=%s,\n" "TABLE_UPDATE_CYCLE=%ums, BLOCKING_IO_TIMEOUT=%ums, RETRY_INTERVAL=%ums,\n" "NETMASK=%#llx, GROUP_ID=%u\n",
-				WH_BOOLF(ctx.enableRegistration),
-				WH_BOOLF(ctx.authenticateClient),
-				WH_BOOLF(ctx.connectToOverlay), ctx.updateCycle,
-				ctx.requestTimeout, ctx.retryInterval, ctx.netMask,
-				ctx.groupId);
+				"Overlay hub settings: \n" "ENABLE_REGISTRATION=%s, AUTHENTICATE_CLIENTS=%s, JOIN_OVERLAY=%s,\n" "UPDATE_CYCLE=%ums, IO_TIMEOUT=%ums, RETRY_INTERVAL=%ums,\n" "NETMASK=%#llx, GROUP_ID=%u\n",
+				WH_BOOLF(ctx.enroll), WH_BOOLF(ctx.authenticate),
+				WH_BOOLF(ctx.join), ctx.period, ctx.timeout, ctx.pause,
+				ctx.netmask, ctx.group);
 		installService();
 		installSettingsMonitor();
 	} catch (const BaseException &e) {
@@ -204,11 +200,10 @@ void OverlayHub::installService() {
 	}
 
 	int fd = -1;
-	auto w = connect(fd, true, ctx.requestTimeout);
+	auto w = connect(fd, true, ctx.timeout);
 	worker.id = w->getUid(); //set here
 	onRegistration(w);
-	stabilizer.configure(fd, ctx.bootstrapNodes, ctx.updateCycle,
-			ctx.retryInterval);
+	stabilizer.configure(fd, ctx.nodes, ctx.period, ctx.pause);
 }
 
 void OverlayHub::installSettingsMonitor() {
@@ -468,7 +463,7 @@ bool OverlayHub::isValidRegistrationRequest(const Message *msg) noexcept {
 	if (!allowRegistration(origin, requestedId)) {
 		//CASE 1
 		return false;
-	} else if (!ctx.authenticateClient && !isInternalNode(requestedId)) {
+	} else if (!ctx.authenticate && !isInternalNode(requestedId)) {
 		//CASE 2
 		return true;
 	} else if (!getPKI()) {
@@ -520,7 +515,7 @@ bool OverlayHub::allowRegistration(unsigned long long source,
 	 * 3. Requested ID cannot be one of the Host/Controller/Worker IDs
 	 * 4. Requested Client ID must be "local"
 	 */
-	if (!ctx.enableRegistration) {
+	if (!ctx.enroll) {
 		//CASE 1
 		return false;
 	} else if (!isEphemeralId(source) || isEphemeralId(requestedId)) {
@@ -540,7 +535,7 @@ bool OverlayHub::allowRegistration(unsigned long long source,
 
 int OverlayHub::getModeOfRegistration(unsigned long long current,
 		unsigned long long requested) noexcept {
-	if (!ctx.enableRegistration) {
+	if (!ctx.enroll) {
 		return -1;
 	} else if (isHostId(requested) || isWorkerId(requested)) {
 		return -1;
@@ -655,7 +650,7 @@ bool OverlayHub::allowCommunication(unsigned long long source,
 bool OverlayHub::checkMask(unsigned long long source,
 		unsigned long long destination) const noexcept {
 	return isInternalNode(source)
-			|| ((source & ctx.netMask) == (destination & ctx.netMask));
+			|| ((source & ctx.netmask) == (destination & ctx.netmask));
 }
 
 bool OverlayHub::process(Message *message) noexcept {
@@ -1485,7 +1480,7 @@ bool OverlayHub::isPrivileged(unsigned long long uid) const noexcept {
 }
 
 bool OverlayHub::isSupernode() const noexcept {
-	return (ctx.connectToOverlay && !isController(getUid()));
+	return (ctx.join && !isController(getUid()));
 }
 
 bool OverlayHub::isHostId(unsigned long long uid) const noexcept {
@@ -1538,7 +1533,7 @@ Watcher* OverlayHub::connect(unsigned long long id, Digest *hc) {
 	} else if (conn->testFlags(WATCHER_ACTIVE)) {
 		//Registration completed
 		return conn;
-	} else if (conn->hasTimedOut(ctx.requestTimeout)) {
+	} else if (conn->hasTimedOut(ctx.timeout)) {
 		disable(conn);
 		return nullptr;
 	} else {

@@ -210,23 +210,23 @@ private:
 	 */
 	struct {
 		//Enable client Registration
-		bool enableRegistration;
+		bool enroll;
 		//Authenticate every Client Registration Request
-		bool authenticateClient;
+		bool authenticate;
 		//If true, server will try to connect to the overlay network
-		bool connectToOverlay;
+		bool join;
 		//Frequency of Routing Table Update
-		unsigned int updateCycle;
+		unsigned int period;
 		//Timeout for blocking I/O
-		unsigned int requestTimeout;
+		unsigned int timeout;
 		//Waiting period after stabilization error
-		unsigned int retryInterval;
+		unsigned int pause;
 		//64-bit bitmask to restrict client<->client communication
-		unsigned long long netMask;
+		unsigned long long netmask;
 		//Group ID of the hub
-		unsigned int groupId;
+		unsigned int group;
 		//Bootstrap nodes
-		unsigned long long bootstrapNodes[128];
+		unsigned long long nodes[128];
 	} ctx;
 	//-----------------------------------------------------------------
 	/*
