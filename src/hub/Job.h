@@ -1,7 +1,7 @@
 /*
- * Worker.h
+ * Job.h
  *
- * Background task
+ * Asynchronous task
  *
  *
  * Copyright (C) 2025 Amit Kumar (amitkriit@gmail.com)
@@ -10,34 +10,34 @@
  *
  */
 
-#ifndef WH_HUB_WORKER_H_
-#define WH_HUB_WORKER_H_
+#ifndef WH_HUB_JOB_H_
+#define WH_HUB_JOB_H_
 #include "../base/common/Activity.h"
 #include "../base/Thread.h"
 
 namespace wanhive {
 /**
- * Background task
+ * Asynchronous task
  */
-class Worker: private Activity {
+class Job: private Activity {
 public:
 	/**
-	 * Constructor: creates a worker.
+	 * Constructor: creates a new job.
 	 */
-	Worker() noexcept;
+	Job() noexcept;
 	/**
-	 * Destructor: aborts if the worker was not stopped.
+	 * Destructor: aborts if the job was not stopped.
 	 */
-	~Worker();
+	~Job();
 protected:
 	/**
-	 * Starts the worker in a new thread.
+	 * Starts the job in a separate thread.
 	 * @param arg additional argument
 	 * @return true on success, false if no action is available
 	 */
 	bool start(void *arg);
 	/**
-	 * Stops the worker.
+	 * Stops the job.
 	 */
 	void stop();
 private:
@@ -48,10 +48,10 @@ private:
 	void act(void *arg) noexcept override;
 	void cease() noexcept override;
 private:
-	class Job: public Task {
+	class Runner: public Task {
 	public:
-		Job(Activity &action) noexcept;
-		~Job();
+		Runner(Activity &action) noexcept;
+		~Runner();
 		void run(void *arg) noexcept override;
 		int getStatus() const noexcept override;
 		void setStatus(int status) noexcept override;
@@ -59,10 +59,10 @@ private:
 		Activity &action;
 	};
 private:
-	Job job;
+	Runner runner;
 	Thread *thread { nullptr };
 };
 
 } /* namespace wanhive */
 
-#endif /* WH_HUB_WORKER_H_ */
+#endif /* WH_HUB_JOB_H_ */

@@ -1,7 +1,7 @@
 /*
- * Worker.cpp
+ * Job.cpp
  *
- * Background task
+ * Asynchronous task
  *
  *
  * Copyright (C) 2025 Amit Kumar (amitkriit@gmail.com)
@@ -10,52 +10,53 @@
  *
  */
 
-#include "Worker.h"
+#include "Job.h"
 #include "../base/common/Exception.h"
 #include <cstdlib>
 
 namespace wanhive {
 
-Worker::Job::Job(Activity &action) noexcept :
+Job::Runner::Runner(Activity &action) noexcept :
 		action { action } {
+
 }
 
-Worker::Job::~Job() {
+Job::Runner::~Runner() {
+
 }
 
-void Worker::Job::run(void *arg) noexcept {
+void Job::Runner::run(void *arg) noexcept {
 	action.act(arg);
 }
 
-int Worker::Job::getStatus() const noexcept {
+int Job::Runner::getStatus() const noexcept {
 	return 0;
 }
 
-void Worker::Job::setStatus(int status) noexcept {
-
+void Job::Runner::setStatus(int status) noexcept {
 }
 
 }  // namespace wanhive
 
 namespace wanhive {
 
-Worker::Worker() noexcept :
-		job { *this } {
+Job::Job() noexcept :
+		runner { *this } {
 
 }
 
-Worker::~Worker() {
+Job::~Job() {
 	if (thread) {
 		abort();
 	}
 }
 
-bool Worker::start(void *arg) {
+bool Job::start(void *arg) {
 	try {
 		if (!doable()) {
 			return false;
 		} else if (!thread) {
-			thread = new Thread(job, arg);
+			thread = new Thread(runner, arg);
 			return true;
 		} else {
 			throw Exception(EX_STATE);
@@ -67,7 +68,7 @@ bool Worker::start(void *arg) {
 	}
 }
 
-void Worker::stop() {
+void Job::stop() {
 	if (thread) {
 		thread->join();
 		delete thread;
@@ -77,17 +78,16 @@ void Worker::stop() {
 	cease();
 }
 
-bool Worker::doable() const noexcept {
+bool Job::doable() const noexcept {
 	return false;
 }
 
-void Worker::act(void *arg) noexcept {
+void Job::act(void *arg) noexcept {
 
 }
 
-void Worker::cease() noexcept {
+void Job::cease() noexcept {
 
 }
 
 } /* namespace wanhive */
-

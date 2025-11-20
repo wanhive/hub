@@ -197,9 +197,9 @@ void Manager::executeHub() noexcept {
 		 */
 		installSignals();
 		if (ctx.hub->execute(nullptr)) {
-			WH_LOG_INFO("Hub was terminated normally.");
+			WH_LOG_INFO("Hub terminated normally.");
 		} else {
-			WH_LOG_ERROR("Hub was terminated due to error.");
+			WH_LOG_ERROR("Hub terminated due to error.");
 		}
 		restoreSignals();
 	} catch (const BaseException &e) {

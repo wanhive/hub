@@ -18,11 +18,11 @@
 #include "Identity.h"
 #include "Inotifier.h"
 #include "Interrupt.h"
+#include "Job.h"
 #include "Logic.h"
 #include "Socket.h"
 #include "Stream.h"
 #include "Watchers.h"
-#include "Worker.h"
 #include "../base/Timer.h"
 #include "../base/Thread.h"
 #include "../base/ds/Buffer.h"
@@ -43,8 +43,8 @@ class Hub: public Handler<Alarm>,
 		public Handler<Stream>,
 		protected Identity,
 		protected Reactor,
-		private Task,
-		private Worker {
+		private Job,
+		private Task {
 public:
 	/**
 	 * Constructor: creates a new hub.
@@ -279,13 +279,14 @@ private:
 	int getStatus() const noexcept final;
 	void setStatus(int status) noexcept final;
 	//-----------------------------------------------------------------
-	//Configure the hub and start the worker thread
+	/*
+	 * Event loop management
+	 */
 	void setup(void *arg);
-	//The event loop
 	void loop();
 	//-----------------------------------------------------------------
 	/*
-	 * These functions are called during configuration (see Hub::configure()).
+	 * These functions are called during configuration
 	 */
 	void initBuffers();
 	void initReactor();
@@ -296,64 +297,59 @@ private:
 	void initInterrupt();
 	//-----------------------------------------------------------------
 	/*
-	 * Worker management
+	 * Job (asynchronous task) management
 	 */
-	//Starts the worker
-	void startWorker(void *arg);
-	//Stops the worker
-	void stopWorker();
+	void async(void *arg);
+	void await();
 	//-----------------------------------------------------------------
-	//Publish the outgoing messages to their intended destinations
+	/*
+	 * Message processing
+	 */
 	void publish() noexcept;
-	//Process all the incoming messages
 	void process() noexcept;
 	//-----------------------------------------------------------------
 	/*
-	 * Connection management
+	 * Connection and stream management
 	 */
-	//Accept an incoming connection
 	bool acceptConnection(Socket *listener) noexcept;
-	//Read/write data to and from a connected Socket
 	bool processConnection(Socket *connection) noexcept;
-	//Read/write data to and from a byte stream
 	bool processStream(Stream *stream) noexcept;
 	//-----------------------------------------------------------------
 	/*
 	 * Traffic limiting, shaping and policing
 	 */
-	//Returns true if the <message> outlived it's TTL, false otherwise
 	bool drop(Message *message) const noexcept;
-	//Sets admission limit (congestion control)
 	unsigned int throttle(const Socket *connection) const noexcept;
 	void countReceived(unsigned int bytes) noexcept;
 	void countDropped(unsigned int bytes) noexcept;
-	//=================================================================
-	//Clean up the internal structures
+	//-----------------------------------------------------------------
+	/*
+	 * Cleanup helpers
+	 */
 	void clear() noexcept;
-	//Iterate through internal record and delete all the watchers
 	static int deleteWatchers(Watcher *w, void *arg) noexcept;
 private:
 	//Hub's unique identifier
 	const unsigned long long uid;
-	//Indicates whether the event loop terminated normally
-	volatile bool healthy;
-	//Event loop executes as long as this value is non-zero
+	//Hub's termination status
+	bool healthy;
+	//Event loop's running status
 	volatile int running;
 	//-----------------------------------------------------------------
-	//Collection of watchers currently being monitored
+	//Watchers being monitored
 	Watchers watchers;
-	//List of all incoming messages waiting for processing by the hub
+	//Incoming messages ready for processing
 	CircularBuffer<Message*> incoming;
-	//List of outgoing messages ready for dispatch to their respective destinations
+	//Outgoing messages ready for dispatch
 	CircularBuffer<Message*> outgoing;
-	//List of incoming temporary connections
+	//Temporary connections
 	Buffer<unsigned long long> temporary;
 	//-----------------------------------------------------------------
 	/*
 	 * Hub statistics
 	 */
-	Timer uptime;	//Hub uptime
-	struct { //Traffic metrics
+	Timer uptime;
+	struct {
 		TrafficInfo received;
 		TrafficInfo dropped;
 	} traffic;

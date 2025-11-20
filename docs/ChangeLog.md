@@ -9,7 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-- **Worker** class for asynchronous task handling.
+- **Job** class for asynchronous task execution.
 
 ### Changed
 

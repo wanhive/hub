@@ -312,8 +312,8 @@ void Hub::cleanup() noexcept {
 	try {
 		WH_LOG_INFO("Shutdown initiated....");
 		//-----------------------------------------------------------------
-		//1. Stop the worker thread
-		stopWorker();
+		//1. Wait for the worker
+		await();
 		//-----------------------------------------------------------------
 		//2. Disconnect: recycle all watchers
 		iterate(deleteWatchers, nullptr);
@@ -547,7 +547,7 @@ void Hub::setStatus(int status) noexcept {
 void Hub::setup(void *arg) {
 	WH_LOG_INFO("Starting....");
 	configure(arg);
-	startWorker(arg);
+	async(arg);
 	WH_LOG_INFO("Hub %llu [PID: %d] started in %f seconds", getUid(), getpid(),
 			uptime.elapsed());
 }
@@ -705,9 +705,9 @@ void Hub::initInterrupt() {
 	}
 }
 
-void Hub::startWorker(void *arg) {
+void Hub::async(void *arg) {
 	try {
-		if (Worker::start(arg)) {
+		if (Job::start(arg)) {
 			WH_LOG_INFO("Worker started");
 		} else {
 			WH_LOG_DEBUG("No worker");
@@ -718,10 +718,9 @@ void Hub::startWorker(void *arg) {
 	}
 }
 
-void Hub::stopWorker() {
+void Hub::await() {
 	try {
-		WH_LOG_INFO("Waiting for the worker to finish....");
-		Worker::stop();
+		Job::stop();
 		WH_LOG_INFO("Worker stopped");
 	} catch (const BaseException &e) {
 		WH_LOG_EXCEPTION(e);
