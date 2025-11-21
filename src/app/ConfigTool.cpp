@@ -121,10 +121,10 @@ void ConfigTool::manageHosts() {
 	try {
 		if (mode == 1) {
 			Hosts hosts(sf);
-			hosts.batchUpdate(hf);
+			hosts.load(hf);
 		} else if (mode == 2) {
 			Hosts hosts(sf, true);
-			hosts.batchDump(hf);
+			hosts.dump(hf);
 		} else if (mode == 3) {
 			createDummyHostsFile(hf);
 		} else {
@@ -187,7 +187,7 @@ void ConfigTool::generateVerifier() {
 
 void ConfigTool::createDummyHostsFile(const char *path) {
 	std::cout << "Generating a sample \"hosts\" file..." << std::endl;
-	Hosts::createDummy(path);
+	Hosts::dummy(path);
 }
 
 } /* namespace wanhive */

@@ -13,25 +13,35 @@
 #include "SQLite.h"
 #include "../common/Exception.h"
 
+namespace {
+
+auto disposal(wanhive::SQLiteScope scope) {
+	switch (scope) {
+	case wanhive::SQLiteScope::STATIC:
+		return SQLITE_STATIC;
+	default:
+		return SQLITE_TRANSIENT;
+	}
+}
+
+}  // namespace
+
 namespace wanhive {
 
 SQLite::SQLite() noexcept {
 
 }
 
-SQLite::SQLite(const char *path, bool fixed) {
-	open(path, fixed);
+SQLite::SQLite(const char *path, int flags) {
+	open(path, flags);
 }
 
 SQLite::~SQLite() {
 	close();
 }
 
-void SQLite::open(const char *path, bool fixed) {
+void SQLite::open(const char *path, int flags) {
 	close();
-	int flags =
-			fixed ? SQLITE_OPEN_READONLY : (SQLITE_OPEN_READWRITE
-							| SQLITE_OPEN_CREATE);
 	sqlite3 *conn = nullptr;
 	if (sqlite3_open_v2(path, &conn, flags, nullptr) != SQLITE_OK) {
 		sqlite3_close_v2(conn);
@@ -47,10 +57,15 @@ void SQLite::close() noexcept {
 }
 
 sqlite3_stmt* SQLite::prepare(const char *sql, int bytes) {
+	if (!db || !sql) {
+		throw Exception(EX_NULL);
+	}
+
 	sqlite3_stmt *stmt { nullptr };
-	if (db && sqlite3_prepare_v2(db, sql, bytes, &stmt, nullptr) == SQLITE_OK) {
+	if (sqlite3_prepare_v2(db, sql, bytes, &stmt, nullptr) == SQLITE_OK) {
 		return stmt;
 	} else {
+		finalize(stmt);
 		throw Exception(EX_OPERATION);
 	}
 }
@@ -83,41 +98,106 @@ int SQLite::finalize(sqlite3_stmt *stmt) noexcept {
 	return sqlite3_finalize(stmt);
 }
 
-void SQLite::transact(SQLiteUnit stage) {
+void SQLite::transact(SQLiteStage stage) {
 	const char *ts { nullptr };
 	switch (stage) {
-	case SQLiteUnit::BEGIN:
+	case SQLiteStage::BEGIN:
 		ts = "BEGIN";
 		break;
-	case SQLiteUnit::COMMIT:
+	case SQLiteStage::COMMIT:
 		ts = "COMMIT";
 		break;
-	case SQLiteUnit::ROLLBACK:
+	case SQLiteStage::ROLLBACK:
 		ts = "ROLLBACK";
 		break;
 	default:
 		break;
 	}
 
-	transact(ts);
+	execute(ts);
 }
 
-sqlite3* SQLite::getHandle() noexcept {
-	return db;
-}
-
-const sqlite3* SQLite::getHandle() const noexcept {
-	return db;
-}
-
-void SQLite::transact(const char *stage) {
-	if (!db || !stage) {
+bool SQLite::execute(const char *sql, SQLiteCB callback, void *arg) {
+	if (!db || !sql) {
 		throw Exception(EX_NULL);
-	} else if (sqlite3_exec(db, stage, nullptr, nullptr, nullptr) != SQLITE_OK) {
-		throw Exception(EX_OPERATION);
-	} else {
-		return;
 	}
+
+	auto status = sqlite3_exec(db, sql, callback, arg, nullptr);
+	if (status == SQLITE_OK) {
+		return true;
+	} else if (status == SQLITE_ABORT) {
+		return false;
+	} else {
+		throw Exception(EX_OPERATION);
+	}
+}
+
+bool SQLite::execute(const char *sql) {
+	return execute(sql, nullptr, nullptr);
+}
+
+sqlite3* SQLite::getHandle() const noexcept {
+	return db;
+}
+
+int SQLite::bindBlob(sqlite3_stmt *stmt, int index, const void *blob,
+		size_t bytes, SQLiteScope scope) noexcept {
+	return sqlite3_bind_blob64(stmt, index, blob, bytes, disposal(scope));
+}
+
+int SQLite::bindText(sqlite3_stmt *stmt, int index, const char *text,
+		size_t bytes, SQLiteScope scope) noexcept {
+	return sqlite3_bind_text64(stmt, index, text, bytes, disposal(scope),
+	SQLITE_UTF8);
+}
+
+int SQLite::bindInteger(sqlite3_stmt *stmt, int index, int value) noexcept {
+	return sqlite3_bind_int(stmt, index, value);
+}
+
+int SQLite::bindLongInteger(sqlite3_stmt *stmt, int index,
+		long long value) noexcept {
+	return sqlite3_bind_int64(stmt, index, value);
+}
+
+int SQLite::bindDouble(sqlite3_stmt *stmt, int index, double value) noexcept {
+	return sqlite3_bind_double(stmt, index, value);
+}
+
+int SQLite::bindNull(sqlite3_stmt *stmt, int index) noexcept {
+	return sqlite3_bind_null(stmt, index);
+}
+
+int SQLite::bindZeroes(sqlite3_stmt *stmt, int index, size_t count) noexcept {
+	return sqlite3_bind_zeroblob64(stmt, index, count);
+}
+
+int SQLite::columnType(sqlite3_stmt *stmt, int index) noexcept {
+	return sqlite3_column_type(stmt, index);
+}
+
+int SQLite::columnBytes(sqlite3_stmt *stmt, int index) noexcept {
+	return sqlite3_column_bytes(stmt, index);
+}
+
+const void* SQLite::columnBlob(sqlite3_stmt *stmt, int index) noexcept {
+	return sqlite3_column_blob(stmt, index);
+}
+
+const unsigned char* SQLite::columnText(sqlite3_stmt *stmt, int index) noexcept {
+	return sqlite3_column_text(stmt, index);
+}
+
+int SQLite::columnInteger(sqlite3_stmt *stmt, int index) noexcept {
+	return sqlite3_column_int(stmt, index);
+}
+
+long long SQLite::columnLongInteger(sqlite3_stmt *stmt, int index) noexcept {
+	return sqlite3_column_int64(stmt, index);
+}
+
+double SQLite::columnDouble(sqlite3_stmt *stmt, int index) noexcept {
+	return sqlite3_column_double(stmt, index);
 }
 
 } /* namespace wanhive */

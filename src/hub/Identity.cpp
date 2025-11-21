@@ -386,8 +386,8 @@ void Identity::loadHostsFile() {
 			WH_LOG_WARNING("No hosts file");
 		} else {
 			//Load the hosts into in-memory database
-			hosts.open(":memory:");
-			hosts.batchUpdate(paths.hostsFile);
+			hosts.open(Hosts::IN_MEMORY);
+			hosts.load(paths.hostsFile);
 			WH_LOG_DEBUG("Hosts loaded from %s", paths.hostsFile);
 		}
 	} catch (const BaseException &e) {

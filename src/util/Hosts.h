@@ -1,7 +1,7 @@
 /*
  * Hosts.h
  *
- * The hosts database
+ * Hosts database
  *
  *
  * Copyright (C) 2018 Amit Kumar (amitkriit@gmail.com)
@@ -14,106 +14,94 @@
 #define WH_UTIL_HOSTS_H_
 #include "../base/Network.h"
 #include "../base/Storage.h"
-#include "../base/common/NonCopyable.h"
-#include <sqlite3.h>
+#include "../base/db/SQLite.h"
 
 namespace wanhive {
 /**
- * The hosts database
- * Thread safe at class level
+ * Hosts database
  */
-class Hosts: private NonCopyable {
+class Hosts: private SQLite {
 public:
 	/**
-	 * Default constructor: doesn't create a database connection. Call
-	 * Hosts::open() explicitly to open a database connection.
+	 * Constructor: creates an empty database.
 	 */
 	Hosts() noexcept;
 	/**
-	 * Constructor: opens a new database connection
-	 * @param path pathname of the database file
-	 * @param readOnly true for opening the database in read-only mode,
-	 * false otherwise.
+	 * Constructor: opens the hosts database.
+	 * @param path database file's path
+	 * @param readOnly true for read-only access, false otherwise
 	 */
 	Hosts(const char *path, bool readOnly = false);
 	/**
 	 * Destructor: releases the resources
 	 */
 	~Hosts();
-
 	/**
-	 * Creates a new database connection after closing any existing one.
-	 * @param path pathname of the database file
-	 * @param readOnly true for opening the database in read-only mode,
-	 * false otherwise.
+	 * Opens the hosts database.
+	 * @param path database file's path
+	 * @param readOnly true for read-only access, false otherwise
 	 */
 	void open(const char *path, bool readOnly = false);
+	/**
+	 * Closes the hosts database.
+	 */
+	void close() noexcept;
 	//-----------------------------------------------------------------
 	/**
-	 * Imports hosts data from a TAB-delimited text file (hosts file).
-	 * @param path pathname of the text file containing the hosts data
+	 * Imports data from a tab-delimited text file.
+	 * @param path text file's path
 	 */
-	void batchUpdate(const char *path);
+	void load(const char *path);
 	/**
-	 * Exports the hosts database to a tab-delimited text file.
-	 * @param path pathname of the text file, if a file with the given name
-	 * doesn't exist then a new file will be created.
-	 * @param version the output format specifier
+	 * Exports data to a tab-delimited text file.
+	 * @param path output file's path
+	 * @param version output format
 	 */
-	void batchDump(const char *path, int version = 1);
+	void dump(const char *path, int version = 1);
 	//-----------------------------------------------------------------
 	/**
-	 * Retrieves the network address associated with the given host identifier.
-	 * @param uid the host identifier
-	 * @param ni object for storing the network address
+	 * Reads the network address associated with a host identifier.
+	 * @param uid host identifier
+	 * @param ni stores the network address
 	 * @return 0 on success, 1 if no record found, -1 on error
 	 */
 	int get(unsigned long long uid, NameInfo &ni) noexcept;
 	/**
-	 * Associates a network address to the given host identifier.
-	 * @param uid the host identifier
-	 * @param ni the network address
+	 * Adds a new host into the database. If the host identifier already then
+	 * updates the network address.
+	 * @param uid host identifier
+	 * @param ni host's network address
 	 * @return 0 on success, -1 on error
 	 */
 	int put(unsigned long long uid, const NameInfo &ni) noexcept;
 	/**
-	 * Removes any record associated with the given host identifier.
-	 * @param uid the host identifier
+	 * Removes a host associated with the given identifier.
+	 * @param uid host identifier
 	 * @return 0 on success, -1 on error
 	 */
 	int remove(unsigned long long uid) noexcept;
 	/**
-	 * Returns a randomized list of host identifiers of the given type.
-	 * @param uids the output array for storing the host identifiers
-	 * @param count before the call it's value should be set to the maximum
-	 * capacity of the output array. The actual number of elements transferred
-	 * into the output array is written to this argument.
-	 * @param type the desired host type
+	 * Returns random host identifiers for the given type.
+	 * @param uids buffer to store the host identifiers
+	 * @param count buffer capacity for input, identifiers count as output
+	 * @param type host type
 	 * @return 0 on success, -1 on error
 	 */
 	int list(unsigned long long uids[], unsigned int &count, int type) noexcept;
 	//-----------------------------------------------------------------
 	/**
 	 * Generates a dummy hosts file.
-	 * @param path pathname of the hosts file, if a file with the given name
-	 * doesn't exist then it will be created.
-	 * @param version the output format specifier
+	 * @param path hosts file's path
+	 * @param version output format specifier
 	 */
-	static void createDummy(const char *path, int version = 1);
+	static void dummy(const char *path, int version = 1);
 private:
-	void clear() noexcept;
-	void openConnection(const char *path, bool readOnly);
-	void closeConnection() noexcept;
 	void createTable();
 	void prepareStatements();
 	void resetStatements() noexcept;
 	void closeStatements() noexcept;
-	void reset(sqlite3_stmt *stmt) noexcept;
-	void finalize(sqlite3_stmt *stmt) noexcept;
-	void beginTransaction();
-	void endTransaction();
-	void cancelTransaction();
 public:
+	using SQLite::IN_MEMORY;
 	/**
 	 * Host type enumeration
 	 */
@@ -123,12 +111,11 @@ public:
 	};
 private:
 	struct {
-		sqlite3 *conn { nullptr }; //The database connection
-		sqlite3_stmt *iStmt { nullptr }; //Insert
-		sqlite3_stmt *qStmt { nullptr }; //Get
-		sqlite3_stmt *dStmt { nullptr }; //Delete
-		sqlite3_stmt *lStmt { nullptr }; //List
-	} db;
+		sqlite3_stmt *pi { nullptr }; //Insert
+		sqlite3_stmt *pq { nullptr }; //Get
+		sqlite3_stmt *pd { nullptr }; //Delete
+		sqlite3_stmt *pl { nullptr }; //List
+	} stmt;
 };
 
 } /* namespace wanhive */
