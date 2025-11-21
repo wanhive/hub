@@ -16,10 +16,16 @@
 /*
  * Common
  */
+#include "base/common/Activity.h"
 #include "base/common/CommandLine.h"
 #include "base/common/Logger.h"
 #include "base/common/Sink.h"
 #include "base/common/Source.h"
+
+/*
+ * Databases
+ */
+#include "base/db/SQLite.h"
 
 /*
  * Data structures

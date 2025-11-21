@@ -9,6 +9,10 @@ WH_BASE_COMMONHEADERS = base/common/Activity.h base/common/Atomic.h \
 WH_BASE_COMMONSOURCES = base/common/CommandLine.cpp base/common/Exception.cpp \
 	 base/common/Logger.cpp
 
+## src/base/db
+WH_BASE_DBHEADERS = base/db/SQLite.h
+WH_BASE_DBSOURCES = base/db/SQLite.cpp
+
 ## src/base/ds
 WH_BASE_DSHEADERS = base/ds/BinaryHeap.h base/ds/Buffer.h base/ds/BufferVector.h \
 	base/ds/CircularBuffer.h base/ds/CircularBufferVector.h base/ds/Counter.h \
@@ -63,11 +67,13 @@ WH_BASE_TOPSOURCES = base/Configuration.cpp base/Network.cpp base/Selector.cpp \
 	base/Timer.cpp base/TurnGate.cpp
 
 ## src/base collection
-WH_BASEHEADERS = $(WH_BASE_COMMONHEADERS) $(WH_BASE_DSHEADERS) $(WH_BASE_IPCHEADERS) \
-	$(WH_BASE_SECURITYHEADERS) $(WH_BASEUNIXHEADERS) $(WH_BASE_TOPHEADERS)
+WH_BASEHEADERS = $(WH_BASE_COMMONHEADERS) $(WH_BASE_DBHEADERS) \
+	$(WH_BASE_DSHEADERS) $(WH_BASE_IPCHEADERS) $(WH_BASE_SECURITYHEADERS) \
+	$(WH_BASEUNIXHEADERS) $(WH_BASE_TOPHEADERS)
 
-WH_BASESOURCES =  $(WH_BASE_COMMONSOURCES) $(WH_BASE_DSSOURCES) $(WH_BASE_IPCSOURCES) \
-	$(WH_BASE_SECURITYSOURCES) $(WH_BASEUNIXSOURCES) $(WH_BASE_TOPSOURCES)
+WH_BASESOURCES =  $(WH_BASE_COMMONSOURCES) $(WH_BASE_DBSOURCES) \
+	$(WH_BASE_DSSOURCES) $(WH_BASE_IPCSOURCES) $(WH_BASE_SECURITYSOURCES) \
+	$(WH_BASEUNIXSOURCES) $(WH_BASE_TOPSOURCES)
 
 ## src/reactor collection
 WH_REACTORHEADERS = reactor/Descriptor.h reactor/Handler.h reactor/Reactor.h \
@@ -151,6 +157,9 @@ baseinclude_HEADERS= $(WH_BASE_TOPHEADERS)
 
 basecommonincludedir = $(pkgincludedir)/base/common
 basecommoninclude_HEADERS = $(WH_BASE_COMMONHEADERS)
+
+basedbincludedir = $(pkgincludedir)/base/db
+basedbinclude_HEADERS = $(WH_BASE_DBHEADERS)
 
 basedsincludedir = $(pkgincludedir)/base/ds
 basedsinclude_HEADERS = $(WH_BASE_DSHEADERS)
