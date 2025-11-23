@@ -8,7 +8,7 @@ Name: @PACKAGE@
 Description: Development files
 URL: @PACKAGE_URL@
 Version: @VERSION@
-Requires.private: openssl >= 1.1.1 sqlite3 >= 3.5.1
+Requires.private: openssl >= 3.0.0 sqlite3 >= 3.35.0
 Cflags: -I${includedir}
 Libs: -L${libdir} -lwanhive
 Libs.private: -lpthread

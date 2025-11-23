@@ -34,6 +34,10 @@ AC_CHECK_LIB([pthread], [pthread_create], , [AC_MSG_ERROR([libpthread not found.
 AC_CHECK_LIB([sqlite3], [sqlite3_open_v2], , [AC_MSG_ERROR([libsqlite3 not found.])])
 AC_CHECK_LIB([ssl], [OPENSSL_init_ssl], , [AC_MSG_ERROR([libssl not found.])])
 
+# Check for packages.
+PKG_CHECK_MODULES([SQLITE3], [sqlite3 >= 3.35.0], , [AC_MSG_ERROR([Incompatible SQLite3 version.])])
+PKG_CHECK_MODULES([OPENSSL], [openssl >= 3.0.0], , [AC_MSG_ERROR([Incompatible OpenSSL version.])])
+
 # Checks for header files.
 AC_CHECK_HEADERS([fcntl.h mntent.h netdb.h sys/file.h sys/time.h syslog.h termios.h unistd.h], ,[AC_MSG_ERROR([Header files missing.])])
 
