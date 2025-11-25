@@ -267,9 +267,9 @@ void Identity::loadConfiguration() {
 void Identity::loadHosts() {
 	free(paths.hostsDB);
 	free(paths.hostsFile);
-	paths.hostsDB = properties.getPathName("HOSTS", "hostsDB");
+	paths.hostsDB = properties.getPathName("HOSTS", "database");
 	if (!paths.hostsDB) {
-		paths.hostsFile = properties.getPathName("HOSTS", "hostsFile");
+		paths.hostsFile = properties.getPathName("HOSTS", "file");
 	} else {
 		paths.hostsFile = nullptr;
 	}
