@@ -10,8 +10,8 @@ WH_BASE_COMMONSOURCES = base/common/CommandLine.cpp base/common/Exception.cpp \
 	 base/common/Logger.cpp
 
 ## src/base/db
-WH_BASE_DBHEADERS = base/db/SQLite.h
-WH_BASE_DBSOURCES = base/db/SQLite.cpp
+WH_BASE_DBHEADERS = base/db/Postgres.h base/db/SQLite.h
+WH_BASE_DBSOURCES = base/db/Postgres.cpp base/db/SQLite.cpp
 
 ## src/base/ds
 WH_BASE_DSHEADERS = base/ds/BinaryHeap.h base/ds/Buffer.h base/ds/BufferVector.h \

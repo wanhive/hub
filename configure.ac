@@ -30,13 +30,15 @@ AX_CXX_COMPILE_STDCXX(17, [noext], [mandatory])
 # Checks for libraries.
 LT_INIT
 AC_CHECK_LIB([crypto], [BN_clear_free], , [AC_MSG_ERROR([libcrypto not found.])])
+AC_CHECK_LIB([pq], [PQfinish], , [AC_MSG_ERROR([libpq not found.])])
 AC_CHECK_LIB([pthread], [pthread_create], , [AC_MSG_ERROR([libpthread not found.])])
 AC_CHECK_LIB([sqlite3], [sqlite3_open_v2], , [AC_MSG_ERROR([libsqlite3 not found.])])
 AC_CHECK_LIB([ssl], [OPENSSL_init_ssl], , [AC_MSG_ERROR([libssl not found.])])
 
 # Check for packages.
-PKG_CHECK_MODULES([SQLITE3], [sqlite3 >= 3.35.0], , [AC_MSG_ERROR([Incompatible SQLite3 version.])])
+PKG_CHECK_MODULES([LIBPQ], [libpq >= 15.0.0], , [AC_MSG_ERROR([Incompatible libpq version.])])
 PKG_CHECK_MODULES([OPENSSL], [openssl >= 3.0.0], , [AC_MSG_ERROR([Incompatible OpenSSL version.])])
+PKG_CHECK_MODULES([SQLITE3], [sqlite3 >= 3.35.0], , [AC_MSG_ERROR([Incompatible SQLite3 version.])])
 
 # Checks for header files.
 AC_CHECK_HEADERS([fcntl.h mntent.h netdb.h sys/file.h sys/time.h syslog.h termios.h unistd.h], ,[AC_MSG_ERROR([Header files missing.])])
@@ -74,8 +76,6 @@ AC_CHECK_FUNCS([alarm atexit clock_gettime fchdir ftruncate getcwd gethostname g
 
 # Conditionally build the additional packages
 AC_ARG_WITH([executables], [AS_HELP_STRING([--without-executables], [Do not build executable programs.])])
-AS_IF([test "x$with_executables" != "xno"], [AC_CHECK_LIB([pq], [PQfinish], , [AC_MSG_ERROR([libpq not found.])])])
-AS_IF([test "x$with_executables" != "xno"], [AC_CHECK_HEADERS([postgresql/libpq-fe.h], , [AC_MSG_ERROR([Additional header file missing.])])])
 AM_CONDITIONAL([WH_WITH_EXECUTABLES], [test "x$with_executables" != "xno"])
 
 # Doxygen configuration file generation

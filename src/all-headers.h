@@ -26,6 +26,7 @@
 #include "base/common/Task.h"
 #include "base/common/defines.h"
 #include "base/common/reflect.h"
+#include "base/db/Postgres.h"
 #include "base/db/SQLite.h"
 #include "base/ds/BinaryHeap.h"
 #include "base/ds/Buffer.h"

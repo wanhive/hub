@@ -25,6 +25,7 @@
 /*
  * Databases
  */
+#include "base/db/Postgres.h"
 #include "base/db/SQLite.h"
 
 /*

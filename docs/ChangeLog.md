@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 - **Job** class for asynchronous task execution.
+- PostgreSQL database connection manager.
 - SQLite database manager.
 
 ### Changed
