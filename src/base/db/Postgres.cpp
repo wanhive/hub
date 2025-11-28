@@ -12,6 +12,8 @@
 
 #include "Postgres.h"
 #include "../common/Exception.h"
+#include <cerrno>
+#include <sys/select.h>
 
 namespace wanhive {
 
@@ -23,11 +25,11 @@ Postgres::~Postgres() {
 
 }
 
-PGconn* Postgres::connect(const PGConnection &info) noexcept {
+PGconn* Postgres::connect(const PGInfo &info) noexcept {
 	if (info.name) {
 		return connect(info.name, info.blocking);
 	} else {
-		return connect(info.params.keys, info.params.values, info.params.expand,
+		return connect(info.ctx.keys, info.ctx.values, info.ctx.expand,
 				info.blocking);
 	}
 }
@@ -106,11 +108,11 @@ bool Postgres::reconnect(PGconn *conn, bool blocking) noexcept {
 	}
 }
 
-bool Postgres::ping(const PGConnection &info) noexcept {
+bool Postgres::ping(const PGInfo &info) noexcept {
 	if (info.name) {
 		return ping(info.name);
 	} else {
-		return ping(info.params.keys, info.params.values, info.params.expand);
+		return ping(info.ctx.keys, info.ctx.values, info.ctx.expand);
 	}
 }
 
@@ -128,6 +130,50 @@ bool Postgres::ping(const char *const keys[], const char *const values[],
 		return PQpingParams(keys, values, expand) == PQPING_OK;
 	} else {
 		return false;
+	}
+}
+
+PGHealth Postgres::poll(PGconn *conn, PGPoll type) noexcept {
+	if (!conn) {
+		return PGHealth::BAD;
+	}
+
+	PostgresPollingStatusType status;
+	if (type == PGPoll::CONNECT) {
+		status = PQconnectPoll(conn);
+	} else {
+		status = PQresetPoll(conn);
+	}
+
+	if (status == PGRES_POLLING_FAILED) {
+		return PGHealth::BAD;
+	}
+
+	if (status == PGRES_POLLING_OK) {
+		return PGHealth::READY;
+	}
+
+	auto fd = PQsocket(conn);
+	if (fd < 0) {
+		return PGHealth::BAD;
+	}
+
+	fd_set fdset;
+	FD_ZERO(&fdset);
+	FD_SET(fd, &fdset);
+	timeval timeout { 0, 0 };
+	int ret { -1 };
+
+	if (status == PGRES_POLLING_READING) {
+		ret = select(fd + 1, &fdset, nullptr, nullptr, &timeout);
+	} else if (status == PGRES_POLLING_WRITING) {
+		ret = select(fd + 1, nullptr, &fdset, nullptr, &timeout);
+	}
+
+	if (ret >= 0 || errno == EINTR) {
+		return PGHealth::OK;
+	} else {
+		return PGHealth::BAD;
 	}
 }
 

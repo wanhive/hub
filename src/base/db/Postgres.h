@@ -18,7 +18,7 @@ namespace wanhive {
 /**
  * Connection parameters.
  */
-struct PGConnection {
+struct PGInfo {
 	/*! Connection parameters as nul-terminated string */
 	const char *name { nullptr };
 	/*! Connection parameters as keywords and values */
@@ -29,7 +29,7 @@ struct PGConnection {
 		const char *values[64] { };
 		/*! Controls 'dbname' parameter's expansion */
 		bool expand { false };
-	} params;
+	} ctx;
 	/*! Controls blocking/non-blocking operation */
 	bool blocking { true };
 };
@@ -41,6 +41,14 @@ enum class PGHealth {
 	BAD, /**< Failed or invalid connection */
 	OK, /**< Connection in progress */
 	READY, /**< Ready to use */
+};
+
+/**
+ * Polling type.
+ */
+enum class PGPoll {
+	CONNECT,/**< New connection attempt */
+	RESET /**< Reset attempt */
 };
 
 /**
@@ -62,7 +70,7 @@ public:
 	 * @param info connection parameters
 	 * @return database connection handle (nullptr on error)
 	 */
-	static PGconn* connect(const PGConnection &info) noexcept;
+	static PGconn* connect(const PGInfo &info) noexcept;
 	/**
 	 * Opens a new database connection.
 	 * @param name connection parameters string
@@ -92,26 +100,26 @@ public:
 	 */
 	static void disconnect(PGconn *conn) noexcept;
 	/**
-	 * Attempts to re-establish database connection.
+	 * Attempts to re-establish a database connection.
 	 * @param conn database connection handle
 	 * @param blocking true for blocking operation, false otherwise
 	 * @return true on success, false on error
 	 */
 	static bool reconnect(PGconn *conn, bool blocking) noexcept;
 	/**
-	 * Checks the connection parameters and the database server's status.
+	 * Checks connection parameters and database server's status.
 	 * @param info connection parameters
 	 * @return true if connection accepted, false otherwise
 	 */
-	static bool ping(const PGConnection &info) noexcept;
+	static bool ping(const PGInfo &info) noexcept;
 	/**
-	 * Checks the connection parameters and the database server's status.
+	 * Checks connection parameters and database server's status.
 	 * @param name connection parameters string
 	 * @return true if connection accepted, false otherwise
 	 */
 	static bool ping(const char *name) noexcept;
 	/**
-	 * Checks the connection parameters and the database server's status.
+	 * Checks connection parameters and database server's status.
 	 * @param keys null terminated array of keywords
 	 * @param values null terminated array of values
 	 * @param expand true to expand the 'dbname' keyword, false otherwise
@@ -119,6 +127,13 @@ public:
 	 */
 	static bool ping(const char *const keys[], const char *const values[],
 			bool expand) noexcept;
+	/**
+	 * Polls database connection's status.
+	 * @param conn database connection handle
+	 * @param type polling type
+	 * @return health code
+	 */
+	static PGHealth poll(PGconn *conn, PGPoll type) noexcept;
 };
 
 } /* namespace wanhive */
