@@ -39,7 +39,7 @@ enum class SQLiteScope {
  * Callback function for the one-step query execution interface.
  * @ref https://sqlite.org/c3ref/exec.html
  */
-using SQLiteCB = int (*)(void*,int,char**,char**) noexcept;
+using SQLiteHandler = int (*)(void*,int,char**,char**) noexcept;
 
 /**
  * SQLite database manager
@@ -63,13 +63,13 @@ public:
 	~SQLite();
 	//-----------------------------------------------------------------
 	/**
-	 * Opens the database, closing any current one.
+	 * Opens a database, closing any current one.
 	 * @param path database file path
 	 * @param flags access mode flags
 	 */
 	void open(const char *path, int flags);
 	/**
-	 * Closes the database.
+	 * Closes a database.
 	 */
 	void close() noexcept;
 	/**
@@ -83,24 +83,25 @@ public:
 	//-----------------------------------------------------------------
 	/**
 	 * Evaluates a prepared statement.
-	 * @param stmt prepared statement
+	 * @param stmt valid prepared statement
 	 * @return error code
 	 */
 	int step(sqlite3_stmt *stmt) noexcept;
 	/**
-	 * Resets a prepared statement to its initial state for re-execution.
-	 * @param stmt prepared statement
+	 * Readies a prepared statement for re-execution.
+	 * @param stmt valid prepared statement
 	 * @return error code
 	 */
 	int reset(sqlite3_stmt *stmt) noexcept;
 	/**
 	 * Resets the bindings on a prepared statement.
-	 * @param stmt prepared statement
+	 * @param stmt valid prepared statement
 	 * @return error code
 	 */
 	int unbind(sqlite3_stmt *stmt) noexcept;
 	/**
-	 * Closes a prepared statement.
+	 * Closes a prepared statement and frees its resources. A closed statement
+	 * should never be reused. This function is nullptr-safe.
 	 * @param stmt prepared statement
 	 * @return error code
 	 */
@@ -113,11 +114,11 @@ public:
 	/**
 	 * One-step query executor.
 	 * @param sql semicolon-separated sql statements
-	 * @param callback callback function
+	 * @param handler callback function
 	 * @param arg additional argument for the callback function
 	 * @return true on success, false if callback routine requested an abort
 	 */
-	bool execute(const char *sql, SQLiteCB callback, void *arg);
+	bool execute(const char *sql, SQLiteHandler handler, void *arg);
 	/**
 	 * One-step query executor.
 	 * @param sql semicolon-separated sql statements
@@ -210,14 +211,14 @@ protected:
 	 */
 	static int columnBytes(sqlite3_stmt *stmt, int index) noexcept;
 	/**
-	 * Returns the blob from the result column of a query.
+	 * Returns the blob from a query's result column.
 	 * @param stmt valid prepared statement
 	 * @param index valid column index
 	 * @return blob's pointer
 	 */
 	static const void* columnBlob(sqlite3_stmt *stmt, int index) noexcept;
 	/**
-	 * Returns the UTF-8 encoded text from the result column of a query.
+	 * Returns the UTF-8 encoded text from a query's result column.
 	 * @param stmt valid prepared statement
 	 * @param index valid column index
 	 * @return text's pointer
@@ -225,21 +226,21 @@ protected:
 	static const unsigned char* columnText(sqlite3_stmt *stmt,
 			int index) noexcept;
 	/**
-	 * Returns the integer value from the result column of a query.
+	 * Returns the integer value from a query's result column.
 	 * @param stmt valid prepared statement
 	 * @param index valid column index
 	 * @return integer value
 	 */
 	static int columnInteger(sqlite3_stmt *stmt, int index) noexcept;
 	/**
-	 * Returns the 64-bit integer value from the result column of a query.
+	 * Returns the 64-bit integer value from a query's result column.
 	 * @param stmt valid prepared statement
 	 * @param index valid column index
 	 * @return 64-bit integer value
 	 */
 	static long long columnLongInteger(sqlite3_stmt *stmt, int index) noexcept;
 	/**
-	 * Returns the double value from the result column of a query.
+	 * Returns the double value from a query's result column.
 	 * @param stmt valid prepared statement
 	 * @param index valid column index
 	 * @return double value
@@ -247,9 +248,9 @@ protected:
 	static double columnDouble(sqlite3_stmt *stmt, int index) noexcept;
 public:
 	/**
-	 * Common access types
+	 * Common access control flags
 	 */
-	enum AccessTypes {
+	enum AccessFlags {
 		/*! Open in read-only mode */
 		READ_ONLY = SQLITE_OPEN_READONLY,
 		/*! Open for reading and writing if possible */

@@ -15,7 +15,7 @@
 
 namespace {
 
-auto disposal(wanhive::SQLiteScope scope) {
+auto disposal(wanhive::SQLiteScope scope) noexcept {
 	switch (scope) {
 	case wanhive::SQLiteScope::STATIC:
 		return SQLITE_STATIC;
@@ -117,12 +117,12 @@ void SQLite::transact(SQLiteStage stage) {
 	execute(ts);
 }
 
-bool SQLite::execute(const char *sql, SQLiteCB callback, void *arg) {
+bool SQLite::execute(const char *sql, SQLiteHandler handler, void *arg) {
 	if (!db || !sql) {
 		throw Exception(EX_NULL);
 	}
 
-	auto status = sqlite3_exec(db, sql, callback, arg, nullptr);
+	auto status = sqlite3_exec(db, sql, handler, arg, nullptr);
 	if (status == SQLITE_OK) {
 		return true;
 	} else if (status == SQLITE_ABORT) {

@@ -95,7 +95,8 @@ public:
 	 */
 	static PGHealth health(const PGconn *conn) noexcept;
 	/**
-	 * Closes a database connection (the handle must never be reused).
+	 * Closes a database connection and frees its resources. A closed connection
+	 * should never be reused. This function is nullptr-safe.
 	 * @param conn database connection handle
 	 */
 	static void disconnect(PGconn *conn) noexcept;
