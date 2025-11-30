@@ -15,9 +15,9 @@
 #include "../base/common/Exception.h"
 #include "../base/common/Logger.h"
 #include "../base/ds/Encoding.h"
-#include "../util/Authenticator.h"
 #include "../util/Hosts.h"
 #include "../util/PKI.h"
+#include "../util/Verifier.h"
 #include <cinttypes>
 #include <cstring>
 #include <iostream>
@@ -161,8 +161,8 @@ void ConfigTool::generateVerifier() {
 
 	try {
 		Data password { (const unsigned char*) secret, strlen(secret) };
-		Authenticator auth(true);
-		if (!auth.generateVerifier(name, password, rounds)) {
+		Verifier verifier(true);
+		if (!verifier.compute(name, password, rounds)) {
 			throw Exception(EX_OPERATION);
 		}
 
@@ -171,11 +171,11 @@ void ConfigTool::generateVerifier() {
 
 		std::cout << "{\n";
 		std::cout << " \"id\": \"" << name << "\",\n";
-		auth.getSalt(data);
+		verifier.salt(data);
 		buffer[0] = '\0';
 		Encoding::base16Encode(buffer, data.base, data.length, sizeof(buffer));
 		std::cout << " \"salt\": \"" << buffer << "\",\n";
-		auth.getPasswordVerifier(data);
+		verifier.secret(data);
 		buffer[0] = '\0';
 		Encoding::base16Encode(buffer, data.base, data.length, sizeof(buffer));
 		std::cout << " \"verifier\": \"" << buffer << "\"\n";

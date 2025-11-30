@@ -13,7 +13,7 @@
 #ifndef WH_HUB_CLIENTHUB_H_
 #define WH_HUB_CLIENTHUB_H_
 #include "Hub.h"
-#include "../util/Authenticator.h"
+#include "../util/Verifier.h"
 
 namespace wanhive {
 /**
@@ -115,7 +115,7 @@ private:
 
 		Hash hashFn;
 		Digest nonce;
-		Authenticator authenticator;
+		Verifier verifier;
 
 		Timer timer;
 		int stage;

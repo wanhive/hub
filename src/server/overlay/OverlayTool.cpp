@@ -231,10 +231,9 @@ void OverlayTool::identifyCmd() {
 	try {
 		Data salt, nonce;
 		Data password { (const unsigned char*) secret, strlen(secret) };
-		bool success = auth.generateNonce(nonce) && identificationRequest( {
-				identity, id }, nonce)
-				&& processIdentificationResponse(salt, nonce)
-				&& auth.createIdentity(identity, password, salt, nonce, rounds);
+		bool success = auth.nonce(nonce) && identificationRequest( { identity,
+				id }, nonce) && processIdentificationResponse(salt, nonce)
+				&& auth.scramble(identity, password, salt, nonce, rounds);
 
 		if (success) {
 			std::cout << "IDENTIFY SUCCEEDED" << std::endl;
@@ -253,9 +252,9 @@ void OverlayTool::authenticateCmd() {
 
 	try {
 		Data proof;
-		bool success = auth.generateUserProof(proof) && authenticationRequest( {
-				0, id }, proof) && processAuthenticationResponse(proof)
-				&& auth.authenticateHost(proof);
+		bool success = auth.userProof(proof)
+				&& authenticationRequest( { 0, id }, proof)
+				&& processAuthenticationResponse(proof) && auth.verify(proof);
 		if (success) {
 			std::cout << "AUTHENTICATE SUCCEEDED" << std::endl;
 		} else {

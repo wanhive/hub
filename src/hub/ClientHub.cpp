@@ -376,7 +376,7 @@ Message* ClientHub::createIdentificationRequest() {
 	try {
 		Message *msg = nullptr;
 		Data nonce;
-		if (!bs.authenticator.generateNonce(nonce)) {
+		if (!bs.verifier.nonce(nonce)) {
 			throw Exception(EX_SECURITY);
 		} else if (!(msg = Protocol::createIdentificationRequest(
 				{ getUid(), 0 }, nonce, 0))) {
@@ -401,8 +401,8 @@ void ClientHub::processIdentificationResponse(Message *msg) noexcept {
 		setStage(WHC_ERROR);
 	} else {
 		Data password { ctx.password, ctx.passwordLength };
-		auto f = bs.authenticator.createIdentity(getUid(), password, salt,
-				nonce, ctx.rounds);
+		auto f = bs.verifier.scramble(getUid(), password, salt, nonce,
+				ctx.rounds);
 		if (!f) {
 			setStage(WHC_ERROR);
 		} else {
@@ -419,7 +419,7 @@ Message* ClientHub::createAuthenticationRequest() {
 		Data proof;
 		if (!bs.auth) {
 			throw Exception(EX_OPERATION);
-		} else if (!bs.authenticator.generateUserProof(proof)) {
+		} else if (!bs.verifier.userProof(proof)) {
 			throw Exception(EX_STATE);
 		} else if (!(msg = Protocol::createAuthenticationRequest(
 				{ 0, bs.auth->getUid() }, proof, 0))) {
@@ -441,7 +441,7 @@ void ClientHub::processAuthenticationResponse(Message *msg) noexcept {
 		setStage(WHC_ERROR);
 	} else if (!Protocol::processAuthenticationResponse(msg, proof)) {
 		setStage(WHC_ERROR);
-	} else if (!bs.authenticator.authenticateHost(proof)) {
+	} else if (!bs.verifier.verify(proof)) {
 		setStage(WHC_ERROR);
 	} else {
 		WH_LOG_DEBUG("Authentication succeeded");

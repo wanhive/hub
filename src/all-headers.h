@@ -114,7 +114,6 @@
 #include "reactor/Handler.h"
 #include "reactor/Reactor.h"
 #include "reactor/Watcher.h"
-#include "util/Authenticator.h"
 #include "util/Endpoint.h"
 #include "util/FlowControl.h"
 #include "util/Frame.h"
@@ -129,6 +128,7 @@
 #include "util/PKI.h"
 #include "util/Packet.h"
 #include "util/Random.h"
+#include "util/Verifier.h"
 #include "util/commands.h"
 
 #endif /* WH_ALL_HEADERS_H_ */

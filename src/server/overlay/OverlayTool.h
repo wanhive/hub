@@ -14,7 +14,7 @@
 #define WH_SERVER_OVERLAY_OVERLAYTOOL_H_
 #include "OverlayProtocol.h"
 #include "../../hub/Identity.h"
-#include "../../util/Authenticator.h"
+#include "../../util/Verifier.h"
 
 namespace wanhive {
 /**
@@ -89,7 +89,7 @@ private:
 	unsigned int timeout;
 	unsigned long long hostId;
 	unsigned long long destinationId;
-	Authenticator auth;
+	Verifier auth;
 };
 
 } /* namespace wanhive */

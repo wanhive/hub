@@ -81,15 +81,15 @@ WH_REACTORHEADERS = reactor/Descriptor.h reactor/Handler.h reactor/Reactor.h \
 WH_REACTORSOURCES = reactor/Descriptor.cpp reactor/Reactor.cpp reactor/Watcher.cpp
 
 ## src/util collection
-WH_UTILHEADERS = util/Authenticator.h util/Endpoint.h util/FlowControl.h \
-	util/Frame.h util/Hash.h util/Hosts.h util/InstanceID.h util/Message.h \
-	util/MessageAddress.h util/MessageContext.h util/MessageControl.h \
-	util/MessageHeader.h util/PKI.h util/Packet.h util/Random.h util/commands.h
-WH_UTILSOURCES = util/Authenticator.cpp util/Endpoint.cpp util/FlowControl.cpp \
-	util/Frame.cpp util/Hash.cpp util/Hosts.cpp util/InstanceID.cpp \
-	util/Message.cpp util/MessageAddress.cpp util/MessageContext.cpp \
-	util/MessageControl.cpp util/MessageHeader.cpp util/PKI.cpp \
-	util/Packet.cpp util/Random.cpp
+WH_UTILHEADERS = util/Endpoint.h util/FlowControl.h util/Frame.h util/Hash.h \
+	util/Hosts.h util/InstanceID.h util/Message.h util/MessageAddress.h \
+	util/MessageContext.h util/MessageControl.h util/MessageHeader.h \
+	util/PKI.h util/Packet.h util/Random.h util/Verifier.h util/commands.h
+WH_UTILSOURCES = util/Endpoint.cpp util/FlowControl.cpp util/Frame.cpp \
+	util/Hash.cpp util/Hosts.cpp util/InstanceID.cpp util/Message.cpp \
+	util/MessageAddress.cpp util/MessageContext.cpp util/MessageControl.cpp \
+	util/MessageHeader.cpp util/PKI.cpp util/Packet.cpp util/Random.cpp \
+	util/Verifier.cpp
 
 ## src/hub collection
 WH_HUBHEADERS = hub/Alarm.h hub/ClientHub.h hub/Event.h hub/Hub.h \

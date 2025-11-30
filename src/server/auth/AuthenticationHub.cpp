@@ -21,7 +21,7 @@ namespace wanhive {
 
 AuthenticationHub::AuthenticationHub(unsigned long long uid,
 		const char *path) noexcept :
-		Hub(uid, path), fake(true) {
+		Hub { uid, path }, fake { true } {
 	memset(&ctx, 0, sizeof(ctx));
 }
 
@@ -30,13 +30,13 @@ AuthenticationHub::~AuthenticationHub() {
 }
 
 void AuthenticationHub::expel(Watcher *w) noexcept {
-	Authenticator *authenticator = nullptr;
+	Verifier *verifier { };
 	auto index = waitlist.get(w->getUid());
 	if (index != waitlist.end()) {
-		waitlist.getValue(index, authenticator);
+		waitlist.getValue(index, verifier);
 		waitlist.remove(index);
 	}
-	delete authenticator;
+	delete verifier;
 	Hub::expel(w);
 }
 
@@ -67,7 +67,7 @@ void AuthenticationHub::configure(void *arg) {
 }
 
 void AuthenticationHub::cleanup() noexcept {
-	waitlist.iterate(deleteAuthenticators, this);
+	waitlist.iterate(deleteVerifiers, this);
 	closeDatabaseConnection();
 	memset(&ctx, 0, sizeof(ctx));
 	//Clean up the base class object
@@ -107,22 +107,22 @@ int AuthenticationHub::handleIdentificationRequest(Message *message) noexcept {
 		return handleInvalidRequest(message);
 	}
 
-	Authenticator *authenticator = nullptr;
-	bool success = !isBanned(identity) && (authenticator =
-			new (std::nothrow) Authenticator(true))
-			&& loadIdentity(authenticator, identity, nonce)
-			&& waitlist.hmPut(origin, authenticator);
+	Verifier *verifier { };
+	bool success = !isBanned(identity) && (verifier =
+			new (std::nothrow) Verifier(true))
+			&& loadIdentity(verifier, identity, nonce)
+			&& waitlist.hmPut(origin, verifier);
 	//-----------------------------------------------------------------
 	if (success) {
 		Data salt { nullptr, 0 };
 		Data hostNonce { nullptr, 0 };
 
-		authenticator->getSalt(salt);
-		authenticator->generateNonce(hostNonce);
+		verifier->salt(salt);
+		verifier->nonce(hostNonce);
 		return generateIdentificationResponse(message, salt, hostNonce);
 	} else {
 		//Free up the memory and stop the <origin> from making further requests
-		delete authenticator;
+		delete verifier;
 		waitlist.hmPut(origin, nullptr);
 
 		if (ctx.salt && ctx.saltLength) {
@@ -134,8 +134,8 @@ int AuthenticationHub::handleIdentificationRequest(Message *message) noexcept {
 			Data salt { ctx.salt, ctx.saltLength };
 			Data hostNonce { nullptr, 0 };
 
-			fake.generateFakeSalt(identity, salt);
-			fake.generateFakeNonce(hostNonce);
+			fake.fakeSalt(identity, salt);
+			fake.fakeNonce(hostNonce);
 			salt.length = Twiddler::min(salt.length, 16);
 			return generateIdentificationResponse(message, salt, hostNonce);
 		} else {
@@ -150,15 +150,13 @@ int AuthenticationHub::handleAuthenticationRequest(Message *message) noexcept {
 	 * BODY: variable in Request and Response
 	 * TOTAL: at least 32 bytes in Request and Response
 	 */
-	Authenticator *authenticator = nullptr;
-	if (!waitlist.hmGet(message->getOrigin(), authenticator)
-			|| !authenticator) {
+	Verifier *verifier { };
+	if (!waitlist.hmGet(message->getOrigin(), verifier) || !verifier) {
 		return handleInvalidRequest(message);
 	}
 
 	Data proof { message->getBytes(0), message->getPayloadLength() };
-	bool success = authenticator->authenticateUser(proof)
-			&& authenticator->generateHostProof(proof)
+	bool success = verifier->verify(proof) && verifier->hostProof(proof)
 			&& (proof.length && (proof.length < Message::PAYLOAD_SIZE));
 	if (success) {
 		message->setBytes(0, proof.base, proof.length);
@@ -170,24 +168,24 @@ int AuthenticationHub::handleAuthenticationRequest(Message *message) noexcept {
 		return 0;
 	} else {
 		//Free up the memory and stop the <source> from making further requests
-		delete authenticator;
-		waitlist.hmReplace(message->getOrigin(), nullptr, authenticator);
+		delete verifier;
+		waitlist.hmReplace(message->getOrigin(), nullptr, verifier);
 		return handleInvalidRequest(message);
 	}
 }
 
 int AuthenticationHub::handleAuthorizationRequest(Message *message) noexcept {
 	auto origin = message->getOrigin();
-	Authenticator *authenticator = nullptr;
-	waitlist.hmGet(origin, authenticator);
+	Verifier *verifier { };
+	waitlist.hmGet(origin, verifier);
 
-	if (!authenticator || !authenticator->isAuthenticated()) {
+	if (!verifier || !verifier->verified()) {
 		return handleInvalidRequest(message);
 	}
 
 	//Message is signed on behalf of the authenticated client
-	message->writeSource(authenticator->getIdentity());
-	message->writeSession(authenticator->getGroup());
+	message->writeSource(verifier->identity());
+	message->writeSession(verifier->getGroup());
 	if (message->sign(getPKI())) {
 		message->setDestination(message->getOrigin());
 		return 0;
@@ -209,9 +207,9 @@ bool AuthenticationHub::isBanned(unsigned long long identity) const noexcept {
 	return false;
 }
 
-bool AuthenticationHub::loadIdentity(Authenticator *authenticator,
+bool AuthenticationHub::loadIdentity(Verifier *verifier,
 		unsigned long long identity, const Data &nonce) noexcept {
-	if (!authenticator || !nonce.base || !nonce.length || !ctx.db.query) {
+	if (!verifier || !nonce.base || !nonce.length || !ctx.db.query) {
 		return false;
 	}
 
@@ -237,15 +235,15 @@ bool AuthenticationHub::loadIdentity(Authenticator *authenticator,
 	}
 	//-----------------------------------------------------------------
 	auto salt = PQgetvalue(res, 0, 1);
-	auto verifier = PQgetvalue(res, 0, 2);
+	auto secret = PQgetvalue(res, 0, 2);
 
 	if (PQgetlength(res, 0, 3) == sizeof(uint32_t)) {
-		authenticator->setGroup(ntohl(*((uint32_t*) PQgetvalue(res, 0, 3))));
+		verifier->setGroup(ntohl(*((uint32_t*) PQgetvalue(res, 0, 3))));
 	} else {
-		authenticator->setGroup(0xff);
+		verifier->setGroup(0xff);
 	}
 
-	auto status = authenticator->identify(identity, verifier, salt, nonce);
+	auto status = verifier->identify(identity, secret, salt, nonce);
 
 	PQclear(res);
 	return status;
@@ -316,11 +314,10 @@ int AuthenticationHub::loadDatabaseParams(const char *option, const char *value,
 	}
 }
 
-int AuthenticationHub::deleteAuthenticators(unsigned int index,
-		void *arg) noexcept {
-	Authenticator *authenticator = nullptr;
-	((AuthenticationHub*) arg)->waitlist.getValue(index, authenticator);
-	delete authenticator;
+int AuthenticationHub::deleteVerifiers(unsigned int index, void *arg) noexcept {
+	Verifier *verifier { };
+	((AuthenticationHub*) arg)->waitlist.getValue(index, verifier);
+	delete verifier;
 	return 1;
 }
 

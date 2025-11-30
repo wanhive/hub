@@ -13,7 +13,7 @@
 #ifndef WH_SERVER_AUTH_AUTHENTICATIONHUB_H_
 #define WH_SERVER_AUTH_AUTHENTICATIONHUB_H_
 #include "../../hub/Hub.h"
-#include "../../util/Authenticator.h"
+#include "../../util/Verifier.h"
 
 namespace wanhive {
 /**
@@ -49,7 +49,7 @@ private:
 	//Returns true if the given identity is banned
 	bool isBanned(unsigned long long identity) const noexcept;
 	//Load the identity from a database
-	bool loadIdentity(Authenticator *authenticator, unsigned long long identity,
+	bool loadIdentity(Verifier *verifier, unsigned long long identity,
 			const Data &nonce) noexcept;
 	//Generates an identification response message
 	int generateIdentificationResponse(Message *message, const Data &salt,
@@ -63,12 +63,12 @@ private:
 	static int loadDatabaseParams(const char *option, const char *value,
 			void *arg) noexcept;
 	//Iterator for cleaning up the lookup table during shut down
-	static int deleteAuthenticators(unsigned int index, void *arg) noexcept;
+	static int deleteVerifiers(unsigned int index, void *arg) noexcept;
 private:
 	//Hash table of pending authentication requests
-	Kmap<unsigned long long, Authenticator*> waitlist;
+	Kmap<unsigned long long, Verifier*> waitlist;
 	//For obfuscation of failed identification requests
-	Authenticator fake;
+	Verifier fake;
 	//For database connection management
 	struct DbConnection {
 		void *conn;

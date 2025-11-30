@@ -1,7 +1,7 @@
 /*
- * Authenticator.cpp
+ * Verifier.cpp
  *
- * SRP-6a based mutual authenticator
+ * System for mutual authentication
  *
  *
  * Copyright (C) 2018 Amit Kumar (amitkriit@gmail.com)
@@ -10,47 +10,47 @@
  *
  */
 
-#include "Authenticator.h"
+#include "Verifier.h"
 #include <cstring>
 
 namespace {
+
 constexpr unsigned int DEFAULT_ROUNDS = 1;
 
 }  // namespace
 
 namespace wanhive {
 
-Authenticator::Authenticator(bool isHost) noexcept :
-		Srp(SRP_3072, WH_SHA512), isHost(isHost) {
+Verifier::Verifier(bool host) noexcept :
+		Srp { SRP_3072, WH_SHA512 }, _host { host } {
 }
 
-Authenticator::~Authenticator() {
+Verifier::~Verifier() {
 
 }
 
-bool Authenticator::identify(unsigned long long identity, const char *verifier,
+bool Verifier::identify(unsigned long long identity, const char *secret,
 		const char *salt, const Data &nonce) noexcept {
-	if (!isHost) {
+	if (!_host) {
 		return false;
 	}
 
 	auto success = initialize() && loadSalt(salt)
-			&& loadPasswordVerifier(verifier) && loadHostSecret()
+			&& loadPasswordVerifier(secret) && loadHostSecret()
 			&& loadHostNonce() && loadUserNonce(nonce.base, nonce.length)
 			&& loadRandomScramblingParameter() && loadSessionKey(true)
 			&& generateUserEvidence() && generateHostEvidence();
 
 	if (success) {
-		this->id = identity;
+		this->_identity = identity;
 	}
 
 	return success;
 }
 
-bool Authenticator::createIdentity(unsigned long long identity,
-		const Data &password, const Data &salt, const Data &nonce,
-		unsigned int rounds) noexcept {
-	if (isHost || !password.base || !password.length || !salt.base
+bool Verifier::scramble(unsigned long long identity, const Data &password,
+		const Data &salt, const Data &nonce, unsigned int rounds) noexcept {
+	if (_host || !password.base || !password.length || !salt.base
 			|| !salt.length || !nonce.base || !nonce.length
 			|| salt.length > groupSize() || nonce.length > groupSize()) {
 		return false;
@@ -70,91 +70,74 @@ bool Authenticator::createIdentity(unsigned long long identity,
 			&& generateUserEvidence() && generateHostEvidence();
 
 	if (success) {
-		this->id = identity;
+		this->_identity = identity;
 	}
 
 	return success;
 }
 
-bool Authenticator::authenticateUser(const Data &proof) noexcept {
-	if (!isHost || !proof.base || !proof.length
-			|| (proof.length != keySize())) {
-		return false;
-	} else if (verifyUserProof(proof.base, proof.length)) {
-		authenticated = true;
-		return true;
+bool Verifier::verify(const Data &proof) noexcept {
+	if (_host) {
+		return verifyUser(proof);
 	} else {
-		authenticated = false;
-		return false;
+		return verifyHost(proof);
 	}
 }
 
-bool Authenticator::authenticateHost(const Data &proof) noexcept {
-	if (isHost || !proof.base || !proof.length || (proof.length != keySize())) {
-		return false;
-	} else if (verifyHostProof(proof.base, proof.length)) {
-		authenticated = true;
-		return true;
-	} else {
-		authenticated = false;
-		return false;
-	}
+bool Verifier::verified() const noexcept {
+	return _verified;
 }
 
-bool Authenticator::isAuthenticated() const noexcept {
-	return authenticated;
+unsigned long long Verifier::identity() const noexcept {
+	return _identity;
 }
 
-unsigned long long Authenticator::getIdentity() const noexcept {
-	return id;
-}
-
-bool Authenticator::generateNonce(Data &nonce) noexcept {
+bool Verifier::nonce(Data &data) noexcept {
 	const unsigned char *bytes { };
 	unsigned int length { };
-	if (isHost) {
+	if (_host) {
 		Srp::getHostNonce(bytes, length);
-		nonce = { bytes, length };
+		data = { bytes, length };
 		return true;
 	} else {
 		auto ret = initialize() && loadUserSecret() && loadUserNonce();
 		getUserNonce(bytes, length);
-		nonce = { bytes, length };
+		data = { bytes, length };
 		return ret;
 	}
 }
 
-bool Authenticator::generateUserProof(Data &proof) noexcept {
+bool Verifier::userProof(Data &data) noexcept {
 	const unsigned char *bytes { };
 	unsigned int length { };
 	getUserProof(bytes, length);
-	proof = { bytes, length };
+	data = { bytes, length };
 	return true;
 }
 
-bool Authenticator::generateHostProof(Data &proof) noexcept {
+bool Verifier::hostProof(Data &data) noexcept {
 	const unsigned char *bytes { };
 	unsigned int length { };
 	getHostProof(bytes, length);
-	proof = { bytes, length };
+	data = { bytes, length };
 	return true;
 }
 
-void Authenticator::getSalt(Data &salt) noexcept {
+void Verifier::salt(Data &data) noexcept {
 	const unsigned char *bytes { };
 	unsigned int length { };
 	Srp::getSalt(bytes, length);
-	salt = { bytes, length };
+	data = { bytes, length };
 }
 
-void Authenticator::getPasswordVerifier(Data &verifier) noexcept {
+void Verifier::secret(Data &data) noexcept {
 	const unsigned char *bytes { };
 	unsigned int length { };
 	Srp::getPasswordVerifier(bytes, length);
-	verifier = { bytes, length };
+	data = { bytes, length };
 }
 
-bool Authenticator::generateVerifier(const char *identity, const Data &password,
+bool Verifier::compute(const char *identity, const Data &password,
 		unsigned int rounds) noexcept {
 	if (!rounds) {
 		rounds = DEFAULT_ROUNDS;
@@ -164,30 +147,53 @@ bool Authenticator::generateVerifier(const char *identity, const Data &password,
 			&& loadPasswordVerifier();
 }
 
-void Authenticator::generateFakeNonce(Data &nonce) noexcept {
+void Verifier::fakeNonce(Data &data) noexcept {
 	if (initialize() && Srp::generateFakeNonce()) {
 		const unsigned char *bytes { };
 		unsigned int length { };
 		Srp::getFakeNonce(bytes, length);
-		nonce = { bytes, length };
+		data = { bytes, length };
 	} else {
-		nonce = { nullptr, 0 };
+		data = { nullptr, 0 };
 	}
 }
 
-void Authenticator::generateFakeSalt(unsigned long long identity,
-		Data &salt) noexcept {
+void Verifier::fakeSalt(unsigned long long identity, Data &data) noexcept {
 	char identityString[32];
 	memset(identityString, 0, sizeof(identityString));
 	snprintf(identityString, sizeof(identityString), "@*%llu*@", identity);
 
-	if (Srp::generateFakeSalt(identityString, salt.base, salt.length)) {
+	if (Srp::generateFakeSalt(identityString, data.base, data.length)) {
 		const unsigned char *bytes { };
 		unsigned int length { };
 		Srp::getFakeSalt(bytes, length);
-		salt = { bytes, length };
+		data = { bytes, length };
 	} else {
-		salt = { nullptr, 0 };
+		data = { nullptr, 0 };
+	}
+}
+
+bool Verifier::verifyUser(const Data &proof) noexcept {
+	if (!_host || !proof.base || !proof.length || (proof.length != keySize())) {
+		return false;
+	} else if (verifyUserProof(proof.base, proof.length)) {
+		_verified = true;
+		return true;
+	} else {
+		_verified = false;
+		return false;
+	}
+}
+
+bool Verifier::verifyHost(const Data &proof) noexcept {
+	if (_host || !proof.base || !proof.length || (proof.length != keySize())) {
+		return false;
+	} else if (verifyHostProof(proof.base, proof.length)) {
+		_verified = true;
+		return true;
+	} else {
+		_verified = false;
+		return false;
 	}
 }
 
