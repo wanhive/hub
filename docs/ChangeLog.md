@@ -15,6 +15,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- Cleaner mutual authentication system.
 - Allow **Source** And **Sink** to discard the stored content.
 - Fresh implementation of application manager.
 - Major API changes in **Reactor** and **Hub**.
