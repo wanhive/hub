@@ -24,7 +24,7 @@ namespace wanhive {
 class Verifier: public State, private Srp {
 public:
 	/**
-	 * Creates a mutual authenticator.
+	 * Constructor: creates a mutual authenticator.
 	 * @param host true for host, false for user
 	 */
 	Verifier(bool host = false) noexcept;
@@ -65,8 +65,7 @@ public:
 	 * @param salt user's salt
 	 * @param nonce host's public ephemeral key
 	 * @param rounds password hashing rounds
-	 * @return true if the user's proof (M) generated at the user's end,
-	 * false otherwise.
+	 * @return true on success, false on error
 	 */
 	bool scramble(unsigned long long identity, const Data &password,
 			const Data &salt, const Data &nonce,
@@ -87,12 +86,11 @@ public:
 	//-----------------------------------------------------------------
 	/**
 	 * Returns the most recent authentication's (STEPS 3 & 4) result.
-	 * @return returns true if the most recent authentication attempt
-	 * succeeded, false otherwise.
+	 * @return true on success, false on error
 	 */
 	bool verified() const noexcept;
 	/**
-	 * Returns user identity generated in the STEP 1.
+	 * Returns user's identity saved during STEP 1.
 	 * @return user's identity
 	 */
 	unsigned long long identity() const noexcept;
@@ -103,17 +101,16 @@ public:
 	 * STEP 2).
 	 *
 	 * @param data stores the nonce
-	 * @return true on success (always succeeds at host's end), false on error
+	 * @return true on success (always succeeds at the host), false on error
 	 */
 	bool nonce(Data &data) noexcept;
 	/**
 	 * Returns user's proof (M).
-	 * Host: returns the M generated during STEP 1 (always succeeds)
-	 * User: returns the M generated during STEP 2 (preparation for STEP 3,
-	 * always succeeds)
+	 * Host: returns the M generated during STEP 1
+	 * User: returns the M generated during STEP 2 (preparation for STEP 3)
 	 *
 	 * @param data stores user's proof
-	 * @return true on success, false on error
+	 * @return true on success (always succeeds), false on error
 	 */
 	bool userProof(Data &data) noexcept;
 	/**
@@ -130,14 +127,14 @@ public:
 	 * Returns the salt.
 	 * Host: returns the salt generated after STEP 1 (Preparation for STEP 2)
 	 * User: returns the salt received in STEP 2
-	 * General: returns the salt generated alongside the password verifier
+	 * General: returns the salt computed alongside the password verifier
 	 *
 	 * @param data stores the salt
 	 */
 	void salt(Data &data) noexcept;
 	/**
-	 * Returns the generated password verifier.
-	 * @param data stores the verifier
+	 * Returns the computed password verifier.
+	 * @param data stores the password verifier
 	 */
 	void secret(Data &data) noexcept;
 	/**
