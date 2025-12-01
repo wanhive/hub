@@ -1,7 +1,7 @@
 /*
  * InstanceID.h
  *
- * Cryptographically secure secret for handshaking
+ * Secure instance identifier
  *
  *
  * Copyright (C) 2018 Amit Kumar (amitkriit@gmail.com)
@@ -17,12 +17,12 @@
 
 namespace wanhive {
 /**
- * A unique and secret identifier.
+ * Secure and unique identifier
  */
 class InstanceID: private NonCopyable {
 public:
 	/**
-	 * Default constructor: creates a secure instance ID.
+	 * Constructor: creates a secure identifier.
 	 */
 	InstanceID();
 	/**
@@ -31,21 +31,21 @@ public:
 	~InstanceID();
 	//-----------------------------------------------------------------
 	/**
-	 * Generates a nonce suitable for secure handshaking.
-	 * @param hash the object that provides the hash function
-	 * @param salt the salt
-	 * @param id the identifier, (salt, id) pair should be unique.
-	 * @param nonce the object for storing the generated nonce
+	 * Generates cryptographic nonce using a unique (salt, id) pair.
+	 * @param hash cryptographic hash function provider
+	 * @param salt random data
+	 * @param id identifier
+	 * @param nonce stores the generated nonce
 	 */
 	void generateNonce(Hash &hash, uint64_t salt, uint64_t id,
 			Digest *nonce) const noexcept;
 	/**
-	 * Verifies a nonce.
-	 * @param hash the object that provides the hash function
-	 * @param salt the salt
-	 * @param id the identifier
-	 * @param nonce the nonce for verification
-	 * @return true on successful verification, false otherwise
+	 * Verifies a cryptographic nonce.
+	 * @param hash cryptographic hash function provider
+	 * @param salt random data
+	 * @param id identifier
+	 * @param nonce pseudo-random nonce
+	 * @return true on success, false on error
 	 */
 	bool verifyNonce(Hash &hash, uint64_t salt, uint64_t id,
 			const Digest *nonce) const noexcept;

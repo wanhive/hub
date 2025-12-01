@@ -277,7 +277,7 @@ void Hub::configure(void *arg) {
 		ctx.redact = conf.getBoolean("OPT", "redact", true);
 		//-----------------------------------------------------------------
 		WH_LOG_DEBUG(
-				"Hub setings:\n" "LISTEN=%s, BACKLOG=%d, SERVICE_NAME='%s', SERVICE_TYPE='%s',\n" "IO_EVENTS=%u, TIMER_EXPIRATION=%ums, TIMER_INTERVAL=%ums, SEMAPHORE=%s,\n" "SYNCHRONOUS_SIGNAL=%s, CONNECTIONS=%u, MESSAGES=%u,\n" "NEW_CONNECTIONS=%u, NEW_CONNECTION_TIMEOUT=%ums, CYCLE_IN_LIMIT=%u,\n" "OUT_QUEUE_LIMIT=%u, THROTTLE=%s, RESERVED_MESSAGES=%u, ALLOW_PACKET_DROP=%s,\n" "MESSAGE_TTL=%u, ANSWER_RATIO=%f, FORWARD_RATIO=%f, LOG_LEVEL=%s, REDACT=%s\n",
+				"\nLISTEN=%s, BACKLOG=%d, SERVICE_NAME='%s', SERVICE_TYPE='%s',\n" "IO_EVENTS=%u, TIMER_EXPIRATION=%ums, TIMER_INTERVAL=%ums, SEMAPHORE=%s,\n" "SYNCHRONOUS_SIGNAL=%s, CONNECTIONS=%u, MESSAGES=%u,\n" "NEW_CONNECTIONS=%u, NEW_CONNECTION_TIMEOUT=%ums, CYCLE_IN_LIMIT=%u,\n" "OUT_QUEUE_LIMIT=%u, THROTTLE=%s, RESERVED_MESSAGES=%u, ALLOW_PACKET_DROP=%s,\n" "MESSAGE_TTL=%u, ANSWER_RATIO=%f, FORWARD_RATIO=%f, LOG_LEVEL=%s, REDACT=%s\n",
 				WH_BOOLF(ctx.listen), ctx.backlog, ctx.name, ctx.type,
 				ctx.events, ctx.expiration, ctx.interval,
 				WH_BOOLF(ctx.semaphore), WH_BOOLF(ctx.signal), ctx.connections,

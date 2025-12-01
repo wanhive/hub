@@ -56,8 +56,7 @@ void AuthenticationHub::configure(void *arg) {
 		}
 
 		auto mask = Hub::redact();
-		WH_LOG_DEBUG(
-				"Authentication hub settings:\nDATABASE= '%s'\nQUERY= '%s'\nSALT= '%s'\n",
+		WH_LOG_DEBUG("\nDATABASE= '%s'\nQUERY= '%s'\nSALT= '%s'\n",
 				WH_MASK_STR(mask, ctx.db.name), WH_MASK_STR(mask, ctx.db.query),
 				WH_MASK_STR(mask, (const char *)ctx.salt));
 	} catch (const BaseException &e) {

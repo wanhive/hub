@@ -1,7 +1,7 @@
 /*
  * InstanceID.cpp
  *
- * Cryptographically secure secret for handshaking
+ * Secure instance identifier
  *
  *
  * Copyright (C) 2018 Amit Kumar (amitkriit@gmail.com)

@@ -1,7 +1,7 @@
 /*
  * Topic.h
  *
- * Topic-based subscription management
+ * Topics subscription
  *
  *
  * Copyright (C) 2019 Amit Kumar (amitkriit@gmail.com)
@@ -15,12 +15,12 @@
 
 namespace wanhive {
 /**
- * Topic-based subscription management
+ * Topics subscription
  */
 class Topic {
 public:
 	/**
-	 * Default constructor: all the topics are un-subscribed
+	 * Constructor: clears all subscriptions.
 	 */
 	Topic() noexcept;
 	/**
@@ -29,26 +29,25 @@ public:
 	~Topic();
 	//-----------------------------------------------------------------
 	/**
-	 * Adds subscription to the given topic.
-	 * @param id the topic identifier
-	 * @return true on success, false otherwise (invalid topic identifier)
+	 * Adds subscription to a topic.
+	 * @param id topic identifier
+	 * @return true on success, false on error (invalid topic)
 	 */
 	bool set(unsigned int id) noexcept;
 	/**
-	 * Removes subscription from the given topic.
-	 * @param id the topic identifier
+	 * Clears subscription to a topic.
+	 * @param id topic identifier
 	 */
 	void clear(unsigned int id) noexcept;
 	/**
-	 * Tests subscription to the given topic.
-	 * @param id the topic identifier
-	 * @return true if a subscription exists, false if a subscription doesn't
-	 * exist, or the topic identifier is invalid.
+	 * Tests subscription to a topic.
+	 * @param id topic identifier
+	 * @return true if subscription exists, false otherwise
 	 */
 	bool test(unsigned int id) const noexcept;
 	/**
 	 * Returns the number of subscribed topics.
-	 * @return the total subscriptions count
+	 * @return subscription count
 	 */
 	unsigned int count() const noexcept;
 public:

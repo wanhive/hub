@@ -79,7 +79,7 @@ void OverlayHub::configure(void *arg) {
 		ctx.nodes[n] = 0;
 
 		WH_LOG_DEBUG(
-				"Overlay hub settings: \n" "ENABLE_REGISTRATION=%s, AUTHENTICATE_CLIENTS=%s, JOIN_OVERLAY=%s,\n" "UPDATE_CYCLE=%ums, IO_TIMEOUT=%ums, RETRY_INTERVAL=%ums,\n" "NETMASK=%#llx, GROUP_ID=%u\n",
+				"\nENABLE_REGISTRATION=%s, AUTHENTICATE_CLIENTS=%s, JOIN_OVERLAY=%s,\n" "UPDATE_CYCLE=%ums, IO_TIMEOUT=%ums, RETRY_INTERVAL=%ums,\n" "NETMASK=%#llx, GROUP_ID=%u\n",
 				WH_BOOLF(ctx.enroll), WH_BOOLF(ctx.authenticate),
 				WH_BOOLF(ctx.join), ctx.period, ctx.timeout, ctx.pause,
 				ctx.netmask, ctx.group);

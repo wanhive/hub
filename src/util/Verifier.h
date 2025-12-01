@@ -167,9 +167,9 @@ private:
 	bool verifyUser(const Data &proof) noexcept;
 	bool verifyHost(const Data &proof) noexcept;
 private:
+	const bool _host;
 	unsigned long long _identity { 0 };
 	bool _verified { false };
-	bool _host;
 };
 
 } /* namespace wanhive */

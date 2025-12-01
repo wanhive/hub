@@ -1,7 +1,7 @@
 /*
  * Topic.cpp
  *
- * Topic-based subscription management
+ * Topics subscription
  *
  *
  * Copyright (C) 2019 Amit Kumar (amitkriit@gmail.com)
@@ -24,12 +24,13 @@ Topic::~Topic() {
 }
 
 bool Topic::set(unsigned int id) noexcept {
-	if (id < COUNT && !Twiddler::test(bits, id)) {
+	auto valid = (id < COUNT);
+	if (valid && !Twiddler::test(bits, id)) {
 		Twiddler::set(bits, id);
 		_count += 1;
 		return true;
 	} else {
-		return (id < COUNT);
+		return valid;
 	}
 }
 
