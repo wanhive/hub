@@ -1,0 +1,90 @@
+/*
+ * DataStore.h
+ *
+ * Structured data repository
+ *
+ *
+ * Copyright (C) 2025 Amit Kumar (amitkriit@gmail.com)
+ * This program is part of the Wanhive IoT Platform.
+ * Check the COPYING file for the license.
+ *
+ */
+
+#ifndef WH_BASE_DB_DATASTORE_H_
+#define WH_BASE_DB_DATASTORE_H_
+#include "Postgres.h"
+
+namespace wanhive {
+/**
+ * Database connection parameters.
+ */
+using DBInfo = PGInfo;
+/**
+ * Database connection health.
+ */
+using DBHealth = PGHealth;
+
+/**
+ * PostgreSQL-based structured data repository
+ */
+class DataStore {
+public:
+	/**
+	 * Constructor: creates an empty repository.
+	 */
+	DataStore() noexcept;
+	/**
+	 * Constructor: connects to a database.
+	 * @param info connection parameters
+	 */
+	DataStore(const DBInfo &info);
+	/**
+	 * Destructor: closes the database.
+	 */
+	~DataStore();
+	/**
+	 * Opens a database connection.
+	 * @param info connection parameters
+	 */
+	void open(const DBInfo &info);
+	/**
+	 * Re-establishes a database connection.
+	 * @param blocking true for blocking operation, false otherwise
+	 */
+	void reset(bool blocking = true);
+	/**
+	 * Closes the database connection.
+	 */
+	void close() noexcept;
+	/**
+	 * Polls database connection's status.
+	 * @return true for stable connection, false for connection in-progress
+	 */
+	bool poll();
+	/**
+	 * Probes database connection's health.
+	 * @return health code
+	 */
+	DBHealth health() const noexcept;
+	/**
+	 * Checks connection parameters and database server's status.
+	 * @param info connection parameters
+	 * @return true on success, false on error
+	 */
+	static bool ping(const DBInfo &info) noexcept;
+protected:
+	/**
+	 * Returns the database connection handle.
+	 * @return opaque database connection object
+	 */
+	PGconn* getHandle() const noexcept;
+private:
+	struct {
+		PGPoll poll { PGPoll::CONNECT };
+		PGconn *conn { nullptr };
+	} db;
+};
+
+} /* namespace wanhive */
+
+#endif /* WH_BASE_DB_DATASTORE_H_ */
