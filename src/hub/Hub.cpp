@@ -749,7 +749,7 @@ void Hub::publish() noexcept {
 		}
 
 		//Trap the message (e.g. registration request)
-		if (msg->testFlags(MSG_TRAP) && probe(msg)) {
+		if (msg->testFlags(MSG_PROBE) && probe(msg)) {
 			//Do not forward
 			Message::recycle(msg);
 			continue;

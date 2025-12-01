@@ -212,8 +212,8 @@ private:
 	 */
 	virtual void maintain() noexcept;
 	/**
-	 * Adapter: Probes a message which has it's MSG_TRAP flag set.
-	 * @param message a message to process
+	 * Adapter: Handles messages that have the MSG_PROBE flag enabled.
+	 * @param message a message to probe
 	 * @return true to discard (recycle) the message, false otherwise
 	 */
 	virtual bool probe(Message *message) noexcept;

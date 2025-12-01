@@ -30,7 +30,7 @@ enum MessageFlag : uint32_t {
 	MSG_WAIT_PROCESSING = 4,/**< Wait for processing */
 	MSG_PROCESSED = 8, /**< Processed */
 	MSG_PRIORITY = 16, /**< High priority message */
-	MSG_TRAP = 32, /**< Requires additional processing */
+	MSG_PROBE = 32, /**< Requires additional processing */
 	MSG_INVALID = 64 /**< Invalid message */
 };
 //-----------------------------------------------------------------

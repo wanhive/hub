@@ -823,7 +823,7 @@ bool OverlayHub::handleRegistrationRequest(Message *msg) noexcept {
 	//Get the Requested UID
 	auto requestedUid = msg->getSource();
 	//Trap this message before publishing to the remote host
-	msg->setFlags(MSG_TRAP);
+	msg->setFlags(MSG_PROBE);
 	//-----------------------------------------------------------------
 	/*
 	 * [PROXY ESTABLISHMENT]
