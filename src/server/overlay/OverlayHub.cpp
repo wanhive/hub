@@ -104,7 +104,16 @@ void OverlayHub::cleanup() noexcept {
 	Hub::cleanup();
 }
 
-bool OverlayHub::trap(Message *message) noexcept {
+void OverlayHub::maintain() noexcept {
+	if (!isStable()) {
+		setStable(true);
+		if (fixController()) {
+			fixRoutingTable();
+		}
+	}
+}
+
+bool OverlayHub::probe(Message *message) noexcept {
 	return (bool) processRegistrationRequest(message);
 }
 
@@ -144,15 +153,6 @@ void OverlayHub::route(Message *message) noexcept {
 	 */
 	if (isExternalNode(message->getDestination())) {
 		message->writeLabel(0); //Clean up the label
-	}
-}
-
-void OverlayHub::maintain() noexcept {
-	if (!isStable()) {
-		setStable(true);
-		if (fixController()) {
-			fixRoutingTable();
-		}
 	}
 }
 
@@ -497,7 +497,7 @@ int OverlayHub::processRegistrationRequest(Message *message) noexcept {
 		return -1;
 	}
 
-	auto conn = shift(current, requested, (mode == 2) ? true : false);
+	auto conn = move(current, requested, (mode == 2) ? true : false);
 	if (!conn) {
 		return -1;
 	} else {

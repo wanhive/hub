@@ -147,13 +147,13 @@ protected:
 	 * conflicting watcher is disabled. On success, the moving watcher's
 	 * WATCHER_ACTIVE flag is set and its UID is updated to match the new key.
 	 * On failure, the old key's watcher is disabled.
-	 * @param from old key's value
-	 * @param to new key's value
+	 * @param from old key
+	 * @param to new key
 	 * @param replace true to replace on conflict, false to fail on conflict
-	 * @return the watcher at the new key on success, nullptr on failure.
+	 * @return the watcher at the new key on success, nullptr on failure
 	 */
-	Watcher* shift(unsigned long long from, unsigned long long to,
-			bool replace = false) noexcept;
+	Watcher* move(unsigned long long from, unsigned long long to,
+			bool replace) noexcept;
 	/**
 	 * Watcher management: iterates through the registered watchers. Callback
 	 * function's returned value controls the iteration's behavior:
@@ -162,8 +162,8 @@ protected:
 	 * Reactor::disable() explicitly inside the callback function to remove the
 	 * watcher from event loop),
 	 * [Any other value]: stop iteration.
-	 * @param fn the callback function
-	 * @param arg additional argument for the callback function
+	 * @param fn callback function
+	 * @param arg callback function's additional argument
 	 */
 	void iterate(int (*fn)(Watcher *w, void *arg), void *arg);
 	/**
@@ -171,7 +171,7 @@ protected:
 	 * @param target maximum connections to purge (0 for no limit)
 	 * @param force true to expire all temporary connections; false for the
 	 * normal operation.
-	 * @return number of connections purged
+	 * @return purged connections count
 	 */
 	unsigned int reap(unsigned int target = 0, bool force = false) noexcept;
 	//-----------------------------------------------------------------
@@ -208,20 +208,20 @@ protected:
 	virtual void cleanup() noexcept;
 private:
 	/**
-	 * Adapter: processes a message which has it's MSG_TRAP flag set.
-	 * @param message the message to process
-	 * @return true to discard (recycle) the message, false otherwise
-	 */
-	virtual bool trap(Message *message) noexcept;
-	/**
-	 * Adapter: processes an incoming message and creates a route for it.
-	 * @param message the message to process
-	 */
-	virtual void route(Message *message) noexcept;
-	/**
 	 * Adapter: the hub maintenance routine.
 	 */
 	virtual void maintain() noexcept;
+	/**
+	 * Adapter: Probes a message which has it's MSG_TRAP flag set.
+	 * @param message a message to process
+	 * @return true to discard (recycle) the message, false otherwise
+	 */
+	virtual bool probe(Message *message) noexcept;
+	/**
+	 * Adapter: processes an incoming message and creates a route for it.
+	 * @param message incoming message
+	 */
+	virtual void route(Message *message) noexcept;
 	//-----------------------------------------------------------------
 	/**
 	 * Adapter: callback for periodic timer expiration.
@@ -348,7 +348,7 @@ private:
 	//Outgoing messages ready for dispatch
 	CircularBuffer<Message*> outgoing;
 	//Temporary connections
-	Buffer<unsigned long long> temporary;
+	Buffer<unsigned long long> guests;
 	//-----------------------------------------------------------------
 	/*
 	 * Hub statistics
@@ -384,9 +384,9 @@ private:
 		char type[8];
 		//Maximum number of IO events to process in each event loop
 		unsigned int events;
-		//Timer settings: initial expiration in miliseconds
+		//Timer settings: initial expiration in milliseconds
 		unsigned int expiration;
-		//Timer settings: periodic expiration in miliseconds
+		//Timer settings: periodic expiration in milliseconds
 		unsigned int interval;
 		//Enable/disable semaphore-like behavior for the event notifier
 		bool semaphore;

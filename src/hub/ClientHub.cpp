@@ -82,6 +82,42 @@ void ClientHub::cleanup() noexcept {
 	Hub::cleanup();
 }
 
+void ClientHub::maintain() noexcept {
+	switch (getStage()) {
+	case WHC_IDENTIFY:
+		connectToAuthenticator();
+		break;
+	case WHC_AUTHENTICATE:
+		if (checkStageTimeout(ctx.timeout)) {
+			setStage(WHC_ERROR);
+		}
+		break;
+	case WHC_BOOTSTRAP:
+		connectToOverlay();
+		break;
+	case WHC_ROOT:
+	case WHC_GETKEY:
+	case WHC_AUTHORIZE:
+		if (checkStageTimeout(ctx.timeout)) {
+			setStage(WHC_ERROR);
+		}
+		break;
+	case WHC_ERROR:
+		if (checkStageTimeout(ctx.pause)) {
+			setStage(WHC_IDENTIFY);
+		}
+		break;
+	case WHC_REGISTERED:
+		if (!bs.node) {
+			setStage(WHC_ERROR);
+		}
+		break;
+	default:
+		Hub::cancel();
+		break;
+	}
+}
+
 void ClientHub::route(Message *message) noexcept {
 	auto origin = message->getOrigin();
 	auto source = message->getSource();
@@ -128,42 +164,6 @@ void ClientHub::route(Message *message) noexcept {
 		break;
 	default:
 		//Unsupported message
-		break;
-	}
-}
-
-void ClientHub::maintain() noexcept {
-	switch (getStage()) {
-	case WHC_IDENTIFY:
-		connectToAuthenticator();
-		break;
-	case WHC_AUTHENTICATE:
-		if (checkStageTimeout(ctx.timeout)) {
-			setStage(WHC_ERROR);
-		}
-		break;
-	case WHC_BOOTSTRAP:
-		connectToOverlay();
-		break;
-	case WHC_ROOT:
-	case WHC_GETKEY:
-	case WHC_AUTHORIZE:
-		if (checkStageTimeout(ctx.timeout)) {
-			setStage(WHC_ERROR);
-		}
-		break;
-	case WHC_ERROR:
-		if (checkStageTimeout(ctx.pause)) {
-			setStage(WHC_IDENTIFY);
-		}
-		break;
-	case WHC_REGISTERED:
-		if (!bs.node) {
-			setStage(WHC_ERROR);
-		}
-		break;
-	default:
-		Hub::cancel();
 		break;
 	}
 }
@@ -521,7 +521,7 @@ void ClientHub::processRegistrationResponse(Message *msg) noexcept {
 			|| status == WH_AQLF_REJECTED) {
 		setStage(WHC_ERROR);
 	} else if (origin == bs.node->getUid() && status == WH_AQLF_ACCEPTED) {
-		if (shift(bs.node->getUid(), 0, true)) {
+		if (move(bs.node->getUid(), 0, true)) {
 			WH_LOG_INFO("Registration succeeded");
 			setStage(WHC_REGISTERED);
 		} else {

@@ -112,7 +112,7 @@ bool Hub::detach(unsigned long long id) noexcept {
 	return disable(find(id));
 }
 
-Watcher* Hub::shift(unsigned long long from, unsigned long long to,
+Watcher* Hub::move(unsigned long long from, unsigned long long to,
 		bool replace) noexcept {
 	Watcher *w[2] = { nullptr, nullptr };
 	if (!watchers.contains(from)) {
@@ -136,12 +136,12 @@ void Hub::iterate(int (*fn)(Watcher *w, void *arg), void *arg) {
 
 unsigned int Hub::reap(unsigned int target, bool force) noexcept {
 	//Prepare the buffer for reading
-	temporary.rewind();
+	guests.rewind();
 	auto timeout = force ? 0 : ctx.lease;
 
 	unsigned int count = 0;
 	unsigned long long id;
-	while (temporary.get(id)) {
+	while (guests.get(id)) {
 		auto conn = find(id);
 		if (!conn) {
 			continue;
@@ -157,12 +157,12 @@ unsigned int Hub::reap(unsigned int target, bool force) noexcept {
 			 * order, hence if this connection hasn't timed-out then neither
 			 * have the successors.
 			 */
-			temporary.setIndex(temporary.getIndex() - 1);
+			guests.setIndex(guests.getIndex() - 1);
 			break;
 		}
 	}
 	//Prepare the buffer for adding more data towards rear
-	temporary.pack();
+	guests.pack();
 	return count;
 }
 
@@ -318,7 +318,7 @@ void Hub::cleanup() noexcept {
 		iterate(deleteWatchers, nullptr);
 		//-----------------------------------------------------------------
 		//3. Clean up all the containers
-		temporary.clear();
+		guests.clear();
 		Message *msg;
 		while (outgoing.get(msg)) {
 			Message::recycle(msg);
@@ -353,15 +353,15 @@ void Hub::cleanup() noexcept {
 	 */
 }
 
-bool Hub::trap(Message *message) noexcept {
+void Hub::maintain() noexcept {
+
+}
+
+bool Hub::probe(Message *message) noexcept {
 	return false;
 }
 
 void Hub::route(Message *message) noexcept {
-
-}
-
-void Hub::maintain() noexcept {
 
 }
 
@@ -574,7 +574,7 @@ void Hub::initBuffers() {
 		//Stores messages ready for publishing
 		outgoing.initialize(ctx.messages);
 		//Stores temporary connection identifiers
-		temporary.initialize(ctx.guests);
+		guests.initialize(ctx.guests);
 	} catch (const BaseException &e) {
 		WH_LOG_EXCEPTION(e);
 		throw;
@@ -749,7 +749,7 @@ void Hub::publish() noexcept {
 		}
 
 		//Trap the message (e.g. registration request)
-		if (msg->testFlags(MSG_TRAP) && trap(msg)) {
+		if (msg->testFlags(MSG_TRAP) && probe(msg)) {
 			//Do not forward
 			Message::recycle(msg);
 			continue;
@@ -801,7 +801,7 @@ void Hub::process() noexcept {
 
 bool Hub::acceptConnection(Socket *listener) noexcept {
 	//Limited protection against flooding of new connections
-	if (!temporary.hasSpace()) {
+	if (!guests.hasSpace()) {
 		//Clean up timed out temporary connections
 		reap();
 	}
@@ -821,7 +821,7 @@ bool Hub::acceptConnection(Socket *listener) noexcept {
 		 * and other unknown issues.
 		 */
 		//Activate the Connection
-		if (temporary.put(newConn->getUid())) {
+		if (guests.put(newConn->getUid())) {
 			attach(newConn, IO_WR, 0);
 			newConn->setOption(WATCHER_WRITE_BUFFER_MAX, ctx.output);
 		} else {

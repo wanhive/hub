@@ -38,9 +38,9 @@ private:
 	void expel(Watcher *w) noexcept override;
 	void configure(void *arg) override;
 	void cleanup() noexcept override;
-	bool trap(Message *message) noexcept override;
-	void route(Message *message) noexcept override;
 	void maintain() noexcept override;
+	bool probe(Message *message) noexcept override;
+	void route(Message *message) noexcept override;
 	void onAlarm(unsigned long long uid, unsigned long long ticks) noexcept
 			override;
 	void onInotification(unsigned long long uid,
