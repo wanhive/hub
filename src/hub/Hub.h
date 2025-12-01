@@ -344,9 +344,9 @@ private:
 	//Watchers being monitored
 	Watchers watchers;
 	//Incoming messages ready for processing
-	CircularBuffer<Message*> incoming;
+	CircularBuffer<Message*> in;
 	//Outgoing messages ready for dispatch
-	CircularBuffer<Message*> outgoing;
+	CircularBuffer<Message*> out;
 	//Temporary connections
 	Buffer<unsigned long long> guests;
 	//-----------------------------------------------------------------
@@ -402,9 +402,9 @@ private:
 		unsigned int lease;
 
 		//Limit on incoming messages from each connection each cycle
-		unsigned int input;
+		unsigned int inward;
 		//Limit on outgoing messages a connection is allowed to hold on to
-		unsigned int output;
+		unsigned int outward;
 		//Throttle incoming packets under load
 		bool throttle;
 		//These number of messages will be reserved for internal purposes

@@ -168,7 +168,7 @@ unsigned int Hub::reap(unsigned int target, bool force) noexcept {
 
 bool Hub::collect(Message *message) noexcept {
 	if (message && !message->isMarked() && message->validate()
-			&& incoming.put(message)) {
+			&& in.put(message)) {
 		message->putFlags(MSG_WAIT_PROCESSING);
 		message->setMarked();
 		return true;
@@ -178,7 +178,7 @@ bool Hub::collect(Message *message) noexcept {
 }
 
 bool Hub::forward(Message *message) noexcept {
-	if (message && !message->isMarked() && outgoing.put(message)) {
+	if (message && !message->isMarked() && out.put(message)) {
 		message->putFlags(MSG_PROCESSED);
 		message->setMarked();
 		return true;
@@ -257,9 +257,9 @@ void Hub::configure(void *arg) {
 		}
 		ctx.lease = conf.getNumber("HUB", "lease");
 
-		ctx.input = conf.getNumber("HUB", "input");
-		ctx.output = conf.getNumber("HUB", "output");
-		ctx.output = Twiddler::min(ctx.output, (Socket::OUT_QUEUE_SIZE - 1));
+		ctx.inward = conf.getNumber("HUB", "inward");
+		ctx.outward = conf.getNumber("HUB", "outward");
+		ctx.outward = Twiddler::min(ctx.outward, (Socket::OUT_QUEUE_SIZE - 1));
 
 		ctx.throttle = conf.getBoolean("HUB", "throttle");
 		ctx.reserved = conf.getNumber("HUB", "reserved");
@@ -281,7 +281,7 @@ void Hub::configure(void *arg) {
 				WH_BOOLF(ctx.listen), ctx.backlog, ctx.name, ctx.type,
 				ctx.events, ctx.expiration, ctx.interval,
 				WH_BOOLF(ctx.semaphore), WH_BOOLF(ctx.signal), ctx.connections,
-				ctx.messages, ctx.guests, ctx.lease, ctx.input, ctx.output,
+				ctx.messages, ctx.guests, ctx.lease, ctx.inward, ctx.outward,
 				WH_BOOLF(ctx.throttle), ctx.reserved, WH_BOOLF(ctx.policing),
 				ctx.ttl, ctx.answer, ctx.forward,
 				Logger::levelString(Logger::getDefault().getLevel()),
@@ -320,10 +320,10 @@ void Hub::cleanup() noexcept {
 		//3. Clean up all the containers
 		guests.clear();
 		Message *msg;
-		while (outgoing.get(msg)) {
+		while (out.get(msg)) {
 			Message::recycle(msg);
 		}
-		while (incoming.get(msg)) {
+		while (in.get(msg)) {
 			Message::recycle(msg);
 		}
 		//-----------------------------------------------------------------
@@ -553,7 +553,7 @@ void Hub::setup(void *arg) {
 
 void Hub::loop() {
 	while (running) {
-		poll(outgoing.isEmpty());
+		poll(out.isEmpty());
 		publish();
 		dispatch();
 		process();
@@ -570,9 +570,9 @@ void Hub::initBuffers() {
 		//Initialize the message Pool
 		Message::initPool(ctx.messages);
 		//Stores incoming messages for processing
-		incoming.initialize(ctx.messages);
+		in.initialize(ctx.messages);
 		//Stores messages ready for publishing
-		outgoing.initialize(ctx.messages);
+		out.initialize(ctx.messages);
 		//Stores temporary connection identifiers
 		guests.initialize(ctx.guests);
 	} catch (const BaseException &e) {
@@ -732,7 +732,7 @@ void Hub::publish() noexcept {
 	/*
 	 * Incoming Allocation Strategy (IAS)
 	 */
-	auto capacity = Message::unallocated() + outgoing.readSpace();
+	auto capacity = Message::unallocated() + out.readSpace();
 	//Limit on the number of queries that can be answered
 	auto answerCapacity = (unsigned int) (capacity * ctx.answer);
 	//Limit on the number of queries that can be forwarded
@@ -740,7 +740,7 @@ void Hub::publish() noexcept {
 	//-----------------------------------------------------------------
 	Message *msg = nullptr;
 	Watcher *w = nullptr;
-	while (outgoing.get(msg)) {
+	while (out.get(msg)) {
 		//-----------------------------------------------------------------
 		//Sanity check
 		if (!msg->validate()) {
@@ -780,7 +780,7 @@ void Hub::publish() noexcept {
 		//-----------------------------------------------------------------
 		if (!w->publish(msg)) {
 			//Recipient's queue is full, retry later
-			incoming.put(msg);
+			in.put(msg);
 		} else if (w->testEvents(IO_WRITE)) {
 			retain(w);
 		}
@@ -789,13 +789,13 @@ void Hub::publish() noexcept {
 
 void Hub::process() noexcept {
 	Message *message;
-	while (incoming.get(message)) {
+	while (in.get(message)) {
 		if (!message->testFlags(MSG_PROCESSED)) {
 			//All the other flags are cleared
 			message->putFlags(MSG_PROCESSED);
 			route(message);
 		}
-		outgoing.put(message);
+		out.put(message);
 	}
 }
 
@@ -823,7 +823,7 @@ bool Hub::acceptConnection(Socket *listener) noexcept {
 		//Activate the Connection
 		if (guests.put(newConn->getUid())) {
 			attach(newConn, IO_WR, 0);
-			newConn->setOption(WATCHER_WRITE_BUFFER_MAX, ctx.output);
+			newConn->setOption(WATCHER_WRITE_BUFFER_MAX, ctx.outward);
 		} else {
 			throw Exception(EX_OVERFLOW);
 		}
@@ -857,7 +857,7 @@ bool Hub::processConnection(Socket *connection) noexcept {
 		if (ctx.throttle) {
 			cycleLimit = throttle(connection);
 		} else {
-			cycleLimit = Twiddler::min(ctx.input, Message::unallocated());
+			cycleLimit = Twiddler::min(ctx.inward, Message::unallocated());
 		}
 
 		//-----------------------------------------------------------------
@@ -868,7 +868,7 @@ bool Hub::processConnection(Socket *connection) noexcept {
 		while (msgCount < cycleLimit) {
 			Message *message = connection->getMessage();
 			if (message) {
-				incoming.put(message);
+				in.put(message);
 				countReceived(message->getLength());
 				msgCount++;
 			} else {
@@ -876,7 +876,7 @@ bool Hub::processConnection(Socket *connection) noexcept {
 			}
 		}
 		//-----------------------------------------------------------------
-		return connection->isReady() || (ctx.input && (msgCount == cycleLimit));
+		return connection->isReady() || (ctx.inward && (msgCount == cycleLimit));
 	} catch (const BaseException &e) {
 		WH_LOG_EXCEPTION(e);
 		return disable(connection);
@@ -921,11 +921,11 @@ unsigned int Hub::throttle(const Socket *connection) const noexcept {
 		if (!connection->testFlags(SOCKET_OVERLAY | SOCKET_PRIORITY)) {
 			//A normal client connection
 			auto ratio = ((double) available) / Message::poolSize();
-			auto limit = (unsigned int) (ctx.input * ratio);
+			auto limit = (unsigned int) (ctx.inward * ratio);
 			return Twiddler::min(limit, available);
 		} else {
 			//An important connection
-			return Twiddler::min(ctx.input, available);
+			return Twiddler::min(ctx.inward, available);
 		}
 	} else if (connection->testFlags(SOCKET_PRIORITY)) {
 		//A priority connection
