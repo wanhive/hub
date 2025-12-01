@@ -167,7 +167,7 @@ protected:
 	 */
 	void iterate(int (*fn)(Watcher *w, void *arg), void *arg);
 	/**
-	 * Watcher management: purges temporary connections that have timed out.
+	 * Watcher management: purges expired temporary connections.
 	 * @param target maximum connections to purge (0 for no limit)
 	 * @param force true to expire all temporary connections; false for the
 	 * normal operation.
@@ -176,15 +176,15 @@ protected:
 	unsigned int reap(unsigned int target = 0, bool force = false) noexcept;
 	//-----------------------------------------------------------------
 	/**
-	 * Message queuing: inserts a message directly into the incoming queue.
-	 * @param message the message to insert
-	 * @return true on success, false otherwise
+	 * Message queuing: puts a message directly into the incoming queue.
+	 * @param message a message to insert
+	 * @return true on success, false on error
 	 */
 	bool collect(Message *message) noexcept;
 	/**
-	 * Message queuing: inserts a message directly into the outgoing queue.
-	 * @param message the message to insert
-	 * @return true on success, false otherwise
+	 * Message queuing: puts a message directly into the outgoing queue.
+	 * @param message a message to insert
+	 * @return true on success, false on error
 	 */
 	bool forward(Message *message) noexcept;
 	//-----------------------------------------------------------------
@@ -212,7 +212,7 @@ private:
 	 */
 	virtual void maintain() noexcept;
 	/**
-	 * Adapter: Handles messages that have the MSG_PROBE flag enabled.
+	 * Adapter: handles messages that have the MSG_PROBE flag enabled.
 	 * @param message a message to probe
 	 * @return true to discard (recycle) the message, false otherwise
 	 */
