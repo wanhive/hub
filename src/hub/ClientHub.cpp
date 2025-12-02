@@ -1,7 +1,7 @@
 /*
  * ClientHub.cpp
  *
- * The base class for wanhive clients
+ * Base class for wanhive clients
  *
  *
  * Copyright (C) 2019 Amit Kumar (amitkriit@gmail.com)

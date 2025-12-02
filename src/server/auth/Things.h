@@ -36,14 +36,14 @@ public:
 	~Things();
 	/**
 	 * Sets the database query string (doesn't duplicate). The query must
-	 * accept an unique identifier (UID) as the query parameter and return
+	 * accept a unique identifier (UID) as the query parameter and return
 	 * a tuple (UID, SALT, VERIFIER, TYPE) in that order.
 	 * @param command database query string
 	 */
 	void setCommand(const char *command) noexcept;
 	/**
-	 * Configures a mutual authenticator for the given identity.
-	 * @param identity thing's identifier
+	 * Initializes a mutual authenticator for a given identity.
+	 * @param identity thing's identity
 	 * @param nonce cryptographic nonce
 	 * @param verifier mutual authenticator
 	 */

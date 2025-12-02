@@ -13,7 +13,6 @@
 #include "AuthenticationHub.h"
 #include "../../base/common/Logger.h"
 #include "../../util/commands.h"
-#include "../../util/Endpoint.h"
 #include <new>
 
 namespace wanhive {

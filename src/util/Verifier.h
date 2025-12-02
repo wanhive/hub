@@ -152,15 +152,15 @@ public:
 			unsigned int rounds) noexcept;
 	//-----------------------------------------------------------------
 	/**
-	 * Host: generates fake nonce during STEP 1 to hide failed identification.
+	 * Host: generates fake nonce during STEP 1 to hide a failed identification.
 	 * @param data stores the fake nonce
 	 */
 	void fakeNonce(Data &data) noexcept;
 	/**
-	 * Host: generates fake salt during STEP 1 to hide failed identification.
+	 * Host: generates fake salt during STEP 1 to hide a failed identification.
 	 * @param identity user's identity
-	 * @param data value-result argument for passing on a key to seed the salt
-	 * generator and for storing the result (generated salt) after completion.
+	 * @param data salt generator's seed as input and the generated salt as
+	 * output (value-result argument).
 	 */
 	void fakeSalt(unsigned long long identity, Data &data) noexcept;
 private:
