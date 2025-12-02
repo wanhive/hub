@@ -48,20 +48,13 @@ void DataStore::close() noexcept {
 }
 
 bool DataStore::poll() {
-	auto trace = health();
-	if (trace == DBHealth::OK) {
-		trace = Postgres::poll(db.conn, db.poll);
-		switch (trace) {
-		case PGHealth::READY:
-			return true;
-		case PGHealth::OK:
-			return false;
-		default:
-			throw Exception(EX_RESOURCE);
-		}
-	} else if (trace == DBHealth::READY) {
+	auto status = Postgres::poll(db.conn, db.poll);
+	switch (status) {
+	case PGHealth::READY:
 		return true;
-	} else {
+	case PGHealth::OK:
+		return false;
+	default:
 		throw Exception(EX_RESOURCE);
 	}
 }
