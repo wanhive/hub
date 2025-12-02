@@ -102,16 +102,16 @@ WH_HUBSOURCES = hub/Alarm.cpp hub/ClientHub.cpp hub/Event.cpp hub/Hub.cpp \
 	hub/Topic.cpp hub/Watchers.cpp
 
 ## src/server collection
-WH_SERVERHEADERS = server/auth/AuthenticationHub.h server/overlay/commands.h \
+WH_SERVERHEADERS = server/auth/AuthenticationHub.h server/auth/Things.h \
 	server/overlay/DHT.h server/overlay/Finger.h server/overlay/Node.h \
 	server/overlay/OverlayHub.h server/overlay/OverlayHubInfo.h \
 	server/overlay/OverlayProtocol.h server/overlay/OverlayService.h \
-	server/overlay/OverlayTool.h server/overlay/Topics.h
-WH_SERVERSOURCES = server/auth/AuthenticationHub.cpp server/overlay/DHT.cpp \
-	server/overlay/Finger.cpp server/overlay/Node.cpp server/overlay/OverlayHub.cpp \
-	server/overlay/OverlayHubInfo.cpp server/overlay/OverlayProtocol.cpp \
-	server/overlay/OverlayService.cpp server/overlay/OverlayTool.cpp \
-	server/overlay/Topics.cpp
+	server/overlay/OverlayTool.h server/overlay/Topics.h server/overlay/commands.h
+WH_SERVERSOURCES = server/auth/AuthenticationHub.cpp server/auth/Things.cpp \
+	server/overlay/DHT.cpp server/overlay/Finger.cpp server/overlay/Node.cpp \
+	server/overlay/OverlayHub.cpp server/overlay/OverlayHubInfo.cpp \
+	server/overlay/OverlayProtocol.cpp server/overlay/OverlayService.cpp \
+	server/overlay/OverlayTool.cpp server/overlay/Topics.cpp
 
 ## src/test collection
 WH_TESTHEADERS = test/ds/BufferTest.h test/ds/HashTableTest.h \
