@@ -16,11 +16,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
-- Cleaner mutual authentication mechanism.
+- Cleaner authentication hub implementation for better performance and stability.
+- Streamlined mutual authentication mechanism.
 - Allow **Source** And **Sink** to discard the stored content.
-- Fresh implementation of application manager.
-- Major interface changes in the library.
-- Major configuration option changes.
+- Fresh application manager implementation.
+- Backward incompatible library interface changes.
+- Backward incompatible configuration option changes.
 
 ## [15.0.0] - 2025-10-21
 

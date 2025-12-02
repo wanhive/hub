@@ -42,7 +42,7 @@ void Things::setCommand(const char *command) noexcept {
 
 void Things::get(unsigned long long identity, const Data &nonce,
 		Verifier *verifier) {
-	if (!verifier || !nonce.base || !nonce.length || !command) {
+	if (!verifier || !nonce.base || !nonce.length) {
 		throw Exception(EX_ARGUMENT);
 	}
 
@@ -60,7 +60,6 @@ void Things::get(unsigned long long identity, const Data &nonce,
 
 	auto conn = DataStore::getHandle();
 	auto query = command ? command : DEF_QUERY;
-	//Request binary result
 	auto res = PQexecParams(conn, query, 1, nullptr, paramValues, nullptr,
 			nullptr, 1);
 	if (PQresultStatus(res) != PGRES_TUPLES_OK || PQntuples(res) == 0) {

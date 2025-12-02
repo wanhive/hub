@@ -14,15 +14,14 @@
 #include "../../base/common/Logger.h"
 #include "../../util/commands.h"
 #include "../../util/Endpoint.h"
-#include <postgresql/libpq-fe.h>
 #include <new>
 
 namespace wanhive {
 
 AuthenticationHub::AuthenticationHub(unsigned long long uid,
 		const char *path) noexcept :
-		Hub { uid, path }, fake { true } {
-	memset(&ctx, 0, sizeof(ctx));
+		Hub { uid, path } {
+	clear();
 }
 
 AuthenticationHub::~AuthenticationHub() {
@@ -44,21 +43,22 @@ void AuthenticationHub::configure(void *arg) {
 	try {
 		Hub::configure(arg);
 		auto &conf = Identity::getConfiguration();
-		ctx.db.name = conf.getString("AUTH", "database");
-		ctx.db.query = conf.getString("AUTH", "query");
-		conf.map("RDBMS", loadDatabaseParams, &ctx.db);
-
-		ctx.salt = (const unsigned char*) conf.getString("AUTH", "salt");
-		if (ctx.salt) {
-			ctx.saltLength = strlen((const char*) ctx.salt);
+		dbi.info.name = conf.getString("AUTH", "database");
+		dbi.command = conf.getString("AUTH", "query");
+		conf.map("RDBMS", loadDatabaseParams, &dbi);
+		dbi.seed.base = (const unsigned char*) conf.getString("AUTH", "seed");
+		if (dbi.seed.base) {
+			dbi.seed.length = strlen((const char*) dbi.seed.base);
 		} else {
-			ctx.saltLength = 0;
+			dbi.seed.length = 0;
 		}
 
 		auto mask = Hub::redact();
-		WH_LOG_DEBUG("\nDATABASE= '%s'\nQUERY= '%s'\nSALT= '%s'\n",
-				WH_MASK_STR(mask, ctx.db.name), WH_MASK_STR(mask, ctx.db.query),
-				WH_MASK_STR(mask, (const char *)ctx.salt));
+		WH_LOG_DEBUG("\nDATABASE= '%s'\nQUERY= '%s'\nSEED= '%s'\n",
+				WH_MASK_STR(mask, dbi.info.name),
+				WH_MASK_STR(mask, dbi.command),
+				WH_MASK_STR(mask, (const char *)dbi.seed.base));
+		setup();
 	} catch (const BaseException &e) {
 		WH_LOG_EXCEPTION(e);
 		throw;
@@ -67,10 +67,26 @@ void AuthenticationHub::configure(void *arg) {
 
 void AuthenticationHub::cleanup() noexcept {
 	waitlist.iterate(deleteVerifiers, this);
-	closeDatabaseConnection();
-	memset(&ctx, 0, sizeof(ctx));
-	//Clean up the base class object
+	things.close();
+	clear();
 	Hub::cleanup();
+}
+
+void AuthenticationHub::maintain() noexcept {
+	try {
+		auto status = things.health();
+		switch (status) {
+		case DBHealth::READY:
+			break;
+		default:
+			things.reset(true);
+			break;
+		}
+	} catch (const BaseException &e) {
+		WH_LOG_EXCEPTION(e);
+	} catch (...) {
+		WH_LOG_EXCEPTION_U();
+	}
 }
 
 void AuthenticationHub::route(Message *message) noexcept {
@@ -124,13 +140,13 @@ int AuthenticationHub::handleIdentificationRequest(Message *message) noexcept {
 		delete verifier;
 		waitlist.hmPut(origin, nullptr);
 
-		if (ctx.salt && ctx.saltLength) {
+		if (dbi.seed.base && dbi.seed.length) {
 			/*
 			 * Obfuscate the failed identification request. Salt associated
 			 * with an identity should not tend to change on new request.
 			 * Nonce should look like it was randomly generated.
 			 */
-			Data salt { ctx.salt, ctx.saltLength };
+			Data salt { dbi.seed };
 			Data hostNonce { nullptr, 0 };
 
 			fake.fakeSalt(identity, salt);
@@ -208,44 +224,16 @@ bool AuthenticationHub::isBanned(unsigned long long identity) const noexcept {
 
 bool AuthenticationHub::loadIdentity(Verifier *verifier,
 		unsigned long long identity, const Data &nonce) noexcept {
-	if (!verifier || !nonce.base || !nonce.length || !ctx.db.query) {
+	try {
+		things.get(identity, nonce, verifier);
+		return true;
+	} catch (const BaseException &e) {
+		WH_LOG_EXCEPTION(e);
+		return false;
+	} catch (...) {
+		WH_LOG_EXCEPTION_U();
 		return false;
 	}
-
-	//-----------------------------------------------------------------
-	auto conn = static_cast<PGconn*>(getDatabaseConnection());
-	if (!conn) {
-		return false;
-	}
-
-	char identityString[64];
-	memset(identityString, 0, sizeof(identityString));
-	snprintf(identityString, sizeof(identityString), "%llu", identity);
-
-	const char *paramValues[1];
-	paramValues[0] = identityString;
-	//Request binary result
-	auto res = PQexecParams(conn, ctx.db.query, 1, nullptr, paramValues,
-			nullptr, nullptr, 1);
-	if (PQresultStatus(res) != PGRES_TUPLES_OK || PQntuples(res) == 0) {
-		WH_LOG_DEBUG("%s", PQerrorMessage(conn));
-		PQclear(res);
-		return false;
-	}
-	//-----------------------------------------------------------------
-	auto salt = PQgetvalue(res, 0, 1);
-	auto secret = PQgetvalue(res, 0, 2);
-
-	if (PQgetlength(res, 0, 3) == sizeof(uint32_t)) {
-		verifier->setGroup(ntohl(*((uint32_t*) PQgetvalue(res, 0, 3))));
-	} else {
-		verifier->setGroup(0xff);
-	}
-
-	auto status = verifier->identify(identity, secret, salt, nonce);
-
-	PQclear(res);
-	return status;
 }
 
 int AuthenticationHub::generateIdentificationResponse(Message *message,
@@ -274,39 +262,33 @@ int AuthenticationHub::generateIdentificationResponse(Message *message,
 	return 0;
 }
 
-void* AuthenticationHub::getDatabaseConnection() noexcept {
-	if (ctx.db.conn) {
-		//Already connected
-	} else if (ctx.db.name) {
-		ctx.db.conn = PQconnectdb(ctx.db.name);
+void AuthenticationHub::setup() {
+	if (dbi.index < ArraySize(dbi.info.ctx.keys)) {
+		dbi.info.ctx.keys[dbi.index] = nullptr;
+		dbi.info.ctx.values[dbi.index] = nullptr;
+		things.setCommand(dbi.command);
+		things.open(dbi.info);
 	} else {
-		ctx.db.conn = PQconnectdbParams(ctx.db.params.keys,
-				ctx.db.params.values, 0);
+		throw Exception(EX_OPERATION);
 	}
-
-	//Check for completion
-	if (PQstatus(static_cast<PGconn*>(ctx.db.conn)) != CONNECTION_OK) {
-		WH_LOG_DEBUG("%s", PQerrorMessage(static_cast<PGconn*>(ctx.db.conn)));
-		closeDatabaseConnection();
-	}
-
-	return ctx.db.conn;
 }
 
-void AuthenticationHub::closeDatabaseConnection() noexcept {
-	if (ctx.db.conn) {
-		PQfinish(static_cast<PGconn*>(ctx.db.conn));
-		ctx.db.conn = nullptr;
-	}
+void AuthenticationHub::clear() noexcept {
+	dbi.info = DBInfo { };
+	dbi.index = 0;
+	dbi.command = nullptr;
+	dbi.seed = { nullptr, 0 };
 }
 
 int AuthenticationHub::loadDatabaseParams(const char *option, const char *value,
 		void *arg) noexcept {
-	auto &params = (static_cast<DbConnection*>(arg))->params;
-	if (params.index < 63) {
-		params.keys[params.index] = option;
-		params.values[params.index] = value;
-		params.index += 1;
+	auto &ctx = (static_cast<DBConnection*>(arg))->info.ctx;
+	auto &index = (static_cast<DBConnection*>(arg))->index;
+	auto limit = ArraySize(ctx.keys) - 1;
+	if (index < limit) {
+		ctx.keys[index] = option;
+		ctx.values[index] = value;
+		index += 1;
 		return 0;
 	} else {
 		return 1;
