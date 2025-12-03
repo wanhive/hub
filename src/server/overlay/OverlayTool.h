@@ -56,7 +56,7 @@ private:
 	 * Registration and bootstrap commands
 	 */
 	void registerCmd();
-	void getKeyCmd();
+	void tokenCmd();
 	void findRoot();
 	void findBootstrapNode();
 	//-----------------------------------------------------------------

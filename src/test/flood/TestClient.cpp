@@ -70,7 +70,7 @@ bool TestClient::authenticate() {
 	try {
 		Digest hc;
 		useKeyPair(getPKI());
-		return getKeyRequest( { 0, hostId }, &hc, verifyHost())
+		return tokenRequest( { 0, hostId }, &hc, verifyHost())
 				&& registerRequest( { getSource(), hostId }, &hc);
 	} catch (const BaseException &e) {
 		WH_LOG_EXCEPTION(e);

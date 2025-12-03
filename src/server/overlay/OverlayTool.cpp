@@ -81,8 +81,8 @@ void OverlayTool::execute() noexcept {
 			case WH_DHT_CMD_BASIC:
 				if (qualifier == WH_DHT_QLF_REGISTER) {
 					registerCmd();
-				} else if (qualifier == WH_DHT_QLF_GETKEY) {
-					getKeyCmd();
+				} else if (qualifier == WH_DHT_QLF_TOKEN) {
+					tokenCmd();
 				} else if (qualifier == WH_DHT_QLF_FINDROOT) {
 					findRoot();
 				} else if (qualifier == WH_DHT_QLF_BOOTSTRAP) {
@@ -317,7 +317,7 @@ void OverlayTool::registerCmd() {
 	try {
 		Digest hc;
 		Random().bytes(&hc, Hash::SIZE);
-		if (getKeyRequest( { 0, id }, &hc, verifyHost()) && registerRequest( {
+		if (tokenRequest( { 0, id }, &hc, verifyHost()) && registerRequest( {
 				newId, id }, &hc)) {
 			std::cout << "REGISTER SUCCEEDED FOR ID: " << newId << std::endl;
 			//Message source will be set to this
@@ -331,23 +331,23 @@ void OverlayTool::registerCmd() {
 	}
 }
 
-void OverlayTool::getKeyCmd() {
-	std::cout << "CMD: [GETKEY]" << std::endl;
+void OverlayTool::tokenCmd() {
+	std::cout << "CMD: [TOKEN]" << std::endl;
 	uint64_t id = destinationId;
 
 	try {
 		Digest hc;
 		Random().bytes(&hc, Hash::SIZE);
-		if (getKeyRequest( { 0, id }, &hc, verifyHost())) {
+		if (tokenRequest( { 0, id }, &hc, verifyHost())) {
 			EncodedDigest encodedKey;
 			unsigned int encLen = Hash::encode(&hc, &encodedKey);
-			std::cout << "GETKEY RETURNED: " << "[" << encLen << "] "
+			std::cout << "TOKEN RETURNED: " << "[" << encLen << "] "
 					<< encodedKey << std::endl;
 		} else {
-			std::cout << "GETKEY FAILED" << std::endl;
+			std::cout << "TOKEN FAILED" << std::endl;
 		}
 	} catch (const BaseException &e) {
-		std::cout << "GETKEY FAILED" << std::endl;
+		std::cout << "TOKEN FAILED" << std::endl;
 		throw;
 	}
 }

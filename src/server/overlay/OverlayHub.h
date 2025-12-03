@@ -111,7 +111,7 @@ private:
 	bool handleDescribeNodeRequest(Message *msg) noexcept;
 
 	bool handleRegistrationRequest(Message *msg) noexcept;
-	bool handleGetKeyRequest(Message *msg) noexcept;
+	bool handleTokenRequest(Message *msg) noexcept;
 	bool handleFindRootRequest(Message *msg) noexcept;
 	bool handleBootstrapRequest(Message *msg) noexcept;
 

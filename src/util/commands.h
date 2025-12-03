@@ -35,7 +35,7 @@ enum WhpQualifier {
 	WH_QLF_DESCRIBE = 127, /**< Describe request */
 	//WH_CMD_BASIC
 	WH_QLF_REGISTER = 0, /**< Registration request */
-	WH_QLF_GETKEY = 1, /**< Session key request */
+	WH_QLF_TOKEN = 1, /**< Session key request */
 	WH_QLF_FINDROOT = 2, /**< Root identification request */
 	WH_QLF_BOOTSTRAP = 3, /**< Bootstrap request */
 	//WH_CMD_MULTICAST

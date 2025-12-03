@@ -92,25 +92,25 @@ bool Protocol::registerRequest(const MessageAddress &address, Digest *hc) {
 			&& processRegisterResponse();
 }
 
-unsigned int Protocol::createGetKeyRequest(const MessageAddress &address,
+unsigned int Protocol::createTokenRequest(const MessageAddress &address,
 		Digest *hc, bool verify) noexcept {
-	return createGetKeyRequest(address, nextSequenceNumber(),
+	return createTokenRequest(address, nextSequenceNumber(),
 			{ verify ? getKeyPair() : nullptr, hc }, *this);
 }
 
-unsigned int Protocol::processGetKeyResponse(Digest *hc) const noexcept {
-	return processGetKeyResponse(*this, hc);
+unsigned int Protocol::processTokenResponse(Digest *hc) const noexcept {
+	return processTokenResponse(*this, hc);
 }
 
-bool Protocol::getKeyRequest(const MessageAddress &address, Digest *hc,
+bool Protocol::tokenRequest(const MessageAddress &address, Digest *hc,
 		bool verify) {
 	/*
 	 * HEADER: SRC=0, DEST=X, ....CMD=1, QLF=1, AQLF=0/1/127
 	 * BODY: 512/8=64 Bytes in Request (optional), (512/8)*2=128 Bytes in Response
 	 * TOTAL: 32+64=96 bytes in Request; 32+128=160 bytes in Response
 	 */
-	return createGetKeyRequest(address, hc, verify)
-			&& executeRequest(false, verify) && processGetKeyResponse(hc);
+	return createTokenRequest(address, hc, verify)
+			&& executeRequest(false, verify) && processTokenResponse(hc);
 }
 
 unsigned int Protocol::createFindRootRequest(uint64_t host,
@@ -317,17 +317,17 @@ Message* Protocol::createRegisterRequest(const MessageAddress &address,
 	return msg;
 }
 
-Message* Protocol::createGetKeyRequest(const MessageAddress &address,
+Message* Protocol::createTokenRequest(const MessageAddress &address,
 		const TransactionKey &tk, Message *msg) noexcept {
 	if (msg || (msg = Message::create())) {
-		createGetKeyRequest(address, 0, tk, *msg);
+		createTokenRequest(address, 0, tk, *msg);
 	}
 	return msg;
 }
 
-unsigned int Protocol::processGetKeyResponse(const Message *msg,
+unsigned int Protocol::processTokenResponse(const Message *msg,
 		Digest *hc) noexcept {
-	return msg && hc && processGetKeyResponse(*msg, hc);
+	return msg && hc && processTokenResponse(*msg, hc);
 }
 
 Message* Protocol::createFindRootRequest(const MessageAddress &address,
@@ -442,7 +442,7 @@ unsigned int Protocol::createRegisterRequest(const MessageAddress &address,
 	return packet.header().getLength();
 }
 
-unsigned int Protocol::createGetKeyRequest(const MessageAddress &address,
+unsigned int Protocol::createTokenRequest(const MessageAddress &address,
 		uint16_t sequenceNumber, const TransactionKey &tk,
 		Packet &packet) noexcept {
 	auto length = HEADER_SIZE;
@@ -464,14 +464,14 @@ unsigned int Protocol::createGetKeyRequest(const MessageAddress &address,
 
 	packet.header().setAddress(address.getSource(), address.getDestination());
 	packet.header().setControl(length, sequenceNumber, 0);
-	packet.header().setContext(WH_CMD_BASIC, WH_QLF_GETKEY, WH_AQLF_REQUEST);
+	packet.header().setContext(WH_CMD_BASIC, WH_QLF_TOKEN, WH_AQLF_REQUEST);
 	packet.packHeader();
 	return packet.header().getLength();
 }
 
-unsigned int Protocol::processGetKeyResponse(const Packet &packet,
+unsigned int Protocol::processTokenResponse(const Packet &packet,
 		Digest *hc) noexcept {
-	if (!packet.checkContext(WH_CMD_BASIC, WH_QLF_GETKEY, WH_AQLF_ACCEPTED)) {
+	if (!packet.checkContext(WH_CMD_BASIC, WH_QLF_TOKEN, WH_AQLF_ACCEPTED)) {
 		return 0;
 	} else if (!hc || packet.getPayloadLength() < (2 * Hash::SIZE)) {
 		return 0;

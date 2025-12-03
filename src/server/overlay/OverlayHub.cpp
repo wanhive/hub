@@ -559,8 +559,8 @@ bool OverlayHub::interceptMessage(Message *message) noexcept {
 	} else if (message->getQualifier() == WH_DHT_QLF_REGISTER) {
 		handleRegistrationRequest(message);
 		return true;
-	} else if (message->getQualifier() == WH_DHT_QLF_GETKEY) {
-		handleGetKeyRequest(message);
+	} else if (message->getQualifier() == WH_DHT_QLF_TOKEN) {
+		handleTokenRequest(message);
 		return true;
 	} else {
 		return false;
@@ -868,7 +868,7 @@ bool OverlayHub::handleRegistrationRequest(Message *msg) noexcept {
 	return true;
 }
 
-bool OverlayHub::handleGetKeyRequest(Message *msg) noexcept {
+bool OverlayHub::handleTokenRequest(Message *msg) noexcept {
 	/*
 	 * HEADER: SRC=0, DEST=X, ....CMD=1, QLF=1, AQLF=0/1/127
 	 * BODY: 512/8=64 Bytes in Request (optional), (512/8)*2=128 Bytes in Response
@@ -1555,7 +1555,7 @@ Watcher* OverlayHub::createProxyConnection(unsigned long long id, Digest *hc) {
 		//-----------------------------------------------------------------
 		//A getKey request is automatically sent out
 		generateNonce(hash, conn->getUid(), getUid(), hc);
-		auto msg = Protocol::createGetKeyRequest( { 0, id },
+		auto msg = Protocol::createTokenRequest( { 0, id },
 				{ verifyHost() ? getPKI() : nullptr, hc }, nullptr);
 		if (!msg) {
 			throw Exception(EX_MEMORY);

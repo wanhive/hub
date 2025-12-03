@@ -37,7 +37,7 @@ enum WhpDhtQualifier {
 	WH_DHT_QLF_DESCRIBE = WH_QLF_DESCRIBE, /**< hub statistics */
 	//WH_DHT_CMD_BASIC
 	WH_DHT_QLF_REGISTER = WH_QLF_REGISTER, /**< registration */
-	WH_DHT_QLF_GETKEY = WH_QLF_GETKEY, /**< session key */
+	WH_DHT_QLF_TOKEN = WH_QLF_TOKEN, /**< session key */
 	WH_DHT_QLF_FINDROOT = WH_QLF_FINDROOT, /**< root host */
 	WH_DHT_QLF_BOOTSTRAP = WH_QLF_BOOTSTRAP, /**< bootstrap nodes */
 	//WH_DHT_CMD_MULTICAST

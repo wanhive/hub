@@ -113,14 +113,14 @@ public:
 	 * @param verify true if host verification is desired, false otherwise
 	 * @return message length on success, 0 on error (invalid request)
 	 */
-	unsigned int createGetKeyRequest(const MessageAddress &address, Digest *hc,
+	unsigned int createTokenRequest(const MessageAddress &address, Digest *hc,
 			bool verify) noexcept;
 	/**
 	 * Processes the response to a session key request.
 	 * @param hc object for storing the session key returned by the host
 	 * @return message length on success, 0 if request denied or invalid response
 	 */
-	unsigned int processGetKeyResponse(Digest *hc) const noexcept;
+	unsigned int processTokenResponse(Digest *hc) const noexcept;
 	/**
 	 * Executes and processes a session key request.
 	 * @param address message's address
@@ -129,7 +129,7 @@ public:
 	 * @param verify true if host verification is desired, false otherwise
 	 * @return true on success, false on error (request denied by the host)
 	 */
-	bool getKeyRequest(const MessageAddress &address, Digest *hc, bool verify);
+	bool tokenRequest(const MessageAddress &address, Digest *hc, bool verify);
 	//-----------------------------------------------------------------
 	/**
 	 * Creates a find-root request to discover the given client's root host.
@@ -304,7 +304,7 @@ public:
 	 * @return message containing the session key request on success, nullptr on
 	 * error (invalid request or could not create a new message).
 	 */
-	static Message* createGetKeyRequest(const MessageAddress &address,
+	static Message* createTokenRequest(const MessageAddress &address,
 			const TransactionKey &tk, Message *msg) noexcept;
 	/**
 	 * Processes a message containing the response to a session key request.
@@ -312,7 +312,7 @@ public:
 	 * @param hc object for storing the session key
 	 * @return message length on success, 0 if request denied or invalid response
 	 */
-	static unsigned int processGetKeyResponse(const Message *msg,
+	static unsigned int processTokenResponse(const Message *msg,
 			Digest *hc) noexcept;
 
 	/**
@@ -354,11 +354,11 @@ private:
 	static unsigned int createRegisterRequest(const MessageAddress &address,
 			uint16_t sequenceNumber, const Digest *hc, Packet &packet) noexcept;
 	//Returns message length on success, 0 on failure
-	static unsigned int createGetKeyRequest(const MessageAddress &address,
+	static unsigned int createTokenRequest(const MessageAddress &address,
 			uint16_t sequenceNumber, const TransactionKey &tk,
 			Packet &packet) noexcept;
 	//Returns message length on success, 0 on failure (<hc> is the value-result argument)
-	static unsigned int processGetKeyResponse(const Packet &packet,
+	static unsigned int processTokenResponse(const Packet &packet,
 			Digest *hc) noexcept;
 	//Returns message length on success, 0 on failure
 	static unsigned int createFindRootRequest(const MessageAddress &address,

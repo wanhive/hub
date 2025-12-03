@@ -154,7 +154,7 @@ void Agent::route(Message *message) noexcept {
 			//Bad message
 		} else if (qualifier == WH_QLF_REGISTER) {
 			processRegistrationResponse(message);
-		} else if (qualifier == WH_QLF_GETKEY) {
+		} else if (qualifier == WH_QLF_TOKEN) {
 			processGetKeyResponse(message);
 		} else if (qualifier == WH_QLF_FINDROOT) {
 			processFindRootResponse(message);
@@ -324,7 +324,7 @@ void Agent::findRoot() noexcept {
 		Random prng;
 		prng.bytes(rnd, sizeof(rnd));
 		generateNonce(bs.hashFn, rnd[0], rnd[1], &bs.nonce);
-		auto msg = Protocol::createGetKeyRequest( { 0, 0 },
+		auto msg = Protocol::createTokenRequest( { 0, 0 },
 				{ verifyHost() ? getPKI() : nullptr, &bs.nonce }, nullptr);
 		//-----------------------------------------------------------------
 		if (!msg) {
@@ -485,7 +485,7 @@ void Agent::processGetKeyResponse(Message *msg) noexcept {
 		setStage(WHC_ERROR);
 	} else if (!msg->verify((verifyHost() ? getPKI() : nullptr))) {
 		setStage(WHC_ERROR);
-	} else if (!Protocol::processGetKeyResponse(msg, &bs.nonce)) {
+	} else if (!Protocol::processTokenResponse(msg, &bs.nonce)) {
 		setStage(WHC_ERROR);
 	} else {
 		WH_LOG_DEBUG("Session key received");
