@@ -9,19 +9,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-- **Job** class for asynchronous task execution.
-- Basic structured data repository.
-- PostgreSQL database connection manager.
+- Functions in **Source** and **Sink** to discard stored content.
+- Base class for asynchronous task executors.
+- Base class for structured data repositories.
+- PostgreSQL connection manager.
 - SQLite database manager.
 
 ### Changed
 
-- Cleaner authentication hub implementation for better performance and stability.
+- Cleaner authentication hub implementation.
 - Streamlined mutual authentication mechanism.
-- Allow **Source** And **Sink** to discard the stored content.
-- Fresh application manager implementation.
-- Backward incompatible library interface changes.
-- Backward incompatible configuration option changes.
+- Cleaner application manager implementation.
+- Backward-incompatible library interfaces.
+- Backward-incompatible configuration options.
 
 ## [15.0.0] - 2025-10-21
 
