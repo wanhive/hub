@@ -71,8 +71,8 @@ void Identity::initialize() {
 	}
 }
 
-const Configuration& Identity::getConfiguration() const noexcept {
-	return properties;
+const Options& Identity::getOptions() const noexcept {
+	return options;
 }
 
 const PKI* Identity::getPKI() const noexcept {
@@ -141,7 +141,7 @@ unsigned int Identity::getIdentifiers(const char *section, const char *option,
 	}
 	//--------------------------------------------------------------------------
 	memset(nodes, 0, count * sizeof(unsigned long long));
-	auto filename = properties.getPathName(section, option, nullptr);
+	auto filename = options.getPathName(section, option, nullptr);
 	if (Storage::testFile(filename) != 1) {
 		free(filename);
 		return 0;
@@ -244,11 +244,11 @@ void Identity::loadConfiguration() {
 	try {
 		free(paths.configurationFile);
 		paths.configurationFile = locateConfigurationFile();
-		properties.clear();
+		options.clear();
 
 		if (!paths.configurationFile) {
 			WH_LOG_WARNING("No configuration file");
-		} else if (properties.load(paths.configurationFile)) {
+		} else if (options.load(paths.configurationFile)) {
 			WH_LOG_INFO("Configuration loaded from %s",
 					paths.configurationFile);
 		} else {
@@ -267,9 +267,9 @@ void Identity::loadConfiguration() {
 void Identity::loadHosts() {
 	free(paths.hostsDB);
 	free(paths.hostsFile);
-	paths.hostsDB = properties.getPathName("HOSTS", "database");
+	paths.hostsDB = options.getPathName("HOSTS", "database");
 	if (!paths.hostsDB) {
-		paths.hostsFile = properties.getPathName("HOSTS", "file");
+		paths.hostsFile = options.getPathName("HOSTS", "file");
 	} else {
 		paths.hostsFile = nullptr;
 	}
@@ -296,10 +296,10 @@ void Identity::loadHosts() {
 void Identity::loadKeys() {
 	free(paths.privateKey);
 	free(paths.publicKey);
-	paths.privateKey = properties.getPathName("KEYS", "private");
-	paths.publicKey = properties.getPathName("KEYS", "public");
+	paths.privateKey = options.getPathName("KEYS", "private");
+	paths.publicKey = options.getPathName("KEYS", "public");
 
-	auth.verify = properties.getBoolean("KEYS", "verify");
+	auth.verify = options.getBoolean("KEYS", "verify");
 	if (!auth.verify) {
 		WH_LOG_WARNING("Host verification disabled");
 	} else if (!paths.publicKey) {
@@ -336,7 +336,7 @@ void Identity::loadKeys() {
 }
 
 void Identity::loadSSL() {
-	ssl.enabled = properties.getBoolean("SSL", "enable");
+	ssl.enabled = options.getBoolean("SSL", "enable");
 	if (!ssl.enabled) {
 		WH_LOG_WARNING("SSL/TLS disabled");
 		return;
@@ -345,9 +345,9 @@ void Identity::loadSSL() {
 	free(paths.sslRoot);
 	free(paths.sslCertificate);
 	free(paths.sslHostKey);
-	paths.sslRoot = properties.getPathName("SSL", "trust");
-	paths.sslCertificate = properties.getPathName("SSL", "certificate");
-	paths.sslHostKey = properties.getPathName("SSL", "key");
+	paths.sslRoot = options.getPathName("SSL", "trust");
+	paths.sslCertificate = options.getPathName("SSL", "certificate");
+	paths.sslHostKey = options.getPathName("SSL", "key");
 	//-----------------------------------------------------------------
 	try {
 		ssl.ctx.initialize(paths.sslCertificate, paths.sslHostKey);

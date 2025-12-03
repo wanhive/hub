@@ -41,7 +41,7 @@ void AuthenticationHub::expel(Watcher *w) noexcept {
 void AuthenticationHub::configure(void *arg) {
 	try {
 		Hub::configure(arg);
-		auto &conf = Identity::getConfiguration();
+		auto &conf = Identity::getOptions();
 		dbi.info.name = conf.getString("AUTH", "database");
 		dbi.command = conf.getString("AUTH", "query");
 		conf.map("RDBMS", loadDatabaseParams, &dbi);

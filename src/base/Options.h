@@ -1,5 +1,5 @@
 /*
- * Configuration.h
+ * Options.h
  *
  * Configuration management
  *
@@ -10,8 +10,8 @@
  *
  */
 
-#ifndef WH_BASE_CONFIGURATION_H_
-#define WH_BASE_CONFIGURATION_H_
+#ifndef WH_BASE_OPTIONS_H_
+#define WH_BASE_OPTIONS_H_
 #include "common/NonCopyable.h"
 #include <cstdio>
 
@@ -20,21 +20,21 @@ namespace wanhive {
  * Configuration manager that accepts simplified INI file format.
  * @ref https://en.wikipedia.org/wiki/INI_file
  */
-class Configuration: private NonCopyable {
+class Options: private NonCopyable {
 public:
 	/**
-	 * Default constructor: initializes an empty object.
+	 * Constructor: initializes an empty object.
 	 */
-	Configuration() noexcept;
+	Options() noexcept;
 	/**
 	 * Constructor: loads configuration data from the given file.
 	 * @param filename pathname of the configuration file
 	 */
-	Configuration(const char *filename);
+	Options(const char *filename);
 	/**
 	 * Destructor
 	 */
-	~Configuration();
+	~Options();
 	//-----------------------------------------------------------------
 	/**
 	 * Clears out the configuration data.
@@ -258,4 +258,5 @@ private:
 };
 
 } /* namespace wanhive */
-#endif /* WH_BASE_CONFIGURATION_H_ */
+
+#endif /* WH_BASE_OPTIONS_H_ */

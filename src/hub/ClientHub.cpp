@@ -57,7 +57,7 @@ void ClientHub::expel(Watcher *w) noexcept {
 void ClientHub::configure(void *arg) {
 	try {
 		Hub::configure(arg);
-		auto &conf = Identity::getConfiguration();
+		auto &conf = Identity::getOptions();
 
 		auto password = conf.getString("CLIENT", "password", "");
 		auto rounds = conf.getNumber("CLIENT", "rounds");

@@ -59,7 +59,7 @@ void OverlayHub::expel(Watcher *w) noexcept {
 void OverlayHub::configure(void *arg) {
 	try {
 		Hub::configure(arg);
-		auto &conf = Identity::getConfiguration();
+		auto &conf = Identity::getOptions();
 		ctx.enroll = conf.getBoolean("OVERLAY", "enroll");
 		ctx.authenticate = conf.getBoolean("OVERLAY", "authenticate");
 		ctx.join = conf.getBoolean("OVERLAY", "join");

@@ -59,10 +59,10 @@ WH_BASEUNIXSOURCES = base/unix/Config.cpp base/unix/Directory.cpp \
 ## src/base
 WH_VERHEADERS = base/version.h
 WH_VERSOURCES = base/version.cpp
-WH_BASE_TOPHEADERS = base/Configuration.h base/Network.h base/Selector.h \
+WH_BASE_TOPHEADERS = base/Network.h base/Options.h base/Selector.h \
 	base/Signal.h base/Storage.h base/System.h base/Thread.h base/Timer.h \
 	base/TurnGate.h
-WH_BASE_TOPSOURCES = base/Configuration.cpp base/Network.cpp base/Selector.cpp \
+WH_BASE_TOPSOURCES = base/Network.cpp base/Options.cpp base/Selector.cpp \
 	base/Signal.cpp base/Storage.cpp base/System.cpp base/Thread.cpp \
 	base/Timer.cpp base/TurnGate.cpp
 

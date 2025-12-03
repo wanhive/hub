@@ -12,11 +12,11 @@
 
 #ifndef WH_HUB_IDENTITY_H_
 #define WH_HUB_IDENTITY_H_
+#include "../base/Options.h"
+#include "../base/security/SSLContext.h"
 #include "../util/Hosts.h"
 #include "../util/InstanceID.h"
 #include "../util/PKI.h"
-#include "../base/Configuration.h"
-#include "../base/security/SSLContext.h"
 
 namespace wanhive {
 /**
@@ -43,7 +43,7 @@ public:
 	 * Returns configuration data.
 	 * @return configuration data
 	 */
-	const Configuration& getConfiguration() const noexcept;
+	const Options& getOptions() const noexcept;
 	//-----------------------------------------------------------------
 	/**
 	 * Returns the asymmetric cryptography facility.
@@ -159,7 +159,7 @@ private:
 	//Unique ID of the currently running instance
 	InstanceID *instanceId { nullptr };
 	//Application's properties
-	Configuration properties;
+	Options options;
 	//The hosts database
 	Hosts hosts;
 

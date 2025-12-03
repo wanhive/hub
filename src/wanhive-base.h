@@ -59,8 +59,8 @@
 /*
  * System utilities
  */
-#include "base/Configuration.h"
 #include "base/Network.h"
+#include "base/Options.h"
 #include "base/Selector.h"
 #include "base/Signal.h"
 #include "base/Storage.h"

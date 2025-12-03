@@ -1,5 +1,5 @@
 /*
- * Configuration.cpp
+ * Options.cpp
  *
  * Configuration management
  *
@@ -10,7 +10,7 @@
  *
  */
 
-#include "Configuration.h"
+#include "Options.h"
 #include "Storage.h"
 #include "Timer.h"
 #include "common/Exception.h"
@@ -29,11 +29,11 @@ const char KEY_VALUE_REGEX[] = "%31[^= ] = %223[^\n]";
 
 namespace wanhive {
 
-Configuration::Configuration() noexcept {
+Options::Options() noexcept {
 	memset(&data, 0, sizeof(data));
 }
 
-Configuration::Configuration(const char *filename) {
+Options::Options(const char *filename) {
 	memset(&data, 0, sizeof(data));
 	if (!load(filename)) {
 		clear();
@@ -41,11 +41,7 @@ Configuration::Configuration(const char *filename) {
 	}
 }
 
-Configuration::~Configuration() {
-	clear();
-}
-
-void Configuration::clear() noexcept {
+Options::~Options() {
 	for (unsigned int i = 0; i < data.nSections; ++i) {
 		memset(data.sections[i].entries, 0, sizeof(Entry));
 		free(data.sections[i].entries);
@@ -54,7 +50,16 @@ void Configuration::clear() noexcept {
 	memset(&data, 0, sizeof(data));
 }
 
-bool Configuration::load(const char *filename, size_t *count) noexcept {
+void Options::clear() noexcept {
+	for (unsigned int i = 0; i < data.nSections; ++i) {
+		memset(data.sections[i].entries, 0, sizeof(Entry));
+		free(data.sections[i].entries);
+	}
+	free(data.sections);
+	memset(&data, 0, sizeof(data));
+}
+
+bool Options::load(const char *filename, size_t *count) noexcept {
 	char buffer[MAX_LINE_LEN * 2];
 	char section[MAX_SECTION_LEN];
 	char key[MAX_KEY_LEN];
@@ -115,7 +120,7 @@ bool Configuration::load(const char *filename, size_t *count) noexcept {
 	return success;
 }
 
-bool Configuration::store(const char *filename) noexcept {
+bool Options::store(const char *filename) noexcept {
 	FILE *fp = nullptr;
 	auto success = true;
 
@@ -139,7 +144,7 @@ bool Configuration::store(const char *filename) noexcept {
 	return success;
 }
 
-bool Configuration::print(FILE *stream, const char *name) noexcept {
+bool Options::print(FILE *stream, const char *name) noexcept {
 	if (!stream) {
 		return false;
 	}
@@ -171,7 +176,7 @@ bool Configuration::print(FILE *stream, const char *name) noexcept {
 	return true;
 }
 
-bool Configuration::setString(const char *section, const char *option,
+bool Options::setString(const char *section, const char *option,
 		const char *value) noexcept {
 	if (section && option && value && option[0] && value[0]) {
 		// Check whether the entry already exists
@@ -196,7 +201,7 @@ bool Configuration::setString(const char *section, const char *option,
 
 }
 
-const char* Configuration::getString(const char *section, const char *option,
+const char* Options::getString(const char *section, const char *option,
 		const char *defaultValue) const noexcept {
 	if (section && option && option[0]) {
 		auto entry = findEntry(section, option);
@@ -210,7 +215,7 @@ const char* Configuration::getString(const char *section, const char *option,
 	}
 }
 
-bool Configuration::setNumber(const char *section, const char *option,
+bool Options::setNumber(const char *section, const char *option,
 		unsigned long long value) noexcept {
 	char s[128];
 	memset(s, 0, sizeof(s));
@@ -218,8 +223,8 @@ bool Configuration::setNumber(const char *section, const char *option,
 	return setString(section, option, s);
 }
 
-unsigned long long Configuration::getNumber(const char *section,
-		const char *option, unsigned long long defaultValue) const noexcept {
+unsigned long long Options::getNumber(const char *section, const char *option,
+		unsigned long long defaultValue) const noexcept {
 	unsigned long long num;
 	auto val = getString(section, option);
 	if (val && sscanf(val, "%llu", &num) == 1) {
@@ -229,7 +234,7 @@ unsigned long long Configuration::getNumber(const char *section,
 	}
 }
 
-bool Configuration::setDouble(const char *section, const char *option,
+bool Options::setDouble(const char *section, const char *option,
 		double value) noexcept {
 	char s[128];
 	memset(s, 0, sizeof(s));
@@ -237,7 +242,7 @@ bool Configuration::setDouble(const char *section, const char *option,
 	return setString(section, option, s);
 }
 
-double Configuration::getDouble(const char *section, const char *option,
+double Options::getDouble(const char *section, const char *option,
 		double defaultValue) const noexcept {
 	double num;
 	auto val = getString(section, option);
@@ -248,12 +253,12 @@ double Configuration::getDouble(const char *section, const char *option,
 	}
 }
 
-bool Configuration::setBoolean(const char *section, const char *option,
+bool Options::setBoolean(const char *section, const char *option,
 		bool value) noexcept {
 	return setString(section, option, WH_BOOLF(value));
 }
 
-bool Configuration::getBoolean(const char *section, const char *option,
+bool Options::getBoolean(const char *section, const char *option,
 		bool defaultValue) const noexcept {
 	auto val = getString(section, option);
 	if (!val) {
@@ -269,12 +274,12 @@ bool Configuration::getBoolean(const char *section, const char *option,
 	}
 }
 
-char* Configuration::getPathName(const char *section, const char *option,
+char* Options::getPathName(const char *section, const char *option,
 		const char *defaultValue) const noexcept {
 	return expandPath(getString(section, option, defaultValue));
 }
 
-void Configuration::map(const char *section,
+void Options::map(const char *section,
 		int (&f)(const char *option, const char *value, void *arg),
 		void *data) const {
 	if (section) {
@@ -291,11 +296,11 @@ void Configuration::map(const char *section,
 	}
 }
 
-unsigned int Configuration::sections() const noexcept {
+unsigned int Options::sections() const noexcept {
 	return data.nSections;
 }
 
-unsigned int Configuration::entries(const char *section) const noexcept {
+unsigned int Options::entries(const char *section) const noexcept {
 	if (section) {
 		auto sec = findSection(section);
 		return sec ? sec->nEntries : 0;
@@ -304,8 +309,7 @@ unsigned int Configuration::entries(const char *section) const noexcept {
 	}
 }
 
-bool Configuration::exists(const char *section,
-		const char *option) const noexcept {
+bool Options::exists(const char *section, const char *option) const noexcept {
 	if (section && option && option[0]) {
 		return (findEntry(section, option) != nullptr);
 	} else {
@@ -313,7 +317,7 @@ bool Configuration::exists(const char *section,
 	}
 }
 
-void Configuration::remove(const char *section, const char *option) noexcept {
+void Options::remove(const char *section, const char *option) noexcept {
 	if (section && option && option[0]) {
 		Section *sec = nullptr;
 		auto entry = findEntry(section, option, &sec);
@@ -336,7 +340,7 @@ void Configuration::remove(const char *section, const char *option) noexcept {
 	}
 }
 
-void Configuration::remove(const char *section) noexcept {
+void Options::remove(const char *section) noexcept {
 	if (section) {
 		auto sec = findSection(section);
 		if (!sec) {
@@ -358,15 +362,15 @@ void Configuration::remove(const char *section) noexcept {
 	}
 }
 
-int Configuration::getStatus() const noexcept {
+int Options::getStatus() const noexcept {
 	return data.status;
 }
 
-void Configuration::resetStatus() noexcept {
+void Options::resetStatus() noexcept {
 	data.status = 0;
 }
 
-char* Configuration::expandPath(const char *pathname) const noexcept {
+char* Options::expandPath(const char *pathname) const noexcept {
 	if (!pathname) {
 		return nullptr;
 	} else if (pathname[0] != '$') {
@@ -432,8 +436,7 @@ char* Configuration::expandPath(const char *pathname) const noexcept {
 	}
 }
 
-Configuration::Section* Configuration::findSection(
-		const char *section) const noexcept {
+Options::Section* Options::findSection(const char *section) const noexcept {
 	for (unsigned int i = 0; i < data.nSections; ++i) {
 		if (strcmp(section, data.sections[i].name) == 0) {
 			return &data.sections[i];
@@ -442,8 +445,8 @@ Configuration::Section* Configuration::findSection(
 	return nullptr;
 }
 
-Configuration::Entry* Configuration::findEntry(const char *section,
-		const char *key, Section **secP) const noexcept {
+Options::Entry* Options::findEntry(const char *section, const char *key,
+		Section **secP) const noexcept {
 	auto sec = findSection(section);
 	if (secP) {
 		*secP = sec;
@@ -459,7 +462,7 @@ Configuration::Entry* Configuration::findEntry(const char *section,
 	return nullptr;
 }
 
-Configuration::Section* Configuration::addSection(const char *name) noexcept {
+Options::Section* Options::addSection(const char *name) noexcept {
 	Section section;
 	memset(&section, 0, sizeof(section));
 	strncpy(section.name, name, MAX_SECTION_LEN - 1);
@@ -467,8 +470,7 @@ Configuration::Section* Configuration::addSection(const char *name) noexcept {
 			section);
 }
 
-Configuration::Entry* Configuration::addEntry(const char *name,
-		Section *section) noexcept {
+Options::Entry* Options::addEntry(const char *name, Section *section) noexcept {
 	Entry entry;
 	memset(&entry, 0, sizeof(entry));
 	strncpy(entry.key, name, MAX_KEY_LEN - 1);
