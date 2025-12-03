@@ -12,7 +12,7 @@
 
 #ifndef WH_TEST_MULTICAST_MULTICASTCONSUMER_H_
 #define WH_TEST_MULTICAST_MULTICASTCONSUMER_H_
-#include "../../hub/ClientHub.h"
+#include "../../hub/Agent.h"
 
 namespace wanhive {
 /**
@@ -20,7 +20,7 @@ namespace wanhive {
  * (For testing purpose only)
  * Thread safe at class level
  */
-class MulticastConsumer final: public ClientHub {
+class MulticastConsumer final: public Agent {
 public:
 	MulticastConsumer(unsigned long long uid, unsigned int topic,
 			const char *path = nullptr) noexcept;

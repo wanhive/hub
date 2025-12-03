@@ -1,5 +1,5 @@
 /*
- * ClientHub.cpp
+ * Agent.cpp
  *
  * Base class for wanhive clients
  *
@@ -10,7 +10,7 @@
  *
  */
 
-#include "ClientHub.h"
+#include "Agent.h"
 #include "Protocol.h"
 #include "../base/common/Logger.h"
 #include "../util/commands.h"
@@ -34,16 +34,16 @@ enum {
 
 namespace wanhive {
 
-ClientHub::ClientHub(unsigned long long uid, const char *path) noexcept :
-		Hub(uid, path) {
+Agent::Agent(unsigned long long uid, const char *path) noexcept :
+		Hub { uid, path } {
 	clear();
 }
 
-ClientHub::~ClientHub() {
+Agent::~Agent() {
 
 }
 
-void ClientHub::expel(Watcher *w) noexcept {
+void Agent::expel(Watcher *w) noexcept {
 	if (w == bs.auth) {
 		bs.auth = nullptr;
 	} else if (w == bs.node) {
@@ -54,7 +54,7 @@ void ClientHub::expel(Watcher *w) noexcept {
 	Hub::expel(w);
 }
 
-void ClientHub::configure(void *arg) {
+void Agent::configure(void *arg) {
 	try {
 		Hub::configure(arg);
 		auto &conf = Identity::getOptions();
@@ -77,12 +77,12 @@ void ClientHub::configure(void *arg) {
 	}
 }
 
-void ClientHub::cleanup() noexcept {
+void Agent::cleanup() noexcept {
 	clear();
 	Hub::cleanup();
 }
 
-void ClientHub::maintain() noexcept {
+void Agent::maintain() noexcept {
 	switch (getStage()) {
 	case WHC_IDENTIFY:
 		connectToAuthenticator();
@@ -118,7 +118,7 @@ void ClientHub::maintain() noexcept {
 	}
 }
 
-void ClientHub::route(Message *message) noexcept {
+void Agent::route(Message *message) noexcept {
 	auto origin = message->getOrigin();
 	auto source = message->getSource();
 	auto command = message->getCommand();
@@ -168,11 +168,11 @@ void ClientHub::route(Message *message) noexcept {
 	}
 }
 
-bool ClientHub::isConnected() const noexcept {
+bool Agent::isConnected() const noexcept {
 	return bs.connected;
 }
 
-void ClientHub::setPassword(const unsigned char *password, unsigned int length,
+void Agent::setPassword(const unsigned char *password, unsigned int length,
 		unsigned int rounds) noexcept {
 	if (password && length) {
 		length = Twiddler::min(length, sizeof(ctx.password)); //trim
@@ -186,8 +186,8 @@ void ClientHub::setPassword(const unsigned char *password, unsigned int length,
 	}
 }
 
-void ClientHub::connectToAuthenticator() noexcept {
-	Socket *s = nullptr;
+void Agent::connectToAuthenticator() noexcept {
+	Socket *s { };
 	try {
 		//-----------------------------------------------------------------
 		//Check for consistency
@@ -237,8 +237,8 @@ void ClientHub::connectToAuthenticator() noexcept {
 	}
 }
 
-void ClientHub::connectToOverlay() noexcept {
-	Socket *s = nullptr;
+void Agent::connectToOverlay() noexcept {
+	Socket *s { };
 	try {
 		//-----------------------------------------------------------------
 		//Check for consistency
@@ -282,11 +282,11 @@ void ClientHub::connectToOverlay() noexcept {
 	}
 }
 
-bool ClientHub::checkStageTimeout(unsigned int milliseconds) const noexcept {
+bool Agent::checkStageTimeout(unsigned int milliseconds) const noexcept {
 	return bs.timer.hasTimedOut(milliseconds);
 }
 
-void ClientHub::initAuthentication() noexcept {
+void Agent::initAuthentication() noexcept {
 	try {
 		if (!isStage(WHC_AUTHENTICATE) || !bs.auth) {
 			throw Exception(EX_STATE);
@@ -302,9 +302,9 @@ void ClientHub::initAuthentication() noexcept {
 	}
 }
 
-void ClientHub::findRoot() noexcept {
-	Socket *s = nullptr;
-	auto fresh = false;
+void Agent::findRoot() noexcept {
+	Socket *s { };
+	bool fresh { };
 	try {
 		if (!isStage(WHC_ROOT) || !bs.node) {
 			throw Exception(EX_STATE);
@@ -350,7 +350,7 @@ void ClientHub::findRoot() noexcept {
 	}
 }
 
-void ClientHub::initAuthorization() noexcept {
+void Agent::initAuthorization() noexcept {
 	try {
 		if (!isStage(WHC_AUTHORIZE) || !bs.node
 				|| (ctx.passwordLength && !bs.auth)) {
@@ -372,9 +372,9 @@ void ClientHub::initAuthorization() noexcept {
 	}
 }
 
-Message* ClientHub::createIdentificationRequest() {
+Message* Agent::createIdentificationRequest() {
 	try {
-		Message *msg = nullptr;
+		Message *msg { };
 		Data nonce;
 		if (!bs.verifier.nonce(nonce)) {
 			throw Exception(EX_SECURITY);
@@ -390,7 +390,7 @@ Message* ClientHub::createIdentificationRequest() {
 	}
 }
 
-void ClientHub::processIdentificationResponse(Message *msg) noexcept {
+void Agent::processIdentificationResponse(Message *msg) noexcept {
 	Data salt;
 	Data nonce;
 	if (!isStage(WHC_IDENTIFY)) {
@@ -413,9 +413,9 @@ void ClientHub::processIdentificationResponse(Message *msg) noexcept {
 	}
 }
 
-Message* ClientHub::createAuthenticationRequest() {
+Message* Agent::createAuthenticationRequest() {
 	try {
-		Message *msg = nullptr;
+		Message *msg { };
 		Data proof;
 		if (!bs.auth) {
 			throw Exception(EX_OPERATION);
@@ -433,7 +433,7 @@ Message* ClientHub::createAuthenticationRequest() {
 	}
 }
 
-void ClientHub::processAuthenticationResponse(Message *msg) noexcept {
+void Agent::processAuthenticationResponse(Message *msg) noexcept {
 	Data proof;
 	if (!isStage(WHC_AUTHENTICATE)) {
 		setStage(WHC_ERROR);
@@ -449,7 +449,7 @@ void ClientHub::processAuthenticationResponse(Message *msg) noexcept {
 	}
 }
 
-Message* ClientHub::createFindRootRequest() {
+Message* Agent::createFindRootRequest() {
 	try {
 		auto msg = Protocol::createFindRootRequest( { 0, 0 }, getUid(), 0);
 		if (msg) {
@@ -463,8 +463,8 @@ Message* ClientHub::createFindRootRequest() {
 	}
 }
 
-void ClientHub::processFindRootResponse(Message *msg) noexcept {
-	uint64_t root = 0;
+void Agent::processFindRootResponse(Message *msg) noexcept {
+	uint64_t root { };
 	if (!isStage(WHC_BOOTSTRAP)) {
 		setStage(WHC_ERROR);
 	} else if (!bs.node || msg->getOrigin() != bs.node->getUid()) {
@@ -478,7 +478,7 @@ void ClientHub::processFindRootResponse(Message *msg) noexcept {
 	}
 }
 
-void ClientHub::processGetKeyResponse(Message *msg) noexcept {
+void Agent::processGetKeyResponse(Message *msg) noexcept {
 	if (!isStage(WHC_GETKEY)) {
 		setStage(WHC_ERROR);
 	} else if (!bs.node || msg->getOrigin() != bs.node->getUid()) {
@@ -494,7 +494,7 @@ void ClientHub::processGetKeyResponse(Message *msg) noexcept {
 	}
 }
 
-Message* ClientHub::createRegistrationRequest(bool sign) {
+Message* Agent::createRegistrationRequest(bool sign) {
 	try {
 		auto msg = Protocol::createRegisterRequest( { getUid(), 0 }, &bs.nonce,
 				nullptr);
@@ -512,7 +512,7 @@ Message* ClientHub::createRegistrationRequest(bool sign) {
 	}
 }
 
-void ClientHub::processRegistrationResponse(Message *msg) noexcept {
+void Agent::processRegistrationResponse(Message *msg) noexcept {
 	auto origin = msg->getOrigin();
 	auto status = msg->getStatus();
 	if (!isStage(WHC_AUTHORIZE)) {
@@ -535,7 +535,7 @@ void ClientHub::processRegistrationResponse(Message *msg) noexcept {
 	}
 }
 
-void ClientHub::setStage(int stage) noexcept {
+void Agent::setStage(int stage) noexcept {
 	if (stage != bs.stage) {
 		bs.timer.now();
 		bs.stage = stage;
@@ -554,15 +554,15 @@ void ClientHub::setStage(int stage) noexcept {
 	}
 }
 
-int ClientHub::getStage() const noexcept {
+int Agent::getStage() const noexcept {
 	return bs.stage;
 }
 
-bool ClientHub::isStage(int stage) const noexcept {
+bool Agent::isStage(int stage) const noexcept {
 	return (bs.stage == stage);
 }
 
-void ClientHub::loadIdentifiers(bool auth) {
+void Agent::loadIdentifiers(bool auth) {
 	try {
 		if (bs.identifiers.getStatus()) {
 			throw Exception(EX_STATE);
@@ -593,14 +593,14 @@ void ClientHub::loadIdentifiers(bool auth) {
 	}
 }
 
-void ClientHub::clearIdentifiers() noexcept {
+void Agent::clearIdentifiers() noexcept {
 	bs.identifiers.setIndex(0);
 	bs.identifiers.setLimit(0);
 	bs.identifiers.setStatus(0);
 	bs.root = 0;
 }
 
-void ClientHub::clear() noexcept {
+void Agent::clear() noexcept {
 	memset(&ctx, 0, sizeof(ctx));
 
 	clearIdentifiers();

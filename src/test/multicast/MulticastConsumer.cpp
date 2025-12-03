@@ -19,7 +19,7 @@ namespace wanhive {
 
 MulticastConsumer::MulticastConsumer(unsigned long long uid, unsigned int topic,
 		const char *path) noexcept :
-		ClientHub(uid, path), topic(topic), subscribed(false) {
+		Agent(uid, path), topic(topic), subscribed(false) {
 
 }
 
@@ -29,7 +29,7 @@ MulticastConsumer::~MulticastConsumer() {
 
 void MulticastConsumer::cleanup() noexcept {
 	subscribed = false;
-	ClientHub::cleanup();
+	Agent::cleanup();
 }
 
 void MulticastConsumer::expel(Watcher *w) noexcept {
@@ -38,12 +38,12 @@ void MulticastConsumer::expel(Watcher *w) noexcept {
 		subscribed = false;
 	}
 
-	ClientHub::expel(w);
+	Agent::expel(w);
 }
 
 void MulticastConsumer::configure(void *arg) {
 	try {
-		ClientHub::configure(arg);
+		Agent::configure(arg);
 		Reactor::setTimeout(2000);
 	} catch (BaseException &e) {
 		WH_LOG_EXCEPTION(e);
@@ -53,7 +53,7 @@ void MulticastConsumer::configure(void *arg) {
 
 void MulticastConsumer::route(Message *message) noexcept {
 	if (!isConnected()) {
-		ClientHub::route(message);
+		Agent::route(message);
 	} else {
 		process(message);
 	}
@@ -61,7 +61,7 @@ void MulticastConsumer::route(Message *message) noexcept {
 
 void MulticastConsumer::maintain() noexcept {
 	if (!isConnected()) {
-		ClientHub::maintain();
+		Agent::maintain();
 	} else if (!subscribed && (topic <= Topic::MAX_ID)
 			&& timer.hasTimedOut(2000)) {
 		timer.now();

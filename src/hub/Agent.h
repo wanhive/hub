@@ -1,5 +1,5 @@
 /*
- * ClientHub.h
+ * Agent.h
  *
  * Base class for wanhive clients
  *
@@ -10,27 +10,27 @@
  *
  */
 
-#ifndef WH_HUB_CLIENTHUB_H_
-#define WH_HUB_CLIENTHUB_H_
+#ifndef WH_HUB_AGENT_H_
+#define WH_HUB_AGENT_H_
 #include "Hub.h"
 #include "../util/Verifier.h"
 
 namespace wanhive {
 /**
- * Client hub implementation
+ * Agent implementation
  */
-class ClientHub: public Hub {
+class Agent: public Hub {
 public:
 	/**
 	 * Constructor: creates a new client
 	 * @param uid hub's unique identifier
 	 * @param path pathname of the configuration file
 	 */
-	ClientHub(unsigned long long uid, const char *path = nullptr) noexcept;
+	Agent(unsigned long long uid, const char *path = nullptr) noexcept;
 	/**
 	 * Destructor
 	 */
-	~ClientHub();
+	~Agent();
 protected:
 	//-----------------------------------------------------------------
 	void expel(Watcher *w) noexcept override;
@@ -125,4 +125,4 @@ private:
 
 } /* namespace wanhive */
 
-#endif /* WH_HUB_CLIENTHUB_H_ */
+#endif /* WH_HUB_AGENT_H_ */
