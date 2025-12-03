@@ -1,7 +1,7 @@
 /*
  * Agent.cpp
  *
- * Base class for wanhive clients
+ * Wanhive Agent
  *
  *
  * Copyright (C) 2019 Amit Kumar (amitkriit@gmail.com)

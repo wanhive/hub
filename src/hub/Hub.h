@@ -1,7 +1,7 @@
 /*
  * Hub.h
  *
- * Base class for wanhive hubs
+ * Wanhive Hub
  *
  *
  * Copyright (C) 2019 Amit Kumar (amitkriit@gmail.com)
@@ -225,41 +225,41 @@ private:
 	//-----------------------------------------------------------------
 	/**
 	 * Adapter: callback for periodic timer expiration.
-	 * @param uid the source identifier
+	 * @param uid source identifier
 	 * @param ticks timer expiration count
 	 */
 	virtual void onAlarm(unsigned long long uid,
 			unsigned long long ticks) noexcept;
 	/**
 	 * Adapter: callback for user-space events.
-	 * @param uid the source identifier
-	 * @param events the events count
+	 * @param uid source identifier
+	 * @param events number of events
 	 */
 	virtual void onEvent(unsigned long long uid,
 			unsigned long long events) noexcept;
 	/**
 	 * Adapter: callback for file system events.
-	 * @param uid the source identifier
-	 * @param event the file system event
+	 * @param uid source identifier
+	 * @param event file system event
 	 */
 	virtual void onInotification(unsigned long long uid,
 			const InotifyEvent *event) noexcept;
 	/**
 	 * Adapter: callback for software interrupt.
-	 * @param uid the source identifier
-	 * @param signum signal's number
+	 * @param uid source identifier
+	 * @param signum signal number
 	 */
 	virtual void onInterrupt(unsigned long long uid, int signum) noexcept;
 	/**
 	 * Adapter: callback for digital logic.
-	 * @param uid the source identifier
-	 * @param event the edge transition
+	 * @param uid source identifier
+	 * @param event edge transition
 	 */
 	virtual void onLogic(unsigned long long uid,
 			const LogicEvent &event) noexcept;
 	/**
 	 * Adapter: callback for byte stream.
-	 * @param id stream's identifier
+	 * @param id source identifier
 	 * @param sink stream's sink
 	 * @param source stream's source
 	 */
@@ -378,47 +378,47 @@ private:
 		bool listen;
 		//Listening backlog
 		int backlog;
-		//Default binding address (for listening socket)
+		//Default binding address
 		char name[128];
-		//Default binding address' type (unix/inet)
+		//Default binding address type
 		char type[8];
-		//Maximum number of IO events to process in each event loop
+		//Limit on the number of IO events processed in each event loop
 		unsigned int events;
 		//Timer settings: initial expiration in milliseconds
 		unsigned int expiration;
 		//Timer settings: periodic expiration in milliseconds
 		unsigned int interval;
-		//Enable/disable semaphore-like behavior for the event notifier
+		//Enable or disable semaphore-like behavior for the event notifier
 		bool semaphore;
-		//Enable/disable synchronous signal handling
+		//Enable or disable synchronous signal handling
 		bool signal;
-		//Maximum number of Connections we can create
+		//Connection pool size
 		unsigned int connections;
-		//Maximum number of Message Objects we can create
+		//Message pool size
 		unsigned int messages;
-		//Maximum number of new connections the server can store
+		//Maximum number of new connections
 		unsigned int guests;
-		//Time-out for temporary connections in milliseconds
+		//Temporary connection expiration in milliseconds
 		unsigned int lease;
 
-		//Limit on incoming messages from each connection each cycle
+		//Limit on the messages accepted from each connection in an event loop
 		unsigned int inward;
-		//Limit on outgoing messages a connection is allowed to hold on to
+		//Limit on the queued up outgoing messages for each connection
 		unsigned int outward;
-		//Throttle incoming packets under load
+		//Throttle incoming traffic
 		bool throttle;
-		//These number of messages will be reserved for internal purposes
+		//Reserved messages for internal purposes
 		unsigned int reserved;
-		//Server may drop messages to reduce congestion
+		//Congestion control
 		bool policing;
-		//Cycles to live for a message
+		//Message TTL
 		unsigned int ttl;
 		//Reservation ratios
 		double answer;		//Reserved for answering
 		double forward;	//Reserved for routing
-		//Log verbosity
+		//Log level
 		unsigned int logging;
-		//Remove/hide sensitive information
+		//Sensitive information handling
 		bool redact;
 	} ctx;
 };
