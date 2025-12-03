@@ -19,7 +19,7 @@
 
 namespace wanhive {
 /**
- * Overlay hub (messaging middleware)
+ * Overlay hub implementation
  */
 class OverlayHub final: public Hub, private Node {
 public:

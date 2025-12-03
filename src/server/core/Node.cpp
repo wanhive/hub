@@ -1,7 +1,7 @@
 /*
  * Node.cpp
  *
- * Chord (distributed hash table) implementation
+ * Chord DHT (distributed hash table)
  *
  *
  * Copyright (C) 2019 Wanhive Systems Private Limited (info@wanhive.com)

@@ -17,7 +17,7 @@
 
 namespace wanhive {
 /**
- * Authentication hub
+ * Authentication hub implementation
  */
 class AuthenticationHub final: public Hub {
 public:

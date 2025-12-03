@@ -1,7 +1,7 @@
 /*
  * commands.h
  *
- * Enumerations of command, qualifier and status flags
+ * Basic network commands
  *
  *
  * Copyright (C) 2018 Amit Kumar (amitkriit@gmail.com)
@@ -21,11 +21,11 @@ namespace wanhive {
 enum WhpCommand {
 	WH_CMD_NULL = 0, /**< Null command */
 	WH_CMD_BASIC = 1, /**< Basic command */
-	WH_CMD_MULTICAST = 2/**< Multicast command */
+	WH_CMD_MULTICAST = 2/**< Pub/Sub command */
 };
 
 /**
- * Enumeration of basic qualifiers
+ * Enumeration of the basic qualifiers
  */
 enum WhpQualifier {
 	//WH_CMD_NULL
@@ -41,16 +41,16 @@ enum WhpQualifier {
 	//WH_CMD_MULTICAST
 	WH_QLF_PUBLISH = 0, /**< Publish request */
 	WH_QLF_SUBSCRIBE = 1, /**< Subscribe request */
-	WH_QLF_UNSUBSCRIBE = 2 /**< Unsubscribe request */
+	WH_QLF_UNSUBSCRIBE = 2 /**< Un-subscribe request */
 };
 
 /**
- * Enumeration of basic status codes
+ * Enumeration of the basic status codes
  */
 enum WhpStatus {
-	WH_AQLF_REJECTED = 0,/**< Rejected status */
-	WH_AQLF_ACCEPTED = 1,/**< Accepted status */
-	WH_AQLF_REQUEST = 127/**< Request status */
+	WH_AQLF_REJECTED = 0,/**< Rejected */
+	WH_AQLF_ACCEPTED = 1,/**< Accepted */
+	WH_AQLF_REQUEST = 127/**< Initiated */
 };
 
 }  // namespace wanhive

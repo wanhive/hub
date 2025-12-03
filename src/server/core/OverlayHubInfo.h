@@ -1,7 +1,7 @@
 /*
  * OverlayHubInfo.h
  *
- * Runtime statistics of an overlay hub
+ * Overlay hub's runtime statistics
  *
  *
  * Copyright (C) 2022 Wanhive Systems Private Limited (info@wanhive.com)

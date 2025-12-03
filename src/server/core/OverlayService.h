@@ -23,8 +23,8 @@ namespace wanhive {
 class OverlayService: private OverlayProtocol {
 public:
 	/**
-	 * Constructor: sets the hub's identifier.
-	 * @param uid hub's identifier
+	 * Constructor: sets up hub's identity.
+	 * @param uid hub's identity
 	 */
 	OverlayService(unsigned long long uid) noexcept;
 	/**
@@ -32,44 +32,39 @@ public:
 	 */
 	~OverlayService();
 	/**
-	 * Reconfigures the object (cleans up the internal structures before loading
-	 * the fresh settings).
-	 * @param connection socket connection to the local hub (must be configured
-	 * for blocking IO).
-	 * @param nodes a list of bootstrap node identifiers
-	 * @param updateCycle wait period in milliseconds between stabilization
-	 * requests.
-	 * @param retryInterval wait period in milliseconds before recovery after
-	 * a temporary stabilization/network error.
+	 * Reconfigures the object after cleaning up if required.
+	 * @param connection blocking socket connection to the local hub
+	 * @param nodes list of bootstrap node identities
+	 * @param updateCycle stabilization cycle's period in milliseconds
+	 * @param retryInterval time to wait in milliseconds after stabilization
+	 * or network error.
 	 */
 	void configure(int connection, const unsigned long long *nodes,
 			unsigned int updateCycle, unsigned int retryInterval) noexcept;
 	//-----------------------------------------------------------------
 	/**
-	 * Executes stabilization routines periodically until a notification (see
-	 * OverlayService::notify()) or an exception. Cleans up the object before
-	 * returning to the caller (see OverlayService::cleanup()).
+	 * Executes stabilization routines periodically until a notification or an
+	 * exception. Cleans up before returning.
 	 */
 	void periodic() noexcept;
 	/**
-	 * Executes the stabilization routine.
-	 * @return true on success, false on non-fatal/temporary error
+	 * Executes the stabilization routines.
+	 * @return true on success, false on non-fatal or temporary error
 	 */
 	bool execute();
 	/**
-	 * Waits for notification (see OverlayService::notify()) or timeout.
-	 * @param timeout timeout in milliseconds
-	 * @return true if the wait was interrupted by a notification, false on
-	 * timeout.
+	 * Waits until a notification arrives or the timeout expires.
+	 * @param timeout timeout value in milliseconds
+	 * @return true on a notification, false on timeout.
 	 */
 	bool wait(unsigned int timeout);
 	/**
-	 * Delivers a notification to this object (see OverlayService::wait()).
+	 * Delivers a notification to this object.
 	 * @return true on success, false on error
 	 */
 	bool notify() noexcept;
 	/**
-	 * Cleans up the internal structures to prevent resource leak.
+	 * Frees the resources.
 	 */
 	void cleanup() noexcept;
 private:
@@ -106,13 +101,13 @@ private:
 	void setUpdateCycle(unsigned int updateCycle) noexcept;
 	void setRetryInterval(unsigned int retryInterval) noexcept;
 private:
-	//Identifier of the hub
+	//Hub's identity
 	const unsigned long long uid;
-	//Next successor to fix
+	//The next successor to fix
 	unsigned int sIndex;
-	//Next finger to fix
+	//The next finger to fix
 	unsigned int fIndex;
-	//Set to true if connection with controller failed
+	//Connection with controller failed
 	bool controllerFailed;
 	//Initialization status
 	bool initialized;

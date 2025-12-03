@@ -20,7 +20,7 @@
 
 namespace wanhive {
 /**
- * Subscriptions manager for overlay hub
+ * Topics manager
  */
 class Topics {
 public:

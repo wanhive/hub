@@ -1,7 +1,7 @@
 /*
  * OverlayTool.cpp
  *
- * Overlay network test-suite
+ * Overlay network tests
  *
  *
  * Copyright (C) 2019 Wanhive Systems Private Limited (info@wanhive.com)

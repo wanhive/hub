@@ -15,13 +15,13 @@
 
 namespace wanhive {
 /**
- * Finger implementation for the chord (distributed hash table)
+ * Finger implementation for the chord DHT (distributed hash table)
  * @ref https://pdos.csail.mit.edu/papers/chord:sigcomm01/chord_sigcomm.pdf
  */
 class Finger {
 public:
 	/**
-	 * Default constructor
+	 * Constructor: creates a finger.
 	 */
 	Finger() noexcept;
 	/**

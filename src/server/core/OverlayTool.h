@@ -1,7 +1,7 @@
 /*
  * OverlayTool.h
  *
- * Overlay network test-suite
+ * Overlay network tests
  *
  *
  * Copyright (C) 2019 Wanhive Systems Private Limited (info@wanhive.com)
@@ -18,15 +18,14 @@
 
 namespace wanhive {
 /**
- * Overlay network test-suite
- * Supports SSL/TLS connection
+ * Overlay network tests
  */
 class OverlayTool: private OverlayProtocol, private Identity {
 public:
 	/**
-	 * Constructor
-	 * @param path pathname of the configuration file (can be nullptr)
-	 * @param timeout socket connection timeout in milliseconds
+	 * Constructor: initializes the object.
+	 * @param path configuration file's path (can be nullptr)
+	 * @param timeout socket I/O timeout in milliseconds
 	 */
 	OverlayTool(const char *path, unsigned int timeout = 5000) noexcept;
 	/**
@@ -34,7 +33,7 @@ public:
 	 */
 	~OverlayTool();
 	/**
-	 * Executes the tests via command line.
+	 * Runs the test routines.
 	 */
 	void run() noexcept;
 private:

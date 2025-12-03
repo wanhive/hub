@@ -1,7 +1,7 @@
 /*
  * OverlayProtocol.cpp
  *
- * Overlay network protocol implementation
+ *  Overlay network protocol
  *
  *
  * Copyright (C) 2019 Wanhive Systems Private Limited (info@wanhive.com)

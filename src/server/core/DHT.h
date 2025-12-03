@@ -15,12 +15,12 @@
 
 namespace wanhive {
 /**
- * Distributed hash table properties
+ * Distributed hash table (DHT) properties
  */
 class DHT {
 public:
 	/**
-	 * Default constructor
+	 * Constructor
 	 */
 	DHT() noexcept;
 	/**

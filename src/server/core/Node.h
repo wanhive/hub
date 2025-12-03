@@ -1,7 +1,7 @@
 /*
  * Node.h
  *
- * Chord (distributed hash table) implementation
+ * Chord DHT (distributed hash table)
  *
  *
  * Copyright (C) 2019 Wanhive Systems Private Limited (info@wanhive.com)
@@ -17,14 +17,14 @@
 
 namespace wanhive {
 /**
- * Chord (distributed hash table) implementation
+ * Chord DHT (distributed hash table) implementation
  * @ref https://pdos.csail.mit.edu/papers/chord:sigcomm01/chord_sigcomm.pdf
  */
 class Node {
 public:
 	/**
-	 * Constructor: assigns an identifier to this node.
-	 * @param key identifier's value (should not be greater than Node::MAX_ID)
+	 * Constructor: assigns an identity.
+	 * @param key node's identity
 	 */
 	Node(unsigned int key);
 	/**
@@ -33,19 +33,19 @@ public:
 	~Node();
 	//-----------------------------------------------------------------
 	/**
-	 * Returns this node's identifier.
-	 * @return this node's identifier
+	 * Returns node's numeric identity.
+	 * @return node's identity
 	 */
 	unsigned int getKey() const noexcept;
 	/**
 	 * Returns an entry from the finger table.
-	 * @param index finger table's index (should be less than Node::TABLESIZE)
+	 * @param index finger table's index
 	 * @return finger's pointer on success, nullptr on error (invalid index)
 	 */
 	const Finger* getFinger(unsigned int index) const noexcept;
 	/**
 	 * Returns a key from the finger table.
-	 * @param index finger table's index (should be less than Node::TABLESIZE)
+	 * @param index finger table's index
 	 * @return key's value on success, 0 on error (invalid index)
 	 */
 	unsigned int get(unsigned int index) const noexcept;
@@ -58,106 +58,102 @@ public:
 	bool set(unsigned int index, unsigned int key) noexcept;
 	/**
 	 * Checks whether an entry in the finger table is consistent.
-	 * @param index finger table's index (should be less than Node::TABLESIZE)
-	 * @return true if the finger at the given index is consistent, false if the
-	 * finger is not consistent or invalid index.
+	 * @param index finger table's index
+	 * @return true if consistent, false otherwise
 	 */
 	bool isConsistent(unsigned int index) const noexcept;
 	/**
 	 * Commits a finger table entry.
-	 * @param index finger table's index (should be less than Node::TABLESIZE)
-	 * @return old key's value before the update
+	 * @param index finger table's index
+	 * @return replaced value
 	 */
 	unsigned int commit(unsigned int index) noexcept;
 	/**
 	 * Checks the "connected" status of a finger table entry.
-	 * @param index finger table's index (should be less than Node::TABLESIZE)
-	 * @return true if connected, false if not connected or invalid index
+	 * @param index finger table's index
+	 * @return true if connected, false otherwise
 	 */
 	bool isConnected(unsigned int index) const noexcept;
 	/**
 	 * Updates the "connected" status of a finger table entry.
-	 * @param index finger table's index (should be less than Node::TABLESIZE)
-	 * @param status true if connected, false if not connected
+	 * @param index finger table's index
+	 * @param status true to connect, false to disconnect
 	 */
 	void setConnected(unsigned int index, bool status) noexcept;
 	/**
-	 * Returns this node's predecessor.
-	 * @return predecessor's identifier
+	 * Returns node's predecessor.
+	 * @return predecessor's identity
 	 */
 	unsigned int getPredecessor() const noexcept;
 	/**
-	 * Sets this node's predecessor.
-	 * @param key predecessor's identifier
-	 * @return true on success, false on error (invalid identifier)
+	 * Sets node's predecessor.
+	 * @param key predecessor's identity
+	 * @return true on success, false on error
 	 */
 	bool setPredecessor(unsigned int key) noexcept;
 	/**
 	 * Checks whether the predecessor's finger is consistent.
-	 * @return true if the predecessor is consistent, false otherwise.
+	 * @return true if consistent, false otherwise.
 	 */
 	bool predessorChanged() const noexcept;
 	/**
-	 * Commits the predecessor's identifier.
-	 * @return previous predecessor's value
+	 * Commits the predecessor's identity.
+	 * @return previous predecessor
 	 */
 	unsigned int commitPredecessor() noexcept;
 	/**
-	 * Returns this node's successor (equivalent to Node::get(0)).
-	 * @return successor's identifier
+	 * Returns node's successor (equivalent to Node::get(0)).
+	 * @return successor's identity
 	 */
 	unsigned int getSuccessor() const noexcept;
 	/**
 	 * Sets this node's successor (equivalent to Node::set(0, id)).
-	 * @param key successor's identifier
-	 * @return true on success, false on error (invalid identifier)
+	 * @param key successor's identity
+	 * @return true on success, false on error
 	 */
 	bool setSuccessor(unsigned int key) noexcept;
 	/**
-	 * Checks if the finger table in "stable" state.
+	 * Checks whether the finger table is in "stable" state.
 	 * @return true if the finger table is stable, false otherwise
 	 */
 	bool isStable() const noexcept;
 	/**
-	 * Updates the finger table's "stable" state.
-	 * @param stable true for stable, false for not-stable
+	 * Updates finger table's "stable" state.
+	 * @param stable true for stable, false for unstable
 	 */
 	void setStable(bool stable) noexcept;
 	//-----------------------------------------------------------------
 	/**
-	 * Recursive routing: checks whether this node the given key's root.
+	 * Recursive routing: checks whether this node is a key's root.
 	 * @param key key's value
-	 * @return true if this node is the given key's root, false otherwise
+	 * @return true if this node is key's root, false otherwise
 	 */
 	bool isLocal(unsigned int key) const noexcept;
 	/**
-	 * Recursive routing: calculates the next hop destination in lookup for the
-	 * given key.
+	 * Recursive routing: calculates the next hop in lookup for a key.
 	 * @param key key's value
-	 * @return next hop's identifier on success, this node's identifier on error
+	 * @return next hop's identity on success, this node's identity on error
 	 */
 	unsigned int nextHop(unsigned int key) const noexcept;
 	//-----------------------------------------------------------------
 	/**
-	 * Returns the given key's local root.
+	 * Returns a key's local root.
 	 * @param key key's value
-	 * @return this node's immediate successor's identifier if that is the given
-	 * key's root, 0 otherwise.
+	 * @return this node's immediate successor if that is the root, 0 otherwise
 	 */
 	unsigned int localSuccessor(unsigned int key) const noexcept;
 	/**
-	 * Returns the closest predecessor of the given key.
+	 * Returns the closest predecessor of a key.
 	 * @param key key's value
-	 * @param checkConnected true to skip the disconnected finger table entries,
-	 * false otherwise.
-	 * @return closest predecessor's identifier on success, this node's identifier
-	 * on error.
+	 * @param checkConnected true to skip disconnected fingers, false otherwise
+	 * @return closest predecessor's identity on success, this node's identity
+	 * on error
 	 */
 	unsigned int closestPredecessor(unsigned int key, bool checkConnected =
 			false) const noexcept;
 	/**
-	 * Joins this node to the distributed hash table using the given key.
-	 * @param key bootstrapping key's value
+	 * Joins this node to a distributed hash table (DHT).
+	 * @param key bootstrapping key
 	 * @return true on success, false otherwise
 	 */
 	bool join(unsigned int key) noexcept;
@@ -169,13 +165,13 @@ public:
 	bool stabilize(unsigned int key) noexcept;
 	/**
 	 * Notifies this node about a potential predecessor.
-	 * @param key predecessor's identifier
+	 * @param key predecessor's identity
 	 * @return true on success (predecessor updated), false otherwise
 	 */
 	bool notify(unsigned int key) noexcept;
 	/**
-	 * Updates the finger table entries associated with the given key. On finger
-	 * table's update, this node is marked as unstable (see Node::isStable()).
+	 * Updates the finger table entries associated with a key. On finger table's
+	 * update, this node is marked as unstable.
 	 * @param key key's value
 	 * @param joined true if the key was added to the network, false if the key
 	 * was removed from the network.
@@ -183,10 +179,10 @@ public:
 	 */
 	bool update(unsigned int key, bool joined) noexcept;
 	/**
-	 * Checks if the finger table contains the given key.
+	 * Checks if the finger table contains a key.
 	 * @param key key's value
-	 * @return true if the given key exists in the finger table (includes 0 and
-	 * this node's identifier), false otherwise.
+	 * @return true if the key exists in the finger table (includes 0 and
+	 * this node's identity), false otherwise.
 	 */
 	bool isInRoute(unsigned int key) const noexcept;
 	//-----------------------------------------------------------------
@@ -196,22 +192,20 @@ public:
 	void print() noexcept;
 	//-----------------------------------------------------------------
 	/**
-	 * Checks whether the given key is inside an open circular interval.
+	 * Checks whether a key belongs to an open circular interval.
 	 * @param key key's value
-	 * @param from circular interval's lower bound
-	 * @param to circular interval's uper bound
-	 * @return true if the key belongs to the open circular interval, false
-	 * otherwise.
+	 * @param from lower bound
+	 * @param to uper bound
+	 * @return true if the key is in the interval, false otherwise.
 	 */
 	static bool isBetween(unsigned int key, unsigned int from,
 			unsigned int to) noexcept;
 	/**
-	 * Checks whether the given key is inside a closed circular interval.
+	 * Checks whether a belongs to a closed circular interval.
 	 * @param key key's value
-	 * @param from circular interval's lower bound
-	 * @param to circular interval's uper bound
-	 * @return true if the key belongs to the closed circular interval, false
-	 * otherwise.
+	 * @param from lower bound
+	 * @param to uper bound
+	 * @return true if the key is in the interval, false otherwise.
 	 */
 	static bool isInRange(unsigned int key, unsigned int from,
 			unsigned int to) noexcept;
@@ -219,14 +213,14 @@ public:
 	 * Calculates a key's successor on the identifier ring.
 	 * @param key key's value
 	 * @param index successor's index
-	 * @return successor's value
+	 * @return successor's identity
 	 */
 	static unsigned int successor(unsigned int key, unsigned int index) noexcept;
 	/**
 	 * Calculates a key's predecessor on the identifier ring.
 	 * @param key key's value
 	 * @param index predecessor's index
-	 * @return predecessor's value
+	 * @return predecessor's identity
 	 */
 	static unsigned int predecessor(unsigned int key,
 			unsigned int index) noexcept;
