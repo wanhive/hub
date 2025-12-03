@@ -10,8 +10,8 @@
  *
  */
 
-#ifndef WH_SERVER_OVERLAY_OVERLAYTOOL_H_
-#define WH_SERVER_OVERLAY_OVERLAYTOOL_H_
+#ifndef WH_SERVER_CORE_OVERLAYTOOL_H_
+#define WH_SERVER_CORE_OVERLAYTOOL_H_
 #include "OverlayProtocol.h"
 #include "../../hub/Identity.h"
 #include "../../util/Verifier.h"
@@ -94,4 +94,4 @@ private:
 
 } /* namespace wanhive */
 
-#endif /* WH_SERVER_OVERLAY_OVERLAYTOOL_H_ */
+#endif /* WH_SERVER_CORE_OVERLAYTOOL_H_ */

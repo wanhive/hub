@@ -10,8 +10,8 @@
  *
  */
 
-#ifndef WH_SERVER_OVERLAY_OVERLAYPROTOCOL_H_
-#define WH_SERVER_OVERLAY_OVERLAYPROTOCOL_H_
+#ifndef WH_SERVER_CORE_OVERLAYPROTOCOL_H_
+#define WH_SERVER_CORE_OVERLAYPROTOCOL_H_
 #include "../../hub/Protocol.h"
 #include "OverlayHubInfo.h"
 
@@ -313,4 +313,4 @@ public:
 
 } /* namespace wanhive */
 
-#endif /* WH_SERVER_OVERLAY_OVERLAYPROTOCOL_H_ */
+#endif /* WH_SERVER_CORE_OVERLAYPROTOCOL_H_ */

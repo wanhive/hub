@@ -10,8 +10,8 @@
  *
  */
 
-#ifndef WH_SERVER_OVERLAY_NODE_H_
-#define WH_SERVER_OVERLAY_NODE_H_
+#ifndef WH_SERVER_CORE_NODE_H_
+#define WH_SERVER_CORE_NODE_H_
 #include "DHT.h"
 #include "Finger.h"
 
@@ -256,4 +256,4 @@ private:
 
 } /* namespace wanhive */
 
-#endif /* WH_SERVER_OVERLAY_NODE_H_ */
+#endif /* WH_SERVER_CORE_NODE_H_ */

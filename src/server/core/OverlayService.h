@@ -10,8 +10,8 @@
  *
  */
 
-#ifndef WH_SERVER_OVERLAY_OVERLAYSERVICE_H_
-#define WH_SERVER_OVERLAY_OVERLAYSERVICE_H_
+#ifndef WH_SERVER_CORE_OVERLAYSERVICE_H_
+#define WH_SERVER_CORE_OVERLAYSERVICE_H_
 #include "Node.h"
 #include "OverlayProtocol.h"
 #include "../../base/TurnGate.h"
@@ -145,4 +145,4 @@ private:
 
 } /* namespace wanhive */
 
-#endif /* WH_SERVER_OVERLAY_OVERLAYSERVICE_H_ */
+#endif /* WH_SERVER_CORE_OVERLAYSERVICE_H_ */

@@ -10,8 +10,8 @@
  *
  */
 
-#ifndef WH_SERVER_OVERLAY_FINGER_H_
-#define WH_SERVER_OVERLAY_FINGER_H_
+#ifndef WH_SERVER_CORE_FINGER_H_
+#define WH_SERVER_CORE_FINGER_H_
 
 namespace wanhive {
 /**
@@ -90,4 +90,4 @@ private:
 
 } /* namespace wanhive */
 
-#endif /* WH_SERVER_OVERLAY_FINGER_H_ */
+#endif /* WH_SERVER_CORE_FINGER_H_ */

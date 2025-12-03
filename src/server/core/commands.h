@@ -10,8 +10,8 @@
  *
  */
 
-#ifndef WH_SERVER_OVERLAY_COMMANDS_H_
-#define WH_SERVER_OVERLAY_COMMANDS_H_
+#ifndef WH_SERVER_CORE_COMMANDS_H_
+#define WH_SERVER_CORE_COMMANDS_H_
 #include "../../util/commands.h"
 
 namespace wanhive {
@@ -70,4 +70,4 @@ enum WhpDhtStatus {
 
 }  // namespace wanhive
 
-#endif /* WH_SERVER_OVERLAY_COMMANDS_H_ */
+#endif /* WH_SERVER_CORE_COMMANDS_H_ */

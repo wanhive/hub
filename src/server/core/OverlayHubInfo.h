@@ -10,8 +10,8 @@
  *
  */
 
-#ifndef WH_SERVER_OVERLAY_OVERLAYHUBINFO_H_
-#define WH_SERVER_OVERLAY_OVERLAYHUBINFO_H_
+#ifndef WH_SERVER_CORE_OVERLAYHUBINFO_H_
+#define WH_SERVER_CORE_OVERLAYHUBINFO_H_
 #include "DHT.h"
 #include "../../hub/HubInfo.h"
 
@@ -135,4 +135,4 @@ private:
 
 } /* namespace wanhive */
 
-#endif /* WH_SERVER_OVERLAY_OVERLAYHUBINFO_H_ */
+#endif /* WH_SERVER_CORE_OVERLAYHUBINFO_H_ */

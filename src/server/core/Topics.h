@@ -10,8 +10,8 @@
  *
  */
 
-#ifndef WH_SERVER_OVERLAY_TOPICS_H_
-#define WH_SERVER_OVERLAY_TOPICS_H_
+#ifndef WH_SERVER_CORE_TOPICS_H_
+#define WH_SERVER_CORE_TOPICS_H_
 #include "../../base/ds/Khash.h"
 #include "../../base/ds/ReadyList.h"
 #include "../../base/ds/Twiddler.h"
@@ -96,4 +96,4 @@ private:
 
 } /* namespace wanhive */
 
-#endif /* WH_SERVER_OVERLAY_TOPICS_H_ */
+#endif /* WH_SERVER_CORE_TOPICS_H_ */

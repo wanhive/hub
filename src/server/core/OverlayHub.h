@@ -10,8 +10,8 @@
  *
  */
 
-#ifndef WH_SERVER_OVERLAY_OVERLAYHUB_H_
-#define WH_SERVER_OVERLAY_OVERLAYHUB_H_
+#ifndef WH_SERVER_CORE_OVERLAYHUB_H_
+#define WH_SERVER_CORE_OVERLAYHUB_H_
 #include "OverlayService.h"
 #include "Topics.h"
 #include "../../base/ds/Tokens.h"
@@ -278,4 +278,4 @@ private:
 
 } /* namespace wanhive */
 
-#endif /* WH_SERVER_OVERLAY_OVERLAYHUB_H_ */
+#endif /* WH_SERVER_CORE_OVERLAYHUB_H_ */

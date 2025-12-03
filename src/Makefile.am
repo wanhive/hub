@@ -103,15 +103,15 @@ WH_HUBSOURCES = hub/Agent.cpp hub/Alarm.cpp hub/Event.cpp hub/Hub.cpp \
 
 ## src/server collection
 WH_SERVERHEADERS = server/auth/AuthenticationHub.h server/auth/Things.h \
-	server/overlay/DHT.h server/overlay/Finger.h server/overlay/Node.h \
-	server/overlay/OverlayHub.h server/overlay/OverlayHubInfo.h \
-	server/overlay/OverlayProtocol.h server/overlay/OverlayService.h \
-	server/overlay/OverlayTool.h server/overlay/Topics.h server/overlay/commands.h
+	server/core/DHT.h server/core/Finger.h server/core/Node.h \
+	server/core/OverlayHub.h server/core/OverlayHubInfo.h \
+	server/core/OverlayProtocol.h server/core/OverlayService.h \
+	server/core/OverlayTool.h server/core/Topics.h server/core/commands.h
 WH_SERVERSOURCES = server/auth/AuthenticationHub.cpp server/auth/Things.cpp \
-	server/overlay/DHT.cpp server/overlay/Finger.cpp server/overlay/Node.cpp \
-	server/overlay/OverlayHub.cpp server/overlay/OverlayHubInfo.cpp \
-	server/overlay/OverlayProtocol.cpp server/overlay/OverlayService.cpp \
-	server/overlay/OverlayTool.cpp server/overlay/Topics.cpp
+	server/core/DHT.cpp server/core/Finger.cpp server/core/Node.cpp \
+	server/core/OverlayHub.cpp server/core/OverlayHubInfo.cpp \
+	server/core/OverlayProtocol.cpp server/core/OverlayService.cpp \
+	server/core/OverlayTool.cpp server/core/Topics.cpp
 
 ## src/test collection
 WH_TESTHEADERS = test/ds/BufferTest.h test/ds/HashTableTest.h \

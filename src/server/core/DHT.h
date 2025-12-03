@@ -10,8 +10,8 @@
  *
  */
 
-#ifndef WH_SERVER_OVERLAY_DHT_H_
-#define WH_SERVER_OVERLAY_DHT_H_
+#ifndef WH_SERVER_CORE_DHT_H_
+#define WH_SERVER_CORE_DHT_H_
 
 namespace wanhive {
 /**
@@ -47,4 +47,4 @@ public:
 
 } /* namespace wanhive */
 
-#endif /* WH_SERVER_OVERLAY_DHT_H_ */
+#endif /* WH_SERVER_CORE_DHT_H_ */
