@@ -41,7 +41,7 @@ void OverlayTool::run() noexcept {
 }
 
 void OverlayTool::setup() {
-	Identity::initialize();
+	Identity::reset();
 }
 
 void OverlayTool::execute() noexcept {

@@ -48,7 +48,7 @@ Identity::Identity(const char *path) noexcept {
 Identity::~Identity() {
 	delete instanceId;
 	free(paths.config);
-	free(paths.configurationFile);
+	free(paths.options);
 	free(paths.hostsDB);
 	free(paths.hostsFile);
 	free(paths.privateKey);
@@ -58,7 +58,7 @@ Identity::~Identity() {
 	free(paths.sslHostKey);
 }
 
-void Identity::initialize() {
+void Identity::reset() {
 	try {
 		generateInstanceId();
 		loadConfiguration();
@@ -170,10 +170,10 @@ unsigned int Identity::getIdentifiers(const char *section, const char *option,
 	return i;
 }
 
-const char* Identity::dataPathName(int context) const noexcept {
+const char* Identity::getPath(int context) const noexcept {
 	switch (context) {
-	case CTX_CONFIGURATION:
-		return paths.configurationFile;
+	case CTX_OPTIONS:
+		return paths.options;
 	case CTX_HOSTS_DB:
 		return paths.hostsDB;
 	case CTX_HOSTS_FILE:
@@ -184,7 +184,7 @@ const char* Identity::dataPathName(int context) const noexcept {
 		return paths.publicKey;
 	case CTX_SSL_ROOT:
 		return paths.sslRoot;
-	case CTX_SSL_CERTIFICATE:
+	case CTX_SSL_CERT:
 		return paths.sslCertificate;
 	case CTX_SSL_PRIVATE:
 		return paths.sslHostKey;
@@ -193,10 +193,10 @@ const char* Identity::dataPathName(int context) const noexcept {
 	}
 }
 
-void Identity::reload(int context) {
+void Identity::refresh(int context) {
 	switch (context) {
-	case CTX_CONFIGURATION:
-		initialize();
+	case CTX_OPTIONS:
+		reset();
 		break;
 	case CTX_HOSTS_DB:
 		loadHostsDatabase();
@@ -213,7 +213,7 @@ void Identity::reload(int context) {
 	case CTX_SSL_ROOT:
 		loadSSL();
 		break;
-	case CTX_SSL_CERTIFICATE:
+	case CTX_SSL_CERT:
 		loadSSLCertificate();
 		break;
 	case CTX_SSL_PRIVATE:
@@ -242,20 +242,19 @@ void Identity::generateInstanceId() {
 
 void Identity::loadConfiguration() {
 	try {
-		free(paths.configurationFile);
-		paths.configurationFile = locateConfigurationFile();
+		free(paths.options);
+		paths.options = locateConfigurationFile();
 		options.clear();
 
-		if (!paths.configurationFile) {
+		if (!paths.options) {
 			WH_LOG_WARNING("No configuration file");
-		} else if (options.load(paths.configurationFile)) {
-			WH_LOG_INFO("Configuration loaded from %s",
-					paths.configurationFile);
+		} else if (options.load(paths.options)) {
+			WH_LOG_INFO("Configuration loaded from %s", paths.options);
 		} else {
 			WH_LOG_ERROR("Could not read the configuration file %s",
-					paths.configurationFile);
-			free(paths.configurationFile);
-			paths.configurationFile = nullptr;
+					paths.options);
+			free(paths.options);
+			paths.options = nullptr;
 			throw Exception(EX_ARGUMENT);
 		}
 	} catch (const BaseException &e) {

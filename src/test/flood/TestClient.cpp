@@ -33,7 +33,7 @@ uint64_t TestClient::getHostId() const noexcept {
 
 void TestClient::bootstrap(uint64_t id, int timeout) {
 	try {
-		Identity::initialize();
+		Identity::reset();
 		//-----------------------------------------------------------------
 		//Connect with the bootstrap node
 		WH_LOG_INFO("Connecting to the bootstrap node: % " PRIu64, id);

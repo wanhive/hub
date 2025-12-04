@@ -220,7 +220,7 @@ void Hub::expel(Watcher *w) noexcept {
 void Hub::configure(void *arg) {
 	try {
 		uptime.now();
-		Identity::initialize();
+		Identity::reset();
 		auto &conf = Identity::getOptions();
 
 		ctx.listen = conf.getBoolean("HUB", "listen");

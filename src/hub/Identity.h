@@ -25,9 +25,8 @@ namespace wanhive {
 class Identity {
 public:
 	/**
-	 * Constructor: creates an uninitialized object, call Identity::initialize()
-	 * to load configuration data and other settings.
-	 * @param path configuration file's pathname (nullptr for default)
+	 * Constructor: sets configuration file's path.
+	 * @param path configuration file's path
 	 */
 	Identity(const char *path = nullptr) noexcept;
 	/**
@@ -35,13 +34,13 @@ public:
 	 */
 	~Identity();
 	/**
-	 * Initializes the object (overwrites existing data).
+	 * Resets all settings and overrides existing configurations if necessary.
 	 */
-	void initialize();
+	void reset();
 	//-----------------------------------------------------------------
 	/**
-	 * Returns configuration data.
-	 * @return configuration data
+	 * Returns the configuration options.
+	 * @return configuration object
 	 */
 	const Options& getOptions() const noexcept;
 	//-----------------------------------------------------------------
@@ -52,18 +51,17 @@ public:
 	const PKI* getPKI() const noexcept;
 	/**
 	 * Checks whether the host verification is enabled.
-	 * @return true if host verification is enabled, false otherwise
+	 * @return true if enabled, false if disabled
 	 */
 	bool verifyHost() const noexcept;
 	/**
-	 * Returns secure connections' context.
-	 * @return pointer to the SSL/TLS context, nullptr if SSL is disabled
+	 * Returns the SSL context.
+	 * @return SSL context (nullptr if SSL is disabled)
 	 */
 	SSLContext* getSSLContext() noexcept;
 	/**
-	 * Generates a secure nonce to prevent replay attack during handshaking and
-	 * authentication (see Identity::verifyNonce()).
-	 * @param hash object providing the hash algorithm
+	 * Generates cryptographic nonce.
+	 * @param hash cryptographic hash function provider
 	 * @param salt salt's value
 	 * @param id identifier's value, [salt, id] pair should be unique
 	 * @param nonce stores the generated nonce
@@ -72,55 +70,55 @@ public:
 	bool generateNonce(Hash &hash, uint64_t salt, uint64_t id,
 			Digest *nonce) const noexcept;
 	/**
-	 * Verifies a secure nonce (see Identity::generateNonce()).
-	 * @param hash an object providing the hash algorithm
+	 * Verifies cryptographic nonce.
+	 * @param hash cryptographic hash function provider
 	 * @param salt salt's value
 	 * @param id identifier's value
-	 * @param nonce nonce's value for verification
+	 * @param nonce nonce's value
 	 * @return true on successful verification, false otherwise
 	 */
 	bool verifyNonce(Hash &hash, uint64_t salt, uint64_t id,
 			const Digest *nonce) const noexcept;
 	//-----------------------------------------------------------------
 	/**
-	 * Hosts management: returns network address associated with a host.
+	 * Hosts management: returns a host's network address.
 	 * @param uid host's identifier
-	 * @param ni stores host's address
+	 * @param ni stores network address
 	 */
 	void getAddress(uint64_t uid, NameInfo &ni);
 	/**
 	 * Hosts management: reads a randomized list of host identifiers of a
-	 * given type from the hosts database and stores them in an array.
+	 * given type from the hosts database.
 	 * @param nodes output array
 	 * @param count output array's capacity
 	 * @param type host's type
-	 * @return actual number of identifiers stored in the output array
+	 * @return identifiers count
 	 */
 	unsigned int getIdentifiers(unsigned long long nodes[], unsigned int count,
 			int type) noexcept;
 	/**
-	 * Hosts management: reads a list of host identifiers from a text file
-	 * specified by the configuration data and stores them in an array.
-	 * @param section configuration data's section name
-	 * @param option configuration data's option name
+	 * Hosts management: reads a randomized list of host identifiers from a text
+	 * file specified by configuration data.
+	 * @param section section's name
+	 * @param option option's name
 	 * @param nodes output array
 	 * @param count output array's capacity
-	 * @return actual number of identifiers stored in the output array
+	 * @return identifiers count
 	 */
 	unsigned int getIdentifiers(const char *section, const char *option,
 			unsigned long long nodes[], unsigned int count) noexcept;
 	//-----------------------------------------------------------------
 	/**
-	 * Returns an application data file's pathname.
-	 * @param context application data's context
-	 * @return file's pathname if exists, nullptr otherwise
+	 * Returns an application data file's path.
+	 * @param context context identifier
+	 * @return data file's path if exists, nullptr otherwise
 	 */
-	const char* dataPathName(int context) const noexcept;
+	const char* getPath(int context) const noexcept;
 	/**
 	 * Partially reloads settings.
-	 * @param context application data's context
+	 * @param context context identifier
 	 */
-	void reload(int context);
+	void refresh(int context);
 private:
 	void generateInstanceId();
 	void loadConfiguration();
@@ -146,13 +144,13 @@ public:
 	 * Application data contexts (non-negative integral values).
 	 */
 	enum {
-		CTX_CONFIGURATION, /**< Configuration data */
+		CTX_OPTIONS, /**< Configuration data */
 		CTX_HOSTS_DB, /**< Hosts database */
 		CTX_HOSTS_FILE, /**< Hosts file */
 		CTX_PKI_PRIVATE, /**< Private key */
 		CTX_PKI_PUBLIC, /**< Public key */
 		CTX_SSL_ROOT, /**< Root CA certificate */
-		CTX_SSL_CERTIFICATE, /**< SSL certificate */
+		CTX_SSL_CERT, /**< SSL certificate */
 		CTX_SSL_PRIVATE /**< SSL private key */
 	};
 private:
@@ -180,7 +178,7 @@ private:
 		//Configuration file's pathname from the command line
 		char *config { nullptr };
 		//Configuration file's resolved pathname
-		char *configurationFile { nullptr };
+		char *options { nullptr };
 		//Hosts database file's pathname
 		char *hostsDB { nullptr };
 		//Clear text hosts file's pathname

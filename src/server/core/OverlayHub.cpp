@@ -210,42 +210,42 @@ void OverlayHub::installSettingsMonitor() {
 	try {
 		//Events we are interested in: modify-> close
 		const uint32_t events = IN_MODIFY | IN_ATTRIB | IN_CLOSE_WRITE;
-		if (auto path = dataPathName(Identity::CTX_CONFIGURATION); path) {
+		if (auto path = getPath(Identity::CTX_OPTIONS); path) {
 			watchlist[0].identifier = track(path, events);
-			watchlist[0].context = Identity::CTX_CONFIGURATION;
+			watchlist[0].context = Identity::CTX_OPTIONS;
 		}
 
-		if (auto path = dataPathName(Identity::CTX_HOSTS_DB); path) {
+		if (auto path = getPath(Identity::CTX_HOSTS_DB); path) {
 			watchlist[1].identifier = track(path, events);
 			watchlist[1].context = Identity::CTX_HOSTS_DB;
 		}
 
-		if (auto path = dataPathName(Identity::CTX_HOSTS_FILE); path) {
+		if (auto path = getPath(Identity::CTX_HOSTS_FILE); path) {
 			watchlist[2].identifier = track(path, events);
 			watchlist[2].context = Identity::CTX_HOSTS_FILE;
 		}
 
-		if (auto path = dataPathName(Identity::CTX_PKI_PRIVATE); path) {
+		if (auto path = getPath(Identity::CTX_PKI_PRIVATE); path) {
 			watchlist[3].identifier = track(path, events);
 			watchlist[3].context = Identity::CTX_PKI_PRIVATE;
 		}
 
-		if (auto path = dataPathName(Identity::CTX_PKI_PUBLIC); path) {
+		if (auto path = getPath(Identity::CTX_PKI_PUBLIC); path) {
 			watchlist[4].identifier = track(path, events);
 			watchlist[4].context = Identity::CTX_PKI_PUBLIC;
 		}
 
-		if (auto path = dataPathName(Identity::CTX_SSL_ROOT); path) {
+		if (auto path = getPath(Identity::CTX_SSL_ROOT); path) {
 			watchlist[5].identifier = track(path, events);
 			watchlist[5].context = Identity::CTX_SSL_ROOT;
 		}
 
-		if (auto path = dataPathName(Identity::CTX_SSL_CERTIFICATE); path) {
+		if (auto path = getPath(Identity::CTX_SSL_CERT); path) {
 			watchlist[6].identifier = track(path, events);
-			watchlist[6].context = Identity::CTX_SSL_CERTIFICATE;
+			watchlist[6].context = Identity::CTX_SSL_CERT;
 		}
 
-		if (auto path = dataPathName(Identity::CTX_SSL_PRIVATE); path) {
+		if (auto path = getPath(Identity::CTX_SSL_PRIVATE); path) {
 			watchlist[7].identifier = track(path, events);
 			watchlist[7].context = Identity::CTX_SSL_PRIVATE;
 		}
@@ -278,7 +278,7 @@ void OverlayHub::updateSettings(unsigned int index) noexcept {
 	 */
 	try {
 		switch (watchlist[index].context) {
-		case Identity::CTX_CONFIGURATION:
+		case Identity::CTX_OPTIONS:
 			if (watchlist[index].identifier != -1) {
 				WH_LOG_DEBUG(
 						"Configuration file has been modified (restart required)");
@@ -296,7 +296,7 @@ void OverlayHub::updateSettings(unsigned int index) noexcept {
 		case Identity::CTX_HOSTS_FILE:
 			if (watchlist[index].identifier != -1) {
 				WH_LOG_DEBUG("Hosts file has been modified");
-				Identity::reload(Identity::CTX_HOSTS_FILE);
+				Identity::refresh(Identity::CTX_HOSTS_FILE);
 			} else {
 				WH_LOG_DEBUG("Hosts file has been ignored");
 			}
@@ -304,7 +304,7 @@ void OverlayHub::updateSettings(unsigned int index) noexcept {
 		case Identity::CTX_PKI_PRIVATE:
 			if (watchlist[index].identifier != -1) {
 				WH_LOG_DEBUG("Private key file has been modified");
-				Identity::reload(Identity::CTX_PKI_PRIVATE);
+				Identity::refresh(Identity::CTX_PKI_PRIVATE);
 			} else {
 				WH_LOG_DEBUG("Private key file has been ignored");
 			}
@@ -312,7 +312,7 @@ void OverlayHub::updateSettings(unsigned int index) noexcept {
 		case Identity::CTX_PKI_PUBLIC:
 			if (watchlist[index].identifier != -1) {
 				WH_LOG_DEBUG("Public key file has been modified");
-				Identity::reload(Identity::CTX_PKI_PUBLIC);
+				Identity::refresh(Identity::CTX_PKI_PUBLIC);
 			} else {
 				WH_LOG_DEBUG("Public key file has been ignored");
 			}
@@ -325,10 +325,10 @@ void OverlayHub::updateSettings(unsigned int index) noexcept {
 				WH_LOG_DEBUG("SSL trusted certificate has been ignored");
 			}
 			break;
-		case Identity::CTX_SSL_CERTIFICATE:
+		case Identity::CTX_SSL_CERT:
 			if (watchlist[index].identifier != -1) {
 				WH_LOG_DEBUG("SSL certificate has been modified");
-				Identity::reload(Identity::CTX_SSL_CERTIFICATE);
+				Identity::refresh(Identity::CTX_SSL_CERT);
 			} else {
 				WH_LOG_DEBUG("SSL certificate has been ignored");
 			}
@@ -336,7 +336,7 @@ void OverlayHub::updateSettings(unsigned int index) noexcept {
 		case Identity::CTX_SSL_PRIVATE:
 			if (watchlist[index].identifier != -1) {
 				WH_LOG_DEBUG("SSL host key has been modified");
-				Identity::reload(Identity::CTX_SSL_PRIVATE);
+				Identity::refresh(Identity::CTX_SSL_PRIVATE);
 			} else {
 				WH_LOG_DEBUG("SSL host key has been ignored");
 			}
