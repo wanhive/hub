@@ -52,7 +52,7 @@ OverlayHub::~OverlayHub() {
 }
 
 void OverlayHub::expel(Watcher *w) noexcept {
-	onRecycle(w);
+	offboard(w);
 	Hub::expel(w);
 }
 
@@ -84,7 +84,7 @@ void OverlayHub::configure(void *arg) {
 				WH_BOOLF(ctx.join), ctx.period, ctx.timeout, ctx.pause,
 				ctx.netmask, ctx.group);
 		installService();
-		installSettingsMonitor();
+		installTracker();
 	} catch (const BaseException &e) {
 		WH_LOG_EXCEPTION(e);
 		throw;
@@ -93,7 +93,7 @@ void OverlayHub::configure(void *arg) {
 
 void OverlayHub::cleanup() noexcept {
 	Watcher *w = nullptr;
-	if (!isHostId(getWorkerId()) && (w = find(getWorkerId()))) {
+	if (!isHost(getWorker()) && (w = find(getWorker()))) {
 		//Shut down hub's end of the socket pair
 		w->stop();
 		stabilizer.notify();
@@ -105,16 +105,11 @@ void OverlayHub::cleanup() noexcept {
 }
 
 void OverlayHub::maintain() noexcept {
-	if (!isStable()) {
-		setStable(true);
-		if (fixController()) {
-			fixRoutingTable();
-		}
-	}
+	converge();
 }
 
 bool OverlayHub::probe(Message *message) noexcept {
-	return (bool) processRegistrationRequest(message);
+	return (bool) enroll(message);
 }
 
 void OverlayHub::route(Message *message) noexcept {
@@ -123,7 +118,7 @@ void OverlayHub::route(Message *message) noexcept {
 	 * [REGISTRATION]: Intercept and handle registration and session-key requests
 	 * because modification in the message will result in verification failure.
 	 */
-	if (interceptMessage(message)) {
+	if (intercept(message)) {
 		message->setGroup(0); //Ignore the group ID
 		return;
 	}
@@ -131,27 +126,26 @@ void OverlayHub::route(Message *message) noexcept {
 	/*
 	 * [FLOW CONTROL]: apply correct source, group, and label
 	 */
-	applyFlowControl(message);
+	annotate(message);
 	//-----------------------------------------------------------------
 	/*
 	 * [ROUTING]: Hub's ID is the sink
 	 */
-	createRoute(message);
+	plot(message);
 	//-----------------------------------------------------------------
 	/*
 	 * [PROCESSING]: Process the local requests
 	 */
-	if (isHostId(message->getDestination())
-			&& !message->testFlags(MSG_INVALID)) {
+	if (isHost(message->getDestination()) && !message->testFlags(MSG_INVALID)) {
 		//Maintain this order
-		process(message); //Process the local request
+		serve(message); //Process the local request
 		message->setGroup(0); //Ignore the group ID
 	}
 	//-----------------------------------------------------------------
 	/*
 	 * [DELIVERY]: deliver to the local destination
 	 */
-	if (isExternalNode(message->getDestination())) {
+	if (isExternal(message->getDestination())) {
 		message->writeLabel(0); //Clean up the label
 	}
 }
@@ -170,14 +164,14 @@ void OverlayHub::onInotification(unsigned long long uid,
 	for (unsigned int i = 0; i < WATCHLIST_SIZE; ++i) {
 		if (watchlist[i].identifier == event->wd) {
 			watchlist[i].events |= event->mask;
-			updateSettings(i);
+			refresh(i);
 			break;
 		}
 	}
 }
 
 bool OverlayHub::doable() const noexcept {
-	return isSupernode();
+	return isSuperNode();
 }
 
 void OverlayHub::act(void *arg) noexcept {
@@ -202,11 +196,11 @@ void OverlayHub::installService() {
 	int fd = -1;
 	auto w = connect(fd, true, ctx.timeout);
 	worker.id = w->getUid(); //set here
-	onRegistration(w);
+	onboard(w);
 	stabilizer.configure(fd, ctx.nodes, ctx.period, ctx.pause);
 }
 
-void OverlayHub::installSettingsMonitor() {
+void OverlayHub::installTracker() {
 	try {
 		//Events we are interested in: modify-> close
 		const uint32_t events = IN_MODIFY | IN_ATTRIB | IN_CLOSE_WRITE;
@@ -256,30 +250,30 @@ void OverlayHub::installSettingsMonitor() {
 	}
 }
 
-void OverlayHub::updateSettings(unsigned int index) noexcept {
+void OverlayHub::refresh(unsigned int context) noexcept {
 	//REF: https://github.com/guard/guard/wiki/Analysis-of-inotify-events-for-different-editors
-	if (watchlist[index].events & IN_IGNORED) {
+	if (watchlist[context].events & IN_IGNORED) {
 		//Associated file will no longer be monitored
-		watchlist[index].identifier = -1;
-		watchlist[index].events = 0;
-	} else if (!(watchlist[index].events & IN_CLOSE_WRITE)) { //Write-close
+		watchlist[context].identifier = -1;
+		watchlist[context].events = 0;
+	} else if (!(watchlist[context].events & IN_CLOSE_WRITE)) { //Write-close
 		return;
-	} else if (!(watchlist[index].events & (IN_MODIFY | IN_ATTRIB))) { //Modification
+	} else if (!(watchlist[context].events & (IN_MODIFY | IN_ATTRIB))) { //Modification
 		//Closed without modification
-		watchlist[index].events = 0;
+		watchlist[context].events = 0;
 		return;
 	} else {
 		//Reset for next cycle
-		watchlist[index].events = 0;
+		watchlist[context].events = 0;
 	}
 	//-----------------------------------------------------------------
 	/*
 	 * Reload the settings
 	 */
 	try {
-		switch (watchlist[index].context) {
+		switch (watchlist[context].context) {
 		case Identity::CTX_OPTIONS:
-			if (watchlist[index].identifier != -1) {
+			if (watchlist[context].identifier != -1) {
 				WH_LOG_DEBUG(
 						"Configuration file has been modified (restart required)");
 			} else {
@@ -287,14 +281,14 @@ void OverlayHub::updateSettings(unsigned int index) noexcept {
 			}
 			break;
 		case Identity::CTX_HOSTS_DB:
-			if (watchlist[index].identifier != -1) {
+			if (watchlist[context].identifier != -1) {
 				WH_LOG_DEBUG("Hosts database has been modified");
 			} else {
 				WH_LOG_DEBUG("Hosts database has been ignored");
 			}
 			break;
 		case Identity::CTX_HOSTS_FILE:
-			if (watchlist[index].identifier != -1) {
+			if (watchlist[context].identifier != -1) {
 				WH_LOG_DEBUG("Hosts file has been modified");
 				Identity::refresh(Identity::CTX_HOSTS_FILE);
 			} else {
@@ -302,7 +296,7 @@ void OverlayHub::updateSettings(unsigned int index) noexcept {
 			}
 			break;
 		case Identity::CTX_PKI_PRIVATE:
-			if (watchlist[index].identifier != -1) {
+			if (watchlist[context].identifier != -1) {
 				WH_LOG_DEBUG("Private key file has been modified");
 				Identity::refresh(Identity::CTX_PKI_PRIVATE);
 			} else {
@@ -310,7 +304,7 @@ void OverlayHub::updateSettings(unsigned int index) noexcept {
 			}
 			break;
 		case Identity::CTX_PKI_PUBLIC:
-			if (watchlist[index].identifier != -1) {
+			if (watchlist[context].identifier != -1) {
 				WH_LOG_DEBUG("Public key file has been modified");
 				Identity::refresh(Identity::CTX_PKI_PUBLIC);
 			} else {
@@ -318,7 +312,7 @@ void OverlayHub::updateSettings(unsigned int index) noexcept {
 			}
 			break;
 		case Identity::CTX_SSL_ROOT:
-			if (watchlist[index].identifier != -1) {
+			if (watchlist[context].identifier != -1) {
 				WH_LOG_DEBUG(
 						"SSL trusted certificate has been modified (restart required)");
 			} else {
@@ -326,7 +320,7 @@ void OverlayHub::updateSettings(unsigned int index) noexcept {
 			}
 			break;
 		case Identity::CTX_SSL_CERT:
-			if (watchlist[index].identifier != -1) {
+			if (watchlist[context].identifier != -1) {
 				WH_LOG_DEBUG("SSL certificate has been modified");
 				Identity::refresh(Identity::CTX_SSL_CERT);
 			} else {
@@ -334,7 +328,7 @@ void OverlayHub::updateSettings(unsigned int index) noexcept {
 			}
 			break;
 		case Identity::CTX_SSL_PRIVATE:
-			if (watchlist[index].identifier != -1) {
+			if (watchlist[context].identifier != -1) {
 				WH_LOG_DEBUG("SSL host key has been modified");
 				Identity::refresh(Identity::CTX_SSL_PRIVATE);
 			} else {
@@ -352,13 +346,19 @@ void OverlayHub::updateSettings(unsigned int index) noexcept {
 	}
 }
 
-bool OverlayHub::fixController() noexcept {
-	//Establish a connection with the controller
-	return connectToRoute(CONTROLLER, &sessions[TABLESIZE]);
-}
+bool OverlayHub::converge() noexcept {
+	if (isStable()) {
+		return true;
+	}
 
-bool OverlayHub::fixRoutingTable() noexcept {
-	//Fall through the routing table and fix the errors
+	setStable(true);
+
+	//First fix the connection to controller
+	if (!bridge(CONTROLLER, &sessions[TABLESIZE])) {
+		return false;
+	}
+
+	//Fall through the routing table and fix errors
 	for (unsigned int i = 0; i < TABLESIZE; i++) {
 		if (!isConsistent(i)) {
 			auto old = commit(i);
@@ -372,38 +372,38 @@ bool OverlayHub::fixRoutingTable() noexcept {
 		}
 
 		//Update the connection status
-		setConnected(i, connectToRoute(get(i), &sessions[i]));
+		setConnected(i, bridge(get(i), &sessions[i]));
 	}
 
 	//If the predecessor has changed, certain connections need to be removed
 	if (predessorChanged()) {
 		commitPredecessor();
-		purgeConnections(PURGE_INVALID);
+		reap(PURGE_INVALID);
 	}
 
 	return true;
 }
 
-bool OverlayHub::connectToRoute(unsigned long long id, Digest *hc) noexcept {
+bool OverlayHub::bridge(unsigned long long id, Digest *hc) noexcept {
 	try {
 		return connect(id, hc);
 	} catch (const BaseException &e) {
 		if (!Socket::unallocated() || !Message::unallocated()) {
-			purgeConnections(PURGE_CLIENT, 2);
+			reap(PURGE_CLIENT, 2);
 			setStable(false);
 		}
 		return false;
 	}
 }
 
-void OverlayHub::onRegistration(Watcher *w) noexcept {
+void OverlayHub::onboard(Watcher *w) noexcept {
 	auto id = w->getUid();
-	if (!isSupernode()) {
+	if (!isSuperNode()) {
 		return;
-	} else if (isController(id) || isWorkerId(id)) {
+	} else if (isController(id) || isWorker(id)) {
 		w->setFlags(SOCKET_PRIORITY);
 		w->setOption(WATCHER_OUTBOUND_MAX, 0); //default
-	} else if (isInternalNode(id)) {
+	} else if (isInternal(id)) {
 		w->setFlags(SOCKET_OVERLAY);
 		w->setOption(WATCHER_OUTBOUND_MAX, 0); //default
 		Node::update(id, true);
@@ -412,14 +412,14 @@ void OverlayHub::onRegistration(Watcher *w) noexcept {
 	}
 }
 
-void OverlayHub::onRecycle(Watcher *w) noexcept {
+void OverlayHub::offboard(Watcher *w) noexcept {
 	//If the worker connection failed then initiate shutdown
-	if (isWorkerId(w->getUid())) {
+	if (isWorker(w->getUid())) {
 		Hub::cancel();
 	}
 
 	//Remove from the routing table
-	if (isInternalNode(w->getUid())) {
+	if (isInternal(w->getUid())) {
 		Node::update(w->getUid(), false);
 	}
 
@@ -433,63 +433,24 @@ void OverlayHub::onRecycle(Watcher *w) noexcept {
 	}
 }
 
-void OverlayHub::addToCache(unsigned long long id) noexcept {
-	if (id && isInternalNode(id) && !isHostId(id)) {
+void OverlayHub::memorize(unsigned long long id) noexcept {
+	if (id && isInternal(id) && !isHost(id)) {
 		nodes.cache[nodes.index] = id;
 		nodes.index = (nodes.index + 1) & (NODECACHE_SIZE - 1);
 	}
 }
 
-bool OverlayHub::isValidStabilizationResponse(const Message *msg) const noexcept {
-	auto &sh = worker.header;
-	return msg->getStatus() != WH_DHT_AQLF_REQUEST
-			&& msg->getLabel() == sh.getLabel()
-			&& isHostId(msg->getDestination())
-			&& msg->getSequenceNumber() == sh.getSequenceNumber()
-			&& msg->getSession() == sh.getSession()
-			&& msg->getCommand() == sh.getCommand()
-			&& msg->getQualifier() == sh.getQualifier();
-}
-
-bool OverlayHub::isValidRegistrationRequest(const Message *msg) noexcept {
-	/*
-	 * 1. Confirm that the requested ID is valid
-	 * 2. Analyze the security features (to prevent attacks)
-	 * 3. Impose rate limit
-	 */
-	auto origin = msg->getOrigin();
-	auto requestedId = msg->getSource();
-
-	if (!allowRegistration(origin, requestedId)) {
-		//CASE 1
-		return false;
-	} else if (!ctx.authenticate && !isInternalNode(requestedId)) {
-		//CASE 2
-		return true;
-	} else if (!getPKI()) {
-		//CASE 2
-		return true;
-	} else if (msg->getPayloadLength() == Hash::SIZE + PKI::SIGNATURE_LENGTH) {
-		//CASE 2 & 3
-		return tokens.take()
-				&& verifyNonce(hash, origin, getUid(),
-						(Digest*) msg->getBytes(0)) && msg->verify(getPKI());
-	} else {
-		return false;
-	}
-}
-
-int OverlayHub::processRegistrationRequest(Message *message) noexcept {
-	if (message->getOrigin() != message->getSource()) {
+int OverlayHub::enroll(const Message *request) noexcept {
+	if (request->getOrigin() != request->getSource()) {
 		//Origin must match the source identifier (only direct requests)
 		return -1;
 	}
 
-	auto current = message->getSource();
-	auto requested = message->getDestination();
+	auto current = request->getSource();
+	auto requested = request->getDestination();
 	int mode = -1; //default: reject
-	if (message->getStatus() == WH_DHT_AQLF_ACCEPTED) {
-		mode = getModeOfRegistration(current, requested);
+	if (request->getStatus() == WH_DHT_AQLF_ACCEPTED) {
+		mode = enroll(current, requested);
 	}
 
 	if (mode == -1) {
@@ -501,14 +462,64 @@ int OverlayHub::processRegistrationRequest(Message *message) noexcept {
 	if (!conn) {
 		return -1;
 	} else {
-		conn->setGroup(message->getSession());
-		onRegistration(conn);
+		conn->setGroup(request->getSession());
+		onboard(conn);
 		return (mode == 0) ? 1 : 0;
 	}
 }
 
-bool OverlayHub::allowRegistration(unsigned long long source,
-		unsigned long long requestedId) const noexcept {
+int OverlayHub::enroll(unsigned long long source,
+		unsigned long long request) noexcept {
+	if (!ctx.enroll) {
+		return -1;
+	} else if (isHost(request) || isWorker(request)) {
+		return -1;
+	} else if (source == request) {
+		//Just activate
+		return 0;
+	} else if (isInternal(request)) {
+		//Precedence rule if both sides are trying to connect
+		return ((request < getUid()) ? 1 : 2);
+	} else if (isLocal(mapKey(request))) {
+		//Replace existing connection on conflict
+		return !(isSuperNode() && (Socket::unallocated() <= TABLESIZE)) ? 2 : -1;
+	} else {
+		return -1;
+	}
+}
+
+bool OverlayHub::authenticate(const Message *request) noexcept {
+	/*
+	 * 1. Confirm that the requested ID is valid
+	 * 2. Analyze the security features (to prevent attacks)
+	 * 3. Impose rate limit
+	 */
+	auto origin = request->getOrigin();
+	auto requested = request->getSource();
+
+	if (!validate(origin, requested)) {
+		//CASE 1
+		return false;
+	} else if (!ctx.authenticate && !isInternal(requested)) {
+		//CASE 2
+		return true;
+	} else if (!getPKI()) {
+		//CASE 2
+		return true;
+	} else if (request->getPayloadLength()
+			== Hash::SIZE + PKI::SIGNATURE_LENGTH) {
+		//CASE 2 & 3
+		return tokens.take()
+				&& verifyNonce(hash, origin, getUid(),
+						(Digest*) request->getBytes(0))
+				&& request->verify(getPKI());
+	} else {
+		return false;
+	}
+}
+
+bool OverlayHub::validate(unsigned long long source,
+		unsigned long long request) const noexcept {
 	/*
 	 * 1. Registration should be enabled
 	 * 2. Only fresh request and the Requested ID must be an Active ID
@@ -518,14 +529,13 @@ bool OverlayHub::allowRegistration(unsigned long long source,
 	if (!ctx.enroll) {
 		//CASE 1
 		return false;
-	} else if (!isEphemeralId(source) || isEphemeralId(requestedId)) {
+	} else if (!isEphemeral(source) || isEphemeral(request)) {
 		//CASE 2
 		return false;
-	} else if (isHostId(requestedId) || isController(requestedId)
-			|| isWorkerId(requestedId)) {
+	} else if (isHost(request) || isController(request) || isWorker(request)) {
 		//CASE 3
 		return false;
-	} else if (isExternalNode(requestedId) && !isLocal(mapKey(requestedId))) {
+	} else if (isExternal(request) && !isLocal(mapKey(request))) {
 		//CASE 4
 		return false;
 	} else {
@@ -533,27 +543,7 @@ bool OverlayHub::allowRegistration(unsigned long long source,
 	}
 }
 
-int OverlayHub::getModeOfRegistration(unsigned long long current,
-		unsigned long long requested) noexcept {
-	if (!ctx.enroll) {
-		return -1;
-	} else if (isHostId(requested) || isWorkerId(requested)) {
-		return -1;
-	} else if (current == requested) {
-		//Just activate
-		return 0;
-	} else if (isInternalNode(requested)) {
-		//Precedence rule if both sides are trying to connect
-		return ((requested < getUid()) ? 1 : 2);
-	} else if (isLocal(mapKey(requested))) {
-		//Replace existing connection on conflict
-		return !(isSupernode() && (Socket::unallocated() <= TABLESIZE)) ? 2 : -1;
-	} else {
-		return -1;
-	}
-}
-
-bool OverlayHub::interceptMessage(Message *message) noexcept {
+bool OverlayHub::intercept(Message *message) noexcept {
 	if (message->getCommand() != WH_DHT_CMD_BASIC) {
 		return false;
 	} else if (message->getQualifier() == WH_DHT_QLF_REGISTER) {
@@ -567,41 +557,41 @@ bool OverlayHub::interceptMessage(Message *message) noexcept {
 	}
 }
 
-void OverlayHub::applyFlowControl(Message *message) noexcept {
-	if (isWorkerId(message->getOrigin())) {
-		message->putLabel(getWorkerId() + getUid());
+void OverlayHub::annotate(Message *message) noexcept {
+	if (isWorker(message->getOrigin())) {
+		message->putLabel(getWorker() + getUid());
 		message->getHeader(worker.header);
-	} else if (isExternalNode(message->getOrigin())) {
+	} else if (isExternal(message->getOrigin())) {
 		//Preserve the group ID at insertion
 		message->writeLabel(message->getGroup());
 		//Assign the correct source ID
 		message->putSource(message->getOrigin());
-	} else if (isExternalNode(message->getSource())) {
+	} else if (isExternal(message->getSource())) {
 		//Retrieve the group ID during routing
 		message->setGroup(message->getLabel());
 	} else {
-		addToCache(message->getSource());
+		memorize(message->getSource());
 	}
 }
 
-bool OverlayHub::createRoute(Message *message) noexcept {
+bool OverlayHub::plot(Message *message) noexcept {
 	auto origin = message->getOrigin();
 	auto destination = message->getDestination();
-	if (isWorkerId(origin)) {
-		if (!isHostId(destination)) {
+	if (isWorker(origin)) {
+		if (!isHost(destination)) {
 			//Stabilization request sent via controller
 			message->setDestination(CONTROLLER);
 		}
 	} else if (isController(origin)) {
-		if (isValidStabilizationResponse(message)) {
+		if (corroborate(message)) {
 			//Stabilization response returned via controller
-			message->setDestination(getWorkerId());
+			message->setDestination(getWorker());
 		}
-	} else if (allowCommunication(origin, destination)) {
-		message->setDestination(getNextHop(destination));
+	} else if (approve(origin, destination)) {
+		message->setDestination(gateway(destination));
 	} else {
 		//Highly likely a miscommunication
-		if (!(isHostId(destination) || isController(destination))) {
+		if (!(isHost(destination) || isController(destination))) {
 			message->setFlags(MSG_INVALID);
 		}
 		message->setDestination(getUid());
@@ -610,8 +600,18 @@ bool OverlayHub::createRoute(Message *message) noexcept {
 	return true;
 }
 
-unsigned long long OverlayHub::getNextHop(
-		unsigned long long destination) const noexcept {
+bool OverlayHub::corroborate(const Message *response) const noexcept {
+	auto &sh = worker.header;
+	return response->getStatus() != WH_DHT_AQLF_REQUEST
+			&& response->getLabel() == sh.getLabel()
+			&& isHost(response->getDestination())
+			&& response->getSequenceNumber() == sh.getSequenceNumber()
+			&& response->getSession() == sh.getSession()
+			&& response->getCommand() == sh.getCommand()
+			&& response->getQualifier() == sh.getQualifier();
+}
+
+unsigned long long OverlayHub::gateway(unsigned long long to) const noexcept {
 	/*
 	 * CASE 1: destination is "local" or <destination> = <Controller>
 	 * In such case do nothing and allow the server take care of it
@@ -620,167 +620,165 @@ unsigned long long OverlayHub::getNextHop(
 	 * CASE 2: Destination lies somewhere else on the network
 	 * FIND THE NEXT HOP
 	 */
-	auto k = mapKey(destination);
-	if (!isLocal(k) && !isController(destination)) {
+	auto k = mapKey(to);
+	if (!isLocal(k) && !isController(to)) {
 		//Case 2
 		return nextHop(k);
 	} else {
-		return destination;
+		return to;
 	}
 }
 
-bool OverlayHub::allowCommunication(unsigned long long source,
-		unsigned long long destination) const noexcept {
+bool OverlayHub::approve(unsigned long long from,
+		unsigned long long to) const noexcept {
 	/*
 	 * 1. Both Source and Destination must be active IDs
 	 * 2. Destination cannot be controller or worker IDs
 	 * 3. Allow client -> supernode communication only via controller
 	 * 4. Apply netmask over all client -> * communications
 	 */
-	auto checkActive = !isEphemeralId(source) && !isEphemeralId(destination);
-	auto checkDestinations = !(isController(destination)
-			|| isWorkerId(destination));
+	auto checkActive = !isEphemeral(from) && !isEphemeral(to);
+	auto checkDestinations = !(isController(to) || isWorker(to));
 	auto checkPrivilege = isController(getUid())
-			|| !(isExternalNode(source) && isInternalNode(destination));
+			|| !(isExternal(from) && isInternal(to));
 
 	return checkActive && checkDestinations && checkPrivilege
-			&& checkMask(source, destination);
+			&& permit(from, to);
 }
 
-bool OverlayHub::checkMask(unsigned long long source,
-		unsigned long long destination) const noexcept {
-	return isInternalNode(source)
-			|| ((source & ctx.netmask) == (destination & ctx.netmask));
+bool OverlayHub::permit(unsigned long long from,
+		unsigned long long to) const noexcept {
+	return isInternal(from) || ((from & ctx.netmask) == (to & ctx.netmask));
 }
 
-bool OverlayHub::process(Message *message) noexcept {
-	switch (message->getCommand()) {
+bool OverlayHub::serve(Message *request) noexcept {
+	switch (request->getCommand()) {
 	case WH_DHT_CMD_NULL:
-		return processNullRequest(message);
+		return serveNullRequest(request);
 	case WH_DHT_CMD_BASIC:
-		return processBasicRequest(message);
+		return serveBasicRequest(request);
 	case WH_DHT_CMD_MULTICAST:
-		return processMulticastRequest(message);
+		return serveMulticastRequest(request);
 	case WH_DHT_CMD_NODE:
-		return processNodeRequest(message);
+		return serveNodeRequest(request);
 	case WH_DHT_CMD_OVERLAY:
-		return processOverlayRequest(message);
+		return serveOverlayRequest(request);
 	default:
-		return handleInvalidRequest(message);
+		return handleInvalidRequest(request);
 	}
 }
 
-bool OverlayHub::processNullRequest(Message *message) noexcept {
-	if (message->getCommand() != WH_DHT_CMD_NULL) {
-		return handleInvalidRequest(message);
+bool OverlayHub::serveNullRequest(Message *request) noexcept {
+	if (request->getCommand() != WH_DHT_CMD_NULL) {
+		return handleInvalidRequest(request);
 	}
 
-	if (!isPrivileged(message->getOrigin())
-			|| message->getStatus() != WH_DHT_AQLF_REQUEST) {
-		return handleInvalidRequest(message);
+	if (!isPrivileged(request->getOrigin())
+			|| request->getStatus() != WH_DHT_AQLF_REQUEST) {
+		return handleInvalidRequest(request);
 	}
 
-	switch (message->getQualifier()) {
+	switch (request->getQualifier()) {
 	case WH_DHT_QLF_DESCRIBE:
-		return handleDescribeNodeRequest(message);
+		return handleDescribeNodeRequest(request);
 	default:
-		return handleInvalidRequest(message);
+		return handleInvalidRequest(request);
 	}
 }
 
-bool OverlayHub::processBasicRequest(Message *message) noexcept {
-	if (message->getCommand() != WH_DHT_CMD_BASIC) {
-		return handleFindRootRequest(message);
+bool OverlayHub::serveBasicRequest(Message *request) noexcept {
+	if (request->getCommand() != WH_DHT_CMD_BASIC) {
+		return handleFindRootRequest(request);
 	}
 
-	switch (message->getQualifier()) {
+	switch (request->getQualifier()) {
 	case WH_DHT_QLF_FINDROOT:
-		return handleFindRootRequest(message);
+		return handleFindRootRequest(request);
 	case WH_DHT_QLF_BOOTSTRAP:
-		if (message->getStatus() == WH_DHT_AQLF_REQUEST) {
-			return handleBootstrapRequest(message);
+		if (request->getStatus() == WH_DHT_AQLF_REQUEST) {
+			return handleBootstrapRequest(request);
 		} else {
-			return handleInvalidRequest(message);
+			return handleInvalidRequest(request);
 		}
 	default:
-		return handleInvalidRequest(message);
+		return handleInvalidRequest(request);
 	}
 }
 
-bool OverlayHub::processMulticastRequest(Message *message) noexcept {
-	if (message->getCommand() != WH_DHT_CMD_MULTICAST) {
-		return handleInvalidRequest(message);
+bool OverlayHub::serveMulticastRequest(Message *request) noexcept {
+	if (request->getCommand() != WH_DHT_CMD_MULTICAST) {
+		return handleInvalidRequest(request);
 	}
 
-	if (isSupernode() || isInternalNode(message->getOrigin())
-			|| isEphemeralId(message->getOrigin())
-			|| message->getStatus() != WH_DHT_AQLF_REQUEST) {
-		return handleInvalidRequest(message);
+	if (isSuperNode() || isInternal(request->getOrigin())
+			|| isEphemeral(request->getOrigin())
+			|| request->getStatus() != WH_DHT_AQLF_REQUEST) {
+		return handleInvalidRequest(request);
 	}
 
-	switch (message->getQualifier()) {
+	switch (request->getQualifier()) {
 	case WH_DHT_QLF_PUBLISH:
-		return handlePublishRequest(message);
+		return handlePublishRequest(request);
 	case WH_DHT_QLF_SUBSCRIBE:
-		return handleSubscribeRequest(message);
+		return handleSubscribeRequest(request);
 	case WH_DHT_QLF_UNSUBSCRIBE:
-		return handleUnsubscribeRequest(message);
+		return handleUnsubscribeRequest(request);
 	default:
-		return handleInvalidRequest(message);
+		return handleInvalidRequest(request);
 	}
 }
 
-bool OverlayHub::processNodeRequest(Message *message) noexcept {
-	if (message->getCommand() != WH_DHT_CMD_NODE) {
-		return handleInvalidRequest(message);
+bool OverlayHub::serveNodeRequest(Message *request) noexcept {
+	if (request->getCommand() != WH_DHT_CMD_NODE) {
+		return handleInvalidRequest(request);
 	}
 
-	if (!(isController(message->getOrigin()) || isWorkerId(message->getOrigin()))
-			|| message->getStatus() != WH_DHT_AQLF_REQUEST) {
-		return handleInvalidRequest(message);
+	if (!(isController(request->getOrigin()) || isWorker(request->getOrigin()))
+			|| request->getStatus() != WH_DHT_AQLF_REQUEST) {
+		return handleInvalidRequest(request);
 	}
 
-	switch (message->getQualifier()) {
+	switch (request->getQualifier()) {
 	case WH_DHT_QLF_GETPREDECESSOR:
-		return handleGetPredecessorRequest(message);
+		return handleGetPredecessorRequest(request);
 	case WH_DHT_QLF_SETPREDECESSOR:
-		return handleSetPredecessorRequest(message);
+		return handleSetPredecessorRequest(request);
 	case WH_DHT_QLF_GETSUCCESSOR:
-		return handleGetSuccessorRequest(message);
+		return handleGetSuccessorRequest(request);
 	case WH_DHT_QLF_SETSUCCESSOR:
-		return handleSetSuccessorRequest(message);
+		return handleSetSuccessorRequest(request);
 	case WH_DHT_QLF_GETFINGER:
-		return handleGetFingerRequest(message);
+		return handleGetFingerRequest(request);
 	case WH_DHT_QLF_SETFINGER:
-		return handleSetFingerRequest(message);
+		return handleSetFingerRequest(request);
 	case WH_DHT_QLF_GETNEIGHBOURS:
-		return handleGetNeighboursRequest(message);
+		return handleGetNeighboursRequest(request);
 	case WH_DHT_QLF_NOTIFY:
-		return handleNotifyRequest(message);
+		return handleNotifyRequest(request);
 	default:
-		return handleInvalidRequest(message);
+		return handleInvalidRequest(request);
 	}
 }
 
-bool OverlayHub::processOverlayRequest(Message *message) noexcept {
-	if (message->getCommand() != WH_DHT_CMD_OVERLAY) {
-		return handleInvalidRequest(message);
+bool OverlayHub::serveOverlayRequest(Message *request) noexcept {
+	if (request->getCommand() != WH_DHT_CMD_OVERLAY) {
+		return handleInvalidRequest(request);
 	}
 
-	if (!isPrivileged(message->getOrigin())
-			|| message->getStatus() != WH_DHT_AQLF_REQUEST) {
-		return handleInvalidRequest(message);
+	if (!isPrivileged(request->getOrigin())
+			|| request->getStatus() != WH_DHT_AQLF_REQUEST) {
+		return handleInvalidRequest(request);
 	}
 
-	switch (message->getQualifier()) {
+	switch (request->getQualifier()) {
 	case WH_DHT_QLF_FINDSUCCESSOR:
-		return handleFindSuccesssorRequest(message);
+		return handleFindSuccesssorRequest(request);
 	case WH_DHT_QLF_PING:
-		return handlePingNodeRequest(message);
+		return handlePingNodeRequest(request);
 	case WH_DHT_QLF_MAP:
-		return handleMapRequest(message);
+		return handleMapRequest(request);
 	default:
-		return handleInvalidRequest(message);
+		return handleInvalidRequest(request);
 	}
 }
 
@@ -842,7 +840,7 @@ bool OverlayHub::handleRegistrationRequest(Message *msg) noexcept {
 	 * Treat all the other cases as a registration request
 	 */
 	//Do this before the message is modified
-	auto success = isValidRegistrationRequest(msg);
+	auto success = authenticate(msg);
 	//Set correct source identifier
 	msg->setSource(origin);
 	//-----------------------------------------------------------------
@@ -920,7 +918,7 @@ bool OverlayHub::handleTokenRequest(Message *msg) noexcept {
 	 * This call succeeds if the caller is a temporary connection and the
 	 * message is of proper size, otherwise a failure message is sent back.
 	 */
-	if (isEphemeralId(origin) && msg->getPayloadLength() <= Hash::SIZE) {
+	if (isEphemeral(origin) && msg->getPayloadLength() <= Hash::SIZE) {
 		Digest hc;	//Challenge Key
 		memset(&hc, 0, sizeof(hc));
 		generateNonce(hash, origin, getUid(), &hc);
@@ -929,7 +927,7 @@ bool OverlayHub::handleTokenRequest(Message *msg) noexcept {
 		msg->writeDestination(0);
 		msg->setDestination(origin);
 		msg->putStatus(WH_DHT_AQLF_ACCEPTED);
-	} else if (isEphemeralId(origin)
+	} else if (isEphemeral(origin)
 			&& msg->getPayloadLength() == PKI::ENCRYPTED_LENGTH && verifyHost()
 			&& getPKI()) {
 		//Extract the challenge key
@@ -972,7 +970,7 @@ bool OverlayHub::handleFindRootRequest(Message *msg) noexcept {
 	//-----------------------------------------------------------------
 	//We have received the result, perform a clean-up and deliver
 	if (msg->getStatus() == WH_DHT_AQLF_ACCEPTED) {
-		if (isInternalNode(origin)
+		if (isInternal(origin)
 				&& msg->getPayloadLength() == (4 * sizeof(uint64_t))) {
 			msg->putLength(Message::HEADER_SIZE + 2 * sizeof(uint64_t));
 			msg->setDestination(msg->getData64(2 * sizeof(uint64_t)));
@@ -995,7 +993,7 @@ bool OverlayHub::handleFindRootRequest(Message *msg) noexcept {
 		//Found the successor, save it into the message
 		msg->setData64(sizeof(uint64_t), localSuccessor);
 		msg->putStatus(WH_DHT_AQLF_ACCEPTED);
-		if (isExternalNode(origin) || isController(getUid())
+		if (isExternal(origin) || isController(getUid())
 				|| isController(origin)) {
 			//Request was initiated locally, send direct response
 			msg->putLength(Message::HEADER_SIZE + 2 * sizeof(uint64_t));
@@ -1006,10 +1004,10 @@ bool OverlayHub::handleFindRootRequest(Message *msg) noexcept {
 		} else {
 			//Request was initiated remotely, route towards the originator
 			msg->putDestination(source);
-			return createRoute(msg);
+			return plot(msg);
 		}
 	} else {
-		if (isExternalNode(origin) || isController(origin)) {
+		if (isExternal(origin) || isController(origin)) {
 			//Received a fresh request
 			if (msg->getPayloadLength() == sizeof(uint64_t)
 					&& msg->getStatus() == WH_DHT_AQLF_REQUEST) {
@@ -1043,7 +1041,7 @@ bool OverlayHub::handleBootstrapRequest(Message *msg) noexcept {
 	} else {
 		//Direct requests only
 		msg->writeSource(0);
-		msg->writeDestination(isExternalNode(origin) ? 0 : source);
+		msg->writeDestination(isExternal(origin) ? 0 : source);
 	}
 	//-----------------------------------------------------------------
 	msg->setDestination(origin);
@@ -1073,7 +1071,7 @@ bool OverlayHub::handlePublishRequest(Message *msg) noexcept {
 	auto topic = msg->getSession();
 	while ((sub = topics.get(topic, index))) {
 		if (sub->getUid() != msg->getOrigin()
-				&& checkMask(msg->getOrigin(), sub->getUid())
+				&& permit(msg->getOrigin(), sub->getUid())
 				&& !sub->testGroup(msg->getGroup()) && sub->publish(msg)
 				&& sub->isReady()) {
 			retain(sub);
@@ -1309,7 +1307,7 @@ bool OverlayHub::handleFindSuccesssorRequest(Message *msg) noexcept {
 	 */
 	auto origin = msg->getOrigin();
 	//-----------------------------------------------------------------
-	if (!(isController(origin) || isWorkerId(origin))) {
+	if (!(isController(origin) || isWorker(origin))) {
 		return handleInvalidRequest(msg);
 	}
 
@@ -1346,7 +1344,7 @@ bool OverlayHub::handlePingNodeRequest(Message *msg) noexcept {
 	 */
 	auto origin = msg->getOrigin();
 	//-----------------------------------------------------------------
-	if (isWorkerId(origin)) {
+	if (isWorker(origin)) {
 		//Allows the worker to ask for maintenance
 		Node::setStable(false);
 		buildDirectResponse(msg);
@@ -1374,7 +1372,7 @@ bool OverlayHub::handleMapRequest(Message *msg) noexcept {
 	 * Message insertion: at this point we are sure that this node is the
 	 * intended recipient.
 	 */
-	if (isExternalNode(origin)) {
+	if (isExternal(origin)) {
 		return handleInvalidRequest(msg);
 	} else if (isController(origin)) {
 		//Cache the source ID
@@ -1385,7 +1383,7 @@ bool OverlayHub::handleMapRequest(Message *msg) noexcept {
 			//Invalid message length
 			return handleInvalidRequest(msg);
 		}
-	} else if (isExternalNode(source) || origin != getPredecessor()
+	} else if (isExternal(source) || origin != getPredecessor()
 			|| msg->getPayloadLength() < sizeof(uint64_t)) {
 		//Routing around the ring: invalid message
 		return handleInvalidRequest(msg);
@@ -1397,7 +1395,7 @@ bool OverlayHub::handleMapRequest(Message *msg) noexcept {
 	auto result = mapFunction(msg);
 	auto successor = getSuccessor();
 	if (result == 0
-			&& (isHostId(source) || !isInRange(source, getUid(), successor))
+			&& (isHost(source) || !isInRange(source, getUid(), successor))
 			&& getUid() != successor) {
 		/*
 		 * Forward the Message around the identifier ring until it reaches the
@@ -1467,23 +1465,23 @@ unsigned long long OverlayHub::nonceToId(const Digest *nonce) const noexcept {
 	}
 }
 
-unsigned long long OverlayHub::getWorkerId() const noexcept {
+unsigned long long OverlayHub::getWorker() const noexcept {
 	return worker.id;
 }
 
-bool OverlayHub::isWorkerId(unsigned long long uid) const noexcept {
-	return (uid == worker.id) && !isHostId(uid);
+bool OverlayHub::isWorker(unsigned long long uid) const noexcept {
+	return (uid == worker.id) && !isHost(uid);
 }
 
 bool OverlayHub::isPrivileged(unsigned long long uid) const noexcept {
-	return isInternalNode(uid) || isWorkerId(uid);
+	return isInternal(uid) || isWorker(uid);
 }
 
-bool OverlayHub::isSupernode() const noexcept {
+bool OverlayHub::isSuperNode() const noexcept {
 	return (ctx.join && !isController(getUid()));
 }
 
-bool OverlayHub::isHostId(unsigned long long uid) const noexcept {
+bool OverlayHub::isHost(unsigned long long uid) const noexcept {
 	return uid == getUid();
 }
 
@@ -1491,15 +1489,15 @@ bool OverlayHub::isController(unsigned long long uid) noexcept {
 	return uid == CONTROLLER;
 }
 
-bool OverlayHub::isInternalNode(unsigned long long uid) noexcept {
+bool OverlayHub::isInternal(unsigned long long uid) noexcept {
 	return uid <= MAX_ID;
 }
 
-bool OverlayHub::isExternalNode(unsigned long long uid) noexcept {
+bool OverlayHub::isExternal(unsigned long long uid) noexcept {
 	return uid > MAX_ID;
 }
 
-bool OverlayHub::isEphemeralId(unsigned long long uid) noexcept {
+bool OverlayHub::isEphemeral(unsigned long long uid) noexcept {
 	return uid > Socket::MAX_ACTIVE_ID;
 }
 
@@ -1571,30 +1569,29 @@ Watcher* OverlayHub::createProxyConnection(unsigned long long id, Digest *hc) {
 	}
 }
 
-unsigned int OverlayHub::purgeConnections(int mode,
-		unsigned int target) noexcept {
+unsigned int OverlayHub::reap(int mode, unsigned int target) noexcept {
 	PurgeControl pc { target, 0, this };
 	switch (mode) {
 	case PURGE_TEMPORARY:
-		return reap(target);
+		return Hub::reap(target);
 	case PURGE_INVALID:
-		iterate(removeIfInvalid, &pc);
+		iterate(reapInvalid, &pc);
 		return pc.count;
 	default:
-		iterate(removeIfClient, &pc);
+		iterate(reapClient, &pc);
 		return pc.count;
 	}
 }
 
-int OverlayHub::removeIfInvalid(Watcher *w, void *arg) noexcept {
+int OverlayHub::reapInvalid(Watcher *w, void *arg) noexcept {
 	auto uid = w->getUid();
 	auto pc = static_cast<PurgeControl*>(arg);
 	auto hub = pc->hub;
 	if (pc->target && pc->count >= pc->target) {
 		return -1;
-	} else if (hub->isInternalNode(uid) || hub->isWorkerId(uid)) {
+	} else if (hub->isInternal(uid) || hub->isWorker(uid)) {
 		return 0;
-	} else if (isEphemeralId(uid) || hub->isLocal(mapKey(uid))) {
+	} else if (isEphemeral(uid) || hub->isLocal(mapKey(uid))) {
 		return 0;
 	} else {
 		hub->disable(w);
@@ -1603,15 +1600,15 @@ int OverlayHub::removeIfInvalid(Watcher *w, void *arg) noexcept {
 	}
 }
 
-int OverlayHub::removeIfClient(Watcher *w, void *arg) noexcept {
+int OverlayHub::reapClient(Watcher *w, void *arg) noexcept {
 	auto uid = w->getUid();
 	auto pc = static_cast<PurgeControl*>(arg);
 	auto hub = pc->hub;
 	if (pc->target && pc->count >= pc->target) {
 		return -1;
-	} else if (hub->isInternalNode(uid) || hub->isWorkerId(uid)) {
+	} else if (hub->isInternal(uid) || hub->isWorker(uid)) {
 		return 0;
-	} else if (isEphemeralId(uid) && w->testFlags(WATCHER_ACTIVE)) {
+	} else if (isEphemeral(uid) && w->testFlags(WATCHER_ACTIVE)) {
 		return 0;
 	} else {
 		hub->disable(w);

@@ -1,7 +1,7 @@
 /*
  * Topics.h
  *
- * Topics management
+ * Topics repository
  *
  *
  * Copyright (C) 2020 Wanhive Systems Private Limited (info@wanhive.com)
@@ -20,12 +20,12 @@
 
 namespace wanhive {
 /**
- * Topics manager
+ * Topics repository
  */
 class Topics {
 public:
 	/**
-	 * Default constructor: initializes an empty object.
+	 * Constructor: creates an empty repository.
 	 */
 	Topics() noexcept;
 	/**
@@ -33,41 +33,40 @@ public:
 	 */
 	~Topics();
 	/**
-	 * Associates a watcher to the given topic.
+	 * Associates a watcher to a topic.
 	 * @param topic topic's identifier
 	 * @param w watcher's pointer
-	 * @return true on success, false on error (invalid topic or watcher)
+	 * @return true on success, false on error
 	 */
 	bool put(unsigned int topic, const Watcher *w) noexcept;
 	/**
-	 * Iterates over the list of watchers associated with the given topic.
+	 * Goes through the list of watchers associated with a topic.
 	 * @param topic topic's identifier
 	 * @param index list's index
-	 * @return pointer to the watcher at the given index, nullptr on error
-	 * (invalid topic/index).
+	 * @return watcher at the current index, nullptr on error
 	 */
 	Watcher* get(unsigned int topic, unsigned int index) const noexcept;
 	/**
-	 * Dissociates a watcher from the given topic.
+	 * Dissociates a watcher from a topic.
 	 * @param topic topic's identifier
 	 * @param w watcher's pointer
 	 */
 	void remove(unsigned int topic, const Watcher *w) noexcept;
 	/**
-	 * Checks whether a watcher is associated with a topic.
+	 * Checks a watcher's association with a topic.
 	 * @param topic topic's identifier
 	 * @param w watcher's pointer
-	 * @return true if an association exists, false otherwise
+	 * @return true if associated, false otherwise
 	 */
 	bool contains(unsigned int topic, const Watcher *w) const noexcept;
 	/**
-	 * Returns the number of watchers associated with the given topic.
+	 * Returns the number of watchers associated with a topic.
 	 * @param topic topic's identifier
-	 * @return subscriptions count for the given topic
+	 * @return association count
 	 */
 	unsigned int count(unsigned int topic) const noexcept;
 	/**
-	 * Clears all associations (doesn't deallocate memory).
+	 * Clears all associations.
 	 */
 	void clear() noexcept;
 private:

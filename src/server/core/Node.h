@@ -33,10 +33,10 @@ public:
 	~Node();
 	//-----------------------------------------------------------------
 	/**
-	 * Returns node's numeric identity.
-	 * @return node's identity
+	 * Returns this node's identity.
+	 * @return numeric identity
 	 */
-	unsigned int getKey() const noexcept;
+	unsigned int self() const noexcept;
 	/**
 	 * Returns an entry from the finger table.
 	 * @param index finger table's index
@@ -192,20 +192,20 @@ public:
 	void print() noexcept;
 	//-----------------------------------------------------------------
 	/**
-	 * Checks whether a key belongs to an open circular interval.
+	 * Checks whether key belongs to an open circular interval.
 	 * @param key key's value
 	 * @param from lower bound
-	 * @param to uper bound
-	 * @return true if the key is in the interval, false otherwise.
+	 * @param to upper bound
+	 * @return true if key is in the interval, false otherwise
 	 */
 	static bool isBetween(unsigned int key, unsigned int from,
 			unsigned int to) noexcept;
 	/**
-	 * Checks whether a belongs to a closed circular interval.
+	 * Checks whether key belongs to a closed circular interval.
 	 * @param key key's value
 	 * @param from lower bound
-	 * @param to uper bound
-	 * @return true if the key is in the interval, false otherwise.
+	 * @param to upper bound
+	 * @return true if key is in the interval, false otherwise
 	 */
 	static bool isInRange(unsigned int key, unsigned int from,
 			unsigned int to) noexcept;

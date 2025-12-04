@@ -31,7 +31,7 @@ struct RouteInfo {
 class OverlayHubInfo: public HubInfo {
 public:
 	/**
-	 * Default constructor: clears out the data.
+	 * Constructor: clears all data.
 	 */
 	OverlayHubInfo() noexcept;
 	/**
@@ -39,7 +39,7 @@ public:
 	 */
 	~OverlayHubInfo();
 	/**
-	 * Clears out the data.
+	 * Clears the data.
 	 */
 	void clear() noexcept;
 	//-----------------------------------------------------------------

@@ -31,7 +31,7 @@ Node::~Node() {
 
 }
 
-unsigned int Node::getKey() const noexcept {
+unsigned int Node::self() const noexcept {
 	return _key;
 }
 
@@ -123,7 +123,7 @@ void Node::setStable(bool stable) noexcept {
 
 bool Node::isLocal(unsigned int key) const noexcept {
 	//(key) E (predecessor, serverId]
-	return (isBetween(key, getPredecessor(), getKey()) || (key == getKey()));
+	return (isBetween(key, getPredecessor(), self()) || (key == self()));
 }
 
 unsigned int Node::nextHop(unsigned int key) const noexcept {
@@ -136,7 +136,7 @@ unsigned int Node::nextHop(unsigned int key) const noexcept {
 
 unsigned int Node::localSuccessor(unsigned int key) const noexcept {
 	auto successor = getSuccessor();
-	if (isBetween(key, getKey(), successor) || (key == successor)) {
+	if (isBetween(key, self(), successor) || (key == successor)) {
 		return successor;
 	} else {
 		return 0;
@@ -147,12 +147,12 @@ unsigned int Node::closestPredecessor(unsigned int key,
 		bool checkConnected) const noexcept {
 	for (int i = (TABLESIZE - 1); i >= 0; --i) {
 		auto f = table[i].getId();
-		if (isBetween(f, getKey(), key)
+		if (isBetween(f, self(), key)
 				&& (!checkConnected || table[i].isConnected())) {
 			return f;
 		}
 	}
-	return getKey();
+	return self();
 }
 
 bool Node::join(unsigned int key) noexcept {
@@ -160,7 +160,7 @@ bool Node::join(unsigned int key) noexcept {
 }
 
 bool Node::stabilize(unsigned int key) noexcept {
-	if (key != 0 && isBetween(key, getKey(), getSuccessor())) {
+	if (key != 0 && isBetween(key, self(), getSuccessor())) {
 		return setSuccessor(key);
 	} else {
 		return true;
@@ -169,7 +169,7 @@ bool Node::stabilize(unsigned int key) noexcept {
 
 bool Node::notify(unsigned int key) noexcept {
 	auto predecessor = getPredecessor();
-	if (predecessor == 0 || isBetween(key, predecessor, getKey())) {
+	if (predecessor == 0 || isBetween(key, predecessor, self())) {
 		return setPredecessor(key);
 	} else {
 		return false;
@@ -195,7 +195,7 @@ bool Node::update(unsigned int key, bool joined) noexcept {
 }
 
 bool Node::isInRoute(unsigned int key) const noexcept {
-	if (key == getKey() || key == CONTROLLER) {
+	if (key == self() || key == CONTROLLER) {
 		return true;
 	}
 
@@ -209,7 +209,7 @@ bool Node::isInRoute(unsigned int key) const noexcept {
 }
 
 void Node::print() noexcept {
-	fprintf(stderr, "KEY: %u\n", getKey());
+	fprintf(stderr, "KEY: %u\n", self());
 	fprintf(stderr, "PREDECESSOR: %u, SUCCESSOR: %u\n\n", getPredecessor(),
 			getSuccessor());
 	fprintf(stderr, "ROUTING TABLE [STABLE: %s]\n\n", WH_BOOLF(isStable()));
@@ -242,10 +242,10 @@ unsigned int Node::predecessor(unsigned int key, unsigned int index) noexcept {
 
 void Node::initialize() noexcept {
 	//For correct routing on a stand-alone server (don't touch)
-	setPredecessor(getKey());
+	setPredecessor(self());
 	for (unsigned int i = 0; i < TABLESIZE; ++i) {
-		table[i].setStart(successor(getKey(), i));
-		table[i].setId(getKey());
+		table[i].setStart(successor(self(), i));
+		table[i].setId(self());
 		table[i].commit();
 		table[i].setConnected(false);
 	}

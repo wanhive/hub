@@ -1,7 +1,7 @@
 /*
  * Topics.cpp
  *
- * Topics management
+ * Topics repository
  *
  *
  * Copyright (C) 2020 Wanhive Systems Private Limited (info@wanhive.com)

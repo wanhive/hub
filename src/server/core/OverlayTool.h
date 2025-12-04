@@ -23,17 +23,17 @@ namespace wanhive {
 class OverlayTool: private OverlayProtocol, private Identity {
 public:
 	/**
-	 * Constructor: initializes the object.
+	 * Constructor: carries out basic initialization.
 	 * @param path configuration file's path (can be nullptr)
 	 * @param timeout socket I/O timeout in milliseconds
 	 */
-	OverlayTool(const char *path, unsigned int timeout = 5000) noexcept;
+	OverlayTool(const char *path, unsigned int timeout) noexcept;
 	/**
 	 * Destructor
 	 */
 	~OverlayTool();
 	/**
-	 * Runs the test routines.
+	 * Interactively runs the network tests.
 	 */
 	void run() noexcept;
 private:

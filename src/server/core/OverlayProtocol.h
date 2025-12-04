@@ -23,7 +23,7 @@ namespace wanhive {
 class OverlayProtocol: public Protocol {
 public:
 	/**
-	 * Default constructor
+	 * Constructor
 	 */
 	OverlayProtocol() noexcept;
 	/**

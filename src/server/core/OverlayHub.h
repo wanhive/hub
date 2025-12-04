@@ -50,62 +50,53 @@ private:
 	void cease() noexcept override;
 	//-----------------------------------------------------------------
 	void installService();
-	void installSettingsMonitor();
-	void updateSettings(unsigned int index) noexcept;
-	bool fixController() noexcept;
-	bool fixRoutingTable() noexcept;
-	bool connectToRoute(unsigned long long id, Digest *hc) noexcept;
+	void installTracker();
+	void refresh(unsigned int context) noexcept;
 	//-----------------------------------------------------------------
-	//Called on successful registration
-	void onRegistration(Watcher *w) noexcept;
+	//Routing table maintenance
+	bool converge() noexcept;
+	//Connect to a route
+	bool bridge(unsigned long long id, Digest *hc) noexcept;
+	//-----------------------------------------------------------------
+	//Called after registration
+	void onboard(Watcher *w) noexcept;
 	//Called before removal
-	void onRecycle(Watcher *w) noexcept;
-	//Temporarily memorize the identifier
-	void addToCache(unsigned long long id) noexcept;
+	void offboard(Watcher *w) noexcept;
+	//Temporarily memorize an identifier
+	void memorize(unsigned long long id) noexcept;
 	//-----------------------------------------------------------------
-	//Check the stabilization response header
-	bool isValidStabilizationResponse(const Message *msg) const noexcept;
-	//Check the registration request
-	bool isValidRegistrationRequest(const Message *msg) noexcept;
-	/*
-	 * Processes a registration request.
-	 * Returns 0 on success if an ACK must be sent,
-	 * Returns 1 on success if no ACK must be sent,
-	 * Returns -1 on error
-	 */
-	int processRegistrationRequest(Message *message) noexcept;
-	//Check the registration request parameters
-	bool allowRegistration(unsigned long long source,
-			unsigned long long requestedId) const noexcept;
-	/*
-	 * Determines how a registration response should proceed. Return values:
-	 * 0: Just activate the connection
-	 * 1: Try to register with the new ID (fail on conflict)
-	 * 2: Try to register with the new ID (replace on conflict)
-	 * [Any other value]: deactivate the connection
-	 */
-	int getModeOfRegistration(unsigned long long current,
-			unsigned long long requested) noexcept;
+	//Approve a registration request
+	int enroll(const Message *request) noexcept;
+	//Approve a registration request
+	int enroll(unsigned long long source, unsigned long long request) noexcept;
+	//Authenticate a registration request
+	bool authenticate(const Message *request) noexcept;
+	//Validate a registration request
+	bool validate(unsigned long long source,
+			unsigned long long request) const noexcept;
 	//-----------------------------------------------------------------
-	bool interceptMessage(Message *message) noexcept;
-	void applyFlowControl(Message *message) noexcept;
-	//Generates a route for the given message
-	bool createRoute(Message *message) noexcept;
-	unsigned long long getNextHop(unsigned long long destination) const noexcept;
-	bool allowCommunication(unsigned long long source,
-			unsigned long long destination) const noexcept;
-	//Checks the netmask
-	bool checkMask(unsigned long long source,
-			unsigned long long destination) const noexcept;
+	//Intercept registration and session key requests
+	bool intercept(Message *message) noexcept;
+	//Annotate a message before forwarding
+	void annotate(Message *message) noexcept;
+	//Plot a course for a message
+	bool plot(Message *message) noexcept;
+	//Corroborate a stabilization response
+	bool corroborate(const Message *response) const noexcept;
+	//Find the next hop towards a destination
+	unsigned long long gateway(unsigned long long to) const noexcept;
+	//Approve a communication
+	bool approve(unsigned long long from, unsigned long long to) const noexcept;
+	//Permit a communication
+	bool permit(unsigned long long from, unsigned long long to) const noexcept;
 	//-----------------------------------------------------------------
-	//Processes a direct request
-	bool process(Message *message) noexcept;
-
-	bool processNullRequest(Message *message) noexcept;
-	bool processBasicRequest(Message *message) noexcept;
-	bool processMulticastRequest(Message *message) noexcept;
-	bool processNodeRequest(Message *message) noexcept;
-	bool processOverlayRequest(Message *message) noexcept;
+	//Process a direct request
+	bool serve(Message *request) noexcept;
+	bool serveNullRequest(Message *request) noexcept;
+	bool serveBasicRequest(Message *request) noexcept;
+	bool serveMulticastRequest(Message *request) noexcept;
+	bool serveNodeRequest(Message *request) noexcept;
+	bool serveOverlayRequest(Message *request) noexcept;
 
 	bool handleInvalidRequest(Message *msg) noexcept;
 	bool handleDescribeNodeRequest(Message *msg) noexcept;
@@ -135,8 +126,8 @@ private:
 	//0: continue; 1: success/discontinue; -1: error/discontinue
 	int mapFunction(Message *msg) noexcept;
 	/*
-	 * Builds a direct response header. Message's source is set to this hub's
-	 * identifier. If <length> isn't zero then the message length is updated.
+	 * Build a direct response header. Set to this hub's identifier as message's
+	 * source. If <length> isn't zero then update message's length.
 	 */
 	void buildDirectResponse(Message *msg, unsigned int length = 0) noexcept;
 	//-----------------------------------------------------------------
@@ -145,23 +136,23 @@ private:
 	//Returns the identifier associated with the given hash code
 	unsigned long long nonceToId(const Digest *hc) const noexcept;
 	//Worker task's connection ID (hub's ID if no worker)
-	unsigned long long getWorkerId() const noexcept;
+	unsigned long long getWorker() const noexcept;
 	//Check whether the ID belongs to the worker task's connection
-	bool isWorkerId(unsigned long long uid) const noexcept;
+	bool isWorker(unsigned long long uid) const noexcept;
 	//Can the connection <uid> send privileged requests
 	bool isPrivileged(unsigned long long uid) const noexcept;
 	//Returns true if this hub is part of overlay network (excl. Controller)
-	bool isSupernode() const noexcept;
+	bool isSuperNode() const noexcept;
 	//Returns true if <uid> equals this hub's key
-	bool isHostId(unsigned long long uid) const noexcept;
+	bool isHost(unsigned long long uid) const noexcept;
 	//Returns true if <uid> belongs to controller
 	static bool isController(unsigned long long uid) noexcept;
 	//Returns true if <uid> belongs to the overlay nodes (incl. controller)
-	static bool isInternalNode(unsigned long long uid) noexcept;
+	static bool isInternal(unsigned long long uid) noexcept;
 	//Returns true if <uid> doesn't belong to the overlay nodes
-	static bool isExternalNode(unsigned long long uid) noexcept;
+	static bool isExternal(unsigned long long uid) noexcept;
 	//Returns true if <uid> is an ephemeral (temporary) value
-	static bool isEphemeralId(unsigned long long uid) noexcept;
+	static bool isEphemeral(unsigned long long uid) noexcept;
 	//-----------------------------------------------------------------
 	/*
 	 * Create and register a local unix socket, return the other end in <sfd>.
@@ -182,11 +173,11 @@ private:
 	 * <mode>: 0[TEMPORARY]; 1[INVALID]; DEFAULT[TEMPORARY|CLIENT]
 	 * <target>: If not zero then at most these many connections will be purged.
 	 */
-	unsigned int purgeConnections(int mode, unsigned int target = 0) noexcept;
+	unsigned int reap(int mode, unsigned int target = 0) noexcept;
 	//Remove active connections which no longer belong here
-	static int removeIfInvalid(Watcher *w, void *arg) noexcept;
+	static int reapInvalid(Watcher *w, void *arg) noexcept;
 	//Remove client connections
-	static int removeIfClient(Watcher *w, void *arg) noexcept;
+	static int reapClient(Watcher *w, void *arg) noexcept;
 	//-----------------------------------------------------------------
 	//Resets the internal state
 	void clear() noexcept;
