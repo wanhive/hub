@@ -172,9 +172,9 @@ private:
 	ssize_t sslWrite(const void *buf, size_t count);
 	//=================================================================
 	//Create IOVECs from outgoing messages and return the count
-	unsigned int fillOutgoingQueue() noexcept;
+	unsigned int fillEgress() noexcept;
 	//Adjust the IOVECs for the next write cycle
-	void adjustOutgoingQueue(size_t bytes) noexcept;
+	void fixEgress(size_t bytes) noexcept;
 
 	//Clear internal state
 	void clear() noexcept;
@@ -195,27 +195,29 @@ private:
 	Topic subscriptions;
 	//-----------------------------------------------------------------
 	struct {
-		SSL *ssl; //SSL/TLS connection
+		SSL *ssl; //Secure connection
 		bool callRead; //Call read instead of write
 		bool callWrite; //Call write instead of read
-		bool verified; //Host certificate has been verified
+		bool verified; //Host certificate verified
 	} secure;
 	//-----------------------------------------------------------------
-	//Total number of messages received by this object
-	unsigned long long totalIncomingMessages;
-	//Total number of messages sent by this object
-	unsigned long long totalOutgoingMessages;
-	//Maximum number of outgoing messages this object is allowed to hold
-	unsigned int outQueueLimit;
+	//Traffic statistics
+	struct {
+		//Received messages count
+		unsigned long long in;
+		//Sent messages count
+		unsigned long long out;
+	} traffic;
+	//Limit on the queued up outgoing messages count
+	unsigned int backlog;
 	//Serialized I/P
-	Message *incomingMessage;
-	//This buffer stores the incoming raw bytes
+	Message *received;
+	//Collection of incoming raw bytes
 	StaticCircularBuffer<unsigned char, READ_BUFFER_SIZE> in;
-
-	//This buffer collects all the outgoing messages
+	//Collection of outgoing messages
 	StaticCircularBuffer<Message*, OUT_QUEUE_SIZE> out;
 	//Container for scatter-gather O/P
-	StaticBuffer<iovec, OUT_QUEUE_SIZE> outgoingMessages;
+	StaticBuffer<iovec, OUT_QUEUE_SIZE> egress;
 	//-----------------------------------------------------------------
 	static SSLContext *sslCtx; //SSL/TLS context
 };

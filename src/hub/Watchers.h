@@ -55,20 +55,20 @@ public:
 	 */
 	bool insert(Watcher *w) noexcept;
 	/**
-	 * Inserts a (key, watcher) pair. If the given key already exists then the
-	 * associated watcher is replaced and returned.
+	 * Inserts a (key, watcher) pair. In case of conflict the old watcher is
+	 * replaced and returned.
 	 * @param key key's value
-	 * @param w watcher to associate with the given key, its UID is updated to
-	 * match the key.
+	 * @param w watcher to associate with the key, the key is set as watcher's
+	 * unique identifier (UID).
 	 * @return replaced watcher (nullptr on a new insertion)
 	 */
 	Watcher* replace(unsigned long long key, Watcher *w) noexcept;
 	/**
 	 * Inserts a watcher after resolving any conflict. if another watcher is
-	 * associated with the key equal in value to the given watcher's UID then
-	 * the existing watcher will be replaced and returned.
-	 * @param w watcher to insert into the hash table, its UID will be used as
-	 * the key.
+	 * associated with the given watcher's identifier then the conflicting
+	 * watcher will be replaced and returned.
+	 * @param w watcher to insert into the hash table, its identifier will be
+	 * used as the key.
 	 * @return replaced watcher (nullptr on a new insertion)
 	 */
 	Watcher* replace(Watcher *w) noexcept;
@@ -78,16 +78,16 @@ public:
 	 */
 	void remove(unsigned long long key) noexcept;
 	/**
-	 * Swaps watchers associated with the given pair of keys. If only one of the
-	 * two keys exists then the existing key is removed from the hash table, its
-	 * associated watcher is reassigned to the missing key, and the watcher's
-	 * UID is updated to match it's new key. If both the keys exist and swapping
-	 * is allowed then watchers associated with the two keys will be swapped and
-	 * their UIDs will be updated to match their respective keys.
-	 * @param first the first key
-	 * @param second the second key
-	 * @param w stores watchers associated with the given keys (in order) after
-	 * a successful operation.
+	 * Swaps the watchers associated with a pair of keys. If only one of the two
+	 * keys exists then the existing key is removed from the hash table and
+	 * its watcher is reassigned to the missing key and the new key is set as
+	 * the moved watcher's identifier. If both the keys exist and swapping
+	 * is enabled then the watchers associated with the two keys will be
+	 * swapped and their respective identifiers will be set to the new keys.
+	 * @param first first key
+	 * @param second second key
+	 * @param w stores the watchers associated with the given keys (in order)
+	 * after successful operation.
 	 * @param swap true to enable swapping, false otherwise
 	 * @return true on success, false on failure (could not swap or neither of
 	 * the two keys exists).
@@ -95,23 +95,22 @@ public:
 	bool move(unsigned long long first, unsigned long long second,
 			Watcher *(&w)[2], bool swap) noexcept;
 	/**
-	 * Iterates over the hash table, callback function's return value determines
-	 * the iteration's behavior:
-	 * [0]: continue iteration,
-	 * [1]: remove the current entry and continue iteration,
-	 * [Any other value]: stop iteration.
-	 * @param fn the callback function, receives the next watcher as it's first
+	 * Iterates through the hash table. The callback function's return value
+	 * determines the behavior:
+	 * [0]: continue,
+	 * [1]: remove the current entry and continue,
+	 * [Any other value]: stop.
+	 * @param fn callback function, receives the next watcher as it's first
 	 * argument, and a generic pointer as it's second argument.
 	 * @param arg callback function's second argument
 	 */
 	void iterate(int (*fn)(Watcher*, void*), void *arg);
 private:
-	//Iteration's entry point
 	static int _iterator(unsigned int index, void *arg);
 private:
-	Kmap<unsigned long long, Watcher*> watchers; //Hash table
-	int (*itfn)(Watcher*, void*) {nullptr}; //Actual iterator
-	void *itfnarg { nullptr }; //Iterator's argument
+	Kmap<unsigned long long, Watcher*> watchers;
+	int (*itfn)(Watcher*, void*) {nullptr};
+	void *itfnarg { nullptr };
 };
 
 } /* namespace wanhive */

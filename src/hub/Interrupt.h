@@ -22,7 +22,7 @@ namespace wanhive {
 class Interrupt final: public Watcher {
 public:
 	/**
-	 * Constructor: creates a watcher for accepting signals.
+	 * Constructor: creates a signal watcher.
 	 * @param blocking true for blocking IO, false for non-blocking IO (default)
 	 */
 	Interrupt(bool blocking = false);
@@ -38,9 +38,9 @@ public:
 	//-----------------------------------------------------------------
 	/**
 	 * Reads a pending signal.
-	 * @param signum pending signal's number
+	 * @param signum signal's number
 	 * @return number of bytes read on success, 0 if non-blocking mode is on and
-	 * the call would block, -1 if the underlying file descriptor was closed.
+	 * the call would block, -1 if the file descriptor was closed.
 	 */
 	ssize_t read(int &signum);
 private:

@@ -44,7 +44,7 @@ bool Logic::publish(void *arg) noexcept {
 	return false;
 }
 
-ssize_t Logic::update(LogicEvent &event) {
+ssize_t Logic::report(LogicEvent &event) {
 	return -1;
 }
 

@@ -487,7 +487,7 @@ bool Hub::handle(Logic *logic) noexcept {
 			return false;
 		} else if (logic->testEvents(IO_CLOSE)) {
 			return disable(logic);
-		} else if (logic->testEvents(IO_READ) && logic->update(event) == -1) {
+		} else if (logic->testEvents(IO_READ) && logic->report(event) == -1) {
 			return disable(logic);
 		}
 		//-----------------------------------------------------------------
@@ -823,7 +823,7 @@ bool Hub::acceptConnection(Socket *listener) noexcept {
 		//Activate the Connection
 		if (guests.put(newConn->getUid())) {
 			attach(newConn, IO_WR, 0);
-			newConn->setOption(WATCHER_WRITE_BUFFER_MAX, ctx.outward);
+			newConn->setOption(WATCHER_OUTBOUND_MAX, ctx.outward);
 		} else {
 			throw Exception(EX_OVERFLOW);
 		}

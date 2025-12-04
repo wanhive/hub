@@ -36,8 +36,8 @@ enum WatcherFlag : uint32_t {
  * Watcher configuration options
  */
 enum WatcherOption {
-	WATCHER_READ_BUFFER_MAX, /**< Read buffer's maximum size */
-	WATCHER_WRITE_BUFFER_MAX /**< Write buffer's maximum size */
+	WATCHER_INBOUND_MAX, /**< Read buffer's maximum size */
+	WATCHER_OUTBOUND_MAX /**< Write buffer's maximum size */
 };
 //-----------------------------------------------------------------
 //Reactor-specific file handle

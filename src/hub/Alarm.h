@@ -42,20 +42,19 @@ public:
 	/**
 	 * Reads the timer expiration count.
 	 * @param count object for storing the expiration count
-	 * @return the number of bytes read (8 bytes) on success, 0 if non-blocking
-	 * mode is on and the call would block, -1 if the underlying file descriptor
-	 * was closed.
+	 * @return number of bytes read (8 bytes) on success, 0 if non-blocking mode
+	 * is on and the call would block, -1 if the file descriptor was closed.
 	 */
 	ssize_t read(unsigned long long &count);
 	/**
-	 * Updates the settings and restarts the timer.
+	 * Resets timer's settings and restarts it.
 	 * @param expiration initial expiration in miliseconds (set 0 to disarm)
 	 * @param interval interval for periodic timer in milliseconds
 	 */
 	void reset(unsigned int expiration, unsigned int interval);
 	/**
 	 * Returns the initial expiration in milliseconds.
-	 * @return initial expiration in miliseconds
+	 * @return initial expiration in milliseconds
 	 */
 	unsigned int getExpiration() const noexcept;
 	/**
@@ -65,15 +64,12 @@ public:
 	 */
 	unsigned int getInterval() const noexcept;
 private:
-	//Creates a new Timer file descriptor
 	void create(bool blocking);
-	//Updates the settings
 	void update(unsigned int expiration, unsigned int interval);
-	//Fetches the settings
 	void settings(unsigned int &expiration, unsigned int &interval);
 private:
-	unsigned int expiration;	//Initial expiration in milliseconds
-	unsigned int interval;	//Interval for periodic timer in milliseconds
+	unsigned int expiration;
+	unsigned int interval;
 };
 
 } /* namespace wanhive */

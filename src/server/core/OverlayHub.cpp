@@ -402,10 +402,10 @@ void OverlayHub::onRegistration(Watcher *w) noexcept {
 		return;
 	} else if (isController(id) || isWorkerId(id)) {
 		w->setFlags(SOCKET_PRIORITY);
-		w->setOption(WATCHER_WRITE_BUFFER_MAX, 0); //default
+		w->setOption(WATCHER_OUTBOUND_MAX, 0); //default
 	} else if (isInternalNode(id)) {
 		w->setFlags(SOCKET_OVERLAY);
-		w->setOption(WATCHER_WRITE_BUFFER_MAX, 0); //default
+		w->setOption(WATCHER_OUTBOUND_MAX, 0); //default
 		Node::update(id, true);
 	} else {
 		return;

@@ -23,8 +23,7 @@ class Event final: public Watcher {
 public:
 	/**
 	 * Constructor: creates a new events counter.
-	 * @param semaphore true for semaphore-like behavior, false otherwise (see
-	 * EventNotifier::read()).
+	 * @param semaphore true for semaphore-like semantics, false otherwise
 	 * @param blocking true for blocking IO, false for non-blocking IO (default)
 	 */
 	Event(bool semaphore, bool blocking = false);
@@ -39,19 +38,18 @@ public:
 	bool publish(void *arg) noexcept override;
 	//-----------------------------------------------------------------
 	/**
-	 * Reads the events count. If semaphore-like behavior was enabled then each
-	 * call decrements the counter by 1 (reads one single event), otherwise the
+	 * Reads the events count. If semaphore semantics is active then each call
+	 * decrements the counter by 1 (reads one single event), otherwise the
 	 * counter is reset (reads all events).
-	 * @param count object for storing the events count
-	 * @return the number of bytes read (8 bytes) on success, 0 if non-blocking
-	 * mode is on and the call would block, -1 if the underlying file descriptor
-	 * was closed.
+	 * @param count stores the events count
+	 * @return number of bytes read (8 bytes) on success, 0 if non-blocking mode
+	 * is on and the call would block, -1 if the file descriptor was closed.
 	 */
 	ssize_t read(unsigned long long &count);
 	/**
-	 * Adds the given value to the events counter.
-	 * @param count the value to add to the events counter
-	 * @return the number of bytes written (8 bytes) on success, 0 if non-blocking
+	 * Adds an 8-byte integer value to the counter.
+	 * @param count value to add
+	 * @return number of bytes written (8 bytes) on success, 0 if non-blocking
 	 * mode is on and the call would block.
 	 */
 	ssize_t write(unsigned long long count);

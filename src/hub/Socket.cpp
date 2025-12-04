@@ -133,7 +133,7 @@ bool Socket::callback(void *arg) noexcept {
 
 bool Socket::publish(void *arg) noexcept {
 	auto message = static_cast<Message*>(arg);
-	if (message && (!outQueueLimit || out.readSpace() < outQueueLimit)
+	if (message && (!backlog || out.readSpace() < backlog)
 			&& out.put(message)) {
 		message->addReferenceCount();
 		setTrace(message->getTrace());
@@ -163,10 +163,10 @@ bool Socket::testTopic(unsigned int index) const noexcept {
 
 unsigned long long Socket::getOption(int name) const noexcept {
 	switch (name) {
-	case WATCHER_READ_BUFFER_MAX:
+	case WATCHER_INBOUND_MAX:
 		return READ_BUFFER_SIZE;
-	case WATCHER_WRITE_BUFFER_MAX:
-		return outQueueLimit;
+	case WATCHER_OUTBOUND_MAX:
+		return backlog;
 	default:
 		return 0;
 	}
@@ -174,8 +174,8 @@ unsigned long long Socket::getOption(int name) const noexcept {
 
 void Socket::setOption(int name, unsigned long long value) noexcept {
 	switch (name) {
-	case WATCHER_WRITE_BUFFER_MAX:
-		outQueueLimit = Twiddler::min(value, (OUT_QUEUE_SIZE - 1));
+	case WATCHER_OUTBOUND_MAX:
+		backlog = Twiddler::min(value, (OUT_QUEUE_SIZE - 1));
 		break;
 	default:
 		break;
@@ -219,32 +219,32 @@ ssize_t Socket::write() {
 }
 
 Message* Socket::getMessage() {
-	if (incomingMessage == nullptr) {
+	if (received == nullptr) {
 		if (in.isEmpty()) { //:-)
 			return nullptr;
 		}
-		incomingMessage = Message::create(getUid());
-		if (incomingMessage == nullptr) {
+		received = Message::create(getUid());
+		if (received == nullptr) {
 			return nullptr;
 		}
-		incomingMessage->setType(getType());
-		incomingMessage->putTrace(getTrace());
-		incomingMessage->setGroup(getGroup());
-		incomingMessage->setMarked();
+		received->setType(getType());
+		received->putTrace(getTrace());
+		received->setGroup(getGroup());
+		received->setMarked();
 	}
 
 	try {
-		if (incomingMessage->build(*this)) {
-			totalIncomingMessages += 1;
-			auto msg = incomingMessage;
-			incomingMessage = nullptr;
+		if (received->build(*this)) {
+			traffic.in += 1;
+			auto msg = received;
+			received = nullptr;
 			return msg;
 		} else {
 			return nullptr;
 		}
 	} catch (BaseException &e) {
-		Message::recycle(incomingMessage);
-		incomingMessage = nullptr;
+		Message::recycle(received);
+		received = nullptr;
 		throw;
 	}
 }
@@ -289,11 +289,11 @@ ssize_t Socket::socketRead() {
 }
 
 ssize_t Socket::socketWrite() {
-	auto iovCount = Twiddler::min(fillOutgoingQueue(), IOV_MAX);
+	auto iovCount = Twiddler::min(fillEgress(), IOV_MAX);
 	if (iovCount) {
-		auto vec = outgoingMessages.offset();
+		auto vec = egress.offset();
 		auto nSent = Descriptor::writev(vec, iovCount);
-		adjustOutgoingQueue(nSent);
+		fixEgress(nSent);
 		return nSent;
 	} else {
 		//Nothing queued up
@@ -335,11 +335,11 @@ ssize_t Socket::secureWrite() {
 		return secureRead();
 	}
 
-	auto count = fillOutgoingQueue();
+	auto count = fillEgress();
 	if (count) {
 		CryptoUtils::clearErrors();
 		ssize_t nSent = 0;
-		auto iovecs = outgoingMessages.offset();
+		auto iovecs = egress.offset();
 		for (unsigned int i = 0; i < count; i++) {
 			auto data = iovecs[i].iov_base;
 			auto length = iovecs[i].iov_len;
@@ -349,7 +349,7 @@ ssize_t Socket::secureWrite() {
 				break;
 			}
 		}
-		adjustOutgoingQueue(nSent);
+		fixEgress(nSent);
 		return nSent;
 	} else {
 		//Nothing queued up
@@ -448,15 +448,15 @@ ssize_t Socket::sslWrite(const void *buf, size_t count) {
 	}
 }
 
-unsigned int Socket::fillOutgoingQueue() noexcept {
-	if (!outgoingMessages.hasSpace()) {
+unsigned int Socket::fillEgress() noexcept {
+	if (!egress.hasSpace()) {
 		CircularBufferVector<Message*> vector;
 		auto space = out.getReadable(vector);
 		if (space) {
-			outgoingMessages.clear(); //Reset for writing
-			space = Twiddler::min(space, outgoingMessages.capacity()); //Adjust
+			egress.clear(); //Reset for writing
+			space = Twiddler::min(space, egress.capacity()); //Adjust
 
-			auto iovecs = outgoingMessages.offset();
+			auto iovecs = egress.offset();
 			unsigned int count = 0;
 			for (unsigned int i = 0; i < 2; ++i) { //Two parts
 				auto &mvecs = vector.part[i];
@@ -469,20 +469,20 @@ unsigned int Socket::fillOutgoingQueue() noexcept {
 					++count;
 				}
 			}
-			totalOutgoingMessages += count;
-			outgoingMessages.setIndex(count); //Update the index
-			outgoingMessages.rewind(); //Prepare for reading
+			traffic.out += count;
+			egress.setIndex(count); //Update the index
+			egress.rewind(); //Prepare for reading
 		}
 	}
 
-	return outgoingMessages.space();
+	return egress.space();
 }
 
-void Socket::adjustOutgoingQueue(size_t bytes) noexcept {
+void Socket::fixEgress(size_t bytes) noexcept {
 	size_t total = 0;
 	unsigned int sentMessages = 0;
-	auto iovecs = outgoingMessages.offset();
-	auto count = outgoingMessages.space();
+	auto iovecs = egress.offset();
+	auto count = egress.space();
 	for (unsigned int index = 0; index < count; ++index) {
 		iovec &iov = iovecs[index];
 		total += iov.iov_len;
@@ -501,21 +501,20 @@ void Socket::adjustOutgoingQueue(size_t bytes) noexcept {
 		Message::recycle(msg);
 		++sentMessages;
 	}
-	outgoingMessages.setIndex(outgoingMessages.getIndex() + sentMessages);
+	egress.setIndex(egress.getIndex() + sentMessages);
 }
 
 void Socket::clear() noexcept {
 	memset(&secure, 0, sizeof(secure));
-	incomingMessage = nullptr;
-	totalIncomingMessages = 0;
-	totalOutgoingMessages = 0;
-	outQueueLimit = 0;
-	outgoingMessages.rewind();
+	received = nullptr;
+	traffic = { 0, 0 };
+	backlog = 0;
+	egress.rewind();
 }
 
 void Socket::cleanup() noexcept {
 	SSLContext::destroy(secure.ssl);
-	Message::recycle(incomingMessage);
+	Message::recycle(received);
 
 	Message *message;
 	while ((out.get(message))) {
