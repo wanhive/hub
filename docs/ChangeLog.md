@@ -17,9 +17,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
-- Cleaner authentication hub implementation.
-- Streamlined mutual authentication mechanism.
-- Cleaner application manager implementation.
+- Clean up authentication hub.
+- Clean up overlay hub.
+- Clean up application manager.
+- Streamline mutual authentication mechanism.
 - Backward-incompatible library interfaces.
 - Backward-incompatible configuration options.
 
