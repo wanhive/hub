@@ -34,7 +34,7 @@ Time::~Time() {
 }
 
 const timespec& Time::now(clockid_t id) {
-	if (::clock_gettime(id, &ts) == 0) {
+	if (now(id, ts)) {
 		return ts;
 	} else {
 		throw SystemException();
@@ -65,6 +65,49 @@ const timespec& Time::get() const noexcept {
 
 void Time::set(const timespec &ts) noexcept {
 	this->ts = ts;
+}
+
+bool Time::now(clockid_t id, timespec &ts) noexcept {
+	if (::clock_gettime(id, &ts) == 0) {
+		return true;
+	} else {
+		return false;
+	}
+}
+
+bool Time::now(clockid_t id, double &seconds) noexcept {
+	timespec ts;
+	if (now(id, ts)) {
+		seconds = Time::convert(ts);
+		return true;
+	} else {
+		return false;
+	}
+}
+
+void Time::future(timespec &ts, unsigned int offset) noexcept {
+	ts.tv_sec += offset / 1000;
+	ts.tv_nsec += (offset % 1000) * 1000000L;
+	//Adjust for overflow
+	ts.tv_sec += ts.tv_nsec / 1000000000L;
+	ts.tv_nsec %= 1000000000L;
+}
+
+timespec Time::convert(unsigned int milliseconds,
+		unsigned int nanoseconds) noexcept {
+	struct timespec ts;
+	//These many seconds
+	ts.tv_sec = milliseconds / 1000;
+	//These many nanoseconds
+	auto nsec = ((milliseconds % 1000) * 1000000ULL) + nanoseconds;
+	//Adjust for nanoseconds overflow
+	ts.tv_sec += (nsec / 1000000000UL);
+	ts.tv_nsec = (nsec % 1000000000UL);
+	return ts;
+}
+
+double Time::convert(const timespec &ts) noexcept {
+	return (ts.tv_sec + (ts.tv_nsec / 1000000000.0));
 }
 
 } /* namespace wanhive */

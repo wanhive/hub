@@ -21,16 +21,16 @@ namespace wanhive {
 class Time {
 public:
 	/**
-	 * Default constructor: sets zero timestamp.
+	 * Default constructor: assigns zero time value.
 	 */
 	Time() noexcept;
 	/**
-	 * Constructor: assigns a timestamp.
-	 * @param ts timestamp's value
+	 * Constructor: sets a time value.
+	 * @param ts time value
 	 */
 	Time(const timespec &ts) noexcept;
 	/**
-	 * Constructor: reads current time from the given clock.
+	 * Constructor: reads current time of a clock.
 	 * @param id clock's identifier
 	 */
 	Time(clockid_t id);
@@ -40,9 +40,9 @@ public:
 	~Time();
 	//-----------------------------------------------------------------
 	/**
-	 * Wrapper for clock_gettime(2): updates the timestamp.
+	 * Wrapper for clock_gettime(2): retrieves time of a clock.
 	 * @param id clock's identifier
-	 * @return current time
+	 * @return time value
 	 */
 	const timespec& now(clockid_t id);
 	//-----------------------------------------------------------------
@@ -73,6 +73,41 @@ public:
 	 * @param ts new timestamp value
 	 */
 	void set(const timespec &ts) noexcept;
+	//-----------------------------------------------------------------
+	/**
+	 * Wrapper for clock_gettime(2): retrieves time of a clock.
+	 * @param id clock's identifier
+	 * @param ts stores the time value
+	 * @return true on success, false on error
+	 */
+	static bool now(clockid_t id, timespec &ts) noexcept;
+	/**
+	 * Wrapper for clock_gettime(2): retrieves time of a clock.
+	 * @param id clock's identifier
+	 * @param seconds stores the real-valued time in seconds
+	 * @return true on success, false on error
+	 */
+	static bool now(clockid_t id, double &seconds) noexcept;
+	/**
+	 * Calculates a future time value.
+	 * @param ts original time value as input, future time value as output
+	 * @param offset future offset in milliseconds
+	 */
+	static void future(timespec &ts, unsigned int offset) noexcept;
+	/**
+	 * Converts milliseconds to time value.
+	 * @param milliseconds milliseconds value
+	 * @param nanoseconds optional nanoseconds value
+	 * @return time value
+	 */
+	static timespec convert(unsigned int milliseconds,
+			unsigned int nanoseconds) noexcept;
+	/**
+	 * Converts a time value to seconds.
+	 * @param ts time value
+	 * @return real-valued time in seconds
+	 */
+	static double convert(const timespec &ts) noexcept;
 private:
 	timespec ts;
 };

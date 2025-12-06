@@ -46,16 +46,7 @@ bool Timer::hasTimedOut(unsigned int milliseconds) const noexcept {
 }
 
 void Timer::sleep(unsigned int milliseconds, unsigned int nanoseconds) noexcept {
-	struct timespec tv;
-	//These many seconds
-	tv.tv_sec = milliseconds / MILS_IN_SEC;
-	//These many nanoseconds
-	auto nsec = (unsigned long long) ((milliseconds % MILS_IN_SEC) * NS_IN_MILS)
-			+ nanoseconds;
-	//Adjust for nanoseconds overflow
-	tv.tv_sec += (nsec / NS_IN_SEC);
-	tv.tv_nsec = (nsec % NS_IN_SEC);
-
+	auto tv = Time::convert(milliseconds, nanoseconds);
 	//Sleep might get interrupted due to signal delivery
 	while (nanosleep(&tv, &tv) == -1 && errno == EINTR) {
 		//Loop if interrupted by a signal
