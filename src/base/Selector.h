@@ -14,7 +14,6 @@
 #define WH_BASE_SELECTOR_H_
 #include "common/NonCopyable.h"
 #include "ds/Buffer.h"
-#include <signal.h>
 #include <sys/epoll.h>
 
 namespace wanhive {
@@ -49,25 +48,21 @@ enum SelectorFlag : uint32_t {
 };
 //-----------------------------------------------------------------
 /**
- * IO multiplexer: monitors multiple file descriptors to see if any one of them
- * is ready for performing an IO operation.
+ * IO multiplexer: monitors multiple file descriptors for IO events.
  * @note Provides abstraction of Linux's epoll(7) mechanism.
  */
 class Selector: private NonCopyable {
 public:
 	/**
-	 * Default constructor: creates an uninitialized selector. To initialize the
-	 * object call Selector::initialize() explicitly.
+	 * Constructor: creates a new selector.
 	 */
 	Selector() noexcept;
 	/**
 	 * Constructor: creates and initializes a new selector.
-	 * @param maxEvents maximum number of events to return (should be greater
-	 * than zero) by Selector::select().
-	 * @param signal true to safely wait (see Selector::select()) until a signal
-	 * is caught, false for default behavior (no signal safety).
+	 * @param events maximum number of IO events to report
+	 * @param signal true for signal safety, false for default behavior
 	 */
-	Selector(unsigned int maxEvents, bool signal);
+	Selector(unsigned int events, bool signal);
 	/**
 	 * Destructor
 	 */
@@ -75,69 +70,65 @@ public:
 	/**
 	 * Initializes the object (performs clean up if the object was previously
 	 * initialized).
-	 * @param maxEvents the maximum number of events to report in each call to
-	 * Selector::select().
-	 * @param signal true to safely wait (see Selector::select()) until a signal
-	 * is caught, false for default behavior (no signal safety).
+	 * @param events maximum number of IO events to report
+	 * @param signal true true for signal safety, false for default behavior
 	 */
-	void initialize(unsigned int maxEvents, bool signal);
+	void initialize(unsigned int events, bool signal);
 	//-----------------------------------------------------------------
 	/**
 	 * Adds a new file descriptor to the interest list.
-	 * @param fd file descriptor to monitor
-	 * @param events events of interest (see Selector::events())
-	 * @param handle pointer to the user data (see Selector::attachment())
+	 * @param fd file descriptor
+	 * @param events events of interest
+	 * @param handle user data
 	 */
 	void add(int fd, uint32_t events, void *handle = nullptr);
 	/**
-	 * Modifies the settings for a file descriptor in the interest list.
-	 * @param fd file descriptor being monitored (see Selector::add())
-	 * @param events new events of interest (see Selector::events())
-	 * @param handle user data's pointer (see Selector::attachment())
+	 * Modifies a file descriptor's settings in the interest list.
+	 * @param fd file descriptor
+	 * @param events new events of interest
+	 * @param handle user data
 	 */
 	void modify(int fd, uint32_t events, void *handle = nullptr);
 	/**
 	 * Removes a file descriptor from the interest list.
-	 * @param fd file descriptor being monitored (see Selector::add())
+	 * @param fd file descriptor
 	 */
 	void remove(int fd);
 	//-----------------------------------------------------------------
 	/**
-	 * Waits for IO events, timeout, or signal delivery.
-	 * @param timeout wait period in milliseconds (set -1 to block indefinitely,
-	 * 0 to return immediately even if no events are available).
-	 * @return number of ready file descriptors (see Selector::next()), possibly
-	 * zero if the call timed-out, or got interrupted by signal delivery.
+	 * Waits for IO events, signal delivery, or timeout.
+	 * @param timeout wait period in milliseconds. Set to -1 (default) to block
+	 * indefinitely, set to zero (0) for non-blocking operation.
+	 * @return number of ready file descriptors, possibly zero (0) if the call
+	 * got interrupted by signal delivery or timeout expired.
 	 */
 	unsigned int select(int timeout = -1);
 	/**
+	 * Checks whether the selector got timed out.
+	 * @return true if timeout expired, false otherwise.
+	 */
+	bool expired() const noexcept;
+	/**
 	 * Checks whether the selector got interrupted by a signal.
-	 * @return true if the most recent Selector::select() call got interrupted
-	 * by a signal, false otherwise.
+	 * @return true if interrupted, false otherwise.
 	 */
 	bool interrupted() const noexcept;
-	/**
-	 * Checks whether the selector got timed out while waiting for IO events.
-	 * @return true if the most recent Selector::select() call got timed out,
-	 * false otherwise.
-	 */
-	bool timedOut() const noexcept;
 	//-----------------------------------------------------------------
 	/**
 	 * Returns the next event description.
-	 * @return pointer to an object describing the next event
+	 * @return event description (nullptr if none available)
 	 */
 	const SelectionEvent* next() noexcept;
 	/**
-	 * Returns user data associated with a ready file descriptor.
-	 * @param se event description (see Selector::next())
-	 * @return user data's pointer
+	 * Returns the user data associated with an event description.
+	 * @param se event description
+	 * @return user data
 	 */
 	static void* attachment(const SelectionEvent *se) noexcept;
 	/**
-	 * Returns the events reported on a ready file descriptor.
-	 * @param se event description (see Selector::next())
-	 * @return events mask
+	 * Returns the IO events associated with an event description.
+	 * @param se event description
+	 * @return bitmap of events
 	 */
 	static uint32_t events(const SelectionEvent *se) noexcept;
 private:
@@ -149,7 +140,7 @@ private:
 	int epfd { -1 };
 	Buffer<SelectionEvent> selected;
 	bool _interrupted { false };
-	bool _timedOut { false };
+	bool _expired { false };
 };
 
 } /* namespace wanhive */

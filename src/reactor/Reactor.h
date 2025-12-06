@@ -29,11 +29,11 @@ public:
 	Reactor() noexcept;
 	/**
 	 * Constructor: creates and initializes a reactor.
-	 * @param maxEvents maximum number of IO events to report in each poll
+	 * @param events maximum number of IO events to report in each poll
 	 * @param signal set to true for handling the asynchronous signal delivery
 	 * atomically, i.e. a poll can be reliably interrupted by signals.
 	 */
-	Reactor(unsigned int maxEvents, bool signal);
+	Reactor(unsigned int events, bool signal);
 	/**
 	 * Destructor: releases the managed resources.
 	 */
@@ -41,11 +41,11 @@ public:
 	/**
 	 * Initializes the reactor (performs necessary clean-up if the object was
 	 * previously initialized).
-	 * @param maxEvents maximum number of IO events to report in each poll
+	 * @param events maximum number of IO events to report in each poll
 	 * @param signal set to true for handling the asynchronous signal delivery
 	 * atomically, i.e. a poll can be reliably interrupted by signals.
 	 */
-	void initialize(unsigned int maxEvents, bool signal);
+	void initialize(unsigned int events, bool signal);
 	//-----------------------------------------------------------------
 	/**
 	 * Adds a watcher: a watcher must be added only once to only one reactor.
@@ -82,32 +82,32 @@ public:
 	 */
 	void dispatch() noexcept;
 	/**
-	 * Adds a watcher back to the list of watchers ready for IO (ready list).
+	 * Adds a watcher to the ready list of watchers.
 	 * @param w a watcher being monitored
 	 */
 	void retain(Watcher *w) noexcept;
-	//-----------------------------------------------------------------
+	/**
+	 * Checks whether the last poll got timed out.
+	 * @return true if timeout expired, false otherwise
+	 */
+	bool expired() const noexcept;
 	/**
 	 * Checks whether the last poll got interrupted by a signal.
 	 * @return true if interrupted, false otherwise
 	 */
 	bool interrupted() const noexcept;
-	/**
-	 * Checks whether the last poll got timed out.
-	 * @return true if timeout expired, false otherwise
-	 */
-	bool timedOut() const noexcept;
+	//-----------------------------------------------------------------
 	/**
 	 * Returns the current timeout value for poll.
 	 * @return timeout value in milliseconds
 	 */
 	int getTimeout() const noexcept;
 	/**
-	 * Sets the number of milliseconds that a poll will block.
-	 * @param milliseconds timeout value in milliseconds. Set to -1 (default)
+	 * Sets the timeout value for poll.
+	 * @param timeout timeout value in milliseconds. Set to -1 (default)
 	 * to block indefinitely, set to zero (0) for non-blocking operation.
 	 */
-	void setTimeout(int milliseconds) noexcept;
+	void setTimeout(int timeout) noexcept;
 private:
 	/**
 	 * Processes a watcher before adding it to the event loop.

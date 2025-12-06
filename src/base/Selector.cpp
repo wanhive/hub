@@ -13,6 +13,7 @@
 #include "Selector.h"
 #include "unix/SystemException.h"
 #include <cerrno>
+#include <signal.h>
 #include <unistd.h>
 
 namespace wanhive {
@@ -21,18 +22,18 @@ Selector::Selector() noexcept {
 
 }
 
-Selector::Selector(unsigned int maxEvents, bool signal) {
-	initialize(maxEvents, signal);
+Selector::Selector(unsigned int events, bool signal) {
+	initialize(events, signal);
 }
 
 Selector::~Selector() {
 	close();
 }
 
-void Selector::initialize(unsigned int maxEvents, bool signal) {
+void Selector::initialize(unsigned int events, bool signal) {
 	//Strictly maintain the sequence to prevent resource leak
 	close();
-	selected.initialize(maxEvents);
+	selected.initialize(events);
 	selected.rewind(); //Nothing to read yet
 	mask = (signal ? &signals : nullptr);
 	create();
@@ -67,7 +68,7 @@ void Selector::remove(int fd) {
 
 unsigned int Selector::select(int timeout) {
 	_interrupted = false;
-	_timedOut = false;
+	_expired = false;
 	selected.clear();
 	auto n = epoll_pwait(epfd, selected.offset(), selected.space(), timeout,
 			mask);
@@ -81,7 +82,7 @@ unsigned int Selector::select(int timeout) {
 		return n;
 	} else if (n == 0) {
 		//Timed out
-		_timedOut = true;
+		_expired = true;
 		return n;
 	} else if (errno == EINTR) {
 		//Received a signal
@@ -93,12 +94,12 @@ unsigned int Selector::select(int timeout) {
 	}
 }
 
-bool Selector::interrupted() const noexcept {
-	return _interrupted;
+bool Selector::expired() const noexcept {
+	return _expired;
 }
 
-bool Selector::timedOut() const noexcept {
-	return _timedOut;
+bool Selector::interrupted() const noexcept {
+	return _interrupted;
 }
 
 const SelectionEvent* Selector::next() noexcept {
@@ -132,7 +133,7 @@ int Selector::close() noexcept {
 	mask = nullptr;
 	epfd = -1;
 	_interrupted = false;
-	_timedOut = false;
+	_expired = false;
 	return ret;
 }
 

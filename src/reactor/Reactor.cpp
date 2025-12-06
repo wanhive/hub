@@ -18,17 +18,17 @@ Reactor::Reactor() noexcept {
 
 }
 
-Reactor::Reactor(unsigned int maxEvents, bool signal) {
-	selector.initialize(maxEvents, signal);
+Reactor::Reactor(unsigned int events, bool signal) {
+	selector.initialize(events, signal);
 }
 
 Reactor::~Reactor() {
 
 }
 
-void Reactor::initialize(unsigned int maxEvents, bool signal) {
+void Reactor::initialize(unsigned int events, bool signal) {
 	timeout = -1;
-	selector.initialize(maxEvents, signal);
+	selector.initialize(events, signal);
 	readyList.initialize();
 }
 
@@ -108,20 +108,20 @@ void Reactor::retain(Watcher *w) noexcept {
 	}
 }
 
-bool Reactor::interrupted() const noexcept {
-	return selector.interrupted();
+bool Reactor::expired() const noexcept {
+	return selector.expired();
 }
 
-bool Reactor::timedOut() const noexcept {
-	return selector.timedOut();
+bool Reactor::interrupted() const noexcept {
+	return selector.interrupted();
 }
 
 int Reactor::getTimeout() const noexcept {
 	return timeout;
 }
 
-void Reactor::setTimeout(int milliseconds) noexcept {
-	this->timeout = milliseconds;
+void Reactor::setTimeout(int timeout) noexcept {
+	this->timeout = timeout;
 }
 
 Watcher* Reactor::ready() noexcept {

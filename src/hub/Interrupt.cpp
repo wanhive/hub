@@ -14,6 +14,7 @@
 #include "Hub.h"
 #include "../base/unix/SystemException.h"
 #include <sys/signalfd.h>
+#include <signal.h>
 
 namespace wanhive {
 
