@@ -135,7 +135,7 @@ bool Socket::publish(void *arg) noexcept {
 	auto message = static_cast<Message*>(arg);
 	if (message && (!backlog || out.readSpace() < backlog)
 			&& out.put(message)) {
-		message->addReferenceCount();
+		message->link();
 		setTrace(message->getTrace());
 		setFlags(WATCHER_OUT);
 		return true;

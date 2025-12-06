@@ -906,7 +906,7 @@ bool Hub::processStream(Stream *stream) noexcept {
 
 bool Hub::drop(Message *message) const noexcept {
 	return ctx.policing && !message->testFlags(MSG_PRIORITY)
-			&& (message->addHopCount() > ctx.ttl);
+			&& (message->hop() > ctx.ttl);
 }
 
 unsigned int Hub::throttle(const Socket *connection) const noexcept {

@@ -611,12 +611,12 @@ public:
 	 * Increments the reference count by one (1) and returns the new value.
 	 * @return updated reference count
 	 */
-	unsigned int addReferenceCount() noexcept;
+	unsigned int link() noexcept;
 	/**
 	 * Increments the hop count by one (1) and returns the new value.
 	 * @return updated hop count
 	 */
-	unsigned int addHopCount() noexcept;
+	unsigned int hop() noexcept;
 };
 
 } /* namespace wanhive */

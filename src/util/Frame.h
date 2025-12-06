@@ -104,25 +104,25 @@ public:
 protected:
 	/**
 	 * For traffic shaping: returns the hop count.
-	 * @return the hop count
+	 * @return hops count
 	 */
-	unsigned int getHopCount() const noexcept;
+	unsigned int getHops() const noexcept;
 	/**
 	 * For traffic shaping: sets the hop count.
-	 * @param hopCount the desired hop count
+	 * @param hops hops count
 	 */
-	void setHopCount(unsigned int hopCount) noexcept;
+	void setHops(unsigned int hops) noexcept;
 
 	/**
 	 * For multicasting: returns the reference count.
-	 * @return the reference count
+	 * @return reference count
 	 */
-	unsigned int getReferenceCount() const noexcept;
+	unsigned int getLinks() const noexcept;
 	/**
 	 * For multicasting: sets the reference count.
-	 * @param referenceCount the desired reference count
+	 * @param links reference count
 	 */
-	void setReferenceCount(unsigned int referenceCount) noexcept;
+	void setLinks(unsigned int links) noexcept;
 	//-----------------------------------------------------------------
 	/**
 	 * Returns a constant reference to the frame buffer. This call allows the
@@ -148,9 +148,9 @@ public:
 	/** The maximum payload size in bytes */
 	static constexpr unsigned int PAYLOAD_SIZE = (MTU - HEADER_SIZE);
 private:
-	unsigned int hopCount { 0 }; //Hop count
-	unsigned int referenceCount { 0 }; //Reference count
-	const uint64_t origin; //Origin's identifier
+	unsigned int hops { 0 }; //Hop count
+	unsigned int links { 0 }; //Reference count
+	const uint64_t origin; //Frame's origin
 	MessageHeader _header; //Routing header
 	StaticBuffer<unsigned char, MTU> _frame; //Frame buffer
 };

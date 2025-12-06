@@ -1082,7 +1082,7 @@ bool OverlayHub::handlePublishRequest(Message *msg) noexcept {
 	msg->writeLabel(0); //Clean up internal information
 	msg->writeDestination(0); //There are multiple destinations
 	msg->writeStatus(WH_DHT_AQLF_ACCEPTED); //Prevent rebound
-	msg->addReferenceCount(); //Account for Hub::publish
+	msg->link(); //Account for Hub::publish
 	return true;
 }
 

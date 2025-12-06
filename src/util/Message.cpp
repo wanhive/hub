@@ -42,11 +42,11 @@ Message* Message::create(uint64_t origin) noexcept {
 }
 
 bool Message::recycle(Message *message) noexcept {
-	if (!message || message->getReferenceCount() <= 1) {
+	if (!message || message->getLinks() <= 1) {
 		delete message;
 		return true;
 	} else {
-		message->setReferenceCount(message->getReferenceCount() - 1);
+		message->setLinks(message->getLinks() - 1);
 		return false;
 	}
 }
@@ -604,14 +604,14 @@ bool Message::available(unsigned int count) noexcept {
 	return count <= unallocated();
 }
 
-unsigned int Message::addReferenceCount() noexcept {
-	setReferenceCount(getReferenceCount() + 1);
-	return getReferenceCount();
+unsigned int Message::link() noexcept {
+	setLinks(getLinks() + 1);
+	return getLinks();
 }
 
-unsigned int Message::addHopCount() noexcept {
-	setHopCount(getHopCount() + 1);
-	return getHopCount();
+unsigned int Message::hop() noexcept {
+	setHops(getHops() + 1);
+	return getHops();
 }
 
 } /* namespace wanhive */

@@ -77,20 +77,20 @@ void Frame::clear() noexcept {
 	_frame.clear();
 }
 
-unsigned int Frame::getHopCount() const noexcept {
-	return hopCount;
+unsigned int Frame::getHops() const noexcept {
+	return hops;
 }
 
-void Frame::setHopCount(unsigned int hopCount) noexcept {
-	this->hopCount = hopCount;
+void Frame::setHops(unsigned int hops) noexcept {
+	this->hops = hops;
 }
 
-unsigned int Frame::getReferenceCount() const noexcept {
-	return referenceCount;
+unsigned int Frame::getLinks() const noexcept {
+	return links;
 }
 
-void Frame::setReferenceCount(unsigned int referenceCount) noexcept {
-	this->referenceCount = referenceCount;
+void Frame::setLinks(unsigned int links) noexcept {
+	this->links = links;
 }
 
 } /* namespace wanhive */
