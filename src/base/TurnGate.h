@@ -17,41 +17,46 @@
 
 namespace wanhive {
 /**
- * Turn gate for threads: allows a single thread to pass through.
+ * Turn gate for threads
  */
 class TurnGate: private NonCopyable {
 public:
 	/**
-	 * Default constructor: initializes the object
+	 * Constructor: initializes the synchronization mechanism.
 	 */
 	TurnGate() noexcept;
 	/**
-	 * Destructor
+	 * Destructor: calls abort on system error.
 	 */
 	~TurnGate();
 	/**
 	 * Waits for a notification. If a notification become pending then exactly
-	 * one of the competing threads is unblocked.
+	 * one of the competing threads gets unblocked.
 	 * @return always true
 	 */
 	bool wait();
 	/**
 	 * Waits for a notification or timeout. If a notification becomes pending
-	 * then exactly one of the competing threads is unblocked. Waiting thread
-	 * is unblocked on timeout.
-	 * @param milliseconds timeout value in milliseconds
-	 * @return true if a notification was received, false on timeout
+	 * then exactly one of the competing threads gets unblocked. Unblocks the
+	 * waiting threads on timeout.
+	 * @param timeout wait period in milliseconds
+	 * @return true if a notification arrived, false if timeout expired
 	 */
-	bool wait(unsigned int milliseconds);
+	bool wait(unsigned int timeout);
 	/**
 	 * Delivers a notification to the waiting threads.
 	 */
 	void signal();
 private:
+	void lock();
+	void unlock();
+	void setup() noexcept;
+	void cleanup() noexcept;
+private:
 	pthread_mutex_t mutex;
 	pthread_cond_t condition;
 	size_t count { };
-	bool flag { false };
+	bool flag { };
 };
 
 } /* namespace wanhive */

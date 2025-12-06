@@ -12,95 +12,101 @@
 
 #include "TurnGate.h"
 #include "unix/SystemException.h"
+#include "unix/Time.h"
 #include <cerrno>
 #include <cstdlib>
 
 namespace wanhive {
 
 TurnGate::TurnGate() noexcept {
+	setup();
+}
+
+TurnGate::~TurnGate() {
+	cleanup();
+}
+
+bool TurnGate::wait() {
+	lock();
+
+	int rc = 0;
+	while (!flag && rc == 0) {
+		rc = pthread_cond_wait(&condition, &mutex);
+	}
+
+	auto value = flag;
+	flag = false;
+	unlock();
+
+	if (rc == 0) {
+		return value;
+	} else {
+		throw SystemException(rc);
+	}
+}
+
+bool TurnGate::wait(unsigned int timeout) {
+	lock();
+
+	int rc = 0;
+	if (!flag && timeout) {
+		timespec tv;
+		if (!Time::now(CLOCK_REALTIME, tv)) {
+			unlock();
+			throw SystemException();
+		}
+		Time::future(tv, timeout);
+
+		while (!flag && rc == 0) {
+			rc = pthread_cond_timedwait(&condition, &mutex, &tv);
+		}
+	}
+
+	auto value = flag;
+	flag = false;
+	unlock();
+
+	if (rc == 0 || rc == ETIMEDOUT) {
+		return value;
+	} else {
+		throw SystemException(rc);
+	}
+}
+
+void TurnGate::signal() {
+	lock();
+	flag = true;
+	unlock();
+
+	if (auto rc = pthread_cond_signal(&condition); rc != 0) {
+		throw SystemException(rc);
+	}
+}
+
+void TurnGate::lock() {
+	if (auto rc = pthread_mutex_lock(&mutex); rc != 0) {
+		throw SystemException(rc);
+	}
+}
+
+void TurnGate::unlock() {
+	if (auto rc = pthread_mutex_unlock(&mutex); rc != 0) {
+		throw SystemException(rc);
+	}
+}
+
+void TurnGate::setup() noexcept {
 	mutex = PTHREAD_MUTEX_INITIALIZER;
 	condition = PTHREAD_COND_INITIALIZER;
 }
 
-TurnGate::~TurnGate() {
+void TurnGate::cleanup() noexcept {
 	if (pthread_cond_destroy(&condition) != 0) {
 		abort();
 	}
 
 	if (pthread_mutex_destroy(&mutex) != 0) {
 		abort();
-	}
-}
-
-bool TurnGate::wait() {
-	auto status = pthread_mutex_lock(&mutex);
-	if (status == 0) {
-		++count;
-		int rc = 0;
-		while (!flag && rc == 0) {
-			rc = pthread_cond_wait(&condition, &mutex);
-		}
-		--count;
-		auto value = flag;
-		flag = false;
-		pthread_mutex_unlock(&mutex);
-
-		if (rc == 0) {
-			return value;
-		} else {
-			throw SystemException(rc);
-		}
-	} else {
-		throw SystemException(status);
-	}
-}
-
-bool TurnGate::wait(unsigned int milliseconds) {
-	auto status = pthread_mutex_lock(&mutex);
-	if (status == 0) {
-		++count;
-		int rc = 0;
-		if (!flag && milliseconds) {
-			struct timespec tv;
-			clock_gettime(CLOCK_REALTIME, &tv);
-
-			tv.tv_sec += milliseconds / 1000;
-			tv.tv_nsec += (milliseconds % 1000) * 1000000L;
-			//Adjust for overflow
-			tv.tv_sec += tv.tv_nsec / 1000000000L;
-			tv.tv_nsec %= 1000000000L;
-			while (!flag && rc == 0) {
-				rc = pthread_cond_timedwait(&condition, &mutex, &tv);
-			}
-		}
-		--count;
-		auto value = flag;
-		flag = false;
-		pthread_mutex_unlock(&mutex);
-
-		if (rc == 0 || rc == ETIMEDOUT) {
-			return value;
-		} else {
-			throw SystemException(rc);
-		}
-	} else {
-		throw SystemException(status);
-	}
-}
-
-void TurnGate::signal() {
-	auto status = pthread_mutex_lock(&mutex);
-	if (status == 0) {
-		flag = true;
-		pthread_mutex_unlock(&mutex);
-		auto rc = pthread_cond_signal(&condition);
-		if (rc != 0) {
-			throw SystemException(rc);
-		} else {
-			return;
-		}
-	} else {
-		throw SystemException(status);
 	}
 }
 
