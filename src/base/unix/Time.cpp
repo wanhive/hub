@@ -21,7 +21,7 @@ Time::Time() noexcept :
 }
 
 Time::Time(const timespec &ts) noexcept :
-		ts(ts) {
+		ts { ts } {
 
 }
 

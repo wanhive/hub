@@ -17,7 +17,7 @@
 namespace wanhive {
 
 PThread::PThread(Task &task, void *arg, bool detached) :
-		tid(self()), task(task), arg(arg), detached(detached) {
+		tid { self() }, task { task }, arg { arg }, detached { detached } {
 	start();
 }
 

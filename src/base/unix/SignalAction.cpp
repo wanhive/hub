@@ -17,7 +17,7 @@
 namespace wanhive {
 
 SignalAction::SignalAction(bool restart) noexcept :
-		_restart(restart) {
+		_restart { restart } {
 	reset();
 }
 
