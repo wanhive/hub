@@ -276,7 +276,7 @@ void Manager::runComponentsTest() noexcept {
 
 void Manager::installSignals() {
 	//Block all signals
-	Signal::blockAll();
+	Signal::block();
 	//Suppress SIGPIPE
 	Signal::ignore(SIGPIPE);
 	//Install a dummy handler for SIGUSR1
@@ -291,7 +291,7 @@ void Manager::installSignals() {
 
 void Manager::restoreSignals() {
 	//Unblock all signals
-	Signal::unblockAll();
+	Signal::unblock();
 	//Restore SIGPIPE
 	Signal::reset(SIGPIPE);
 	//Restore SIGUSR1

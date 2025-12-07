@@ -16,6 +16,16 @@
 
 namespace wanhive {
 
+void Signal::block() {
+	SignalSet ss(true);
+	TSignal::setMask(SIG_SETMASK, ss);
+}
+
+void Signal::unblock() {
+	SignalSet ss(false);
+	TSignal::setMask(SIG_SETMASK, ss);
+}
+
 void Signal::block(int signum) {
 	SignalSet ss(false);
 	ss.add(signum);
@@ -26,16 +36,6 @@ void Signal::unblock(int signum) {
 	SignalSet ss(false);
 	ss.add(signum);
 	TSignal::setMask(SIG_UNBLOCK, ss);
-}
-
-void Signal::blockAll() {
-	SignalSet ss(true);
-	TSignal::setMask(SIG_SETMASK, ss);
-}
-
-void Signal::unblockAll() {
-	SignalSet ss(false);
-	TSignal::setMask(SIG_SETMASK, ss);
 }
 
 void Signal::ignore(int signum) {

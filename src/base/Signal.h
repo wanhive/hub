@@ -21,39 +21,39 @@ namespace wanhive {
 class Signal {
 public:
 	/**
-	 * Blocks a given signal.
+	 * Blocks all signals.
+	 */
+	static void block();
+	/**
+	 * Unblocks all signals.
+	 */
+	static void unblock();
+	/**
+	 * Blocks a signal.
 	 * @param signum signal number
 	 */
 	static void block(int signum);
 	/**
-	 * Unblocks a given signal.
+	 * Unblocks a signal.
 	 * @param signum signal number
 	 */
 	static void unblock(int signum);
 	/**
-	 * Blocks all signals.
-	 */
-	static void blockAll();
-	/**
-	 * Unblock all signals.
-	 */
-	static void unblockAll();
-	/**
-	 * Specifies that a given signal should be ignored.
+	 * Specifies that a signal should be ignored.
 	 * @param signum signal number
 	 */
 	static void ignore(int signum);
 	/**
-	 * Installs a given signal's default handler.
+	 * Installs a signal's default handler.
 	 * @param signum signal number
 	 */
 	static void reset(int signum);
 	/**
-	 * Installs a given signal's handler.
+	 * Installs a signal handler.
 	 * @param signum signal number
-	 * @param handler signal handler (nullptr for a dummy handler)
-	 * @param restart true to force restart of interruptible system calls when
-	 * interrupted by a signal handler, false otherwise.
+	 * @param handler signal handler (nullptr for dummy handler)
+	 * @param restart true to automatically restart certain system calls if
+	 * interrupted by a signal, false to fail with an error.
 	 */
 	static void handle(int signum, void (*handler)(int) = nullptr,
 			bool restart = true);
