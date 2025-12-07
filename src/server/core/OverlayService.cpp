@@ -27,18 +27,18 @@ OverlayService::~OverlayService() {
 }
 
 void OverlayService::configure(int connection, const unsigned long long *nodes,
-		unsigned int updateCycle, unsigned int retryInterval) noexcept {
+		unsigned int period, unsigned int delay) noexcept {
 	cleanup();
 	setConnection(connection);
 	setBootstrapNodes(nodes);
-	setUpdateCycle(updateCycle);
-	setRetryInterval(retryInterval);
+	setPeriod(period);
+	setDelay(delay);
 }
 
 void OverlayService::periodic() noexcept {
 	try {
 		while (true) {
-			auto delay = execute() ? ctx.updateCycle : ctx.retryInterval;
+			auto delay = execute() ? ctx.period : ctx.delay;
 			if (wait(delay)) {
 				break;
 			}
@@ -200,10 +200,10 @@ bool OverlayService::isReachable(uint64_t id) noexcept {
 	}
 }
 
-bool OverlayService::join(uint64_t id, uint64_t startNode) noexcept {
+bool OverlayService::join(uint64_t id, uint64_t start) noexcept {
 	try {
 		uint64_t successor = 0;
-		if (!findSuccessorRequest(startNode, id, successor)) {
+		if (!findSuccessorRequest(start, id, successor)) {
 			return false;
 		}
 
@@ -387,12 +387,12 @@ void OverlayService::setBootstrapNodes(const unsigned long long *nodes) noexcept
 	ctx.nodes[i] = 0;
 }
 
-void OverlayService::setUpdateCycle(unsigned int updateCycle) noexcept {
-	ctx.updateCycle = updateCycle;
+void OverlayService::setPeriod(unsigned int period) noexcept {
+	ctx.period = period;
 }
 
-void OverlayService::setRetryInterval(unsigned int retryInterval) noexcept {
-	ctx.retryInterval = retryInterval;
+void OverlayService::setDelay(unsigned int delay) noexcept {
+	ctx.delay = delay;
 }
 
 } /* namespace wanhive */
