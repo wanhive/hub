@@ -50,6 +50,34 @@ struct Color {
 	unsigned char blue;
 };
 
+/**
+ * Cyclic function's period.
+ */
+struct Period {
+	/*! Initial expiration */
+	unsigned int value;
+	/*! Repetition interval */
+	unsigned int interval;
+};
+
+/**
+ * Commonly used metric prefixes.
+ */
+struct Factor {
+	/*! Metric prefix Nano- */
+	constexpr static long NANO = 1000000000L;
+	/*! Metric prefix Micro- */
+	constexpr static long MICRO = 1000000L;
+	/*! Metric prefix Milli- */
+	constexpr static long MILLI = 1000L;
+	/*! Nano- in Micro- */
+	constexpr static long NANO_IN_MICRO = (NANO / MICRO);
+	/*! Nano- in Milli- */
+	constexpr static long NANO_IN_MILLI = (NANO / MILLI);
+	/*! Micro- in Milli- */
+	constexpr static long MICRO_IN_MILLI = (MICRO / MILLI);
+};
+
 } /* namespace wanhive */
 
 #endif /* WH_BASE_DS_SPATIAL_H_ */
