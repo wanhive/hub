@@ -81,7 +81,7 @@ protected:
 	 * @param expiration initial expiration in milliseconds
 	 * @param interval interval in milliseconds
 	 */
-	void periodic(unsigned int &expiration, unsigned int &interval) noexcept;
+	void period(unsigned int &expiration, unsigned int &interval) noexcept;
 	/**
 	 * Reports events to the events counter. This method can be safely called
 	 * by the worker thread.

@@ -40,7 +40,7 @@ void Hub::cancel() noexcept {
 	setStatus(0);
 }
 
-void Hub::periodic(unsigned int &expiration, unsigned int &interval) noexcept {
+void Hub::period(unsigned int &expiration, unsigned int &interval) noexcept {
 	if (prime.alarm) {
 		expiration = prime.alarm->getExpiration();
 		interval = prime.alarm->getInterval();
