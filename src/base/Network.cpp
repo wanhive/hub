@@ -87,16 +87,16 @@ int Network::connectedSocket(const NameInfo &ni, SocketAddress &sa,
 	return connectedSocket(ni.host, ni.service, sa, blocking);
 }
 
-void Network::listen(int sfd, int backlog) {
-	if (::listen(sfd, backlog) == -1) {
+void Network::listen(int listener, int backlog) {
+	if (::listen(listener, backlog) == -1) {
 		throw SystemException();
 	}
 }
 
-int Network::accept(int listenfd, SocketAddress &sa, bool blocking) {
+int Network::accept(int listener, SocketAddress &sa, bool blocking) {
 	sa.length = sizeof(sockaddr_storage);
 	auto flags = blocking ? 0 : SOCK_NONBLOCK;
-	auto sfd = ::accept4(listenfd, (sockaddr*) &sa.address, &sa.length, flags);
+	auto sfd = ::accept4(listener, (sockaddr*) &sa.address, &sa.length, flags);
 	if (sfd != -1) {
 		return sfd;
 	} else if (errno == EWOULDBLOCK || errno == EAGAIN) {
@@ -114,9 +114,9 @@ int Network::close(int sfd) noexcept {
 	return ::close(sfd);
 }
 
-void Network::setBlocking(int sfd, bool block) {
+void Network::setBlocking(int sfd, bool blocking) {
 	auto flags = Fcntl::getStatusFlag(sfd);
-	if (block) {
+	if (blocking) {
 		flags &= ~O_NONBLOCK;
 	} else {
 		flags |= O_NONBLOCK;
@@ -197,33 +197,16 @@ void Network::socketPair(int (&sv)[2], bool blocking) {
 	}
 }
 
-size_t Network::sendStream(int sockfd, const unsigned char *buf,
-		size_t length) {
-	auto toSend = length;
-	size_t index = 0;
-	ssize_t n = 0;
-	while (toSend != 0) {
-		if ((n = ::send(sockfd, buf + index, toSend, MSG_NOSIGNAL)) == -1) {
-			throw SystemException();
-		} else {
-			toSend -= n;
-			index += n;
-		}
-	}
-	return (length - toSend);
-}
-
-size_t Network::receiveStream(int sockfd, unsigned char *buf, size_t length,
-		bool strict) {
-	auto toRecv = length;
+size_t Network::read(int sfd, unsigned char *buf, size_t bytes, bool strict) {
+	auto toRecv = bytes;
 	size_t index = 0;
 	ssize_t n = 0;
 	while (toRecv != 0) {
-		if ((n = ::recv(sockfd, buf + index, toRecv, 0)) == -1) {
+		if ((n = ::recv(sfd, buf + index, toRecv, 0)) == -1) {
 			throw SystemException();
 		} else if (n == 0) {
 			//Peer shutdown
-			if (strict && length) {
+			if (strict && bytes) {
 				throw Exception(EX_RESOURCE);
 			} else {
 				break;
@@ -233,33 +216,48 @@ size_t Network::receiveStream(int sockfd, unsigned char *buf, size_t length,
 			index += n;
 		}
 	}
-	return (length - toRecv);
+	return (bytes - toRecv);
 }
 
-void Network::setReceiveTimeout(int sfd, unsigned int milliseconds) {
+size_t Network::write(int sfd, const unsigned char *buf, size_t bytes) {
+	auto toSend = bytes;
+	size_t index = 0;
+	ssize_t n = 0;
+	while (toSend != 0) {
+		if ((n = ::send(sfd, buf + index, toSend, MSG_NOSIGNAL)) == -1) {
+			throw SystemException();
+		} else {
+			toSend -= n;
+			index += n;
+		}
+	}
+	return (bytes - toSend);
+}
+
+void Network::setReceiveTimeout(int sfd, unsigned int timeout) {
 	timeval to;
-	to.tv_sec = milliseconds / 1000;
-	to.tv_usec = (milliseconds % 1000) * 1000;
+	to.tv_sec = timeout / 1000;
+	to.tv_usec = (timeout % 1000) * 1000;
 	if (::setsockopt(sfd, SOL_SOCKET, SO_RCVTIMEO, &to, sizeof(to))) {
 		throw SystemException();
 	}
 }
 
-void Network::setSendTimeout(int sfd, unsigned int milliseconds) {
+void Network::setSendTimeout(int sfd, unsigned int timeout) {
 	timeval to;
-	to.tv_sec = milliseconds / 1000;
-	to.tv_usec = (milliseconds % 1000) * 1000;
+	to.tv_sec = timeout / 1000;
+	to.tv_usec = (timeout % 1000) * 1000;
 	if (::setsockopt(sfd, SOL_SOCKET, SO_SNDTIMEO, &to, sizeof(to))) {
 		throw SystemException();
 	}
 }
 
-void Network::setSocketTimeout(int sfd, int recvTimeout, int sendTimeout) {
-	if (recvTimeout >= 0) {
-		setReceiveTimeout(sfd, recvTimeout);
+void Network::setSocketTimeout(int sfd, int input, int output) {
+	if (input >= 0) {
+		setReceiveTimeout(sfd, input);
 	}
-	if (sendTimeout >= 0) {
-		setSendTimeout(sfd, sendTimeout);
+	if (output >= 0) {
+		setSendTimeout(sfd, output);
 	}
 }
 

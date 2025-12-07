@@ -27,8 +27,8 @@ public:
 	SSLContext() noexcept;
 	/**
 	 * Constructor: initializes the SSL/TLS context.
-	 * @param certificate certificate file's pathname
-	 * @param privateKey private key file's pathname
+	 * @param certificate certificate file's path
+	 * @param privateKey private key file's path
 	 */
 	SSLContext(const char *certificate, const char *privateKey);
 	/**
@@ -43,23 +43,23 @@ public:
 	SSL_CTX* getContext() const noexcept;
 	/**
 	 * Initializes the SSL/TLS context.
-	 * @param certificate certificate file's pathname
-	 * @param privateKey private key file's pathname
+	 * @param certificate certificate file's path
+	 * @param privateKey private key file's path
 	 */
 	void initialize(const char *certificate, const char *privateKey);
 	/**
 	 * Sets the CA certificates' location. If neither value is provided then the
 	 * default system values are used.
-	 * @param file CA certificate file's pathname
+	 * @param file CA certificate file's path
 	 * @param CA certificates' directory name
 	 */
 	void loadTrustedPaths(const char *file, const char *path);
 	//-----------------------------------------------------------------
 	/**
 	 * Creates a new secure connection.
-	 * @param fd secure connection's file descriptor
+	 * @param fd socket's descriptor
 	 * @param server true for server-side configuration, false for client
-	 * @return pointer to secure connection object
+	 * @return secure connection
 	 */
 	SSL* create(int fd, bool server);
 	/**
@@ -70,56 +70,54 @@ public:
 	bool inContext(const SSL *ssl) const noexcept;
 	/**
 	 * Establishes secure connection with a server.
-	 * @param fd socket file descriptor (configured for blocking IO)
-	 * @return pointer to secure connection object
+	 * @param fd blocking socket's descriptor
+	 * @return secure connection
 	 */
 	SSL* connect(int fd);
 	//-----------------------------------------------------------------
 	/**
 	 * Returns secure connection's file descriptor.
-	 * @param ssl pointer to secure connection object
-	 * @return file descriptor's value
+	 * @param ssl secure connection
+	 * @return socket's descriptor
 	 */
 	static int getSocket(const SSL *ssl) noexcept;
 	/**
-	 * Assigns a file descriptor to the given secure connection object.
-	 * @param ssl pointer to secure connection object
-	 * @param fd socket file descriptor
+	 * Associates SSL with a socket.
+	 * @param ssl secure connection
+	 * @param fd socket's descriptor
 	 * @return true on success, false on error
 	 */
 	static bool setSocket(SSL *ssl, int fd) noexcept;
 	/**
-	 * Returns the peer certificate verification status.
-	 * @param ssl pointer to secure connection object
+	 * Returns the remote peer certificate verification status.
+	 * @param ssl secure connection
 	 * @return true if verification succeeded, false otherwise
 	 */
 	static bool verify(const SSL *ssl) noexcept;
 	/**
-	 * Destroys a secure connection object (Doesn't close the file descriptor).
-	 * @param ssl pointer to secure connection object
+	 * Frees a secure connection (Doesn't close the underlying socket).
+	 * @param ssl secure connection
 	 */
 	static void destroy(SSL *ssl) noexcept;
 	//-----------------------------------------------------------------
 	/**
-	 * Reads exactly the given number of bytes from a blocking SSL connection.
-	 * @param ssl pointer to secure connection object
-	 * @param buf buffer for storing the incoming data
-	 * @param length number of bytes to read
-	 * @return number of bytes read from the secure connection
+	 * Reads specified number of bytes from a blocking SSL connection.
+	 * @param ssl secure connection
+	 * @param buf stores the incoming data
+	 * @param bytes number of bytes to read
+	 * @return number of bytes transferred
 	 */
-	static size_t receiveStream(SSL *ssl, unsigned char *buf, size_t length);
+	static size_t receive(SSL *ssl, unsigned char *buf, size_t bytes);
 	/**
-	 * Writes exactly the given number bytes to a blocking SSL connection.
-	 * @param ssl pointer to secure connection object
+	 * Writes specified number bytes to a blocking SSL connection.
+	 * @param ssl secure connection
 	 * @param buf outgoing data buffer
-	 * @param length number of bytes to write
-	 * @return number of bytes written to the secure connection
+	 * @param bytes number of bytes to write
+	 * @return number of bytes transferred
 	 */
-	static size_t sendStream(SSL *ssl, const unsigned char *buf, size_t length);
+	static size_t send(SSL *ssl, const unsigned char *buf, size_t bytes);
 private:
-	//Install certificate and private key
 	bool installKeys(const char *certificate, const char *privateKey) noexcept;
-	//Clear the context
 	void clear() noexcept;
 private:
 	SSL_CTX *ctx { nullptr };

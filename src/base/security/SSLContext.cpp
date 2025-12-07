@@ -130,13 +130,13 @@ void SSLContext::clear() noexcept {
 	ctx = nullptr;
 }
 
-size_t SSLContext::receiveStream(SSL *ssl, unsigned char *buf, size_t length) {
-	if (!ssl || (!buf && length)) {
+size_t SSLContext::receive(SSL *ssl, unsigned char *buf, size_t bytes) {
+	if (!ssl || (!buf && bytes)) {
 		throw Exception(EX_ARGUMENT);
-	} else if (!length) {
+	} else if (!bytes) {
 		return 0;
 	} else {
-		auto toRecv = length;
+		auto toRecv = bytes;
 		size_t index = 0;
 		ssize_t n = 0;
 		while (toRecv != 0) {
@@ -147,18 +147,17 @@ size_t SSLContext::receiveStream(SSL *ssl, unsigned char *buf, size_t length) {
 				throw Exception(EX_SECURITY);
 			}
 		}
-		return (length - toRecv);
+		return (bytes - toRecv);
 	}
 }
 
-size_t SSLContext::sendStream(SSL *ssl, const unsigned char *buf,
-		size_t length) {
-	if (!ssl || (!buf && length)) {
+size_t SSLContext::send(SSL *ssl, const unsigned char *buf, size_t bytes) {
+	if (!ssl || (!buf && bytes)) {
 		throw Exception(EX_ARGUMENT);
-	} else if (!length) {
+	} else if (!bytes) {
 		return 0;
 	} else {
-		auto toSend = length;
+		auto toSend = bytes;
 		size_t index = 0;
 		ssize_t n = 0;
 		while (toSend != 0) {
@@ -169,7 +168,7 @@ size_t SSLContext::sendStream(SSL *ssl, const unsigned char *buf,
 				throw Exception(EX_SECURITY);
 			}
 		}
-		return (length - toSend);
+		return (bytes - toSend);
 	}
 }
 

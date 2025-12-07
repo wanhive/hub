@@ -208,7 +208,7 @@ void Endpoint::send(int sfd, Packet &packet, const PKI *pki) {
 	} else if (!packet.sign(pki)) {
 		throw Exception(EX_SECURITY);
 	} else {
-		Network::sendStream(sfd, packet.buffer(), packet.header().getLength());
+		Network::write(sfd, packet.buffer(), packet.header().getLength());
 	}
 }
 
@@ -218,8 +218,7 @@ void Endpoint::send(SSL *ssl, Packet &packet, const PKI *pki) {
 	} else if (!packet.sign(pki)) {
 		throw Exception(EX_SECURITY);
 	} else {
-		SSLContext::sendStream(ssl, packet.buffer(),
-				packet.header().getLength());
+		SSLContext::send(ssl, packet.buffer(), packet.header().getLength());
 	}
 }
 
@@ -228,7 +227,7 @@ void Endpoint::receive(int sfd, Packet &packet, unsigned int sequenceNumber,
 	packet.clear();
 	do {
 		//Receive the header
-		Network::receiveStream(sfd, packet.buffer(), HEADER_SIZE);
+		Network::read(sfd, packet.buffer(), HEADER_SIZE);
 
 		//Prepare the header and the frame buffer
 		if (!packet.unpackHeader()) {
@@ -237,7 +236,7 @@ void Endpoint::receive(int sfd, Packet &packet, unsigned int sequenceNumber,
 
 		//Receive the payload
 		auto payloadLength = packet.header().getLength() - HEADER_SIZE;
-		Network::receiveStream(sfd, packet.payload(), payloadLength);
+		Network::read(sfd, packet.payload(), payloadLength);
 	} while (sequenceNumber
 			&& (packet.header().getSequenceNumber() != sequenceNumber));
 
@@ -251,7 +250,7 @@ void Endpoint::receive(SSL *ssl, Packet &packet, unsigned int sequenceNumber,
 	packet.clear();
 	do {
 		//Receive the header
-		SSLContext::receiveStream(ssl, packet.buffer(), HEADER_SIZE);
+		SSLContext::receive(ssl, packet.buffer(), HEADER_SIZE);
 
 		//Prepare the header and the frame buffer
 		if (!packet.unpackHeader()) {
@@ -260,7 +259,7 @@ void Endpoint::receive(SSL *ssl, Packet &packet, unsigned int sequenceNumber,
 
 		//Receive the payload
 		auto payloadLength = packet.header().getLength() - HEADER_SIZE;
-		SSLContext::receiveStream(ssl, packet.payload(), payloadLength);
+		SSLContext::receive(ssl, packet.payload(), payloadLength);
 	} while (sequenceNumber
 			&& (packet.header().getSequenceNumber() != sequenceNumber));
 
