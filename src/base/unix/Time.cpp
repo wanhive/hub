@@ -99,15 +99,19 @@ timespec Time::convert(unsigned int milliseconds,
 	//These many seconds
 	ts.tv_sec = milliseconds / 1000;
 	//These many nanoseconds
-	auto nsec = ((milliseconds % 1000) * 1000000ULL) + nanoseconds;
+	auto nsec = ((milliseconds % 1000) * 1000000LL) + nanoseconds;
 	//Adjust for nanoseconds overflow
-	ts.tv_sec += (nsec / 1000000000UL);
-	ts.tv_nsec = (nsec % 1000000000UL);
+	ts.tv_sec += (nsec / 1000000000L);
+	ts.tv_nsec = (nsec % 1000000000L);
 	return ts;
 }
 
 double Time::convert(const timespec &ts) noexcept {
 	return (ts.tv_sec + (ts.tv_nsec / 1000000000.0));
+}
+
+long long Time::milliseconds(const timespec &ts) noexcept {
+	return ((ts.tv_sec * 1000LL) + (ts.tv_nsec / 1000000LL));
 }
 
 } /* namespace wanhive */

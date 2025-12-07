@@ -12,23 +12,22 @@
 
 #ifndef WH_HUB_ALARM_H_
 #define WH_HUB_ALARM_H_
+#include "../base/ds/Spatial.h"
 #include "../reactor/Watcher.h"
 
 namespace wanhive {
 /**
- * Millisecond resolution periodic timer
+ * Millisecond precision periodic timer
  * @note Abstraction of the Linux's timerfd mechanism (timerfd_create(2))
  */
 class Alarm final: public Watcher {
 public:
 	/**
-	 * Constructor: creates a new timer (doesn't start it).
-	 * @param expiration initial expiration in miliseconds (set 0 to disarm)
-	 * @param interval interval for periodic timer in milliseconds
+	 * Constructor: creates a new timer.
+	 * @param period timer's period
 	 * @param blocking true for blocking IO, false for non-blocking IO (default)
 	 */
-	Alarm(unsigned int expiration, unsigned int interval,
-			bool blocking = false);
+	Alarm(const Period &period, bool blocking = false);
 	/**
 	 * Destructor
 	 */
@@ -41,35 +40,27 @@ public:
 	//-----------------------------------------------------------------
 	/**
 	 * Reads the timer expiration count.
-	 * @param count object for storing the expiration count
+	 * @param count stores the expiration count
 	 * @return number of bytes read (8 bytes) on success, 0 if non-blocking mode
 	 * is on and the call would block, -1 if the file descriptor was closed.
 	 */
 	ssize_t read(unsigned long long &count);
 	/**
 	 * Resets timer's settings and restarts it.
-	 * @param expiration initial expiration in miliseconds (set 0 to disarm)
-	 * @param interval interval for periodic timer in milliseconds
+	 * @param period timer's period
 	 */
-	void reset(unsigned int expiration, unsigned int interval);
+	void reset(const Period &period);
 	/**
-	 * Returns the initial expiration in milliseconds.
-	 * @return initial expiration in milliseconds
+	 * Returns timer's current settings.
+	 * @return timer's period
 	 */
-	unsigned int getExpiration() const noexcept;
-	/**
-	 * Returns the periodic timer interval (repeated timer expiration after the
-	 * initial expiration) in milliseconds.
-	 * @return interval of periodic timer in milliseconds
-	 */
-	unsigned int getInterval() const noexcept;
+	const Period& getPeriod() const noexcept;
 private:
 	void create(bool blocking);
-	void update(unsigned int expiration, unsigned int interval);
-	void settings(unsigned int &expiration, unsigned int &interval);
+	void update(const Period &period);
+	void settings(Period &period);
 private:
-	unsigned int expiration;
-	unsigned int interval;
+	Period period;
 };
 
 } /* namespace wanhive */

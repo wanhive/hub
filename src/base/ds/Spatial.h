@@ -55,7 +55,7 @@ struct Color {
  */
 struct Period {
 	/*! Initial expiration */
-	unsigned int value;
+	unsigned int once;
 	/*! Repetition interval */
 	unsigned int interval;
 };

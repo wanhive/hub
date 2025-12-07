@@ -40,13 +40,11 @@ void Hub::cancel() noexcept {
 	setStatus(0);
 }
 
-void Hub::period(unsigned int &expiration, unsigned int &interval) noexcept {
+void Hub::period(Period &data) noexcept {
 	if (prime.alarm) {
-		expiration = prime.alarm->getExpiration();
-		interval = prime.alarm->getInterval();
+		data = prime.alarm->getPeriod();
 	} else {
-		expiration = 0;
-		interval = 0;
+		data = { 0, 0 };
 	}
 }
 
@@ -628,7 +626,7 @@ void Hub::initAlarm() {
 	Alarm *alarm = nullptr;
 	try {
 		if (ctx.expiration) {
-			alarm = new Alarm(ctx.expiration, ctx.interval);
+			alarm = new Alarm( { ctx.expiration, ctx.interval });
 			attach(alarm, IO_READ, (WATCHER_ACTIVE | WATCHER_CRITICAL));
 			prime.alarm = alarm;
 		} else {

@@ -77,18 +77,6 @@ private:
 	static double difference(unsigned long long start,
 			unsigned long long end) noexcept;
 public:
-	/** Nanoseconds in a Second */
-	static constexpr long NS_IN_SEC = 1000000000L;
-	/** Microseconds in a Second */
-	static constexpr long MS_IN_SEC = 1000000L;
-	/** Milliseconds in a Second */
-	static constexpr long MILS_IN_SEC = 1000L;
-	/** Nanoseconds in a Microsecond */
-	static constexpr long NS_IN_MS = (NS_IN_SEC / MS_IN_SEC);
-	/** Nanoseconds in a Millisecond */
-	static constexpr long NS_IN_MILS = (NS_IN_SEC / MILS_IN_SEC);
-	/** Microseconds in a Millisecond */
-	static constexpr long MS_IN_MILS = (MS_IN_SEC / MILS_IN_SEC);
 	/*! ISO8601 (UTC) format for date and time representation */
 	static constexpr const char *ISO8601_UTC_FMT = "%Y-%m-%dT%H:%M:%SZ";
 private:

@@ -11,6 +11,7 @@
  */
 
 #include "Timer.h"
+#include "ds/Spatial.h"
 #include "ds/Twiddler.h"
 #include "unix/Time.h"
 #include <cerrno>
@@ -37,7 +38,8 @@ void Timer::now() noexcept {
 
 bool Timer::hasTimedOut(unsigned int milliseconds) const noexcept {
 	if (milliseconds) {
-		auto diff = ((unsigned long long) milliseconds) * MS_IN_MILS;
+		auto diff = ((unsigned long long) milliseconds)
+				* Factor::MICRO_IN_MILLI;
 		auto mark = currentTime();
 		return (mark < t) || ((mark - t) > diff);
 	} else {
@@ -99,13 +101,13 @@ unsigned long long Timer::timeSeed() noexcept {
 unsigned long long Timer::currentTime() noexcept {
 	Time t(CLOCK_MONOTONIC); //Cannot fail
 	decltype(auto) ts = t.get();
-	return (((unsigned long long) ts.tv_sec * MS_IN_SEC)
-			+ (ts.tv_nsec / NS_IN_MS));
+	return (((unsigned long long) ts.tv_sec * Factor::MICRO)
+			+ (ts.tv_nsec / Factor::NANO_IN_MICRO));
 }
 
 double Timer::difference(unsigned long long start,
 		unsigned long long end) noexcept {
-	return ((double) (end - start) / (double) MS_IN_SEC);
+	return ((double) (end - start) / (double) Factor::MICRO);
 }
 
 } /* namespace wanhive */

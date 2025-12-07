@@ -13,27 +13,13 @@
 #include "Alarm.h"
 #include "Hub.h"
 #include "../base/unix/SystemException.h"
+#include "../base/unix/Time.h"
 #include <sys/timerfd.h>
-
-namespace {
-
-void milsToSpec(unsigned int milliseconds, timespec &ts) {
-	ts.tv_sec = milliseconds / wanhive::Timer::MILS_IN_SEC;
-	ts.tv_nsec = (milliseconds - (ts.tv_sec * wanhive::Timer::MILS_IN_SEC))
-			* wanhive::Timer::NS_IN_MILS;
-}
-
-long long specToMils(timespec &ts) {
-	return (((long long) ts.tv_sec * wanhive::Timer::MILS_IN_SEC)
-			+ (ts.tv_nsec / wanhive::Timer::NS_IN_MILS));
-}
-
-}  // namespace
 
 namespace wanhive {
 
-Alarm::Alarm(unsigned int expiration, unsigned int interval, bool blocking) :
-		expiration(expiration), interval(interval) {
+Alarm::Alarm(const Period &period, bool blocking) :
+		period { period } {
 	create(blocking);
 }
 
@@ -42,12 +28,12 @@ Alarm::~Alarm() {
 }
 
 void Alarm::start() {
-	update(expiration, interval);
+	update(period);
 }
 
 void Alarm::stop() noexcept {
 	try {
-		update(0, 0);
+		update( { 0, 0 });
 	} catch (const BaseException &e) {
 	}
 }
@@ -80,19 +66,14 @@ ssize_t Alarm::read(unsigned long long &count) {
 	}
 }
 
-void Alarm::reset(unsigned int expiration, unsigned int interval) {
-	update(expiration, interval);
+void Alarm::reset(const Period &period) {
+	update(period);
 	//Update the settings only if the system call succeeded
-	this->expiration = expiration;
-	this->interval = interval;
+	this->period = period;
 }
 
-unsigned int Alarm::getExpiration() const noexcept {
-	return expiration;
-}
-
-unsigned int Alarm::getInterval() const noexcept {
-	return interval;
+const Period& Alarm::getPeriod() const noexcept {
+	return period;
 }
 
 void Alarm::create(bool blocking) {
@@ -104,20 +85,20 @@ void Alarm::create(bool blocking) {
 	}
 }
 
-void Alarm::update(unsigned int expiration, unsigned int interval) {
+void Alarm::update(const Period &period) {
 	struct itimerspec time;
-	milsToSpec(expiration, time.it_value);
-	milsToSpec(interval, time.it_interval);
+	time.it_value = Time::convert(period.once, 0);
+	time.it_interval = Time::convert(period.interval, 0);
 	if (timerfd_settime(Descriptor::getHandle(), 0, &time, nullptr)) {
 		throw SystemException();
 	}
 }
 
-void Alarm::settings(unsigned int &expiration, unsigned int &interval) {
+void Alarm::settings(Period &period) {
 	struct itimerspec time;
 	if (timerfd_gettime(Descriptor::getHandle(), &time) == 0) {
-		expiration = specToMils(time.it_value);
-		interval = specToMils(time.it_interval);
+		period.once = Time::milliseconds(time.it_value);
+		period.interval = Time::milliseconds(time.it_interval);
 	} else {
 		throw SystemException();
 	}

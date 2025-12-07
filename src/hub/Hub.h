@@ -76,12 +76,11 @@ public:
 	void cancel() noexcept;
 protected:
 	/**
-	 * Reads the default periodic timer's settings. This method can be safely
-	 * called by the worker thread.
-	 * @param expiration initial expiration in milliseconds
-	 * @param interval interval in milliseconds
+	 * Reads the default periodic timer's settings in milliseconds. This method
+	 * can be safely called by the worker thread.
+	 * @param data timer's period
 	 */
-	void period(unsigned int &expiration, unsigned int &interval) noexcept;
+	void period(Period &data) noexcept;
 	/**
 	 * Reports events to the events counter. This method can be safely called
 	 * by the worker thread.

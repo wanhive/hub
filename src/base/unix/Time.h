@@ -108,6 +108,12 @@ public:
 	 * @return real-valued time in seconds
 	 */
 	static double convert(const timespec &ts) noexcept;
+	/**
+	 * Converts a time value to milliseconds.
+	 * @param ts time value
+	 * @return milliseconds
+	 */
+	static long long milliseconds(const timespec &ts) noexcept;
 private:
 	timespec ts;
 };
