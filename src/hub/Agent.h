@@ -53,29 +53,29 @@ protected:
 	void setPassword(const unsigned char *password, unsigned int length,
 			unsigned int rounds) noexcept;
 private:
-	//Connect to the authentication node
+	//Connect to an authentication hub
 	void connectToAuthenticator() noexcept;
 	//Connect to the overlay network
 	void connectToOverlay() noexcept;
 	//Checks whether the current stage is taking longer than expected to finish
-	bool checkStageTimeout(unsigned int milliseconds) const noexcept;
-	//Called by processIdentificationResponse
+	bool overdue(unsigned int milliseconds) const noexcept;
+	//Helper for identification routine
 	void initAuthentication() noexcept;
-	//Called by processFindRootResponse
+	//Helper for bootstrapping routine
 	void findRoot() noexcept;
-	//Called by processGetKeyResponse
+	//Helper for session key routine
 	void initAuthorization() noexcept;
 
 	Message* createIdentificationRequest();
-	void processIdentificationResponse(Message *msg) noexcept;
+	void processIdentificationResponse(const Message *msg) noexcept;
 
 	Message* createAuthenticationRequest();
-	void processAuthenticationResponse(Message *msg) noexcept;
+	void processAuthenticationResponse(const Message *msg) noexcept;
 
 	Message* createFindRootRequest();
-	void processFindRootResponse(Message *msg) noexcept;
+	void processFindRootResponse(const Message *msg) noexcept;
 
-	void processGetKeyResponse(Message *msg) noexcept;
+	void processTokenResponse(const Message *msg) noexcept;
 
 	Message* createRegistrationRequest(bool sign);
 	void processRegistrationResponse(Message *msg) noexcept;

@@ -88,7 +88,7 @@ void Agent::maintain() noexcept {
 		connectToAuthenticator();
 		break;
 	case WHC_AUTHENTICATE:
-		if (checkStageTimeout(ctx.timeout)) {
+		if (overdue(ctx.timeout)) {
 			setStage(WHC_ERROR);
 		}
 		break;
@@ -98,12 +98,12 @@ void Agent::maintain() noexcept {
 	case WHC_ROOT:
 	case WHC_GETKEY:
 	case WHC_AUTHORIZE:
-		if (checkStageTimeout(ctx.timeout)) {
+		if (overdue(ctx.timeout)) {
 			setStage(WHC_ERROR);
 		}
 		break;
 	case WHC_ERROR:
-		if (checkStageTimeout(ctx.pause)) {
+		if (overdue(ctx.pause)) {
 			setStage(WHC_IDENTIFY);
 		}
 		break;
@@ -155,7 +155,7 @@ void Agent::route(Message *message) noexcept {
 		} else if (qualifier == WH_QLF_REGISTER) {
 			processRegistrationResponse(message);
 		} else if (qualifier == WH_QLF_TOKEN) {
-			processGetKeyResponse(message);
+			processTokenResponse(message);
 		} else if (qualifier == WH_QLF_FINDROOT) {
 			processFindRootResponse(message);
 		} else {
@@ -282,7 +282,7 @@ void Agent::connectToOverlay() noexcept {
 	}
 }
 
-bool Agent::checkStageTimeout(unsigned int milliseconds) const noexcept {
+bool Agent::overdue(unsigned int milliseconds) const noexcept {
 	return bs.timer.hasTimedOut(milliseconds);
 }
 
@@ -390,7 +390,7 @@ Message* Agent::createIdentificationRequest() {
 	}
 }
 
-void Agent::processIdentificationResponse(Message *msg) noexcept {
+void Agent::processIdentificationResponse(const Message *msg) noexcept {
 	Data salt;
 	Data nonce;
 	if (!isStage(WHC_IDENTIFY)) {
@@ -433,7 +433,7 @@ Message* Agent::createAuthenticationRequest() {
 	}
 }
 
-void Agent::processAuthenticationResponse(Message *msg) noexcept {
+void Agent::processAuthenticationResponse(const Message *msg) noexcept {
 	Data proof;
 	if (!isStage(WHC_AUTHENTICATE)) {
 		setStage(WHC_ERROR);
@@ -463,7 +463,7 @@ Message* Agent::createFindRootRequest() {
 	}
 }
 
-void Agent::processFindRootResponse(Message *msg) noexcept {
+void Agent::processFindRootResponse(const Message *msg) noexcept {
 	uint64_t root { };
 	if (!isStage(WHC_BOOTSTRAP)) {
 		setStage(WHC_ERROR);
@@ -478,7 +478,7 @@ void Agent::processFindRootResponse(Message *msg) noexcept {
 	}
 }
 
-void Agent::processGetKeyResponse(Message *msg) noexcept {
+void Agent::processTokenResponse(const Message *msg) noexcept {
 	if (!isStage(WHC_GETKEY)) {
 		setStage(WHC_ERROR);
 	} else if (!bs.node || msg->getOrigin() != bs.node->getUid()) {
