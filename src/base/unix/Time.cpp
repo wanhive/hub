@@ -78,7 +78,17 @@ bool Time::now(clockid_t id, timespec &ts) noexcept {
 bool Time::now(clockid_t id, double &seconds) noexcept {
 	timespec ts;
 	if (now(id, ts)) {
-		seconds = Time::convert(ts);
+		seconds = Time::seconds(ts);
+		return true;
+	} else {
+		return false;
+	}
+}
+
+bool Time::now(clockid_t id, long long &milliseconds) noexcept {
+	timespec ts;
+	if (now(id, ts)) {
+		milliseconds = Time::milliseconds(ts);
 		return true;
 	} else {
 		return false;
@@ -106,7 +116,7 @@ timespec Time::convert(unsigned int milliseconds,
 	return ts;
 }
 
-double Time::convert(const timespec &ts) noexcept {
+double Time::seconds(const timespec &ts) noexcept {
 	return (ts.tv_sec + (ts.tv_nsec / 1000000000.0));
 }
 

@@ -84,10 +84,18 @@ public:
 	/**
 	 * Wrapper for clock_gettime(2): retrieves time of a clock.
 	 * @param id clock's identifier
-	 * @param seconds stores the real-valued time in seconds
+	 * @param seconds stores the seconds value
 	 * @return true on success, false on error
 	 */
 	static bool now(clockid_t id, double &seconds) noexcept;
+	/**
+	 * Wrapper for clock_gettime(2): retrieves time of a clock.
+	 * @param id clock's identifier
+	 * @param milliseconds stores the milliseconds value
+	 * @return true on success, false on error
+	 */
+	static bool now(clockid_t id, long long &milliseconds) noexcept;
+	//-----------------------------------------------------------------
 	/**
 	 * Calculates a future time value.
 	 * @param ts original time value as input, future time value as output
@@ -101,17 +109,17 @@ public:
 	 * @return time value
 	 */
 	static timespec convert(unsigned int milliseconds,
-			unsigned int nanoseconds) noexcept;
+			unsigned int nanoseconds = 0) noexcept;
 	/**
 	 * Converts a time value to seconds.
 	 * @param ts time value
-	 * @return real-valued time in seconds
+	 * @return seconds value
 	 */
-	static double convert(const timespec &ts) noexcept;
+	static double seconds(const timespec &ts) noexcept;
 	/**
 	 * Converts a time value to milliseconds.
 	 * @param ts time value
-	 * @return milliseconds
+	 * @return milliseconds value
 	 */
 	static long long milliseconds(const timespec &ts) noexcept;
 private:
