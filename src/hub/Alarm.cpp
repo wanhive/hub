@@ -87,8 +87,8 @@ void Alarm::create(bool blocking) {
 
 void Alarm::update(const Period &period) {
 	struct itimerspec time;
-	time.it_value = Time::convert(period.once, 0);
-	time.it_interval = Time::convert(period.interval, 0);
+	time.it_value = Time::convert(period.once);
+	time.it_interval = Time::convert(period.interval);
 	if (timerfd_settime(Descriptor::getHandle(), 0, &time, nullptr)) {
 		throw SystemException();
 	}
