@@ -5,7 +5,7 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased]
+## [16.0.0] - 2025-12-09
 
 ### Added
 
@@ -17,12 +17,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
-- Clean up authentication hub.
-- Clean up overlay hub.
-- Clean up application manager.
-- Streamline mutual authentication mechanism.
-- Backward-incompatible library interfaces.
-- Backward-incompatible configuration options.
+- Clean up the authentication hub.
+- Clean up the overlay hub.
+- Clean up the application manager.
+- Streamline the mutual authentication mechanism.
+- Update the message handling routines.
+- Update the basic network management routines.
+- Update the time keeping routines.
+- Update the IO multiplexer.
+- Update the watcher interfaces.
+- Update the **configuration** options.
+
+### Fixed
+
+- Strictly check system-call errors in **TurnGate**.
 
 ## [15.0.0] - 2025-10-21
 
