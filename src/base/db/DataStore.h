@@ -27,7 +27,7 @@ using DBHealth = PGHealth;
 /**
  * PostgreSQL-based structured data repository
  */
-class DataStore {
+class DataStore: private NonCopyable {
 public:
 	/**
 	 * Constructor: creates an empty repository.

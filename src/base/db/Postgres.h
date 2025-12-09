@@ -12,6 +12,7 @@
 
 #ifndef WH_BASE_DB_POSTGRES_H_
 #define WH_BASE_DB_POSTGRES_H_
+#include "../common/NonCopyable.h"
 #include <postgresql/libpq-fe.h>
 
 namespace wanhive {
@@ -55,7 +56,7 @@ enum class PGPoll {
  * PostgreSQL connection manager
  * @ref https://www.postgresql.org/docs/current/libpq.html
  */
-class Postgres {
+class Postgres: private NonCopyable {
 public:
 	/**
 	 * Constructor
