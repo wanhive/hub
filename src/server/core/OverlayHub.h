@@ -24,9 +24,9 @@ namespace wanhive {
 class OverlayHub final: public Hub, private Node {
 public:
 	/**
-	 * Constructor: creates a new hub.
+	 * Constructor: creates an overlay hub.
 	 * @param uid hub's identifier
-	 * @param path configuration file's pathname (nullptr for default)
+	 * @param path configuration file's path (nullptr for default)
 	 */
 	OverlayHub(unsigned long long uid, const char *path = nullptr);
 	/**
@@ -137,13 +137,13 @@ private:
 	unsigned long long nonceToId(const Digest *hc) const noexcept;
 	//Worker task's connection ID (hub's ID if no worker)
 	unsigned long long getWorker() const noexcept;
-	//Check whether the ID belongs to the worker task's connection
+	//Checks whether the <id> belongs to the worker task
 	bool isWorker(unsigned long long uid) const noexcept;
-	//Can the connection <uid> send privileged requests
+	//Checks whether connection <uid> can send privileged requests
 	bool isPrivileged(unsigned long long uid) const noexcept;
-	//Returns true if this hub is part of overlay network (excl. Controller)
+	//Checks if this hub is part of overlay network (excl. Controller)
 	bool isSuperNode() const noexcept;
-	//Returns true if <uid> equals this hub's key
+	//Returns true if <uid> equals this hub's identifier
 	bool isHost(unsigned long long uid) const noexcept;
 	//Returns true if <uid> belongs to controller
 	static bool isController(unsigned long long uid) noexcept;
@@ -155,28 +155,28 @@ private:
 	static bool isEphemeral(unsigned long long uid) noexcept;
 	//-----------------------------------------------------------------
 	/*
-	 * Create and register a local unix socket, return the other end in <sfd>.
+	 * Creates a local unix socket connection, returning the other end in <sfd>.
 	 * If <blocking> is true then <sfd> is configured as a blocking socket with
-	 * the given <timeout>. Setting <timeout> to zero (0) will make <sfd> to
+	 * the given IO <timeout>. Setting <timeout> to zero (0) will make <sfd> to
 	 * block forever. The returned Watcher is always nonblocking.
 	 */
 	Watcher* connect(int &sfd, bool blocking = false, int timeout = 0);
-	//Establish connection with the remote hub <id> asynchronously
+	//Connects with a remote hub <id> asynchronously
 	Watcher* connect(unsigned long long id, Digest *hc);
 	/*
-	 * Creates an outgoing Socket connection to a remote node specified by <id>.
-	 * Returns a unique session identifier in <hc>.
+	 * Creates an outgoing Socket connection to a remote node <id>.
+	 * Returns a unique session token in <hc>.
 	 */
 	Watcher* createProxyConnection(unsigned long long id, Digest *hc);
 	/*
 	 * Purges connections of particular type.
 	 * <mode>: 0[TEMPORARY]; 1[INVALID]; DEFAULT[TEMPORARY|CLIENT]
-	 * <target>: If not zero then at most these many connections will be purged.
+	 * <target>: Maximum number of connections to purge (0 = no limit).
 	 */
 	unsigned int reap(int mode, unsigned int target = 0) noexcept;
-	//Remove active connections which no longer belong here
+	//Removes invalid active connections after network churn
 	static int reapInvalid(Watcher *w, void *arg) noexcept;
-	//Remove client connections
+	//Removes client connections
 	static int reapClient(Watcher *w, void *arg) noexcept;
 	//-----------------------------------------------------------------
 	//Resets the internal state
@@ -234,7 +234,7 @@ private:
 	 */
 	//For authentication of proxy connections, +1 for the controller
 	Digest sessions[TABLESIZE + 1];
-	//Message digests generator
+	//Cryptographic hash function provider
 	Hash hash;
 	//-----------------------------------------------------------------
 	/*
@@ -256,7 +256,7 @@ private:
 	} watchlist[WATCHLIST_SIZE];
 	//-----------------------------------------------------------------
 	/*
-	 * For multicasting: 256 topics in the range [0-255] are available
+	 * For Pub/Sub: 256 topics in the range [0-255] are available
 	 */
 	Topics topics;
 	//-----------------------------------------------------------------

@@ -17,7 +17,7 @@
 
 namespace {
 
-/* Connection purge types */
+/* Connection purge modes */
 enum PurgeType {
 	PURGE_TEMPORARY, PURGE_INVALID, PURGE_CLIENT
 };
@@ -491,7 +491,7 @@ int OverlayHub::enroll(unsigned long long source,
 bool OverlayHub::authenticate(const Message *request) noexcept {
 	/*
 	 * 1. Confirm that the requested ID is valid
-	 * 2. Analyze the security features (to prevent attacks)
+	 * 2. Analyze the security features
 	 * 3. Impose rate limit
 	 */
 	auto origin = request->getOrigin();
@@ -522,9 +522,9 @@ bool OverlayHub::validate(unsigned long long source,
 		unsigned long long request) const noexcept {
 	/*
 	 * 1. Registration should be enabled
-	 * 2. Only fresh request and the Requested ID must be an Active ID
+	 * 2. Only fresh request and the requested ID must be an Active ID
 	 * 3. Requested ID cannot be one of the Host/Controller/Worker IDs
-	 * 4. Requested Client ID must be "local"
+	 * 4. Requested client ID must be "local"
 	 */
 	if (!ctx.enroll) {
 		//CASE 1
@@ -613,9 +613,9 @@ bool OverlayHub::corroborate(const Message *response) const noexcept {
 
 unsigned long long OverlayHub::gateway(unsigned long long to) const noexcept {
 	/*
-	 * CASE 1: destination is "local" or <destination> = <Controller>
+	 * CASE 1: destination is "local" or "controller"
 	 * In such case do nothing and allow the server take care of it
-	 * This is always the case with a stand-alone server
+	 * That is always the case with a stand-alone server
 	 *
 	 * CASE 2: Destination lies somewhere else on the network
 	 * FIND THE NEXT HOP
@@ -825,9 +825,8 @@ bool OverlayHub::handleRegistrationRequest(Message *msg) noexcept {
 	//-----------------------------------------------------------------
 	/*
 	 * [PROXY ESTABLISHMENT]
-	 * In case a Proxy Connection with the remote node is being established by the
-	 * local node, we might receive a <ACCEPTED> or a <REJECTED> message over the
-	 * proxy connection. In such case no further processing is needed
+	 * If a proxy connection with a remote node is in progress, we might have
+	 * received an accepted/rejected message.
 	 */
 	if (msg->isType(SOCKET_PROXY) && msg->getStatus() != WH_DHT_AQLF_REQUEST) {
 		msg->setDestination(origin);
@@ -876,10 +875,9 @@ bool OverlayHub::handleTokenRequest(Message *msg) noexcept {
 	//-----------------------------------------------------------------
 	/*
 	 * [PROXY ESTABLISHMENT]
-	 * In case a Proxy Connection with the remote node is being established by
-	 * the local node, we might receive a nonce from the remote node if such a
-	 * request was made. Send a registration request to complete the process.
-	 * [GetKey request -> receive nonce -> Registration request -> activate]
+	 * If a proxy connection with a remote node is in progress, we might have
+	 * received a session key. Send back a registration request to complete
+	 * the process.
 	 */
 	if (msg->isType(SOCKET_PROXY) && msg->getStatus() != WH_DHT_AQLF_REQUEST) {
 		//Check message integrity
@@ -1551,7 +1549,7 @@ Watcher* OverlayHub::createProxyConnection(unsigned long long id, Digest *hc) {
 		Identity::getAddress(id, ni);
 		conn = new Socket(ni);
 		//-----------------------------------------------------------------
-		//A getKey request is automatically sent out
+		//A session key request is automatically sent out
 		generateNonce(hash, conn->getUid(), getUid(), hc);
 		auto msg = Protocol::createTokenRequest( { 0, id },
 				{ verifyHost() ? getPKI() : nullptr, hc }, nullptr);
