@@ -16,6 +16,7 @@
 #include "unix/Fcntl.h"
 #include "unix/SystemException.h"
 #include <cerrno>
+#include <cstdio>
 #include <sys/un.h>
 #include <sys/stat.h>
 

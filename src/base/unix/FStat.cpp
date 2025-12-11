@@ -13,6 +13,7 @@
 #include "FStat.h"
 #include "SystemException.h"
 #include "../common/Exception.h"
+#include <cstdio>
 #include <cstring>
 #include <sys/sysmacros.h>
 
