@@ -19,15 +19,15 @@
 
 namespace wanhive {
 
-SSLContext *Socket::sslCtx = nullptr;
+SSLContext *Socket::sslCtx { };
 
 Socket::Socket(int fd) noexcept :
-		Pooled(0), Watcher(fd) {
+		Pooled { 0 }, Watcher { fd } {
 	clear();
 }
 
 Socket::Socket(SSL *ssl) :
-		Pooled(0) {
+		Pooled { 0 } {
 	clear();
 	if (ssl && sslCtx && sslCtx->inContext(ssl)) {
 		secure.ssl = ssl;
@@ -38,7 +38,7 @@ Socket::Socket(SSL *ssl) :
 }
 
 Socket::Socket(const NameInfo &ni, bool blocking, int timeout) :
-		Pooled(0) {
+		Pooled { 0 } {
 	try {
 		clear();
 		SocketAddress sa;
@@ -61,7 +61,7 @@ Socket::Socket(const NameInfo &ni, bool blocking, int timeout) :
 }
 
 Socket::Socket(const char *service, int backlog, bool isUnix, bool blocking) :
-		Pooled(0) {
+		Pooled { 0 } {
 	try {
 		clear();
 		SocketAddress sa;
@@ -505,10 +505,6 @@ void Socket::fixEgress(size_t bytes) noexcept {
 }
 
 void Socket::clear() noexcept {
-	memset(&secure, 0, sizeof(secure));
-	received = nullptr;
-	traffic = { 0, 0 };
-	backlog = 0;
 	egress.rewind();
 }
 

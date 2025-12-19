@@ -60,7 +60,7 @@ private:
 	};
 private:
 	Runner runner;
-	Thread *thread { nullptr };
+	Thread *thread { };
 };
 
 } /* namespace wanhive */

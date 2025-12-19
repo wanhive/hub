@@ -168,8 +168,8 @@ private:
 	bool verifyHost(const Data &proof) noexcept;
 private:
 	const bool _host;
-	unsigned long long _identity { 0 };
-	bool _verified { false };
+	unsigned long long _identity { };
+	bool _verified { };
 };
 
 } /* namespace wanhive */

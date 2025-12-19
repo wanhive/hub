@@ -155,7 +155,7 @@ public:
 	};
 private:
 	//Unique ID of the currently running instance
-	InstanceID *instanceId { nullptr };
+	InstanceID *instanceId { };
 	//Application's properties
 	Options options;
 	//The hosts database
@@ -164,35 +164,35 @@ private:
 	//For authentication
 	struct {
 		PKI pki;
-		bool enabled { false };
-		bool verify { false };
+		bool enabled { };
+		bool verify { };
 	} auth;
 
 	//For SSL/TLS
 	struct {
 		SSLContext ctx;
-		bool enabled { false };
+		bool enabled { };
 	} ssl;
 
 	struct {
 		//Configuration file's pathname from the command line
-		char *config { nullptr };
+		char *config { };
 		//Configuration file's resolved pathname
-		char *options { nullptr };
+		char *options { };
 		//Hosts database file's pathname
-		char *hostsDB { nullptr };
+		char *hostsDB { };
 		//Clear text hosts file's pathname
-		char *hostsFile { nullptr };
+		char *hostsFile { };
 		//Private key file's pathname
-		char *privateKey { nullptr };
+		char *privateKey { };
 		//Public key file's pathname
-		char *publicKey { nullptr };
+		char *publicKey { };
 		//SSL trusted certificate chain file's pathname
-		char *sslRoot { nullptr };
+		char *sslRoot { };
 		//SSL certificate chain file's pathname
-		char *sslCertificate { nullptr };
+		char *sslCertificate { };
 		//SSL private key file's pathname
-		char *sslHostKey { nullptr };
+		char *sslHostKey { };
 	} paths;
 };
 

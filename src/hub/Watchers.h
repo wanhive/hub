@@ -109,8 +109,8 @@ private:
 	static int _iterator(unsigned int index, void *arg);
 private:
 	Kmap<unsigned long long, Watcher*> watchers;
-	int (*itfn)(Watcher*, void*) {nullptr};
-	void *itfnarg { nullptr };
+	int (*itfn)(Watcher*, void*) {};
+	void *itfnarg { };
 };
 
 } /* namespace wanhive */

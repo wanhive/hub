@@ -195,23 +195,23 @@ private:
 	Topic subscriptions;
 	//-----------------------------------------------------------------
 	struct {
-		SSL *ssl; //Secure connection
-		bool callRead; //Call read instead of write
-		bool callWrite; //Call write instead of read
-		bool verified; //Host certificate verified
+		SSL *ssl { }; //Secure connection
+		bool callRead { }; //Call read instead of write
+		bool callWrite { }; //Call write instead of read
+		bool verified { }; //Host certificate verified
 	} secure;
 	//-----------------------------------------------------------------
 	//Traffic statistics
 	struct {
 		//Received messages count
-		unsigned long long in;
+		unsigned long long in { };
 		//Sent messages count
-		unsigned long long out;
+		unsigned long long out { };
 	} traffic;
-	//Limit on the queued up outgoing messages count
-	unsigned int backlog;
+	//Maximum limit for the number of queued outgoing messages
+	unsigned int backlog { };
 	//Serialized I/P
-	Message *received;
+	Message *received { };
 	//Collection of incoming raw bytes
 	StaticCircularBuffer<unsigned char, READ_BUFFER_SIZE> in;
 	//Collection of outgoing messages

@@ -193,9 +193,9 @@ public:
 			0, const PKI *pki = nullptr);
 private:
 	int sockfd { -1 }; //Socket file descriptor
-	SSL *ssl { nullptr };  //SSL/TLS connection
-	SSLContext *sslContext { nullptr }; //SSL/TLS context
-	const PKI *pki { nullptr }; //Keys for asymmetric cryptography
+	SSL *ssl { };  //SSL/TLS connection
+	SSLContext *sslContext { }; //SSL/TLS context
+	const PKI *pki { }; //Keys for asymmetric cryptography
 };
 
 } /* namespace wanhive */
