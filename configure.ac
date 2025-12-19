@@ -4,7 +4,7 @@
 AC_PREREQ([2.71])
 AC_INIT([wanhive], [16.0.0], [info@wanhive.com], , [www.wanhive.com])
 AC_CONFIG_AUX_DIR([config])
-AM_INIT_AUTOMAKE([foreign subdir-objects])
+AM_INIT_AUTOMAKE([-Wall -Werror foreign subdir-objects])
 AC_CONFIG_SRCDIR([src/wanhive-reactor.h])
 AC_CONFIG_HEADERS([src/config.h])
 AC_CONFIG_MACRO_DIRS([m4])
@@ -26,6 +26,7 @@ AC_PROG_CXX([g++])
 AC_PROG_CC([gcc])
 ## https://www.gnu.org/software/autoconf-archive/ax_cxx_compile_stdcxx.html
 AX_CXX_COMPILE_STDCXX(17, [noext], [mandatory])
+AM_PROG_AR
 
 # Checks for libraries.
 LT_INIT

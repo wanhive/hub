@@ -130,56 +130,31 @@ WH_TOPHEADERS = wanhive-base.h wanhive-reactor.h wanhive-util.h wanhive-hub.h wa
 
 # --- SOURCE FILES DECLARATIONS END ---
 
-AM_CXXFLAGS = -Wall
+AM_CXXFLAGS = -Wall -Werror
 
 if WH_WITH_EXECUTABLES
 bin_PROGRAMS = wanhive
 wanhive_SOURCES = $(WH_SERVERHEADERS) $(WH_SERVERSOURCES) $(WH_TESTHEADERS) \
 	$(WH_TESTSOURCES) $(WH_VERHEADERS) $(WH_APPHEADERS) $(WH_APPSOURCES)
-wahhive_CXXFLAGS = -Wall
+wanhive_CXXFLAGS = -Wall
 wanhive_LDADD = libwanhive.la
 endif
 
 lib_LTLIBRARIES = libwanhive.la
-libwanhive_la_CXXFLAGS = -Wall -DWH_CONF_SYSTEM_BASE='"@sysconfdir@"'
+libwanhive_la_CXXFLAGS = $(AM_CXXFLAGS) -DWH_CONF_SYSTEM_BASE='"@sysconfdir@"'
 # https://www.gnu.org/software/libtool/manual/html_node/Updating-version-info.html
 libwanhive_la_LDFLAGS = -version-info @WH_LIB_VERSION@
 libwanhive_la_SOURCES = $(WH_BASEHEADERS) $(WH_BASESOURCES) $(WH_REACTORHEADERS) \
 	$(WH_REACTORSOURCES) $(WH_UTILHEADERS) $(WH_UTILSOURCES) $(WH_HUBHEADERS) \
 	$(WH_HUBSOURCES) $(WH_TOPHEADERS) $(WH_VERHEADERS) $(WH_VERSOURCES)
 
+# --- Library headers ---
 # https://www.gnu.org/software/automake/manual/html_node/Uniform.html
-topincludedir = $(pkgincludedir)
-topinclude_HEADERS = $(WH_TOPHEADERS)
+# https://www.gnu.org/software/automake/manual/html_node/Headers.html
+nobase_pkginclude_HEADERS = $(WH_TOPHEADERS) $(WH_BASE_TOPHEADERS) \
+	$(WH_BASE_COMMONHEADERS) $(WH_BASE_DBHEADERS) $(WH_BASE_DSHEADERS) \
+	$(WH_BASE_IPCHEADERS) $(WH_BASE_SECURITYHEADERS) $(WH_BASEUNIXHEADERS) \
+	$(WH_REACTORHEADERS) $(WH_UTILHEADERS) $(WH_HUBHEADERS)
 
-baseincludedir = $(pkgincludedir)/base
-baseinclude_HEADERS= $(WH_BASE_TOPHEADERS)
-
-basecommonincludedir = $(pkgincludedir)/base/common
-basecommoninclude_HEADERS = $(WH_BASE_COMMONHEADERS)
-
-basedbincludedir = $(pkgincludedir)/base/db
-basedbinclude_HEADERS = $(WH_BASE_DBHEADERS)
-
-basedsincludedir = $(pkgincludedir)/base/ds
-basedsinclude_HEADERS = $(WH_BASE_DSHEADERS)
-
-baseipcincludedir = $(pkgincludedir)/base/ipc
-baseipcinclude_HEADERS = $(WH_BASE_IPCHEADERS)
-
-basesecurityincludedir = $(pkgincludedir)/base/security
-basesecurityinclude_HEADERS = $(WH_BASE_SECURITYHEADERS)
-
-baseunixincludedir = $(pkgincludedir)/base/unix
-baseunixinclude_HEADERS = $(WH_BASEUNIXHEADERS)
-
-reactorincludedir = $(pkgincludedir)/reactor
-reactorinclude_HEADERS = $(WH_REACTORHEADERS)
-
-utilincludedir = $(pkgincludedir)/util
-utilinclude_HEADERS = $(WH_UTILHEADERS)
-
-hubincludedir = $(pkgincludedir)/hub
-hubinclude_HEADERS= $(WH_HUBHEADERS)
-
+# --- pkg-config metadata file ---
 pkgconfig_DATA = wanhive.pc
