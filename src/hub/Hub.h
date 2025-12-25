@@ -259,11 +259,10 @@ private:
 	/**
 	 * Adapter: callback for byte stream.
 	 * @param id source identifier
-	 * @param sink stream's sink
-	 * @param source stream's source
+	 * @param channel bidirectional channel
 	 */
-	virtual void onStream(unsigned long long id, Sink<unsigned char> &sink,
-			Source<unsigned char> &source) noexcept;
+	virtual void onStream(unsigned long long id,
+			Duplex<unsigned char> &channel) noexcept;
 	//-----------------------------------------------------------------
 	/*
 	 * Handler interface implementations

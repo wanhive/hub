@@ -384,8 +384,8 @@ void Hub::onLogic(unsigned long long uid, const LogicEvent &event) noexcept {
 
 }
 
-void Hub::onStream(unsigned long long id, Sink<unsigned char> &sink,
-		Source<unsigned char> &source) noexcept {
+void Hub::onStream(unsigned long long id,
+		Duplex<unsigned char> &channel) noexcept {
 
 }
 
@@ -894,7 +894,7 @@ bool Hub::processStream(Stream *stream) noexcept {
 			return disable(stream);
 		}
 		//-----------------------------------------------------------------
-		onStream(stream->getUid(), *stream, *stream);
+		onStream(stream->getUid(), *stream);
 		return stream->isReady();
 	} catch (const BaseException &e) {
 		WH_LOG_EXCEPTION(e);

@@ -17,6 +17,7 @@
 #include "base/common/Atomic.h"
 #include "base/common/BaseException.h"
 #include "base/common/CommandLine.h"
+#include "base/common/Duplex.h"
 #include "base/common/Exception.h"
 #include "base/common/Logger.h"
 #include "base/common/Memory.h"

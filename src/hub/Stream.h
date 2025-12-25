@@ -13,18 +13,14 @@
 #ifndef WH_HUB_STREAM_H_
 #define WH_HUB_STREAM_H_
 #include "../reactor/Watcher.h"
-#include "../base/common/Sink.h"
-#include "../base/common/Source.h"
+#include "../base/common/Duplex.h"
 #include "../base/ds/StaticCircularBuffer.h"
 
 namespace wanhive {
 /**
  * Byte stream watcher
- * @note For lightweight real-time data streams
  */
-class Stream final: public Sink<unsigned char>,
-		public Source<unsigned char>,
-		public Watcher {
+class Stream final: public Duplex<unsigned char>, public Watcher {
 public:
 	/**
 	 * Constructor: assigns a file descriptor.
