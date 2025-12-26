@@ -69,6 +69,7 @@
 #include "base/TurnGate.h"
 #include "base/security/CryptoUtils.h"
 #include "base/security/CSPRNG.h"
+#include "base/security/Ed25519.h"
 #include "base/security/KeyPair.h"
 #include "base/security/Rsa.h"
 #include "base/security/Sha.h"
