@@ -75,6 +75,7 @@
 #include "base/security/Sha.h"
 #include "base/security/Srp.h"
 #include "base/security/SSLContext.h"
+#include "base/security/X25519.h"
 #include "base/unix/Config.h"
 #include "base/unix/Directory.h"
 #include "base/unix/Environment.h"

@@ -78,6 +78,7 @@
 #include "base/security/Sha.h"
 #include "base/security/Srp.h"
 #include "base/security/SSLContext.h"
+#include "base/security/X25519.h"
 
 /*
  * System library
