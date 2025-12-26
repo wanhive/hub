@@ -13,7 +13,7 @@
 #ifndef WH_BASE_SECURITY_RSA_H_
 #define WH_BASE_SECURITY_RSA_H_
 #include"../common/NonCopyable.h"
-#include <openssl/rsa.h>
+#include <openssl/evp.h>
 
 namespace wanhive {
 /**
@@ -154,7 +154,7 @@ private:
 	static EVP_PKEY* createFromFile(const char *filename, bool isPublicKey,
 			char *password) noexcept;
 	//Validates the keys
-	static bool verifyRSAKey(EVP_PKEY *key) noexcept;
+	static bool verifyRSAKey(const EVP_PKEY *key) noexcept;
 	static void destroyKey(EVP_PKEY *key) noexcept;
 	//Used for key pair generation
 	static EVP_PKEY* generateRSAKey(int bits) noexcept;
@@ -163,8 +163,8 @@ private:
 			bool isPublicKey, char *password = nullptr,
 			const EVP_CIPHER *cipher = nullptr) noexcept;
 private:
-	EVP_PKEY *_public { nullptr };
-	EVP_PKEY *_private { nullptr };
+	EVP_PKEY *_public { };
+	EVP_PKEY *_private { };
 };
 
 } /* namespace wanhive */

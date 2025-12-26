@@ -12,11 +12,8 @@
 
 #include "Rsa.h"
 #include "../Storage.h"
-#include <cstring>
-#include <openssl/bio.h>
-#include <openssl/evp.h>
 #include <openssl/pem.h>
-#include <openssl/sha.h>
+#include <cstring>
 
 namespace wanhive {
 
@@ -306,8 +303,8 @@ EVP_PKEY* Rsa::createFromFile(const char *filename, bool isPublicKey,
 	return rsa;
 }
 
-bool Rsa::verifyRSAKey(EVP_PKEY *key) noexcept {
-	return key && EVP_PKEY_is_a(key, "RSA") == 1;
+bool Rsa::verifyRSAKey(const EVP_PKEY *key) noexcept {
+	return key && (EVP_PKEY_get_id(key) == EVP_PKEY_RSA);
 }
 
 void Rsa::destroyKey(EVP_PKEY *key) noexcept {
