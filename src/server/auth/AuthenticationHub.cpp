@@ -268,7 +268,7 @@ void AuthenticationHub::setup() {
 		things.setCommand(dbi.command);
 		things.open(dbi.info);
 	} else {
-		throw Exception(EX_OPERATION);
+		throw Exception(EX_INDEX);
 	}
 }
 
