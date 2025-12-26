@@ -11,76 +11,23 @@
  */
 
 #include "Rsa.h"
-#include "../Storage.h"
 #include <openssl/pem.h>
-#include <cstring>
 
 namespace wanhive {
 
-Rsa::Rsa() noexcept {
+Rsa::Rsa() noexcept :
+		KeyPair { EVP_PKEY_RSA } {
 
 }
 
 Rsa::~Rsa() {
-	reset();
-}
 
-bool Rsa::init(const char *privateKey, const char *publicKey, bool fromFile,
-		char *password) noexcept {
-	loadPublicKey(publicKey, fromFile);
-	loadPrivateKey(privateKey, fromFile, password);
-
-	return (!privateKey || _private) && (!publicKey || _public);
-}
-
-void Rsa::reset() noexcept {
-	freePublicKey();
-	freePrivateKey();
-}
-
-bool Rsa::loadPrivateKey(const char *privateKey, bool fromFile,
-		char *password) noexcept {
-	freePrivateKey();
-	if (fromFile) {
-		_private = createFromFile(privateKey, false, password);
-	} else {
-		_private = create(privateKey, false, password);
-	}
-	return _private != nullptr;
-}
-
-bool Rsa::loadPublicKey(const char *publicKey, bool fromFile) noexcept {
-	freePublicKey();
-	if (fromFile) {
-		_public = createFromFile(publicKey, true, nullptr);
-	} else {
-		_public = create(publicKey, true, nullptr);
-	}
-	return _public != nullptr;
-}
-
-void Rsa::freePrivateKey() noexcept {
-	destroyKey(_private);
-	_private = nullptr;
-}
-
-void Rsa::freePublicKey() noexcept {
-	destroyKey(_public);
-	_public = nullptr;
-}
-
-bool Rsa::hasPrivateKey() const noexcept {
-	return _private != nullptr;
-}
-
-bool Rsa::hasPublicKey() const noexcept {
-	return _public != nullptr;
 }
 
 bool Rsa::encrypt(const unsigned char *data, unsigned int dataLength,
 		unsigned char *encrypted, unsigned int *encryptedLength) const noexcept {
-	if (_public && (!dataLength || data) && encryptedLength) {
-		auto ctx = EVP_PKEY_CTX_new(_public, nullptr);
+	if (getPublicKey() && (!dataLength || data) && encryptedLength) {
+		auto ctx = EVP_PKEY_CTX_new(getPublicKey(), nullptr);
 		if (!ctx) {
 			return false;
 		}
@@ -113,8 +60,8 @@ bool Rsa::encrypt(const unsigned char *data, unsigned int dataLength,
 
 bool Rsa::decrypt(const unsigned char *data, unsigned int dataLength,
 		unsigned char *decrypted, unsigned int *decryptedLength) const noexcept {
-	if (_private && (!dataLength || data) && decryptedLength) {
-		auto ctx = EVP_PKEY_CTX_new(_private, nullptr);
+	if (getPrivateKey() && (!dataLength || data) && decryptedLength) {
+		auto ctx = EVP_PKEY_CTX_new(getPrivateKey(), nullptr);
 		if (!ctx) {
 			return false;
 		}
@@ -146,7 +93,7 @@ bool Rsa::decrypt(const unsigned char *data, unsigned int dataLength,
 
 bool Rsa::sign(const unsigned char *data, unsigned int dataLength,
 		unsigned char *signature, unsigned int *signatureLength) const noexcept {
-	if (_private && (!dataLength || data) && signatureLength) {
+	if (getPrivateKey() && (!dataLength || data) && signatureLength) {
 		unsigned char md[SHA_DIGEST_LENGTH];
 		unsigned int mdLength = 0;
 		auto type = EVP_sha1();
@@ -155,7 +102,7 @@ bool Rsa::sign(const unsigned char *data, unsigned int dataLength,
 			return false;
 		}
 
-		auto ctx = EVP_PKEY_CTX_new(_private, nullptr);
+		auto ctx = EVP_PKEY_CTX_new(getPrivateKey(), nullptr);
 		if (!ctx) {
 			return false;
 		}
@@ -191,8 +138,9 @@ bool Rsa::sign(const unsigned char *data, unsigned int dataLength,
 }
 
 bool Rsa::verify(const unsigned char *data, unsigned int dataLength,
-		unsigned char *signature, unsigned int signatureLength) const noexcept {
-	if (_public && (!dataLength || data) && signature) {
+		const unsigned char *signature,
+		unsigned int signatureLength) const noexcept {
+	if (getPublicKey() && (!dataLength || data) && signature) {
 		unsigned char md[SHA_DIGEST_LENGTH];
 		unsigned int mdLength = 0;
 		auto type = EVP_sha1();
@@ -201,7 +149,7 @@ bool Rsa::verify(const unsigned char *data, unsigned int dataLength,
 			return false;
 		}
 
-		auto ctx = EVP_PKEY_CTX_new(_public, nullptr);
+		auto ctx = EVP_PKEY_CTX_new(getPublicKey(), nullptr);
 		if (!ctx) {
 			return false;
 		}
@@ -231,115 +179,21 @@ bool Rsa::verify(const unsigned char *data, unsigned int dataLength,
 	}
 }
 
-bool Rsa::generateKeyPair(const char *privateKeyFile, const char *publicKeyFile,
-		int bits, char *password) noexcept {
+bool Rsa::generate(const char *privateKeyFile, const char *publicKeyFile,
+		int bits, char *secret) noexcept {
 	if (!privateKeyFile || !publicKeyFile) {
 		return false;
 	}
 
-	auto rsa = generateRSAKey(bits);
+	auto rsa = EVP_RSA_gen(bits);
 	if (!rsa) {
 		return false;
 	}
 
-	auto status = generatePem(privateKeyFile, rsa, false, password, nullptr)
-			&& generatePem(publicKeyFile, rsa, true, nullptr, nullptr);
+	auto status = store(privateKeyFile, rsa, false, secret, nullptr)
+			&& store(publicKeyFile, rsa, true, nullptr, nullptr);
 	EVP_PKEY_free(rsa);
 	return status;
-}
-
-EVP_PKEY* Rsa::create(const char *key, bool isPublicKey,
-		char *password) noexcept {
-	if (!key) {
-		return nullptr;
-	}
-
-	auto keybio = BIO_new_mem_buf(key, -1);
-	if (keybio == nullptr) {
-		return nullptr;
-	}
-
-	EVP_PKEY *rsa = nullptr;
-	if (isPublicKey) {
-		rsa = PEM_read_bio_PUBKEY(keybio, nullptr, nullptr, nullptr);
-	} else {
-		rsa = PEM_read_bio_PrivateKey(keybio, nullptr, 0, password);
-	}
-
-	if (!verifyRSAKey(rsa)) {
-		EVP_PKEY_free(rsa);
-		rsa = nullptr;
-	}
-
-	BIO_free_all(keybio);
-	return rsa;
-}
-
-EVP_PKEY* Rsa::createFromFile(const char *filename, bool isPublicKey,
-		char *password) noexcept {
-	if (Storage::testFile(filename) != 1) {
-		return nullptr;
-	}
-
-	//Open file for reading in text mode
-	auto fp = Storage::openStream(filename, "r");
-	if (fp == nullptr) {
-		return nullptr;
-	}
-
-	EVP_PKEY *rsa = nullptr;
-	if (isPublicKey) {
-		rsa = PEM_read_PUBKEY(fp, nullptr, nullptr, nullptr);
-	} else {
-		rsa = PEM_read_PrivateKey(fp, nullptr, 0, password);
-	}
-
-	if (!verifyRSAKey(rsa)) {
-		EVP_PKEY_free(rsa);
-		rsa = nullptr;
-	}
-
-	Storage::closeStream(fp);
-	return rsa;
-}
-
-bool Rsa::verifyRSAKey(const EVP_PKEY *key) noexcept {
-	return key && (EVP_PKEY_get_id(key) == EVP_PKEY_RSA);
-}
-
-void Rsa::destroyKey(EVP_PKEY *key) noexcept {
-	EVP_PKEY_free(key);
-}
-
-EVP_PKEY* Rsa::generateRSAKey(int bits) noexcept {
-	return EVP_RSA_gen(bits);
-}
-
-bool Rsa::generatePem(const char *filename, EVP_PKEY *key, bool isPublicKey,
-		char *password, const EVP_CIPHER *cipher) noexcept {
-	if (!filename || !key) {
-		return false;
-	}
-
-	auto pCipher = password ? ((cipher ? cipher : EVP_aes_256_cbc())) : nullptr;
-	auto passPhraseLength = password ? strlen(password) : 0;
-
-	//Open the file for writing in text mode
-	auto file = Storage::openStream(filename, "w");
-	if (!file) {
-		return false;
-	}
-
-	int ret = 0;
-	if (isPublicKey) {
-		ret = PEM_write_PUBKEY(file, key);
-	} else {
-		ret = PEM_write_PrivateKey(file, key, pCipher,
-				(unsigned char*) password, passPhraseLength, nullptr, nullptr);
-	}
-
-	Storage::closeStream(file);
-	return (bool) ret;
 }
 
 } /* namespace wanhive */

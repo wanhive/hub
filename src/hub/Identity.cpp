@@ -75,7 +75,7 @@ const Options& Identity::getOptions() const noexcept {
 	return options;
 }
 
-const PKI* Identity::getPKI() const noexcept {
+PKI* Identity::getPKI() noexcept {
 	if (auth.enabled) {
 		return &auth.pki;
 	} else {

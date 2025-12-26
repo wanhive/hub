@@ -318,7 +318,7 @@ Message* Protocol::createRegisterRequest(const MessageAddress &address,
 }
 
 Message* Protocol::createTokenRequest(const MessageAddress &address,
-		const TransactionKey &tk, Message *msg) noexcept {
+		const Token &tk, Message *msg) noexcept {
 	if (msg || (msg = Message::create())) {
 		createTokenRequest(address, 0, tk, *msg);
 	}
@@ -443,8 +443,7 @@ unsigned int Protocol::createRegisterRequest(const MessageAddress &address,
 }
 
 unsigned int Protocol::createTokenRequest(const MessageAddress &address,
-		uint16_t sequenceNumber, const TransactionKey &tk,
-		Packet &packet) noexcept {
+		uint16_t sequenceNumber, const Token &tk, Packet &packet) noexcept {
 	auto length = HEADER_SIZE;
 	packet.clear();
 	if (tk.nonce && tk.keys) {

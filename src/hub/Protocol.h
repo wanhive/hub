@@ -21,8 +21,8 @@ namespace wanhive {
 /**
  * Asymmetric key and nonce for handshaking
  */
-struct TransactionKey {
-	const PKI *keys;
+struct Token {
+	PKI *keys;
 	Digest *nonce;
 };
 //-----------------------------------------------------------------
@@ -305,7 +305,7 @@ public:
 	 * error (invalid request or could not create a new message).
 	 */
 	static Message* createTokenRequest(const MessageAddress &address,
-			const TransactionKey &tk, Message *msg) noexcept;
+			const Token &tk, Message *msg) noexcept;
 	/**
 	 * Processes a message containing the response to a session key request.
 	 * @param msg the response
@@ -355,8 +355,7 @@ private:
 			uint16_t sequenceNumber, const Digest *hc, Packet &packet) noexcept;
 	//Returns message length on success, 0 on failure
 	static unsigned int createTokenRequest(const MessageAddress &address,
-			uint16_t sequenceNumber, const TransactionKey &tk,
-			Packet &packet) noexcept;
+			uint16_t sequenceNumber, const Token &tk, Packet &packet) noexcept;
 	//Returns message length on success, 0 on failure (<hc> is the value-result argument)
 	static unsigned int processTokenResponse(const Packet &packet,
 			Digest *hc) noexcept;

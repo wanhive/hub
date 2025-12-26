@@ -74,7 +74,6 @@
 #include "base/security/CryptoUtils.h"
 #include "base/security/CSPRNG.h"
 #include "base/security/Rsa.h"
-#include "base/security/SecurityException.h"
 #include "base/security/Sha.h"
 #include "base/security/Srp.h"
 #include "base/security/SSLContext.h"

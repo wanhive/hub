@@ -48,7 +48,7 @@ public:
 	 * Returns the asymmetric cryptography facility.
 	 * @return asymmetric cryptography object
 	 */
-	const PKI* getPKI() const noexcept;
+	PKI* getPKI() noexcept;
 	/**
 	 * Checks whether the host verification is enabled.
 	 * @return true if enabled, false if disabled

@@ -112,7 +112,7 @@ bool Packet::checkContext(uint8_t command, uint8_t qualifier,
 	return checkContext(header(), command, qualifier, status);
 }
 
-bool Packet::sign(const PKI *pki) noexcept {
+bool Packet::sign(PKI *pki) noexcept {
 	if (pki && validate()
 			&& header().getLength() <= (MTU - PKI::SIGNATURE_LENGTH)) {
 		const auto length = header().getLength(); //To roll back
@@ -134,7 +134,7 @@ bool Packet::sign(const PKI *pki) noexcept {
 	}
 }
 
-bool Packet::verify(const PKI *pki) const noexcept {
+bool Packet::verify(PKI *pki) const noexcept {
 	if (pki && getPayloadLength() >= PKI::SIGNATURE_LENGTH) {
 		auto length = header().getLength() - PKI::SIGNATURE_LENGTH;
 		return pki->verify(buffer(), length, (const Signature*) buffer(length));

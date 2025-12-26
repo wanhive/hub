@@ -33,10 +33,10 @@ WH_BASE_IPCSOURCES = base/ipc/DNS.cpp base/ipc/NetworkAddressException.cpp
 
 ## src/base/security
 WH_BASE_SECURITYHEADERS = base/security/CryptoUtils.h base/security/CSPRNG.h \
-	base/security/Rsa.h base/security/SecurityException.h base/security/Sha.h \
+	base/security/KeyPair.h base/security/Rsa.h base/security/Sha.h \
 	base/security/Srp.h base/security/SSLContext.h
 WH_BASE_SECURITYSOURCES = base/security/CryptoUtils.cpp base/security/CSPRNG.cpp \
-	base/security/Rsa.cpp base/security/SecurityException.cpp base/security/Sha.cpp \
+	base/security/KeyPair.cpp base/security/Rsa.cpp base/security/Sha.cpp \
 	base/security/Srp.cpp base/security/SSLContext.cpp
 
 ## src/base/unix

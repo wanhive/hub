@@ -81,7 +81,7 @@ void ConfigTool::generateKeyPair() {
 
 		std::cout << "Generating " << PKI::KEY_LENGTH << " bit RSA keys"
 				<< std::endl;
-		PKI::generateKeyPair(skf, pkf);
+		PKI::generate(skf, pkf);
 	} catch (const BaseException &e) {
 		throw;
 	}

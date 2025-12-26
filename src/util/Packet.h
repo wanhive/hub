@@ -158,13 +158,13 @@ public:
 	 * @param pki signing key
 	 * @return true on success (or key is nullptr), false otherwise
 	 */
-	bool sign(const PKI *pki) noexcept;
+	bool sign(PKI *pki) noexcept;
 	/**
 	 * Verifies this packet's signature.
 	 * @param pki verifying key
 	 * @return true on success (or key is nullptr), false otherwise
 	 */
-	bool verify(const PKI *pki) const noexcept;
+	bool verify(PKI *pki) const noexcept;
 	//-----------------------------------------------------------------
 	/**
 	 * For debugging: prints the header data to stderr.

@@ -46,7 +46,7 @@ bool PKI::hasHostKey() const noexcept {
 }
 
 bool PKI::encrypt(const void *block, unsigned int size,
-		PKIEncryptedData *target) const noexcept {
+		PKIEncryptedData *target) noexcept {
 	unsigned int encLen = ENCRYPTED_LENGTH;
 	return (size <= MAX_PT_LEN)
 			&& rsa.encrypt((const unsigned char*) block, size,
@@ -54,7 +54,7 @@ bool PKI::encrypt(const void *block, unsigned int size,
 }
 
 bool PKI::decrypt(const PKIEncryptedData *block, void *result,
-		unsigned int *size) const noexcept {
+		unsigned int *size) noexcept {
 	unsigned int decLen = ENCODING_LENGTH;
 	auto ret = rsa.decrypt((const unsigned char*) block, ENCRYPTED_LENGTH,
 			(unsigned char*) result, &decLen);
@@ -68,21 +68,20 @@ bool PKI::decrypt(const PKIEncryptedData *block, void *result,
 	}
 }
 
-bool PKI::sign(const void *block, unsigned int size,
-		Signature *sig) const noexcept {
+bool PKI::sign(const void *block, unsigned int size, Signature *sig) noexcept {
 	unsigned int sigLen = SIGNATURE_LENGTH;
 	return rsa.sign((const unsigned char*) block, size, (unsigned char*) sig,
 			&sigLen) && (sigLen == SIGNATURE_LENGTH);
 }
 
 bool PKI::verify(const void *block, unsigned int len,
-		const Signature *sig) const noexcept {
+		const Signature *sig) noexcept {
 	return rsa.verify((unsigned char*) block, len, (unsigned char*) sig,
 			SIGNATURE_LENGTH);
 }
 
-void PKI::generateKeyPair(const char *hostKey, const char *publicKey) {
-	if (!Rsa::generateKeyPair(hostKey, publicKey, KEY_LENGTH)) {
+void PKI::generate(const char *hostKey, const char *publicKey) {
+	if (!Rsa::generate(hostKey, publicKey, KEY_LENGTH)) {
 		throw Exception(EX_SECURITY);
 	}
 }
