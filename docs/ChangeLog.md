@@ -10,11 +10,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 - Base class for bidirectional (**Duplex**) channels.
+- **KeyPair** class for asymmetric cryptographic keys management.
+- **Ed25519** digital signature scheme.
 
 ### Changed
 
-- Stream Watcher extends **Duplex**, not **Sink** or **Source**.
-- The callback function for byte streams in **Hub** accepts the stream's channel as its parameter.
+- **Stream** class extends **Duplex** instead of **Sink** and **Source**.
+- The byte stream callback in **Hub** takes the stream channel as a parameter.
+- Update the cryptographic facility.
+
+### Removed
+
+- Impractical and unused **SecurityException** class.
 
 ## [16.0.0] - 2025-12-09
 
