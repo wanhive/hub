@@ -12,6 +12,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Base class for bidirectional (**Duplex**) channels.
 - **KeyPair** class for asymmetric cryptographic keys management.
 - **Ed25519** digital signature scheme.
+- **X25519** (ECDH) key exchange.
 
 ### Changed
 
