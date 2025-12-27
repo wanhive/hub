@@ -15,10 +15,10 @@
 namespace {
 
 const char *exceptionMessages[] = { "NULL reference", "Invalid index",
-		"Invalid argument(s)", "Invalid parameter(s)",
-		"Invalid memory operation", "Container underflow", "Container overflow",
-		"Invalid range", "Invalid operation", "Invalid state",
-		"Resource unavailable", "Security violation" };
+		"Invalid argument(s)", "Invalid memory operation",
+		"Container underflow", "Container overflow", "Invalid range",
+		"Invalid operation", "Invalid state", "Resource unavailable",
+		"Security violation" };
 
 }  // namespace
 

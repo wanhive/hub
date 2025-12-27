@@ -23,7 +23,6 @@ enum ExceptionType {
 	EX_NULL, /**< Null reference */
 	EX_INDEX, /**< Invalid index */
 	EX_ARGUMENT, /**< Invalid argument */
-	EX_PARAMETER, /**< Invalid parameter */
 	EX_MEMORY, /**< Memory operation failed */
 	EX_UNDERFLOW, /**< Container underflow */
 	EX_OVERFLOW, /**< Container overflow */
