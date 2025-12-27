@@ -132,7 +132,7 @@ bool KeyPair::generate(const char *privateKeyFile, const char *publicKeyFile,
 		return false;
 	}
 
-	auto status = store(privateKeyFile, pkey, false, secret, nullptr)
+	auto status = store(privateKeyFile, pkey, false, secret, cipher)
 			&& store(publicKeyFile, pkey, true, nullptr, nullptr);
 	EVP_PKEY_free(pkey);
 	return status;
