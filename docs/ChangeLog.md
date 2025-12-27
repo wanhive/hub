@@ -18,11 +18,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - **Stream** class extends **Duplex** instead of **Sink** and **Source**.
 - The byte stream callback in **Hub** takes the stream channel as a parameter.
-- Update the cryptographic facility.
+- Restructure the cryptographic facility.
 
 ### Removed
 
-- Impractical and unused **SecurityException** class.
+- **SecurityException** class.
 
 ## [16.0.0] - 2025-12-09
 
