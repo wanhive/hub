@@ -60,11 +60,10 @@ public:
 	 * @param secret private key's pass phrase
 	 * @return true on success, false on error
 	 */
-	static bool generate(const char *privateKeyFile, const char *publicKeyFile,
+	bool generate(const char *privateKeyFile, const char *publicKeyFile,
 			char *secret = nullptr) noexcept;
 private:
 	EVP_MD_CTX* mdContext() noexcept;
-	static EVP_PKEY* generate() noexcept;
 public:
 	/*! Private and public key sizes in bytes */
 	static constexpr unsigned int KEY_SIZE = 32;

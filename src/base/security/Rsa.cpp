@@ -16,7 +16,7 @@
 namespace wanhive {
 
 Rsa::Rsa() noexcept :
-		KeyPair { EVP_PKEY_RSA } {
+		KeyPair { EVP_PKEY_RSA, "RSA" } {
 
 }
 
@@ -181,19 +181,8 @@ bool Rsa::verify(const unsigned char *data, unsigned int dataLength,
 
 bool Rsa::generate(const char *privateKeyFile, const char *publicKeyFile,
 		int bits, char *secret) noexcept {
-	if (!privateKeyFile || !publicKeyFile) {
-		return false;
-	}
-
-	auto rsa = EVP_RSA_gen(bits);
-	if (!rsa) {
-		return false;
-	}
-
-	auto status = store(privateKeyFile, rsa, false, secret, nullptr)
-			&& store(publicKeyFile, rsa, true, nullptr, nullptr);
-	EVP_PKEY_free(rsa);
-	return status;
+	return KeyPair::generate(privateKeyFile, publicKeyFile, bits, secret,
+			nullptr);
 }
 
 } /* namespace wanhive */

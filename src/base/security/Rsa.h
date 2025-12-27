@@ -91,7 +91,7 @@ public:
 	 * @param secret private key's pass phrase
 	 * @return true on success, false on error
 	 */
-	static bool generate(const char *privateKeyFile, const char *publicKeyFile,
+	bool generate(const char *privateKeyFile, const char *publicKeyFile,
 			int bits, char *secret = nullptr) noexcept;
 };
 

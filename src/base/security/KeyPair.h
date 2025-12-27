@@ -22,10 +22,11 @@ namespace wanhive {
 class KeyPair: private NonCopyable {
 public:
 	/**
-	 * Constructor: assigns a NID (numeric identifier).
-	 * @param type numeric identifier
+	 * Constructor: assigns a NID (numeric identifier) and name.
+	 * @param nid numeric identifier
+	 * @param name cipher's name
 	 */
-	KeyPair(int type) noexcept;
+	KeyPair(int nid, const char *name) noexcept;
 	/**
 	 * Destructor
 	 */
@@ -82,12 +83,19 @@ public:
 	 * @return true if public key exists, false otherwise
 	 */
 	bool hasPublicKey() const noexcept;
-	/**
-	 * Returns a short name for the assigned NID.
-	 * @return short name string
-	 */
-	const char* name() const noexcept;
 protected:
+	/**
+	 * Checks a key's compatibility.
+	 * @param pkey asymmetric key
+	 * @return true on a positive match, false otherwise
+	 */
+	bool validate(const EVP_PKEY *pkey) const noexcept;
+	/**
+	 * Validates the private components of a key.
+	 * @param pkey asymmetric key
+	 * @return true on success, false on error
+	 */
+	bool isPrivateKey(EVP_PKEY *pkey) const noexcept;
 	/**
 	 * Returns the public key.
 	 * @return public key
@@ -99,27 +107,46 @@ protected:
 	 */
 	EVP_PKEY* getPublicKey() const noexcept;
 	/**
-	 * Checks a key's compatibility.
-	 * @param pkey asymmetric key
-	 * @return true on a positive match, false otherwise
+	 * generates a new asymmetric key pair.
+	 * @param bits key size in bits
+	 * @return generated key
 	 */
-	bool validate(const EVP_PKEY *pkey) const noexcept;
+	EVP_PKEY* generate(size_t bits = 0) const noexcept;
+	/**
+	 * generates a new asymmetric key pair and stores them. On error, the old
+	 * keys remain preserved.
+	 * @param bits key size in bits
+	 * @return generated key
+	 */
+	EVP_PKEY* generate(size_t bits = 0) noexcept;
+	/**
+	 * Generates a key pair and stores them in PEM-encoded text files.
+	 * @param privateKeyFile private key file's path
+	 * @param publicKeyFile public key file's path
+	 * @param bits key size in bits
+	 * @param secret optional pass phrase for private key
+	 * @param cipher optional encryption cipher (default: AES256-CBC)
+	 *  @return true on success, false on error
+	 */
+	bool generate(const char *privateKeyFile, const char *publicKeyFile,
+			size_t bits, char *secret, const EVP_CIPHER *cipher) const noexcept;
 	/**
 	 * Stores a key as PEM-encoded text file.
 	 * @param path PEM file's path
 	 * @param pkey public or private key
 	 * @param isPublic true for public key, false for private key
-	 * @param secret pass phrase for private key
-	 * @param cipher encryption cipher (default: AES256-CBC)
+	 * @param secret optional pass phrase for private key
+	 * @param cipher optional encryption cipher (default: AES256-CBC)
 	 * @return true on success, false on error
 	 */
 	static bool store(const char *path, EVP_PKEY *pkey, bool isPublic,
-			char *secret = nullptr, const EVP_CIPHER *cipher = nullptr) noexcept;
+			char *secret, const EVP_CIPHER *cipher) noexcept;
 private:
 	EVP_PKEY* create(const char *key, bool isPublic, char *secret) noexcept;
 	EVP_PKEY* load(const char *path, bool isPublic, char *secret) noexcept;
 private:
-	const int type;
+	const int nid;
+	const char *name;
 	EVP_PKEY *_private { };
 	EVP_PKEY *_public { };
 };

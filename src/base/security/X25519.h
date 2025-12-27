@@ -48,10 +48,9 @@ public:
 	 * @param secret private key's pass phrase
 	 * @return true on success, false on error
 	 */
-	static bool generate(const char *privateKeyFile, const char *publicKeyFile,
+	bool generate(const char *privateKeyFile, const char *publicKeyFile,
 			char *secret = nullptr) noexcept;
 private:
-	static EVP_PKEY* generate() noexcept;
 	unsigned char* resize(size_t size) noexcept;
 	void clear() noexcept;
 public:

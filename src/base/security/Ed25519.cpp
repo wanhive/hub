@@ -15,7 +15,7 @@
 namespace wanhive {
 
 Ed25519::Ed25519() noexcept :
-		KeyPair { EVP_PKEY_ED25519 } {
+		KeyPair { EVP_PKEY_ED25519, "ED25519" } {
 
 }
 
@@ -58,19 +58,7 @@ bool Ed25519::verify(const unsigned char *data, unsigned int dataLength,
 
 bool Ed25519::generate(const char *privateKeyFile, const char *publicKeyFile,
 		char *secret) noexcept {
-	if (!privateKeyFile || !publicKeyFile) {
-		return false;
-	}
-
-	auto pkey = generate();
-	if (!pkey) {
-		return false;
-	}
-
-	auto status = store(privateKeyFile, pkey, false, secret, nullptr)
-			&& store(publicKeyFile, pkey, true, nullptr, nullptr);
-	EVP_PKEY_free(pkey);
-	return status;
+	return KeyPair::generate(privateKeyFile, publicKeyFile, 0, secret, nullptr);
 }
 
 EVP_MD_CTX* Ed25519::mdContext() noexcept {
@@ -81,20 +69,6 @@ EVP_MD_CTX* Ed25519::mdContext() noexcept {
 	}
 
 	return mdctx;
-}
-
-EVP_PKEY* Ed25519::generate() noexcept {
-	EVP_PKEY_CTX *ctx { };
-	EVP_PKEY *pkey { };
-	auto success = (ctx = EVP_PKEY_CTX_new_id(EVP_PKEY_ED25519, nullptr))
-			&& (EVP_PKEY_keygen_init(ctx) == 1)
-			&& (EVP_PKEY_keygen(ctx, &pkey) == 1);
-	EVP_PKEY_CTX_free(ctx);
-	if (success && pkey) {
-		return pkey;
-	} else {
-		return nullptr;
-	}
 }
 
 } /* namespace wanhive */

@@ -81,7 +81,7 @@ bool PKI::verify(const void *block, unsigned int len,
 }
 
 void PKI::generate(const char *hostKey, const char *publicKey) {
-	if (!Rsa::generate(hostKey, publicKey, KEY_LENGTH)) {
+	if (!Rsa { }.generate(hostKey, publicKey, KEY_LENGTH)) {
 		throw Exception(EX_SECURITY);
 	}
 }

@@ -15,7 +15,7 @@
 namespace wanhive {
 
 X25519::X25519() noexcept :
-		KeyPair { EVP_PKEY_X25519 } {
+		KeyPair { EVP_PKEY_X25519, "X25519" } {
 
 }
 
@@ -25,19 +25,7 @@ X25519::~X25519() {
 
 bool X25519::generate(const char *privateKeyFile, const char *publicKeyFile,
 		char *secret) noexcept {
-	if (!privateKeyFile || !publicKeyFile) {
-		return false;
-	}
-
-	auto pkey = generate();
-	if (!pkey) {
-		return false;
-	}
-
-	auto status = store(privateKeyFile, pkey, false, secret, nullptr)
-			&& store(publicKeyFile, pkey, true, nullptr, nullptr);
-	EVP_PKEY_free(pkey);
-	return status;
+	return KeyPair::generate(privateKeyFile, publicKeyFile, 0, secret, nullptr);
 }
 
 bool X25519::compute() noexcept {
@@ -56,20 +44,6 @@ bool X25519::compute() noexcept {
 const unsigned char* X25519::get(size_t &length) const noexcept {
 	length = this->bytes;
 	return data;
-}
-
-EVP_PKEY* X25519::generate() noexcept {
-	EVP_PKEY_CTX *ctx { };
-	EVP_PKEY *pkey { };
-	auto success = (ctx = EVP_PKEY_CTX_new_id(EVP_PKEY_X25519, nullptr))
-			&& (EVP_PKEY_keygen_init(ctx) == 1)
-			&& (EVP_PKEY_keygen(ctx, &pkey) == 1);
-	EVP_PKEY_CTX_free(ctx);
-	if (success && pkey) {
-		return pkey;
-	} else {
-		return nullptr;
-	}
 }
 
 unsigned char* X25519::resize(size_t size) noexcept {

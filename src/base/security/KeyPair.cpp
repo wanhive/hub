@@ -16,8 +16,8 @@
 
 namespace wanhive {
 
-KeyPair::KeyPair(int type) noexcept :
-		type { type } {
+KeyPair::KeyPair(int nid, const char *name) noexcept :
+		nid { nid }, name { name } {
 
 }
 
@@ -77,8 +77,16 @@ bool KeyPair::hasPublicKey() const noexcept {
 	return _public != nullptr;
 }
 
-const char* KeyPair::name() const noexcept {
-	return OBJ_nid2sn(type);
+bool KeyPair::validate(const EVP_PKEY *pkey) const noexcept {
+	return pkey && (EVP_PKEY_get_base_id(pkey) == nid);
+}
+
+bool KeyPair::isPrivateKey(EVP_PKEY *pkey) const noexcept {
+	EVP_PKEY_CTX *ctx { };
+	auto status = validate(pkey) && (ctx = EVP_PKEY_CTX_new(pkey, nullptr))
+			&& (EVP_PKEY_private_check(ctx) == 1);
+	EVP_PKEY_CTX_free(ctx);
+	return status;
 }
 
 EVP_PKEY* KeyPair::getPrivateKey() const noexcept {
@@ -89,8 +97,45 @@ EVP_PKEY* KeyPair::getPublicKey() const noexcept {
 	return _public;
 }
 
-bool KeyPair::validate(const EVP_PKEY *pkey) const noexcept {
-	return pkey && (EVP_PKEY_get_base_id(pkey) == type);
+EVP_PKEY* KeyPair::generate(size_t bits) const noexcept {
+	if (bits) {
+		return EVP_PKEY_Q_keygen(nullptr, nullptr, name, bits);
+	} else {
+		return EVP_PKEY_Q_keygen(nullptr, nullptr, name);
+	}
+}
+
+EVP_PKEY* KeyPair::generate(size_t bits) noexcept {
+	EVP_PKEY *pkey { };
+	if (bits) {
+		pkey = EVP_PKEY_Q_keygen(nullptr, nullptr, name, bits);
+	} else {
+		pkey = EVP_PKEY_Q_keygen(nullptr, nullptr, name);
+	}
+
+	if (pkey) {
+		reset();
+		_private = _public = pkey;
+	}
+
+	return pkey;
+}
+
+bool KeyPair::generate(const char *privateKeyFile, const char *publicKeyFile,
+		size_t bits, char *secret, const EVP_CIPHER *cipher) const noexcept {
+	if (!privateKeyFile || !publicKeyFile) {
+		return false;
+	}
+
+	auto pkey = generate(bits);
+	if (!pkey) {
+		return false;
+	}
+
+	auto status = store(privateKeyFile, pkey, false, secret, nullptr)
+			&& store(publicKeyFile, pkey, true, nullptr, nullptr);
+	EVP_PKEY_free(pkey);
+	return status;
 }
 
 bool KeyPair::store(const char *path, EVP_PKEY *pkey, bool isPublic,
@@ -115,7 +160,7 @@ bool KeyPair::store(const char *path, EVP_PKEY *pkey, bool isPublic,
 	}
 
 	Storage::closeStream(file);
-	return (bool) ret;
+	return (ret == 1);
 }
 
 EVP_PKEY* KeyPair::create(const char *key, bool isPublicKey,
