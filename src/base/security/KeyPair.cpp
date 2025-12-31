@@ -60,12 +60,16 @@ bool KeyPair::loadPublicKey(const char *publicKey, bool fromFile) noexcept {
 }
 
 void KeyPair::freePrivateKey() noexcept {
-	EVP_PKEY_free(_private);
+	if (_private != _public) {
+		EVP_PKEY_free(_private);
+	}
 	_private = nullptr;
 }
 
 void KeyPair::freePublicKey() noexcept {
-	EVP_PKEY_free(_public);
+	if (_public != _private) {
+		EVP_PKEY_free(_public);
+	}
 	_public = nullptr;
 }
 
@@ -89,12 +93,44 @@ bool KeyPair::isPrivateKey(EVP_PKEY *pkey) const noexcept {
 	return status;
 }
 
+bool KeyPair::isPublicKey(EVP_PKEY *pkey) const noexcept {
+	EVP_PKEY_CTX *ctx { };
+	auto status = validate(pkey) && (ctx = EVP_PKEY_CTX_new(pkey, nullptr))
+			&& (EVP_PKEY_public_check(ctx) == 1);
+	EVP_PKEY_CTX_free(ctx);
+	return status;
+}
+
 EVP_PKEY* KeyPair::getPrivateKey() const noexcept {
 	return _private;
 }
 
+bool KeyPair::setPrivateKey(EVP_PKEY *pkey) noexcept {
+	if (pkey == _private) {
+		return true;
+	} else if (!pkey || isPrivateKey(pkey)) {
+		freePrivateKey();
+		_private = pkey;
+		return true;
+	} else {
+		return false;
+	}
+}
+
 EVP_PKEY* KeyPair::getPublicKey() const noexcept {
 	return _public;
+}
+
+bool KeyPair::setPublicKey(EVP_PKEY *pkey) noexcept {
+	if (pkey == _public) {
+		return true;
+	} else if (!pkey || isPublicKey(pkey)) {
+		freePublicKey();
+		_public = pkey;
+		return true;
+	} else {
+		return false;
+	}
 }
 
 EVP_PKEY* KeyPair::generate(size_t bits) const noexcept {

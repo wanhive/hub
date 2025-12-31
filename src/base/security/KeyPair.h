@@ -22,7 +22,7 @@ namespace wanhive {
 class KeyPair: private NonCopyable {
 public:
 	/**
-	 * Constructor: assigns a NID (numeric identifier) and name.
+	 * Constructor: assigns a NID (numeric identifier) and a name.
 	 * @param nid numeric identifier
 	 * @param name cipher's name
 	 */
@@ -34,10 +34,10 @@ public:
 	//-----------------------------------------------------------------
 	/**
 	 * Loads private and/or public keys.
-	 * @param privateKey private key's source (can be nullptr)
-	 * @param publicKey public key's source (can be nullptr)
-	 * @param fromFile true for treating the key sources as pathnames to PEM
-	 * encoded files, false for treating the key sources as Base-16 inputs.
+	 * @param privateKey private key (can be nullptr)
+	 * @param publicKey public key (can be nullptr)
+	 * @param fromFile true to treat the keys as PEM-encoded file names, false
+	 * to treat them as PEM-encoded strings.
 	 * @param secret private key's pass phrase (can be nullptr)
 	 * @return true on success, false on error
 	 */
@@ -49,9 +49,9 @@ public:
 	void reset() noexcept;
 	/**
 	 * Loads the private key.
-	 * @param privateKey private key's source (can be nullptr)
-	 * @param fromFile true for treating the key source as pathname to a PEM
-	 * encoded file, false for treating the key source as Base-16 input.
+	 * @param privateKey private key (can be nullptr)
+	 * @param fromFile true to treat the key as PEM-encoded file name, false to
+	 * treat it as a PEM-encoded string.
 	 * @param secret private key's pass phrase (can be nullptr)
 	 * @return true on success, false on error
 	 */
@@ -59,9 +59,9 @@ public:
 			nullptr) noexcept;
 	/**
 	 * Loads the public key.
-	 * @param publicKey public key's source (can be nullptr)
-	 * @param fromFile true for treating the key source as pathname to a PEM
-	 * encoded file, false for treating the key source as Base-16 input.
+	 * @param publicKey public key (can be nullptr)
+	 * @param fromFile true to treat the key as PEM-encoded file name, false to
+	 * treat it as a PEM-encoded string.
 	 * @return true on success, false on error
 	 */
 	bool loadPublicKey(const char *publicKey, bool fromFile) noexcept;
@@ -97,26 +97,44 @@ protected:
 	 */
 	bool isPrivateKey(EVP_PKEY *pkey) const noexcept;
 	/**
+	 * Validates the public key component of a key.
+	 * @param pkey asymmetric key
+	 * @return true on success, false on error
+	 */
+	bool isPublicKey(EVP_PKEY *pkey) const noexcept;
+	/**
 	 * Returns the public key.
 	 * @return public key
 	 */
 	EVP_PKEY* getPrivateKey() const noexcept;
+	/**
+	 * Sets a new private key.
+	 * @param pkey private key
+	 * @return true on success, false on error
+	 */
+	bool setPrivateKey(EVP_PKEY *pkey) noexcept;
 	/**
 	 * Returns the private key.
 	 * @return private key
 	 */
 	EVP_PKEY* getPublicKey() const noexcept;
 	/**
+	 * Sets a new public key.
+	 * @param pkey public key
+	 * @return true on success, false on error
+	 */
+	bool setPublicKey(EVP_PKEY *pkey) noexcept;
+	/**
 	 * generates a new asymmetric key pair.
 	 * @param bits key size in bits
-	 * @return generated key
+	 * @return generated key, nullptr on error
 	 */
 	EVP_PKEY* generate(size_t bits = 0) const noexcept;
 	/**
 	 * generates a new asymmetric key pair and stores them. On error, the old
 	 * keys remain preserved.
 	 * @param bits key size in bits
-	 * @return generated key
+	 * @return generated key, nullptr on error
 	 */
 	EVP_PKEY* generate(size_t bits = 0) noexcept;
 	/**
