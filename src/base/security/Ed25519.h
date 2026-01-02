@@ -33,7 +33,7 @@ public:
 	 * Signs the given data.
 	 * @param data data for signing
 	 * @param dataLength data's size in bytes
-	 * @param signature digital signature output buffer. Set to nullptr to
+	 * @param signature output buffer for digital signature. Set to nullptr to
 	 * calculate the maximum buffer size.
 	 * @param signatureLength buffer size in bytes as input and signature's
 	 * size in bytes as output (value-result argument).
@@ -43,7 +43,7 @@ public:
 			unsigned char *signature, unsigned int *signatureLength) noexcept;
 	/**
 	 * Verifies the given data.
-	 * @param verified data
+	 * @param verifiable data
 	 * @param dataLength data's size in bytes
 	 * @param signature digital signature
 	 * @param signatureLength signature's size in bytes

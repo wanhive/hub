@@ -16,7 +16,7 @@
 
 namespace wanhive {
 /**
- * RSA public key cryptography
+ * RSA asymmetric cipher
  */
 class Rsa: public KeyPair {
 public:
@@ -30,11 +30,11 @@ public:
 	~Rsa();
 	//-----------------------------------------------------------------
 	/**
-	 * Encrypts the given plain text. Uses RSA_PKCS1_OAEP_PADDING (EME-OAEP as
-	 * defined in PKCS #1 v2.0).
-	 * @param data input data
-	 * @param dataLength input data's size in bytes
-	 * @param encrypted encrypted data output buffer. Set to nullptr to
+	 * Encrypts a plain-text. Uses RSA_PKCS1_OAEP_PADDING (EME-OAEP as defined
+	 * in PKCS #1 v2.0).
+	 * @param data plain-text input
+	 * @param dataLength plain-text's size in bytes
+	 * @param encrypted output buffer for cipher-text. Set to nullptr to
 	 * calculate the maximum buffer size.
 	 * @param encryptedLength buffer size in bytes as input and encrypted data's
 	 * size in bytes as output (value-result argument).
@@ -44,13 +44,13 @@ public:
 			unsigned char *encrypted,
 			unsigned int *encryptedLength) const noexcept;
 	/**
-	 * Decrypts the given encrypted data. Uses RSA_PKCS1_OAEP_PADDING (EME-OAEP
-	 * as defined in PKCS #1 v2.0).
-	 * @param data encrypted data
-	 * @param dataLength encrypted data's size in bytes
-	 * @param decrypted plain text output buffer. Set to nullptr to calculate
-	 * the maximum buffer size.
-	 * @param decryptedLength buffer size in bytes as input and plain text's
+	 * Decrypts a cipher-text. Uses RSA_PKCS1_OAEP_PADDING (EME-OAEP as defined
+	 * in PKCS #1 v2.0).
+	 * @param data cipher-text input
+	 * @param dataLength cipher-text's size in bytes
+	 * @param decrypted output buffer for plain-text. Set to nullptr to
+	 * calculate the maximum buffer size.
+	 * @param decryptedLength buffer size in bytes as input and plain-text's
 	 * size in bytes as output (value-result argument).
 	 * @return true on success, false on error
 	 */
@@ -62,7 +62,7 @@ public:
 	 * Signs (PKCS #1 v2.0 SHA-1) the given data.
 	 * @param data data for signing
 	 * @param dataLength data's size in bytes
-	 * @param signature digital signature output buffer. Set to nullptr to
+	 * @param signature output buffer for digital signature. Set to nullptr to
 	 * calculate the maximum buffer size.
 	 * @param signatureLength buffer size in bytes as input and signature's
 	 * size in bytes as output (value-result argument).
@@ -73,7 +73,7 @@ public:
 			unsigned int *signatureLength) const noexcept;
 	/**
 	 * Verifies (PKCS #1 v2.0 SHA-1) the given data.
-	 * @param data verified data
+	 * @param data verifiable data
 	 * @param dataLength data's size in bytes
 	 * @param signature digital signature
 	 * @param signatureLength digital signature's size in bytes
