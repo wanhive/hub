@@ -26,7 +26,7 @@ namespace wanhive {
 /*! RSA signature */
 using Signature = unsigned char[WH_PKI_ENCODING_LEN];
 /*! RSA encrypted data */
-using PKIEncryptedData = unsigned char[WH_PKI_ENCODING_LEN];
+using CipherText = unsigned char[WH_PKI_ENCODING_LEN];
 //-----------------------------------------------------------------
 /**
  * Asymmetric cryptography facility
@@ -49,69 +49,69 @@ public:
 	 * @return true on success, false otherwise
 	 */
 	bool initialize(const char *hostKey, const char *publicKey) noexcept;
-
-	/**
-	 * Loads public key from PEM-encoded file (discards existing key).
-	 * @param publicKey public key file's path (can be nullptr)
-	 * @return true on success, false otherwise
-	 */
-	bool loadPublicKey(const char *publicKey) noexcept;
 	/**
 	 * Loads host (private) key from PEM-encoded file (discards existing key).
 	 * @param hostKey host (private) key file's path (can be nullptr)
 	 * @return true on success, false otherwise
 	 */
 	bool loadHostKey(const char *hostKey) noexcept;
-	//-----------------------------------------------------------------
 	/**
-	 * Checks public key's availability.
-	 * @return true if a public key exists, false otherwise
+	 * Loads public key from PEM-encoded file (discards existing key).
+	 * @param publicKey public key file's path (can be nullptr)
+	 * @return true on success, false otherwise
 	 */
-	bool hasPublicKey() const noexcept;
+	bool loadPublicKey(const char *publicKey) noexcept;
+	//-----------------------------------------------------------------
 	/**
 	 * Checks host (private) key's availability.
 	 * @return true if a host (private) key exists, false otherwise
 	 */
 	bool hasHostKey() const noexcept;
+	/**
+	 * Checks public key's availability.
+	 * @return true if a public key exists, false otherwise
+	 */
+	bool hasPublicKey() const noexcept;
 	//-----------------------------------------------------------------
 	/**
 	 * Performs public key encryption. Cannot encrypt data blocks larger than
 	 * PKI::MAX_PT_LEN bytes.
-	 * @param block data for encryption
+	 * @param plaintext data for encryption
 	 * @param size input data's size in bytes
-	 * @param target output (encrypted data) buffer
+	 * @param ciphertext output (encrypted data) buffer
 	 * @return true on success, false otherwise
 	 */
-	bool encrypt(const void *block, unsigned int size,
-			PKIEncryptedData *target) noexcept;
+	bool encrypt(const void *plaintext, unsigned int size,
+			CipherText *ciphertext) noexcept;
 	/**
 	 * Performs private key decryption.
-	 * @param block encrypted data
-	 * @param result output (decrypted data) buffer. It's capacity should be at
-	 * least PKI::ENCODING_LENGTH bytes.
+	 * @param ciphertext encrypted data
+	 * @param plaintext output (original data) buffer. It's capacity should be
+	 * at least PKI::ENCODING_LENGTH bytes.
 	 * @param size stores output data's size in bytes
 	 * @return true on success, false otherwise
 	 */
-	bool decrypt(const PKIEncryptedData *block, void *result,
+	bool decrypt(const CipherText *ciphertext, void *plaintext,
 			unsigned int *size = nullptr) noexcept;
 	//-----------------------------------------------------------------
 	/**
 	 * Performs private key signing.
-	 * @param block data for signing
+	 * @param data signature creation data
 	 * @param size data's size in bytes
-	 * @param sig output (signature) buffer
+	 * @param signature output (digital signature) buffer
 	 * @return true on success, false otherwise
 	 */
-	bool sign(const void *block, unsigned int size, Signature *sig) noexcept;
+	bool sign(const void *data, unsigned int size,
+			Signature *signature) noexcept;
 	/**
 	 * Performs signature verification using the public key.
-	 * @param block verified data
-	 * @param len data's size in bytes
-	 * @param sig digital signature
+	 * @param data verifiable data
+	 * @param size data's size in bytes
+	 * @param signature digital signature
 	 * @return true on successful verification, false otherwise
 	 */
-	bool verify(const void *block, unsigned int len,
-			const Signature *sig) noexcept;
+	bool verify(const void *data, unsigned int size,
+			const Signature *signature) noexcept;
 	//-----------------------------------------------------------------
 	/**
 	 * Generates and stores key pair as PEM-encoded text files.

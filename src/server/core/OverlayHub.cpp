@@ -931,8 +931,7 @@ bool OverlayHub::handleTokenRequest(Message *msg) noexcept {
 		//Extract the challenge key
 		unsigned char challenge[PKI::ENCODING_LENGTH]; //Challenge
 		memset(&challenge, 0, sizeof(challenge));
-		getPKI()->decrypt((const PKIEncryptedData*) msg->getBytes(0),
-				&challenge);
+		getPKI()->decrypt((const CipherText*) msg->getBytes(0), &challenge);
 		msg->setBytes(0, (const unsigned char*) &challenge, Hash::SIZE);
 		//Build and return the session key
 		Digest hc; //Response

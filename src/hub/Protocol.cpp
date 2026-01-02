@@ -447,7 +447,7 @@ unsigned int Protocol::createTokenRequest(const MessageAddress &address,
 	auto length = HEADER_SIZE;
 	packet.clear();
 	if (tk.nonce && tk.keys) {
-		PKIEncryptedData challenge;
+		CipherText challenge;
 		memset(&challenge, 0, sizeof(challenge));
 		//Ignore the encryption error (Public key is used for encryption)
 		tk.keys->encrypt(tk.nonce, Hash::SIZE, &challenge);
