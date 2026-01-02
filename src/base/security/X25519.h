@@ -43,13 +43,13 @@ public:
 	//-----------------------------------------------------------------
 	/**
 	 * Generates PEM encoded key pair.
-	 * @param privateKeyFile private key file's path
-	 * @param publicKeyFile public key file's path
+	 * @param privateKey private key file's path
+	 * @param publicKey public key file's path
 	 * @param secret private key's pass phrase
 	 * @return true on success, false on error
 	 */
-	bool generate(const char *privateKeyFile, const char *publicKeyFile,
-			char *secret = nullptr) noexcept;
+	bool generate(const char *privateKey, const char *publicKey, char *secret =
+			nullptr) noexcept;
 private:
 	unsigned char* resize(size_t size) noexcept;
 	void clear() noexcept;

@@ -23,11 +23,6 @@ X25519::~X25519() {
 	clear();
 }
 
-bool X25519::generate(const char *privateKeyFile, const char *publicKeyFile,
-		char *secret) noexcept {
-	return KeyPair::generate(privateKeyFile, publicKeyFile, 0, secret, nullptr);
-}
-
 bool X25519::compute() noexcept {
 	EVP_PKEY_CTX *ctx { };
 	unsigned char *buf { };
@@ -44,6 +39,11 @@ bool X25519::compute() noexcept {
 const unsigned char* X25519::get(size_t &length) const noexcept {
 	length = this->bytes;
 	return data;
+}
+
+bool X25519::generate(const char *privateKey, const char *publicKey,
+		char *secret) noexcept {
+	return KeyPair::generate(privateKey, publicKey, 0, secret, nullptr);
 }
 
 unsigned char* X25519::resize(size_t size) noexcept {

@@ -33,44 +33,44 @@ public:
 	~KeyPair();
 	//-----------------------------------------------------------------
 	/**
-	 * Loads private and/or public keys.
+	 * Loads private and/or public keys (discards the existing keys).
 	 * @param privateKey private key (can be nullptr)
 	 * @param publicKey public key (can be nullptr)
-	 * @param fromFile true to treat the keys as PEM-encoded file names, false
-	 * to treat them as PEM-encoded strings.
-	 * @param secret private key's pass phrase (can be nullptr)
+	 * @param secret private key's pass phrase
+	 * @param memory true to treat the key data as PEM-encoded strings, false to
+	 * treat them as PEM-encoded file paths.
 	 * @return true on success, false on error
 	 */
-	bool init(const char *privateKey, const char *publicKey, bool fromFile,
-			char *secret = nullptr) noexcept;
+	bool setup(const char *privateKey, const char *publicKey, char *secret =
+			nullptr, bool memory = false) noexcept;
 	/**
-	 * Clears the private and public keys.
+	 * Disposes of the existing keys.
 	 */
 	void reset() noexcept;
 	/**
-	 * Loads the private key.
+	 * Loads a private key (discards the existing key).
 	 * @param privateKey private key (can be nullptr)
-	 * @param fromFile true to treat the key as PEM-encoded file name, false to
-	 * treat it as a PEM-encoded string.
-	 * @param secret private key's pass phrase (can be nullptr)
+	 * @param secret private key's pass phrase
+	 * @param memory true to treat the key data as PEM-encoded string, false to
+	 * treat it as a PEM-encoded file's path.
 	 * @return true on success, false on error
 	 */
-	bool loadPrivateKey(const char *privateKey, bool fromFile, char *secret =
-			nullptr) noexcept;
+	bool loadPrivateKey(const char *privateKey, char *secret = nullptr,
+			bool memory = false) noexcept;
 	/**
-	 * Loads the public key.
+	 * Loads a public key (discards the existing key).
 	 * @param publicKey public key (can be nullptr)
-	 * @param fromFile true to treat the key as PEM-encoded file name, false to
-	 * treat it as a PEM-encoded string.
+	 * @param memory true to treat the key data as PEM-encoded string, false to
+	 * treat it as a PEM-encoded file's path.
 	 * @return true on success, false on error
 	 */
-	bool loadPublicKey(const char *publicKey, bool fromFile) noexcept;
+	bool loadPublicKey(const char *publicKey, bool memory = false) noexcept;
 	/**
-	 * Clears the private key.
+	 * Disposes of the private key.
 	 */
 	void freePrivateKey() noexcept;
 	/**
-	 * Clears the public key.
+	 * Disposes of the public key.
 	 */
 	void freePublicKey() noexcept;
 	/**
@@ -139,15 +139,15 @@ protected:
 	EVP_PKEY* generate(size_t bits = 0) noexcept;
 	/**
 	 * Generates a key pair and stores them in PEM-encoded text files.
-	 * @param privateKeyFile private key file's path
-	 * @param publicKeyFile public key file's path
+	 * @param privateKey private key file's path
+	 * @param publicKey public key file's path
 	 * @param bits key size in bits
 	 * @param secret optional pass phrase for private key
 	 * @param cipher optional encryption cipher (default: AES256-CBC)
 	 *  @return true on success, false on error
 	 */
-	bool generate(const char *privateKeyFile, const char *publicKeyFile,
-			size_t bits, char *secret, const EVP_CIPHER *cipher) const noexcept;
+	bool generate(const char *privateKey, const char *publicKey, size_t bits,
+			char *secret, const EVP_CIPHER *cipher) const noexcept;
 	/**
 	 * Stores a key as PEM-encoded text file.
 	 * @param path PEM file's path
@@ -160,8 +160,8 @@ protected:
 	static bool store(const char *path, EVP_PKEY *pkey, bool isPublic,
 			char *secret, const EVP_CIPHER *cipher) noexcept;
 private:
-	EVP_PKEY* create(const char *key, bool isPublic, char *secret) noexcept;
-	EVP_PKEY* load(const char *path, bool isPublic, char *secret) noexcept;
+	EVP_PKEY* fromMemory(const char *key, bool isPublic, char *secret) noexcept;
+	EVP_PKEY* fromFile(const char *path, bool isPublic, char *secret) noexcept;
 private:
 	const int nid;
 	const char *name;

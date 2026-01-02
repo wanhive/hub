@@ -179,10 +179,9 @@ bool Rsa::verify(const unsigned char *data, unsigned int dataLength,
 	}
 }
 
-bool Rsa::generate(const char *privateKeyFile, const char *publicKeyFile,
-		int bits, char *secret) noexcept {
-	return KeyPair::generate(privateKeyFile, publicKeyFile, bits, secret,
-			nullptr);
+bool Rsa::generate(const char *privateKey, const char *publicKey, int bits,
+		char *secret) noexcept {
+	return KeyPair::generate(privateKey, publicKey, bits, secret, nullptr);
 }
 
 } /* namespace wanhive */

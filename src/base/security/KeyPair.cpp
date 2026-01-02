@@ -25,12 +25,16 @@ KeyPair::~KeyPair() {
 	reset();
 }
 
-bool KeyPair::init(const char *privateKey, const char *publicKey, bool fromFile,
-		char *secret) noexcept {
-	loadPublicKey(publicKey, fromFile);
-	loadPrivateKey(privateKey, fromFile, secret);
-
-	return (!privateKey || _private) && (!publicKey || _public);
+bool KeyPair::setup(const char *privateKey, const char *publicKey, char *secret,
+		bool memory) noexcept {
+	auto success = loadPublicKey(publicKey, memory)
+			&& loadPrivateKey(privateKey, secret, memory);
+	if (success) {
+		return true;
+	} else {
+		reset();
+		return false;
+	}
 }
 
 void KeyPair::reset() noexcept {
@@ -38,23 +42,27 @@ void KeyPair::reset() noexcept {
 	freePrivateKey();
 }
 
-bool KeyPair::loadPrivateKey(const char *privateKey, bool fromFile,
-		char *secret) noexcept {
+bool KeyPair::loadPrivateKey(const char *privateKey, char *secret,
+		bool memory) noexcept {
 	freePrivateKey();
-	if (fromFile) {
-		_private = load(privateKey, false, secret);
+	if (!privateKey) {
+		return true;
+	} else if (memory) {
+		_private = fromMemory(privateKey, false, secret);
 	} else {
-		_private = create(privateKey, false, secret);
+		_private = fromFile(privateKey, false, secret);
 	}
 	return _private != nullptr;
 }
 
-bool KeyPair::loadPublicKey(const char *publicKey, bool fromFile) noexcept {
+bool KeyPair::loadPublicKey(const char *publicKey, bool memory) noexcept {
 	freePublicKey();
-	if (fromFile) {
-		_public = load(publicKey, true, nullptr);
+	if (!publicKey) {
+		return true;
+	} else if (memory) {
+		_public = fromMemory(publicKey, true, nullptr);
 	} else {
-		_public = create(publicKey, true, nullptr);
+		_public = fromFile(publicKey, true, nullptr);
 	}
 	return _public != nullptr;
 }
@@ -134,7 +142,9 @@ bool KeyPair::setPublicKey(EVP_PKEY *pkey) noexcept {
 }
 
 EVP_PKEY* KeyPair::generate(size_t bits) const noexcept {
-	if (bits) {
+	if (!name) {
+		return nullptr;
+	} else if (bits) {
 		return EVP_PKEY_Q_keygen(nullptr, nullptr, name, bits);
 	} else {
 		return EVP_PKEY_Q_keygen(nullptr, nullptr, name);
@@ -143,7 +153,9 @@ EVP_PKEY* KeyPair::generate(size_t bits) const noexcept {
 
 EVP_PKEY* KeyPair::generate(size_t bits) noexcept {
 	EVP_PKEY *pkey { };
-	if (bits) {
+	if (!name) {
+		return nullptr;
+	} else if (bits) {
 		pkey = EVP_PKEY_Q_keygen(nullptr, nullptr, name, bits);
 	} else {
 		pkey = EVP_PKEY_Q_keygen(nullptr, nullptr, name);
@@ -157,9 +169,9 @@ EVP_PKEY* KeyPair::generate(size_t bits) noexcept {
 	return pkey;
 }
 
-bool KeyPair::generate(const char *privateKeyFile, const char *publicKeyFile,
+bool KeyPair::generate(const char *privateKey, const char *publicKey,
 		size_t bits, char *secret, const EVP_CIPHER *cipher) const noexcept {
-	if (!privateKeyFile || !publicKeyFile) {
+	if (!privateKey || !publicKey) {
 		return false;
 	}
 
@@ -168,8 +180,8 @@ bool KeyPair::generate(const char *privateKeyFile, const char *publicKeyFile,
 		return false;
 	}
 
-	auto status = store(privateKeyFile, pkey, false, secret, cipher)
-			&& store(publicKeyFile, pkey, true, nullptr, nullptr);
+	auto status = store(privateKey, pkey, false, secret, cipher)
+			&& store(publicKey, pkey, true, nullptr, nullptr);
 	EVP_PKEY_free(pkey);
 	return status;
 }
@@ -199,7 +211,7 @@ bool KeyPair::store(const char *path, EVP_PKEY *pkey, bool isPublic,
 	return (ret == 1);
 }
 
-EVP_PKEY* KeyPair::create(const char *key, bool isPublicKey,
+EVP_PKEY* KeyPair::fromMemory(const char *key, bool isPublicKey,
 		char *secret) noexcept {
 	if (!key) {
 		return nullptr;
@@ -226,7 +238,8 @@ EVP_PKEY* KeyPair::create(const char *key, bool isPublicKey,
 	return pkey;
 }
 
-EVP_PKEY* KeyPair::load(const char *path, bool isPublic, char *secret) noexcept {
+EVP_PKEY* KeyPair::fromFile(const char *path, bool isPublic,
+		char *secret) noexcept {
 	if (Storage::testFile(path) != 1) {
 		return nullptr;
 	}

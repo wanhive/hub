@@ -1,7 +1,7 @@
 /*
  * PKI.cpp
  *
- * RSA based asymmetric cryptography
+ * Asymmetric cryptography facility
  *
  *
  * Copyright (C) 2018 Amit Kumar (amitkriit@gmail.com)
@@ -24,17 +24,16 @@ PKI::~PKI() {
 
 }
 
-bool PKI::initialize(const char *hostKey, const char *publicKey,
-		bool fromFile) noexcept {
-	return rsa.init(hostKey, publicKey, fromFile, nullptr);
+bool PKI::initialize(const char *hostKey, const char *publicKey) noexcept {
+	return rsa.setup(hostKey, publicKey);
 }
 
-bool PKI::loadPublicKey(const char *publicKey, bool fromFile) noexcept {
-	return rsa.loadPublicKey(publicKey, fromFile) || !publicKey;
+bool PKI::loadPublicKey(const char *publicKey) noexcept {
+	return rsa.loadPublicKey(publicKey) || !publicKey;
 }
 
-bool PKI::loadHostKey(const char *hostKey, bool fromFile) noexcept {
-	return rsa.loadPrivateKey(hostKey, fromFile, nullptr) || !hostKey;
+bool PKI::loadHostKey(const char *hostKey) noexcept {
+	return rsa.loadPrivateKey(hostKey) || !hostKey;
 }
 
 bool PKI::hasPublicKey() const noexcept {

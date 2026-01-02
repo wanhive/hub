@@ -85,14 +85,14 @@ public:
 	//-----------------------------------------------------------------
 	/**
 	 * Generates PEM encoded key pair.
-	 * @param privateKeyFile private key file's path
-	 * @param publicKeyFile public key file's path
+	 * @param privateKey private key file's path
+	 * @param publicKey public key file's path
 	 * @param bits key size in bits
 	 * @param secret private key's pass phrase
 	 * @return true on success, false on error
 	 */
-	bool generate(const char *privateKeyFile, const char *publicKeyFile,
-			int bits, char *secret = nullptr) noexcept;
+	bool generate(const char *privateKey, const char *publicKey, int bits,
+			char *secret = nullptr) noexcept;
 };
 
 } /* namespace wanhive */

@@ -1,7 +1,7 @@
 /*
  * PKI.h
  *
- * RSA based asymmetric cryptography
+ * Asymmetric cryptography facility
  *
  *
  * Copyright (C) 2018 Amit Kumar (amitkriit@gmail.com)
@@ -29,7 +29,7 @@ using Signature = unsigned char[WH_PKI_ENCODING_LEN];
 using PKIEncryptedData = unsigned char[WH_PKI_ENCODING_LEN];
 //-----------------------------------------------------------------
 /**
- * Asymmetric cryptography facility based on RSA
+ * Asymmetric cryptography facility
  */
 class PKI {
 public:
@@ -43,32 +43,25 @@ public:
 	~PKI();
 	//-----------------------------------------------------------------
 	/**
-	 * Initializes the object (discards existing keys).
-	 * @param hostKey host (private) key string (nullptr to ignore)
-	 * @param publicKey public key string (nullptr to ignore)
-	 * @param fromFile true to treat the key strings as PEM file paths, false to
-	 * treat the strings as base-16 encoded keys.
+	 * Loads key pair from PEM-encoded files (discards existing keys).
+	 * @param hostKey host (private) key file's path (can be nullptr)
+	 * @param publicKey public key file's path (can be nullptr)
 	 * @return true on success, false otherwise
 	 */
-	bool initialize(const char *hostKey, const char *publicKey, bool fromFile =
-			true) noexcept;
+	bool initialize(const char *hostKey, const char *publicKey) noexcept;
 
 	/**
-	 * Initializes the public key (discards existing key).
-	 * @param publicKey public key string
-	 * @param fromFile true to treat the key string as PEM file path, false to
-	 * treat the string as base-16 encoded key.
+	 * Loads public key from PEM-encoded file (discards existing key).
+	 * @param publicKey public key file's path (can be nullptr)
 	 * @return true on success, false otherwise
 	 */
-	bool loadPublicKey(const char *publicKey, bool fromFile = true) noexcept;
+	bool loadPublicKey(const char *publicKey) noexcept;
 	/**
-	 * Initializes the host (private) key (discards existing key).
-	 * @param hostKey host (private) key string
-	 * @param fromFile true to treat the key string as PEM file path, false to
-	 * treat the string as base-16 encoded key.
+	 * Loads host (private) key from PEM-encoded file (discards existing key).
+	 * @param hostKey host (private) key file's path (can be nullptr)
 	 * @return true on success, false otherwise
 	 */
-	bool loadHostKey(const char *hostKey, bool fromFile = true) noexcept;
+	bool loadHostKey(const char *hostKey) noexcept;
 	//-----------------------------------------------------------------
 	/**
 	 * Checks public key's availability.
@@ -121,7 +114,7 @@ public:
 			const Signature *sig) noexcept;
 	//-----------------------------------------------------------------
 	/**
-	 * Generates and stores key pair in PEM-encoded files.
+	 * Generates and stores key pair as PEM-encoded text files.
 	 * @param hostKey host (private) key file's path
 	 * @param publicKey public key file's path
 	 */

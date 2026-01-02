@@ -56,9 +56,9 @@ bool Ed25519::verify(const unsigned char *data, unsigned int dataLength,
 	}
 }
 
-bool Ed25519::generate(const char *privateKeyFile, const char *publicKeyFile,
+bool Ed25519::generate(const char *privateKey, const char *publicKey,
 		char *secret) noexcept {
-	return KeyPair::generate(privateKeyFile, publicKeyFile, 0, secret, nullptr);
+	return KeyPair::generate(privateKey, publicKey, 0, secret, nullptr);
 }
 
 EVP_MD_CTX* Ed25519::mdContext() noexcept {
