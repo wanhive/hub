@@ -16,6 +16,7 @@
 #include "../base/unix/Fcntl.h"
 #include "../base/unix/SystemException.h"
 #include <cerrno>
+#include <cstdio>
 
 namespace wanhive {
 
