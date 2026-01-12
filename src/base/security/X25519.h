@@ -28,19 +28,14 @@ public:
 	 * Destructor
 	 */
 	~X25519();
-	//-----------------------------------------------------------------
 	/**
 	 * Computes the shared secret key.
+	 * @param data output buffer for shared secret key
+	 * @param bytes buffer size in bytes as input and shared key's size in bytes
+	 * as output (value-result argument).
 	 * @return true on success, false on error
 	 */
-	bool compute() noexcept;
-	/**
-	 * Returns the key and it's length in bytes.
-	 * @param length stores key's length in bytes
-	 * @return shared key
-	 */
-	const unsigned char* get(size_t &length) const noexcept;
-	//-----------------------------------------------------------------
+	bool compute(unsigned char *data, unsigned int *bytes) noexcept;
 	/**
 	 * Generates PEM encoded key pair.
 	 * @param privateKey private key file's path
@@ -50,15 +45,9 @@ public:
 	 */
 	bool generate(const char *privateKey, const char *publicKey, char *secret =
 			nullptr) noexcept;
-private:
-	unsigned char* resize(size_t size) noexcept;
-	void clear() noexcept;
 public:
 	/*! Shared key size in bytes */
 	static constexpr unsigned int KEY_SIZE = 32;
-private:
-	unsigned char *data { };
-	size_t bytes { };
 };
 
 } /* namespace wanhive */
