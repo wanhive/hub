@@ -30,7 +30,8 @@ public:
 	~X25519();
 	/**
 	 * Computes the shared secret key.
-	 * @param data output buffer for shared secret key
+	 * @param data output buffer for the shared key. Set to nullptr to calculate
+	 * the maximum buffer size.
 	 * @param bytes buffer size in bytes as input and shared key's size in bytes
 	 * as output (value-result argument).
 	 * @return true on success, false on error
@@ -46,8 +47,10 @@ public:
 	bool generate(const char *privateKey, const char *publicKey, char *secret =
 			nullptr) noexcept;
 public:
-	/*! Shared key size in bytes */
+	/*! Key size in bytes */
 	static constexpr unsigned int KEY_SIZE = 32;
+	/*! Shared secret key size in bytes */
+	static constexpr unsigned int SECRET_SIZE = 32;
 };
 
 } /* namespace wanhive */
