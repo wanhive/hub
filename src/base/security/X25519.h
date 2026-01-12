@@ -35,7 +35,7 @@ public:
 	 * as output (value-result argument).
 	 * @return true on success, false on error
 	 */
-	bool compute(unsigned char *data, unsigned int *bytes) noexcept;
+	bool compute(unsigned char *data, unsigned int &bytes) noexcept;
 	/**
 	 * Generates PEM encoded key pair.
 	 * @param privateKey private key file's path

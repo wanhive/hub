@@ -40,7 +40,7 @@ public:
 	 * @return true on success, false on error
 	 */
 	bool sign(const unsigned char *data, unsigned int dataLength,
-			unsigned char *signature, unsigned int *signatureLength) noexcept;
+			unsigned char *signature, unsigned int &signatureLength) noexcept;
 	/**
 	 * Verifies the given data.
 	 * @param verifiable data

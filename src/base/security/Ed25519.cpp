@@ -24,16 +24,16 @@ Ed25519::~Ed25519() {
 }
 
 bool Ed25519::sign(const unsigned char *data, unsigned int dataLength,
-		unsigned char *signature, unsigned int *signatureLength) noexcept {
-	if (getPrivateKey() && (!dataLength || data) && signatureLength) {
-		size_t len = *signatureLength;
+		unsigned char *signature, unsigned int &signatureLength) noexcept {
+	if (getPrivateKey() && (!dataLength || data)) {
+		size_t len { signatureLength };
 		auto ctx = mdContext();
 		//Sign the data in a single shot
 		auto success = (ctx != nullptr)
 				&& (EVP_DigestSignInit(ctx, nullptr, nullptr, nullptr,
 						getPrivateKey()) == 1)
 				&& (EVP_DigestSign(ctx, signature, &len, data, dataLength) == 1)
-				&& (*signatureLength = len);
+				&& (signatureLength = len);
 		return success;
 	} else {
 		return false;

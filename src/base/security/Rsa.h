@@ -42,7 +42,7 @@ public:
 	 */
 	bool encrypt(const unsigned char *data, unsigned int dataLength,
 			unsigned char *encrypted,
-			unsigned int *encryptedLength) const noexcept;
+			unsigned int &encryptedLength) const noexcept;
 	/**
 	 * Decrypts a cipher-text. Uses RSA_PKCS1_OAEP_PADDING (EME-OAEP as defined
 	 * in PKCS #1 v2.0).
@@ -56,7 +56,7 @@ public:
 	 */
 	bool decrypt(const unsigned char *data, unsigned int dataLength,
 			unsigned char *decrypted,
-			unsigned int *decryptedLength) const noexcept;
+			unsigned int &decryptedLength) const noexcept;
 	//-----------------------------------------------------------------
 	/**
 	 * Signs (PKCS #1 v2.0 SHA-1) the given data.
@@ -70,7 +70,7 @@ public:
 	 */
 	bool sign(const unsigned char *data, unsigned int dataLength,
 			unsigned char *signature,
-			unsigned int *signatureLength) const noexcept;
+			unsigned int &signatureLength) const noexcept;
 	/**
 	 * Verifies (PKCS #1 v2.0 SHA-1) the given data.
 	 * @param data verifiable data

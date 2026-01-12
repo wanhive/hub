@@ -49,14 +49,14 @@ bool PKI::encrypt(const void *plaintext, unsigned int size,
 	auto len = ENCRYPTED_LENGTH;
 	return (size <= MAX_PT_LEN)
 			&& rsa.encrypt((const unsigned char*) plaintext, size,
-					(unsigned char*) ciphertext, &len);
+					(unsigned char*) ciphertext, len);
 }
 
 bool PKI::decrypt(const CipherText *ciphertext, void *plaintext,
 		unsigned int *size) noexcept {
 	auto len = ENCODING_LENGTH;
 	auto ret = rsa.decrypt((const unsigned char*) ciphertext, ENCRYPTED_LENGTH,
-			(unsigned char*) plaintext, &len);
+			(unsigned char*) plaintext, len);
 	if (!ret) {
 		return false;
 	} else if (size) {
@@ -71,7 +71,7 @@ bool PKI::sign(const void *data, unsigned int size,
 		Signature *signature) noexcept {
 	auto len = SIGNATURE_LENGTH;
 	return rsa.sign((const unsigned char*) data, size,
-			(unsigned char*) signature, &len) && (len == SIGNATURE_LENGTH);
+			(unsigned char*) signature, len) && (len == SIGNATURE_LENGTH);
 }
 
 bool PKI::verify(const void *data, unsigned int size,
