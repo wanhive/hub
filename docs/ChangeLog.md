@@ -16,6 +16,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- Combine **network traffic control** on/off options.
 - **Stream** class extends **Duplex** instead of **Sink** and **Source**.
 - The byte stream callback in **Hub** takes the stream channel as a parameter.
 - Restructure the cryptographic facility.
