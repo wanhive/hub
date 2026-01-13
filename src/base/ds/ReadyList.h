@@ -216,10 +216,10 @@ private:
 	}
 private:
 	WH_POD_ASSERT(T);
-	T *storage { nullptr };
-	unsigned int _capacity { 0 };
-	unsigned int _limit { 0 };
-	unsigned int _index { 0 };
+	T *storage { };
+	unsigned int _capacity { };
+	unsigned int _limit { };
+	unsigned int _index { };
 };
 
 } /* namespace wanhive */

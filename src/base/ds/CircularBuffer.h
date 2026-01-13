@@ -213,12 +213,12 @@ private:
 	}
 private:
 	WH_POD_ASSERT(X);
-	X *storage { nullptr };
-	unsigned int _size { 0 };
-	unsigned int _capacity { 0 };
-	unsigned int writeIndex { 0 };
-	unsigned int readIndex { 0 };
-	int status { 0 };
+	X *storage { };
+	unsigned int _size { };
+	unsigned int _capacity { };
+	unsigned int writeIndex { };
+	unsigned int readIndex { };
+	int status { };
 };
 
 } /* namespace wanhive */

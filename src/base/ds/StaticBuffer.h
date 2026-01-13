@@ -207,9 +207,9 @@ private:
 	WH_POD_ASSERT(X);
 	static_assert((SIZE > 0), "Bad buffer size");
 	const unsigned int _capacity { SIZE };
-	unsigned int _limit { _capacity };
-	unsigned int _index { 0 };
-	int status { 0 };
+	unsigned int _limit { SIZE };
+	unsigned int _index { };
+	int status { };
 	X storage[SIZE];
 };
 

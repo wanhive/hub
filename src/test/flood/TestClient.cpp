@@ -18,7 +18,7 @@
 namespace wanhive {
 
 TestClient::TestClient(uint64_t id, const char *path) noexcept :
-		Identity(path) {
+		Identity { path } {
 	setSource(id);
 	hostId = id;
 }

@@ -82,11 +82,11 @@ public:
 	 */
 	bool isInitialized() const noexcept;
 private:
-	void *_bucket { nullptr };
-	void *_head { nullptr };
-	unsigned int _allocated { 0 };
-	unsigned int _capacity { 0 };
-	unsigned int _blockSize { 0 };
+	void *_bucket { };
+	void *_head { };
+	unsigned int _allocated { };
+	unsigned int _capacity { };
+	unsigned int _blockSize { };
 };
 
 } /* namespace wanhive */

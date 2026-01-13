@@ -139,7 +139,7 @@ public:
 	 */
 	static void remove(const char *path);
 private:
-	DIR *dir { nullptr };
+	DIR *dir { };
 };
 
 } /* namespace wanhive */

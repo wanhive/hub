@@ -19,7 +19,7 @@ namespace wanhive {
 
 MulticastConsumer::MulticastConsumer(unsigned long long uid, unsigned int topic,
 		const char *path) noexcept :
-		Agent(uid, path), topic(topic), subscribed(false) {
+		Agent { uid, path }, topic { topic }, subscribed { false } {
 
 }
 

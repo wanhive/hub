@@ -191,13 +191,13 @@ public:
 	 */
 	void setMarked() noexcept;
 private:
-	void *reference { nullptr };
-	int type { 0 };
-	uint32_t flags { 0 };
-	uint32_t events { 0 };
-	uint32_t trace { 0 };
-	unsigned char group { 0 };
-	bool marked { false };
+	void *reference { };
+	int type { };
+	uint32_t flags { };
+	uint32_t events { };
+	uint32_t trace { };
+	unsigned char group { };
+	bool marked { };
 };
 
 } /* namespace wanhive */

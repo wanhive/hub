@@ -87,7 +87,7 @@ public:
 	 */
 	void reopen(const char *path, const char *mode);
 private:
-	FILE *fp { nullptr };
+	FILE *fp { };
 };
 
 } /* namespace wanhive */

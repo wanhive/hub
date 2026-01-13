@@ -150,9 +150,9 @@ private:
 
 private:
 	WH_POD_ASSERT(X);
-	X *storage { nullptr };
-	unsigned int _capacity { 0 };
-	unsigned int _size { 0 };
+	X *storage { };
+	unsigned int _capacity { };
+	unsigned int _size { };
 	BHFN indexer;
 	CMPFN cmp;
 };

@@ -80,8 +80,8 @@ public:
 	static void reverse(const SocketAddress &sa, NameInfo &ni,
 			int flags = (NI_NUMERICHOST | NI_NUMERICSERV));
 private:
-	addrinfo *result { nullptr };
-	addrinfo *index { nullptr };
+	addrinfo *result { };
+	addrinfo *index { };
 };
 
 } /* namespace wanhive */

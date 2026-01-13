@@ -15,8 +15,9 @@
 
 namespace wanhive {
 
-NetworkAddressException::NetworkAddressException(int type) noexcept {
-	error = type;
+NetworkAddressException::NetworkAddressException(int type) noexcept :
+		error { type } {
+
 }
 
 NetworkAddressException::~NetworkAddressException() {

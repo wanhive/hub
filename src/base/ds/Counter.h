@@ -76,8 +76,8 @@ public:
 	 */
 	bool down(unsigned int step = 1) noexcept;
 private:
-	unsigned long long limit { 0 }; //upper limit (inclusive)
-	unsigned long long count { 0 }; //total count
+	unsigned long long limit { }; //upper limit (inclusive)
+	unsigned long long count { }; //total count
 };
 
 } /* namespace wanhive */

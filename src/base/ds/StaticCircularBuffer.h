@@ -205,9 +205,9 @@ private:
 	static_assert((SIZE && !(SIZE & (SIZE - 1))), "Invalid buffer size");
 	const unsigned int _size { SIZE };
 	const unsigned int _capacity { (SIZE ? (SIZE - 1) : SIZE) };
-	int status { 0 };
-	unsigned int writeIndex { 0 };
-	unsigned int readIndex { 0 };
+	int status { };
+	unsigned int writeIndex { };
+	unsigned int readIndex { };
 	X storage[SIZE];
 };
 

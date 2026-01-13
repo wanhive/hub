@@ -39,7 +39,7 @@ private:
 	void open();
 	void close() noexcept;
 private:
-	FILE *fp { nullptr };
+	FILE *fp { };
 };
 
 } /* namespace wanhive */

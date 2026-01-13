@@ -216,11 +216,11 @@ public:
 	bool isEmpty() const noexcept;
 private:
 	WH_POD_ASSERT(X);
-	X *storage { nullptr };
-	unsigned int _capacity { 0 };
-	unsigned int _limit { 0 };
-	unsigned int _index { 0 };
-	int status { 0 };
+	X *storage { };
+	unsigned int _capacity { };
+	unsigned int _limit { };
+	unsigned int _index { };
+	int status { };
 };
 
 } /* namespace wanhive */
