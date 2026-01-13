@@ -259,11 +259,10 @@ void Hub::configure(void *arg) {
 		ctx.outward = conf.getNumber("HUB", "outward");
 		ctx.outward = Twiddler::min(ctx.outward, (Socket::OUT_QUEUE_SIZE - 1));
 
-		ctx.throttle = conf.getBoolean("HUB", "throttle");
+		ctx.regulate = conf.getBoolean("HUB", "regulate");
+
 		ctx.reserved = conf.getNumber("HUB", "reserved");
 		ctx.reserved = Twiddler::min(ctx.reserved, ctx.messages);
-
-		ctx.policing = conf.getBoolean("HUB", "policing");
 		ctx.ttl = conf.getNumber("HUB", "TTL");
 
 		ctx.answer = conf.getDouble("HUB", "answer", 0.5);
@@ -275,13 +274,13 @@ void Hub::configure(void *arg) {
 		ctx.redact = conf.getBoolean("OPT", "redact", true);
 		//-----------------------------------------------------------------
 		WH_LOG_DEBUG(
-				"\nLISTEN=%s, BACKLOG=%d, SERVICE_NAME='%s', SERVICE_TYPE='%s',\n" "IO_EVENTS=%u, TIMER_EXPIRATION=%ums, TIMER_INTERVAL=%ums, SEMAPHORE=%s,\n" "SYNCHRONOUS_SIGNAL=%s, CONNECTIONS=%u, MESSAGES=%u,\n" "NEW_CONNECTIONS=%u, NEW_CONNECTION_TIMEOUT=%ums, CYCLE_IN_LIMIT=%u,\n" "OUT_QUEUE_LIMIT=%u, THROTTLE=%s, RESERVED_MESSAGES=%u, ALLOW_PACKET_DROP=%s,\n" "MESSAGE_TTL=%u, ANSWER_RATIO=%f, FORWARD_RATIO=%f, LOG_LEVEL=%s, REDACT=%s\n",
+				"\nLISTEN=%s, BACKLOG=%d, SERVICE_NAME='%s', SERVICE_TYPE='%s',\n" "IO_EVENTS=%u, TIMER_EXPIRATION=%ums, TIMER_INTERVAL=%ums, SEMAPHORE=%s,\n" "SYNCHRONOUS_SIGNAL=%s, CONNECTIONS=%u, MESSAGES=%u,\n" "NEW_CONNECTIONS=%u, NEW_CONNECTION_TIMEOUT=%ums, CYCLE_IN_LIMIT=%u,\n" "OUT_QUEUE_LIMIT=%u, TRAFFIC_CONTROL=%s, RESERVED_MESSAGES=%u,\n" "MESSAGE_TTL=%u, ANSWER_RATIO=%f, FORWARD_RATIO=%f,\n" "LOG_LEVEL=%s, REDACT=%s\n",
 				WH_BOOLF(ctx.listen), ctx.backlog, ctx.name, ctx.type,
 				ctx.events, ctx.expiration, ctx.interval,
 				WH_BOOLF(ctx.semaphore), WH_BOOLF(ctx.signal), ctx.connections,
 				ctx.messages, ctx.guests, ctx.lease, ctx.inward, ctx.outward,
-				WH_BOOLF(ctx.throttle), ctx.reserved, WH_BOOLF(ctx.policing),
-				ctx.ttl, ctx.answer, ctx.forward,
+				WH_BOOLF(ctx.regulate), ctx.reserved, ctx.ttl, ctx.answer,
+				ctx.forward,
 				Logger::levelString(Logger::getDefault().getLevel()),
 				WH_BOOLF(ctx.redact));
 		//-----------------------------------------------------------------
@@ -852,7 +851,7 @@ bool Hub::processConnection(Socket *connection) noexcept {
 		 * Dynamically update on the basis of local parameters only
 		 */
 		unsigned int cycleLimit;
-		if (ctx.throttle) {
+		if (ctx.regulate) {
 			cycleLimit = throttle(connection);
 		} else {
 			cycleLimit = Twiddler::min(ctx.inward, Message::unallocated());
@@ -903,7 +902,7 @@ bool Hub::processStream(Stream *stream) noexcept {
 }
 
 bool Hub::drop(Message *message) const noexcept {
-	return ctx.policing && !message->testFlags(MSG_PRIORITY)
+	return ctx.regulate && !message->testFlags(MSG_PRIORITY)
 			&& (message->hop() > ctx.ttl);
 }
 

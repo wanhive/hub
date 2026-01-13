@@ -403,12 +403,10 @@ private:
 		unsigned int inward;
 		//Limit on the queued up outgoing messages for each connection
 		unsigned int outward;
-		//Throttle incoming traffic
-		bool throttle;
+		//Traffic shaping and policing
+		bool regulate;
 		//Reserved messages for internal purposes
 		unsigned int reserved;
-		//Congestion control
-		bool policing;
 		//Message TTL
 		unsigned int ttl;
 		//Reservation ratios
