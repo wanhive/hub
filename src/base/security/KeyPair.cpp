@@ -144,22 +144,17 @@ bool KeyPair::setPublicKey(EVP_PKEY *pkey) noexcept {
 EVP_PKEY* KeyPair::generate(size_t bits) const noexcept {
 	if (!name) {
 		return nullptr;
-	} else if (bits) {
-		return EVP_PKEY_Q_keygen(nullptr, nullptr, name, bits);
 	} else {
-		return EVP_PKEY_Q_keygen(nullptr, nullptr, name);
+		return EVP_PKEY_Q_keygen(nullptr, nullptr, name, bits);
 	}
 }
 
 EVP_PKEY* KeyPair::generate(size_t bits) noexcept {
-	EVP_PKEY *pkey { };
 	if (!name) {
 		return nullptr;
-	} else if (bits) {
-		pkey = EVP_PKEY_Q_keygen(nullptr, nullptr, name, bits);
-	} else {
-		pkey = EVP_PKEY_Q_keygen(nullptr, nullptr, name);
 	}
+
+	auto pkey = EVP_PKEY_Q_keygen(nullptr, nullptr, name, bits);
 
 	if (pkey) {
 		reset();
@@ -184,6 +179,30 @@ bool KeyPair::generate(const char *privateKey, const char *publicKey,
 			&& store(publicKey, pkey, true, nullptr, nullptr);
 	EVP_PKEY_free(pkey);
 	return status;
+}
+
+unsigned int KeyPair::bits(const EVP_PKEY *pkey) noexcept {
+	if (pkey) {
+		return EVP_PKEY_get_bits(pkey);
+	} else {
+		return 0;
+	}
+}
+
+unsigned int KeyPair::size(const EVP_PKEY *pkey) noexcept {
+	if (pkey) {
+		return EVP_PKEY_get_size(pkey);
+	} else {
+		return 0;
+	}
+}
+
+unsigned int KeyPair::security(const EVP_PKEY *pkey) noexcept {
+	if (pkey) {
+		return EVP_PKEY_get_security_bits(pkey);
+	} else {
+		return 0;
+	}
 }
 
 bool KeyPair::store(const char *path, EVP_PKEY *pkey, bool isPublic,

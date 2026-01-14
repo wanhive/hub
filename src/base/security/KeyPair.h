@@ -149,6 +149,25 @@ protected:
 	bool generate(const char *privateKey, const char *publicKey, size_t bits,
 			char *secret, const EVP_CIPHER *cipher) const noexcept;
 	/**
+	 * Returns the cryptographic length of a key in bits.
+	 * @param pkey asymmetric key
+	 * @return cryptographic key length in bits, 0 on error
+	 */
+	static unsigned int bits(const EVP_PKEY *pkey) noexcept;
+	/**
+	 * Returns the maximum suitable output buffer size in bytes for various
+	 * operations done with a key.
+	 * @param pkey asymmetric key
+	 * @return maximum buffer size in bytes, 0 on error
+	 */
+	static unsigned int size(const EVP_PKEY *pkey) noexcept;
+	/**
+	 * Returns the number of security bits of a key.
+	 * @param pkey asymmetric key
+	 * @return security bits, 0 on error
+	 */
+	static unsigned int security(const EVP_PKEY *pkey) noexcept;
+	/**
 	 * Stores a key as PEM-encoded text file.
 	 * @param path PEM file's path
 	 * @param pkey public or private key
