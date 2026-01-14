@@ -120,7 +120,7 @@ private:
 	bool installKeys(const char *certificate, const char *privateKey) noexcept;
 	void clear() noexcept;
 private:
-	SSL_CTX *ctx { nullptr };
+	SSL_CTX *ctx { };
 };
 
 } /* namespace wanhive */

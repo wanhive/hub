@@ -12,38 +12,39 @@
 
 #include "CSPRNG.h"
 #include "../Storage.h"
-#include "../common/Exception.h"
+#include "../common/BaseException.h"
 #include <openssl/rand.h>
 
 namespace wanhive {
 class CSPRNG::RandomDevice {
 public:
 	RandomDevice() {
-		random = -1;
-		urandom = -1;
 		try {
 			random = Storage::open("/dev/random", O_RDONLY);
 			urandom = Storage::open("/dev/urandom", O_RDONLY);
 		} catch (const BaseException &e) {
-			Storage::close(random);
-			Storage::close(urandom);
-			random = -1;
-			urandom = -1;
+			reset();
 			throw;
 		}
 	}
 
 	~RandomDevice() {
-		Storage::close(random);
-		Storage::close(urandom);
+		reset();
 	}
 
-	size_t readData(void *block, size_t size, bool strong) const {
-		return Storage::read(strong ? random : urandom, block, size, true);
+	size_t read(void *data, size_t size, bool strong) const {
+		return Storage::read(strong ? random : urandom, data, size, true);
 	}
 private:
-	int random;
-	int urandom;
+	void reset() noexcept {
+		Storage::close(random);
+		Storage::close(urandom);
+		random = -1;
+		urandom = -1;
+	}
+private:
+	int random { -1 };
+	int urandom { -1 };
 };
 
 const CSPRNG::RandomDevice CSPRNG::device;
@@ -58,7 +59,7 @@ bool CSPRNG::seed(const void *data, int count) noexcept {
 }
 
 void CSPRNG::random(void *buffer, unsigned int count, bool strong) {
-	device.readData(buffer, count, strong);
+	device.read(buffer, count, strong);
 }
 
 } /* namespace wanhive */

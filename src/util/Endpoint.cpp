@@ -14,7 +14,6 @@
 #include "commands.h"
 #include "../base/common/Exception.h"
 #include "../base/ds/Serializer.h"
-#include "../base/security/CryptoUtils.h"
 
 namespace wanhive {
 
