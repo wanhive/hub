@@ -75,8 +75,7 @@ public:
 	/**
 	 * Constructs a prepared statement.
 	 * @param sql statement to compile
-	 * @param bytes number of bytes in the input string including the
-	 * nul-terminator
+	 * @param bytes statement's length in bytes including the nul-terminator
 	 * @return compiled prepared statement
 	 */
 	sqlite3_stmt* prepare(const char *sql, int bytes = -1);
@@ -129,9 +128,9 @@ protected:
 	//-----------------------------------------------------------------
 	/**
 	 * Returns the database connection handle.
-	 * @return opaque database connection object
+	 * @return database connection
 	 */
-	sqlite3* getHandle() const noexcept;
+	sqlite3* database() const noexcept;
 	//-----------------------------------------------------------------
 	/**
 	 * Binds a blob to the prepared statement.
@@ -194,7 +193,7 @@ protected:
 	 * @param count number of zeroes
 	 * @return status code
 	 */
-	static int bindZeroes(sqlite3_stmt *stmt, int index, size_t count) noexcept;
+	static int bindZeros(sqlite3_stmt *stmt, int index, size_t count) noexcept;
 	//-----------------------------------------------------------------
 	/**
 	 * Returns a query result's data type.
@@ -202,50 +201,49 @@ protected:
 	 * @param index valid column index
 	 * @return data type code
 	 */
-	static int columnType(sqlite3_stmt *stmt, int index) noexcept;
+	static int getType(sqlite3_stmt *stmt, int index) noexcept;
 	/**
 	 * Returns a blob or a text result's size in bytes.
 	 * @param stmt valid prepared statement
 	 * @param index valid index
 	 * @return result size in bytes
 	 */
-	static int columnBytes(sqlite3_stmt *stmt, int index) noexcept;
+	static int getSize(sqlite3_stmt *stmt, int index) noexcept;
 	/**
 	 * Returns the blob from a query's result column.
 	 * @param stmt valid prepared statement
 	 * @param index valid column index
 	 * @return blob's pointer
 	 */
-	static const void* columnBlob(sqlite3_stmt *stmt, int index) noexcept;
+	static const void* getBlob(sqlite3_stmt *stmt, int index) noexcept;
 	/**
 	 * Returns the UTF-8 encoded text from a query's result column.
 	 * @param stmt valid prepared statement
 	 * @param index valid column index
 	 * @return text's pointer
 	 */
-	static const unsigned char* columnText(sqlite3_stmt *stmt,
-			int index) noexcept;
+	static const unsigned char* getText(sqlite3_stmt *stmt, int index) noexcept;
 	/**
 	 * Returns the integer value from a query's result column.
 	 * @param stmt valid prepared statement
 	 * @param index valid column index
 	 * @return integer value
 	 */
-	static int columnInteger(sqlite3_stmt *stmt, int index) noexcept;
+	static int getInteger(sqlite3_stmt *stmt, int index) noexcept;
 	/**
 	 * Returns the 64-bit integer value from a query's result column.
 	 * @param stmt valid prepared statement
 	 * @param index valid column index
 	 * @return 64-bit integer value
 	 */
-	static long long columnLongInteger(sqlite3_stmt *stmt, int index) noexcept;
+	static long long getLongInteger(sqlite3_stmt *stmt, int index) noexcept;
 	/**
 	 * Returns the double value from a query's result column.
 	 * @param stmt valid prepared statement
 	 * @param index valid column index
 	 * @return double value
 	 */
-	static double columnDouble(sqlite3_stmt *stmt, int index) noexcept;
+	static double getDouble(sqlite3_stmt *stmt, int index) noexcept;
 public:
 	/**
 	 * Common access control flags
@@ -262,7 +260,7 @@ public:
 	/*! Special pathname for in-memory database */
 	static constexpr const char *IN_MEMORY = ":memory:";
 private:
-	sqlite3 *db { nullptr };
+	sqlite3 *db { };
 };
 
 } /* namespace wanhive */

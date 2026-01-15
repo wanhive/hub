@@ -121,10 +121,10 @@ void Hosts::dump(const char *path, int version) {
 
 	writeHeading(f, version);
 	while (SQLite::step(stmt) == SQLITE_ROW) {
-		auto id = (unsigned long long) SQLite::columnLongInteger(stmt, 0);
-		auto host = (const char*) SQLite::columnText(stmt, 1);
-		auto service = (const char*) SQLite::columnText(stmt, 2);
-		auto type = SQLite::columnInteger(stmt, 3);
+		auto id = (unsigned long long) SQLite::getLongInteger(stmt, 0);
+		auto host = (const char*) SQLite::getText(stmt, 1);
+		auto service = (const char*) SQLite::getText(stmt, 2);
+		auto type = SQLite::getInteger(stmt, 3);
 		if (version == 1) {
 			writeTuple(f, id, host, service, type);
 		} else {
@@ -145,11 +145,11 @@ int Hosts::get(unsigned long long uid, NameInfo &ni) noexcept {
 	memset(&ni, 0, sizeof(ni));
 	SQLite::bindLongInteger(stmt.pq, 1, uid);
 	if ((z = SQLite::step(stmt.pq)) == SQLITE_ROW) {
-		strncpy(ni.host, (const char*) SQLite::columnText(stmt.pq, 0),
+		strncpy(ni.host, (const char*) SQLite::getText(stmt.pq, 0),
 				sizeof(ni.host) - 1);
-		strncpy(ni.service, (const char*) SQLite::columnText(stmt.pq, 1),
+		strncpy(ni.service, (const char*) SQLite::getText(stmt.pq, 1),
 				sizeof(ni.service) - 1);
-		ni.type = SQLite::columnInteger(stmt.pq, 2);
+		ni.type = SQLite::getInteger(stmt.pq, 2);
 	} else if (z == SQLITE_DONE) {
 		//No record found
 		ret = 1;
@@ -211,7 +211,7 @@ int Hosts::list(unsigned long long uids[], unsigned int &count,
 	unsigned int x = 0;
 	int z = 0;
 	while ((x < count) && ((z = SQLite::step(stmt.pl)) == SQLITE_ROW)) {
-		uids[x++] = SQLite::columnLongInteger(stmt.pl, 0);
+		uids[x++] = SQLite::getLongInteger(stmt.pl, 0);
 	}
 	SQLite::reset(stmt.pl);
 	SQLite::unbind(stmt.pl);

@@ -42,7 +42,7 @@ SQLite::~SQLite() {
 
 void SQLite::open(const char *path, int flags) {
 	close();
-	sqlite3 *conn = nullptr;
+	sqlite3 *conn { };
 	if (sqlite3_open_v2(path, &conn, flags, nullptr) != SQLITE_OK) {
 		sqlite3_close_v2(conn);
 		throw Exception(EX_OPERATION);
@@ -136,7 +136,7 @@ bool SQLite::execute(const char *sql) {
 	return execute(sql, nullptr, nullptr);
 }
 
-sqlite3* SQLite::getHandle() const noexcept {
+sqlite3* SQLite::database() const noexcept {
 	return db;
 }
 
@@ -168,35 +168,35 @@ int SQLite::bindNull(sqlite3_stmt *stmt, int index) noexcept {
 	return sqlite3_bind_null(stmt, index);
 }
 
-int SQLite::bindZeroes(sqlite3_stmt *stmt, int index, size_t count) noexcept {
+int SQLite::bindZeros(sqlite3_stmt *stmt, int index, size_t count) noexcept {
 	return sqlite3_bind_zeroblob64(stmt, index, count);
 }
 
-int SQLite::columnType(sqlite3_stmt *stmt, int index) noexcept {
+int SQLite::getType(sqlite3_stmt *stmt, int index) noexcept {
 	return sqlite3_column_type(stmt, index);
 }
 
-int SQLite::columnBytes(sqlite3_stmt *stmt, int index) noexcept {
+int SQLite::getSize(sqlite3_stmt *stmt, int index) noexcept {
 	return sqlite3_column_bytes(stmt, index);
 }
 
-const void* SQLite::columnBlob(sqlite3_stmt *stmt, int index) noexcept {
+const void* SQLite::getBlob(sqlite3_stmt *stmt, int index) noexcept {
 	return sqlite3_column_blob(stmt, index);
 }
 
-const unsigned char* SQLite::columnText(sqlite3_stmt *stmt, int index) noexcept {
+const unsigned char* SQLite::getText(sqlite3_stmt *stmt, int index) noexcept {
 	return sqlite3_column_text(stmt, index);
 }
 
-int SQLite::columnInteger(sqlite3_stmt *stmt, int index) noexcept {
+int SQLite::getInteger(sqlite3_stmt *stmt, int index) noexcept {
 	return sqlite3_column_int(stmt, index);
 }
 
-long long SQLite::columnLongInteger(sqlite3_stmt *stmt, int index) noexcept {
+long long SQLite::getLongInteger(sqlite3_stmt *stmt, int index) noexcept {
 	return sqlite3_column_int64(stmt, index);
 }
 
-double SQLite::columnDouble(sqlite3_stmt *stmt, int index) noexcept {
+double SQLite::getDouble(sqlite3_stmt *stmt, int index) noexcept {
 	return sqlite3_column_double(stmt, index);
 }
 
