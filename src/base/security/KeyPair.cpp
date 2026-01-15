@@ -144,8 +144,15 @@ bool KeyPair::setPublicKey(EVP_PKEY *pkey) noexcept {
 EVP_PKEY* KeyPair::generate(size_t bits) const noexcept {
 	if (!name) {
 		return nullptr;
+	}
+
+	auto pkey = EVP_PKEY_Q_keygen(nullptr, nullptr, name, bits);
+
+	if (validate(pkey)) {
+		return pkey;
 	} else {
-		return EVP_PKEY_Q_keygen(nullptr, nullptr, name, bits);
+		EVP_PKEY_free(pkey);
+		return nullptr;
 	}
 }
 
@@ -156,12 +163,14 @@ EVP_PKEY* KeyPair::generate(size_t bits) noexcept {
 
 	auto pkey = EVP_PKEY_Q_keygen(nullptr, nullptr, name, bits);
 
-	if (pkey) {
+	if (validate(pkey)) {
 		reset();
 		_private = _public = pkey;
+		return pkey;
+	} else {
+		EVP_PKEY_free(pkey);
+		return nullptr;
 	}
-
-	return pkey;
 }
 
 bool KeyPair::generate(const char *privateKey, const char *publicKey,
