@@ -47,8 +47,8 @@ void DataStore::close() noexcept {
 	db = { PGPoll::CONNECT, nullptr };
 }
 
-bool DataStore::poll() {
-	auto status = Postgres::poll(db.conn, db.poll);
+bool DataStore::poll(int timeout) {
+	auto status = Postgres::poll(db.conn, db.poll, timeout);
 	switch (status) {
 	case PGHealth::READY:
 		return true;

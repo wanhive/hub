@@ -69,14 +69,14 @@ public:
 	/**
 	 * Opens a new database connection.
 	 * @param info connection parameters
-	 * @return database connection handle (nullptr on error)
+	 * @return database connection (nullptr on error)
 	 */
 	static PGconn* connect(const PGInfo &info) noexcept;
 	/**
 	 * Opens a new database connection.
 	 * @param name connection parameters string
 	 * @param blocking true for blocking operation, false otherwise
-	 * @return database connection handle (nullptr on error)
+	 * @return database connection (nullptr on error)
 	 */
 	static PGconn* connect(const char *name, bool blocking) noexcept;
 	/**
@@ -85,25 +85,25 @@ public:
 	 * @param values null terminated array of values
 	 * @param expand true to expand the 'dbname' keyword, false otherwise
 	 * @param blocking true for blocking operation, false otherwise
-	 * @return database connection handle (nullptr on error)
+	 * @return database connection (nullptr on error)
 	 */
 	static PGconn* connect(const char *const keys[], const char *const values[],
 			bool expand, bool blocking) noexcept;
 	/**
 	 * Reads database connection's health.
-	 * @param conn database connection handle
+	 * @param conn database connection
 	 * @return health code
 	 */
 	static PGHealth health(const PGconn *conn) noexcept;
 	/**
 	 * Closes a database connection and frees its resources. A closed connection
 	 * should never be reused. This function is nullptr-safe.
-	 * @param conn database connection handle
+	 * @param conn database connection
 	 */
 	static void disconnect(PGconn *conn) noexcept;
 	/**
 	 * Attempts to re-establish a database connection.
-	 * @param conn database connection handle
+	 * @param conn database connection
 	 * @param blocking true for blocking operation, false otherwise
 	 * @return true on success, false on error
 	 */
@@ -131,11 +131,13 @@ public:
 			bool expand) noexcept;
 	/**
 	 * Polls database connection's status.
-	 * @param conn database connection handle
+	 * @param conn database connection
 	 * @param type polling type
+	 * @param timeout wait period in milliseconds. Set to -1 (default) to block
+	 * indefinitely, set to zero (0) for non-blocking operation.
 	 * @return health code
 	 */
-	static PGHealth poll(PGconn *conn, PGPoll type) noexcept;
+	static PGHealth poll(PGconn *conn, PGPoll type, int timeout = -1) noexcept;
 };
 
 } /* namespace wanhive */

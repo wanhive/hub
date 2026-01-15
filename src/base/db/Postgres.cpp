@@ -39,7 +39,7 @@ PGconn* Postgres::connect(const char *name, bool blocking) noexcept {
 		return nullptr;
 	}
 
-	PGconn *conn { nullptr };
+	PGconn *conn { };
 	if (blocking) {
 		conn = PQconnectdb(name);
 	} else {
@@ -60,7 +60,7 @@ PGconn* Postgres::connect(const char *const keys[], const char *const values[],
 		return nullptr;
 	}
 
-	PGconn *conn { nullptr };
+	PGconn *conn { };
 	if (blocking) {
 		conn = PQconnectdbParams(keys, values, expand);
 	} else {
@@ -133,7 +133,7 @@ bool Postgres::ping(const char *const keys[], const char *const values[],
 	}
 }
 
-PGHealth Postgres::poll(PGconn *conn, PGPoll type) noexcept {
+PGHealth Postgres::poll(PGconn *conn, PGPoll type, int timeout) noexcept {
 	if (!conn) {
 		return PGHealth::BAD;
 	}
@@ -161,13 +161,19 @@ PGHealth Postgres::poll(PGconn *conn, PGPoll type) noexcept {
 	fd_set fdset;
 	FD_ZERO(&fdset);
 	FD_SET(fd, &fdset);
-	timeval timeout { 0, 0 };
+	timeval tv { }, *to { };
 	int ret { -1 };
 
+	if (timeout >= 0) {
+		tv.tv_sec = timeout / 1000;
+		tv.tv_usec = (timeout % 1000) * 1000;
+		to = &tv;
+	}
+
 	if (status == PGRES_POLLING_READING) {
-		ret = select(fd + 1, &fdset, nullptr, nullptr, &timeout);
+		ret = select(fd + 1, &fdset, nullptr, nullptr, to);
 	} else if (status == PGRES_POLLING_WRITING) {
-		ret = select(fd + 1, nullptr, &fdset, nullptr, &timeout);
+		ret = select(fd + 1, nullptr, &fdset, nullptr, to);
 	}
 
 	if (ret >= 0 || errno == EINTR) {

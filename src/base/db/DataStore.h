@@ -58,9 +58,11 @@ public:
 	void close() noexcept;
 	/**
 	 * Polls database connection's status.
-	 * @return true for stable connection, false for connection in-progress
+	 * @param timeout wait period in milliseconds. Set to -1 (default) to block
+	 * indefinitely, set to zero (0) for non-blocking operation.
+	 * @return
 	 */
-	bool poll();
+	bool poll(int timeout = -1);
 	/**
 	 * Probes database connection's health.
 	 * @return health code
@@ -81,7 +83,7 @@ protected:
 private:
 	struct {
 		PGPoll poll { PGPoll::CONNECT };
-		PGconn *conn { nullptr };
+		PGconn *conn { };
 	} db;
 };
 
