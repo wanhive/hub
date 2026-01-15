@@ -20,6 +20,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Stream** class extends **Duplex** instead of **Sink** and **Source**.
 - The byte stream callback in **Hub** takes the stream channel as a parameter.
 - Restructure the cryptographic facility.
+- Update database management interfaces.
 
 ### Removed
 
