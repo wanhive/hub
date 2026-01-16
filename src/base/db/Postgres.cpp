@@ -12,8 +12,41 @@
 
 #include "Postgres.h"
 #include "../common/Exception.h"
-#include <cerrno>
 #include <sys/select.h>
+#include <cerrno>
+
+namespace {
+
+auto poll(int fd, bool reading, int timeout) noexcept {
+	if (fd < 0) {
+		return wanhive::PGHealth::BAD;
+	}
+
+	timeval tv { }, *to { };
+	if (timeout >= 0) {
+		tv.tv_sec = timeout / 1000;
+		tv.tv_usec = (timeout % 1000) * 1000;
+		to = &tv;
+	}
+
+	fd_set fdset;
+	FD_ZERO(&fdset);
+	FD_SET(fd, &fdset);
+	int ret { -1 };
+	if (reading) {
+		ret = select(fd + 1, &fdset, nullptr, nullptr, to);
+	} else {
+		ret = select(fd + 1, nullptr, &fdset, nullptr, to);
+	}
+
+	if (ret >= 0 || errno == EINTR) {
+		return wanhive::PGHealth::OK;
+	} else {
+		return wanhive::PGHealth::BAD;
+	}
+}
+
+}  // namespace
 
 namespace wanhive {
 
@@ -145,40 +178,14 @@ PGHealth Postgres::poll(PGconn *conn, PGPoll type, int timeout) noexcept {
 		status = PQresetPoll(conn);
 	}
 
-	if (status == PGRES_POLLING_FAILED) {
-		return PGHealth::BAD;
-	}
-
-	if (status == PGRES_POLLING_OK) {
+	switch (status) {
+	case PGRES_POLLING_OK:
 		return PGHealth::READY;
-	}
-
-	auto fd = PQsocket(conn);
-	if (fd < 0) {
-		return PGHealth::BAD;
-	}
-
-	fd_set fdset;
-	FD_ZERO(&fdset);
-	FD_SET(fd, &fdset);
-	timeval tv { }, *to { };
-	int ret { -1 };
-
-	if (timeout >= 0) {
-		tv.tv_sec = timeout / 1000;
-		tv.tv_usec = (timeout % 1000) * 1000;
-		to = &tv;
-	}
-
-	if (status == PGRES_POLLING_READING) {
-		ret = select(fd + 1, &fdset, nullptr, nullptr, to);
-	} else if (status == PGRES_POLLING_WRITING) {
-		ret = select(fd + 1, nullptr, &fdset, nullptr, to);
-	}
-
-	if (ret >= 0 || errno == EINTR) {
-		return PGHealth::OK;
-	} else {
+	case PGRES_POLLING_READING:
+		return ::poll(PQsocket(conn), true, timeout);
+	case PGRES_POLLING_WRITING:
+		return ::poll(PQsocket(conn), false, timeout);
+	default:
 		return PGHealth::BAD;
 	}
 }
