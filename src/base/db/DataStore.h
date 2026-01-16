@@ -77,9 +77,9 @@ public:
 protected:
 	/**
 	 * Returns the database connection handle.
-	 * @return opaque database connection object
+	 * @return database connection
 	 */
-	PGconn* getHandle() const noexcept;
+	PGconn* connection() const noexcept;
 private:
 	struct {
 		PGPoll poll { PGPoll::CONNECT };

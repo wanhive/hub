@@ -58,7 +58,7 @@ void Things::get(unsigned long long identity, const Data &nonce,
 	const char *paramValues[1];
 	paramValues[0] = identityString;
 
-	auto conn = DataStore::getHandle();
+	auto conn = DataStore::connection();
 	auto query = command ? command : DEF_QUERY;
 	auto res = PQexecParams(conn, query, 1, nullptr, paramValues, nullptr,
 			nullptr, 1);

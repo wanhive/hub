@@ -67,7 +67,7 @@ bool DataStore::ping(const DBInfo &info) noexcept {
 	return Postgres::ping(info);
 }
 
-PGconn* DataStore::getHandle() const noexcept {
+PGconn* DataStore::connection() const noexcept {
 	return db.conn;
 }
 
