@@ -1,7 +1,7 @@
 /*
  * Message.cpp
  *
- * Message implementation
+ * Wanhive Message
  *
  *
  * Copyright (C) 2018 Amit Kumar (amitkriit@gmail.com)

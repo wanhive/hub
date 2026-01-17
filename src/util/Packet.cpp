@@ -1,7 +1,7 @@
 /*
  * Packet.cpp
  *
- * The message packet
+ * Message packet
  *
  *
  * Copyright (C) 2021 Amit Kumar (amitkriit@gmail.com)

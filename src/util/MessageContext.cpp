@@ -27,7 +27,7 @@ MessageContext::MessageContext(uint8_t command, uint8_t qualifier,
 }
 
 MessageContext::MessageContext(const unsigned char *data) noexcept {
-	readContext(data);
+	read(data);
 }
 
 MessageContext::~MessageContext() {
@@ -58,27 +58,27 @@ void MessageContext::setStatus(uint8_t status) noexcept {
 	this->status = status;
 }
 
-void MessageContext::getContext(uint8_t &command, uint8_t &qualifier,
+void MessageContext::get(uint8_t &command, uint8_t &qualifier,
 		uint8_t &status) const noexcept {
 	command = getCommand();
 	qualifier = getQualifier();
 	status = getStatus();
 }
 
-void MessageContext::setContext(uint8_t command, uint8_t qualifier,
+void MessageContext::set(uint8_t command, uint8_t qualifier,
 		uint8_t status) noexcept {
 	setCommand(command);
 	setQualifier(qualifier);
 	setStatus(status);
 }
 
-void MessageContext::readContext(const unsigned char *data) noexcept {
+void MessageContext::read(const unsigned char *data) noexcept {
 	setCommand(readCommand(data));
 	setQualifier(readQualifier(data));
 	setStatus(readStatus(data));
 }
 
-void MessageContext::writeContext(unsigned char *data) const noexcept {
+void MessageContext::write(unsigned char *data) const noexcept {
 	writeCommand(data, getCommand());
 	writeQualifier(data, getQualifier());
 	writeStatus(data, getStatus());

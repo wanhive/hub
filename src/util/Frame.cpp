@@ -1,7 +1,7 @@
 /*
  * Frame.cpp
  *
- * The message frame
+ * Message frame
  *
  *
  * Copyright (C) 2022 Amit Kumar (amitkriit@gmail.com)

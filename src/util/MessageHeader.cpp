@@ -47,6 +47,59 @@ void MessageHeader::clear() noexcept {
 	setContext(0, 0, 0);
 }
 
+MessageAddress& MessageHeader::address() noexcept {
+	return *this;
+}
+
+const MessageAddress& MessageHeader::address() const noexcept {
+	return *this;
+}
+
+MessageControl& MessageHeader::control() noexcept {
+	return *this;
+}
+
+const MessageControl& MessageHeader::control() const noexcept {
+	return *this;
+}
+
+MessageContext& MessageHeader::context() noexcept {
+	return *this;
+}
+
+const MessageContext& MessageHeader::context() const noexcept {
+	return *this;
+}
+
+void MessageHeader::getAddress(uint64_t &source,
+		uint64_t &destination) const noexcept {
+	MessageAddress::get(source, destination);
+}
+
+void MessageHeader::setAddress(uint64_t source, uint64_t destination) noexcept {
+	MessageAddress::set(source, destination);
+}
+
+void MessageHeader::getControl(uint16_t &length, uint16_t &sequenceNumber,
+		uint8_t &session) const noexcept {
+	MessageControl::get(length, sequenceNumber, session);
+}
+
+void MessageHeader::setControl(uint16_t length, uint16_t sequenceNumber,
+		uint8_t session) noexcept {
+	MessageControl::set(length, sequenceNumber, session);
+}
+
+void MessageHeader::getContext(uint8_t &command, uint8_t &qualifier,
+		uint8_t &status) const noexcept {
+	MessageContext::get(command, qualifier, status);
+}
+
+void MessageHeader::setContext(uint8_t command, uint8_t qualifier,
+		uint8_t status) noexcept {
+	MessageContext::set(command, qualifier, status);
+}
+
 unsigned int MessageHeader::read(const unsigned char *data) noexcept {
 	readAddress(data);
 	readControl(data);
@@ -62,27 +115,27 @@ unsigned int MessageHeader::write(unsigned char *data) const noexcept {
 }
 
 void MessageHeader::readAddress(const unsigned char *data) noexcept {
-	MessageAddress::readAddress(data);
+	MessageAddress::read(data);
 }
 
 void MessageHeader::writeAddress(unsigned char *data) const noexcept {
-	MessageAddress::writeAddress(data);
+	MessageAddress::write(data);
 }
 
 void MessageHeader::readControl(const unsigned char *data) noexcept {
-	MessageControl::readControl(data + OFF_CTRL);
+	MessageControl::read(data + OFF_CTRL);
 }
 
 void MessageHeader::writeControl(unsigned char *data) const noexcept {
-	MessageControl::writeControl(data + OFF_CTRL);
+	MessageControl::write(data + OFF_CTRL);
 }
 
 void MessageHeader::readContext(const unsigned char *data) noexcept {
-	MessageContext::readContext(data + OFF_CTX);
+	MessageContext::read(data + OFF_CTX);
 }
 
 void MessageHeader::writeContext(unsigned char *data) const noexcept {
-	MessageContext::writeContext(data + OFF_CTX);
+	MessageContext::write(data + OFF_CTX);
 }
 
 void MessageHeader::print() const noexcept {

@@ -1,7 +1,7 @@
 /*
  * Message.h
  *
- * Message implementation
+ * Wanhive Message
  *
  *
  * Copyright (C) 2018 Amit Kumar (amitkriit@gmail.com)
@@ -68,14 +68,14 @@ public:
 	 * Incrementally builds this message from a given source. If the source does
 	 * not contain sufficient data then call this method again when additional
 	 * data becomes available.
-	 * @param in data source's reference
+	 * @param in source's reference
 	 * @return true on completion (message populated), false otherwise
 	 */
 	bool build(Source<unsigned char> &in);
 	//-----------------------------------------------------------------
 	/**
 	 * Returns routing header's label.
-	 * @return label
+	 * @return label's value
 	 */
 	uint64_t getLabel() const noexcept;
 	/**
@@ -96,43 +96,43 @@ public:
 	//-----------------------------------------------------------------
 	/**
 	 * Returns routing header's source identifier.
-	 * @return source identifier
+	 * @return source
 	 */
 	uint64_t getSource() const noexcept;
 	/**
 	 * Sets routing header's source identifier.
-	 * @param source new source identifier
+	 * @param source new source
 	 */
 	void setSource(uint64_t source) noexcept;
 	/**
 	 * Sets frame buffer's source identifier.
-	 * @param source new source identifier
+	 * @param source new source
 	 */
 	void writeSource(uint64_t source) noexcept;
 	/**
 	 * Combines Message::setSource() and Message::writeSource().
-	 * @param source new source identifier
+	 * @param source new source
 	 */
 	void putSource(uint64_t source) noexcept;
 	//-----------------------------------------------------------------
 	/**
 	 * Returns routing header's destination identifier.
-	 * @return destination identifier
+	 * @return destination
 	 */
 	uint64_t getDestination() const noexcept;
 	/**
 	 * Sets routing header's destination identifier.
-	 * @param destination new destination identifier
+	 * @param destination new destination
 	 */
 	void setDestination(uint64_t destination) noexcept;
 	/**
 	 * Sets frame buffer's destination identifier.
-	 * @param destination new destination identifier
+	 * @param destination new destination
 	 */
 	void writeDestination(uint64_t destination) noexcept;
 	/**
 	 * Combines Message::setDestination() and Message::writeDestination().
-	 * @param destination new destination identifier
+	 * @param destination new destination
 	 */
 	void putDestination(uint64_t destination) noexcept;
 	//-----------------------------------------------------------------
@@ -143,15 +143,13 @@ public:
 	uint16_t getLength() const noexcept;
 	/**
 	 * Sets routing header's length field.
-	 * @param length new length, its value should be in the range of
-	 * [Frame::HEADER_SIZE, Frame::MTU].
+	 * @param length new length
 	 * @return true on success, false on error (invalid length)
 	 */
 	bool setLength(uint16_t length) noexcept;
 	/**
 	 * Sets frame buffer's length field (equivalent to Packet::bind(length)).
-	 * @param length new length, this value should be in the range of
-	 * [Frame::HEADER_SIZE, Frame::MTU].
+	 * @param length new length
 	 * @return true on success, false on error (invalid length)
 	 */
 	bool writeLength(uint16_t length) noexcept;
@@ -185,7 +183,7 @@ public:
 	//-----------------------------------------------------------------
 	/**
 	 * Returns routing header's session identifier.
-	 * @return session identifier
+	 * @return session
 	 */
 	uint8_t getSession() const noexcept;
 	/**
@@ -195,12 +193,12 @@ public:
 	void setSession(uint8_t session) noexcept;
 	/**
 	 * Sets frame buffer's session identifier.
-	 * @param session new session identifier
+	 * @param session new session
 	 */
 	void writeSession(uint8_t session) noexcept;
 	/**
 	 * Combines Message::setSession() and Message::writeSession().
-	 * @param session new session identifier
+	 * @param session new session
 	 */
 	void putSession(uint8_t session) noexcept;
 	//-----------------------------------------------------------------
@@ -263,7 +261,7 @@ public:
 	void writeStatus(uint8_t status) noexcept;
 	/**
 	 * Combines Message::setStatus() and Message::writeStatus().
-	 * @param status the new status code
+	 * @param status new status code
 	 */
 	void putStatus(uint8_t status) noexcept;
 	//-----------------------------------------------------------------
@@ -273,16 +271,16 @@ public:
 	 */
 	void getHeader(MessageHeader &header) const noexcept;
 	/**
-	 * Updates the routing header.
-	 * @param header new header data, its length field should contain a value
-	 * in the range [Frame::HEADER_SIZE, Frame::MTU].
+	 * Updates the routing header. This call will fail if the length field in
+	 * the new header contains invalid value.
+	 * @param header new header data
 	 * @return true on success, false on error (invalid length)
 	 */
 	bool setHeader(const MessageHeader &header) noexcept;
 	/**
-	 * Updates frame buffer's serialized header.
-	 * @param header new header data, its length field should have a value
-	 * in the range [Frame::HEADER_SIZE, Frame::MTU].
+	 * Updates frame buffer's header data. This call will fail if the length
+	 * field in the new header contains invalid value.
+	 * @param header new header data
 	 * @return true on success, false on error (invalid length)
 	 */
 	bool writeHeader(const MessageHeader &header) noexcept;
@@ -295,289 +293,247 @@ public:
 	//-----------------------------------------------------------------
 	/**
 	 * Reads 64-bit (8 byte) unsigned integer from the payload.
-	 * @param index data's offset inside the payload, this value should not
-	 * exceed (Frame::PAYLOAD_SIZE - sizeof(uint64_t)).
-	 * @return 8-byte unsigned integer on success, 0 on failure (overflow)
+	 * @param index offset in bytes
+	 * @return 8-byte unsigned integer on success, 0 on error (overflow)
 	 */
 	uint64_t getData64(unsigned int index) const noexcept;
 	/**
 	 * Reads 64-bit (8 byte) unsigned integer from the payload.
-	 * @param index data's offset inside the payload, this value should not
-	 * exceed (Frame::PAYLOAD_SIZE - sizeof(uint64_t)).
+	 * @param index offset in bytes
 	 * @param data stores the 8-bit unsigned integer
-	 * @return true on success, 0 on failure (overflow)
+	 * @return true on success, 0 on error (overflow)
 	 */
 	bool getData64(unsigned int index, uint64_t &data) const noexcept;
 	/**
 	 * Writes 64-bit (8 byte) unsigned integer into the payload.
-	 * @param index data's offset inside the payload, this value should not
-	 * exceed (Frame::PAYLOAD_SIZE - sizeof(uint64_t)).
+	 * @param index offset in bytes
 	 * @param data 8-byte unsigned integer
-	 * @return true on success, false on failure (overflow)
+	 * @return true on success, false on error (overflow)
 	 */
 	bool setData64(unsigned int index, uint64_t data) noexcept;
 	/**
-	 * Appends 64-bit (8 byte) unsigned integer to the payload. On success,
-	 * frame buffer's length and routing header's length field are updated. This
-	 * call will fail if the frame buffer is invalid (see Packet::validate()),
-	 * or if the operation will result in buffer overflow.
+	 * Appends 64-bit (8 byte) unsigned integer to the payload and updates
+	 * message's length.
 	 * @param data 8-byte unsigned integer
-	 * @return true on success, false otherwise
+	 * @return true on success, false on error
 	 */
 	bool appendData64(uint64_t data) noexcept;
 	//-----------------------------------------------------------------
 	/**
 	 * Reads 32-bit (4 byte) unsigned integer from the payload.
-	 * @param index data's offset inside the payload, this value should not
-	 * exceed (Frame::PAYLOAD_SIZE - sizeof(uint32_t)).
-	 * @return 4-byte unsigned integer on success, 0 on failure (overflow)
+	 * @param index offset in bytes
+	 * @return 4-byte unsigned integer on success, 0 on error (overflow)
 	 */
 	uint32_t getData32(unsigned int index) const noexcept;
 	/**
 	 * Reads 32-bit (4 byte) unsigned integer from the payload.
-	 * @param index data's offset inside the payload, this value should not
-	 * exceed (Frame::PAYLOAD_SIZE - sizeof(uint32_t)).
+	 * @param index offset in bytes
 	 * @param data stores the 4-byte unsigned integer
-	 * @return true on success, false on failure (overflow)
+	 * @return true on success, false on error (overflow)
 	 */
 	bool getData32(unsigned int index, uint32_t &data) const noexcept;
 	/**
 	 * Writes 32-bit (4 byte) unsigned integer into the payload.
-	 * @param index data's offset inside the payload, this value should not
-	 * exceed (Frame::PAYLOAD_SIZE - sizeof(uint32_t)).
+	 * @param index offset in bytes
 	 * @param data 4-byte unsigned integer
-	 * @return true on success, false on failure (overflow)
+	 * @return true on success, false on error (overflow)
 	 */
 	bool setData32(unsigned int index, uint32_t data) noexcept;
 	/**
-	 * Appends 32-bit (4 byte) unsigned integer to the payload.  On success,
-	 * frame buffer's length and routing header's length field are updated. This
-	 * call will fail if the frame buffer is invalid (see Packet::validate()),
-	 * or if the operation will result in buffer overflow.
+	 * Appends 32-bit (4 byte) unsigned integer to the payload and updates
+	 * message's length.
 	 * @param data 4-byte unsigned integer
-	 * @return true on success, false otherwise
+	 * @return true on success, false on error
 	 */
 	bool appendData32(uint32_t data) noexcept;
 	//-----------------------------------------------------------------
 	/**
 	 * Reads 16-bit (2 byte) unsigned integer from the payload.
-	 * @param index data's offset inside the payload, this value should not
-	 * exceed (Frame::PAYLOAD_SIZE - sizeof(uint16_t)).
-	 * @return 2-byte unsigned integer on success, 0 on failure (overflow)
+	 * @param index offset in bytes
+	 * @return 2-byte unsigned integer on success, 0 on error (overflow)
 	 */
 	uint16_t getData16(unsigned int index) const noexcept;
 	/**
 	 * Reads 16-bit (2 byte) unsigned integer from the payload.
-	 * @param index data's offset inside the payload, this value should not
-	 * exceed (Frame::PAYLOAD_SIZE - sizeof(uint16_t)).
+	 * @param index offset in bytes
 	 * @param data stores the 2-byte unsigned integer
-	 * @return true on success, false on failure (overflow)
+	 * @return true on success, false on error (overflow)
 	 */
 	bool getData16(unsigned int index, uint16_t &data) const noexcept;
 	/**
 	 * Writes 16-bit (2 byte) unsigned integer into the payload.
-	 * @param index data's offset inside the payload, this value should not
-	 * exceed (Frame::PAYLOAD_SIZE - sizeof(uint16_t)).
+	 * @param index offset in bytes
 	 * @param data 2-byte unsigned integer
-	 * @return true on success, false on failure (overflow)
+	 * @return true on success, false on error (overflow)
 	 */
 	bool setData16(unsigned int index, uint16_t data) noexcept;
 	/**
-	 * Appends 16-bit (2 byte) unsigned integer to the payload.  On success,
-	 * frame buffer's length and routing header's length field are updated. This
-	 * call will fail if the frame buffer is invalid (see Packet::validate()),
-	 * or if the operation will result in buffer overflow.
+	 * Appends 16-bit (2 byte) unsigned integer to the payload and updates
+	 * message's length.
 	 * @param data 2-byte unsigned integer
-	 * @return true on success, false otherwise
+	 * @return true on success, false on error
 	 */
 	bool appendData16(uint16_t data) noexcept;
 	//-----------------------------------------------------------------
 	/**
 	 * Reads 8-bit (1 byte) unsigned integer from the payload.
-	 * @param index data's offset inside the payload, this value should not
-	 * exceed (Frame::PAYLOAD_SIZE - sizeof(uint8_t)).
-	 * @return 1-byte unsigned integer on success, 0 on failure (overflow)
+	 * @param index offset in bytes
+	 * @return 1-byte unsigned integer on success, 0 on error (overflow)
 	 */
 	uint8_t getData8(unsigned int index) const noexcept;
 	/**
 	 * Reads 8-bit (1 byte) unsigned integer from the payload.
-	 * @param index data's offset inside the payload, this value should not
-	 * exceed (Frame::PAYLOAD_SIZE - sizeof(uint8_t)).
+	 * @param index offset in bytes
 	 * @param data stores the 1-byte unsigned integer
-	 * @return true on success, false on failure (overflow)
+	 * @return true on success, false on error (overflow)
 	 */
 	bool getData8(unsigned int index, uint8_t &data) const noexcept;
 	/**
 	 * Writes 8-bit (1 byte) unsigned integer into the payload.
-	 * @param index data's offset inside the payload, this value should not
-	 * exceed (Frame::PAYLOAD_SIZE - sizeof(uint8_t)).
+	 * @param index offset in bytes
 	 * @param data 1-byte unsigned integer
-	 * @return true on success, false on failure (overflow)
+	 * @return true on success, false on error (overflow)
 	 */
 	bool setData8(unsigned int index, uint8_t data) noexcept;
 	/**
-	 * Appends 8-bit (1 byte) unsigned integer to the payload.  On success,
-	 * frame buffer's length and routing header's length field are updated. This
-	 * call will fail if the frame buffer is invalid (see Packet::validate()),
-	 * or if the operation will result in buffer overflow.
+	 * Appends 8-bit (1 byte) unsigned integer to the payload and updates
+	 * message's length.
 	 * @param data 1-byte unsigned integer
-	 * @return true on success, false otherwise
+	 * @return true on success, false on error
 	 */
 	bool appendData8(uint8_t data) noexcept;
 	//-----------------------------------------------------------------
 	/**
 	 * Reads a float value from the payload.
-	 * @param index data's offset inside the payload, this value should not
-	 * exceed (Frame::PAYLOAD_SIZE - 4).
-	 * @return float value on success, 0 on failure (overflow)
+	 * @param index offset in bytes
+	 * @return float value on success, 0 on error (overflow)
 	 */
 	float getFloat(unsigned int index) const noexcept;
 	/**
 	 * Reads a float value from the payload.
-	 * @param index data's offset inside the payload, this value should not
-	 * exceed (Frame::PAYLOAD_SIZE - 4).
+	 * @param index offset in bytes
 	 * @param data stores the float value
-	 * @return true on success, false on failure (overflow)
+	 * @return true on success, false on error (overflow)
 	 */
 	bool getFloat(unsigned int index, float &data) const noexcept;
 	/**
 	 * Writes a float value into the payload.
-	 * @param index data's offset inside the payload, this value should not
-	 * exceed (Frame::PAYLOAD_SIZE - 4).
+	 * @param index offset in bytes
 	 * @param data float value
-	 * @return true on success, false on failure (overflow)
+	 * @return true on success, false on error (overflow)
 	 */
 	bool setFloat(unsigned int index, float data) noexcept;
 	/**
-	 * Appends a float value to the payload.  On success, frame buffer's length
-	 * and routing header's length field are updated. This call will fail if the
-	 * frame buffer is invalid (see Packet::validate()), or if the operation
-	 * will result in buffer overflow.
+	 * Appends a float value to the payload and updates message's length.
 	 * @param data float value
-	 * @return true on success, false otherwise
+	 * @return true on success, false on error
 	 */
 	bool appendFloat(float data) noexcept;
 	//-----------------------------------------------------------------
 	/**
 	 * Reads a double value from the payload.
-	 * @param index data's offset inside the payload, this value should not
-	 * exceed (Frame::PAYLOAD_SIZE - 8).
-	 * @return double value on success, 0 on failure (overflow)
+	 * @param index offset in bytes
+	 * @return double value on success, 0 on error (overflow)
 	 */
 	double getDouble(unsigned int index) const noexcept;
 	/**
 	 * Reads a double value from the payload.
-	 * @param index data's offset inside the payload, this value should not
-	 * exceed (Frame::PAYLOAD_SIZE - 8).
+	 * @param index offset in bytes
 	 * @param data stores the double value
-	 * @return true on success, false on failure (overflow)
+	 * @return true on success, false on error (overflow)
 	 */
 	bool getDouble(unsigned int index, double &data) const noexcept;
 	/**
 	 * Writes a double value into the payload.
-	 * @param index data's offset inside the payload, this value should not
-	 * exceed (Frame::PAYLOAD_SIZE - 8).
+	 * @param index offset in bytes
 	 * @param data double value
 	 * @return true on success, false on failure (overflow)
 	 */
 	bool setDouble(unsigned int index, double data) noexcept;
 	/**
-	 * Appends a double value to the payload.  On success, frame buffer's length
-	 * and routing header's length field are updated. This call will fail if the
-	 * frame buffer is invalid (see Packet::validate()), or if the operation
-	 * will result in buffer overflow.
+	 * Appends a double value to the payload and updates message's length.
 	 * @param data double value
-	 * @return true on success, false otherwise
+	 * @return true on success, false on error
 	 */
 	bool appendDouble(double data) noexcept;
 	//-----------------------------------------------------------------
 	/**
 	 * Reads a sequence of bytes from the payload.
-	 * @param index data's offset inside the payload, this value should not
-	 * exceed (Frame::PAYLOAD_SIZE - length).
+	 * @param index offset in bytes
 	 * @param data stores the bytes
 	 * @param length number of bytes to read
-	 * @return true on success, false on failure (overflow)
+	 * @return true on success, false on error (overflow)
 	 */
 	bool getBytes(unsigned int index, unsigned char *data,
 			unsigned int length) const noexcept;
 	/**
 	 * Returns a constant pointer to the sequence of bytes at the given offset
 	 * in the payload.
-	 * @param index data's offset inside the payload, this value should be less
-	 * than Frame::PAYLOAD_SIZE.
+	 * @param index offset in bytes
 	 * @return data's pointer, nullptr on overflow
 	 */
 	const unsigned char* getBytes(unsigned int index) const noexcept;
 	/**
 	 * Writes a sequence of bytes into the payload.
-	 * @param index data's offset inside the payload, this value should not
-	 * exceed (Frame::PAYLOAD_SIZE - length).
+	 * @param index offset in bytes
 	 * @param data bytes to write
 	 * @param length number of bytes to write
-	 * @return true on success, false on failure (overflow)
+	 * @return true on success, false on error (overflow)
 	 */
 	bool setBytes(unsigned int index, const unsigned char *data,
 			unsigned int length) noexcept;
 	/**
-	 * Appends a sequence of bytes to the payload.  On success, frame buffer's
-	 * length and routing header's length field are updated. This call will fail
-	 * if the frame buffer is invalid (see Packet::validate()), or if the
-	 * operation will result in buffer overflow.
+	 * Appends a sequence of bytes to the payload and updates message's length.
 	 * @param data bytes to write
 	 * @param length number of bytes to write
-	 * @return true on success, false on failure (overflow)
+	 * @return true on success, false on error
 	 */
 	bool appendBytes(const unsigned char *data, unsigned int length) noexcept;
 	//-----------------------------------------------------------------
 	/**
-	 * Writes header and payload data into this message.
-	 * @param header header data. It's length field is ignored and the correct
-	 * message length is calculated.
+	 * Writes header and payload data into this message and updates its length.
+	 * @param header message header (the length field is ignored)
 	 * @param format payload's format string. In case of empty payload, the
 	 * format string should either be nullptr or an empty string. Additional
 	 * arguments following it provide the payload data.
-	 * @return true on success, false on failure (overflow)
+	 * @return true on success, false on error (overflow)
 	 */
 	bool pack(const MessageHeader &header, const char *format, ...) noexcept;
 	/**
-	 * Writes header and payload data into this message.
-	 * @param header header data. It's length field is ignored and the correct
-	 * message length is calculated.
+	 * Writes header and payload data into this message and updates its length.
+	 * @param header message header (the length field is ignored)
 	 * @param format payload's format string (should either be nullptr or an
 	 * empty string if the payload is empty).
 	 * @param ap payload data
-	 * @return true on success, false on failure (overflow)
+	 * @return true on success, false on error (overflow)
 	 */
 	bool pack(const MessageHeader &header, const char *format,
 			va_list ap) noexcept;
 	//-----------------------------------------------------------------
 	/**
-	 * Writes header and payload data into this message.
-	 * @param header header data. It's length field determines the message
-	 * length and should be in the range [Frame::HEADER_SIZE, FRAME::MTU].
+	 * Writes header and payload data into this message and updates its length.
+	 * @param header message header
 	 * @param payload serialized payload data (can be nullptr)
 	 * @return true on success, false on error (invalid length)
 	 */
 	bool pack(const MessageHeader &header,
 			const unsigned char *payload) noexcept;
 	/**
-	 * Extracts values from a serialized message.
-	 * @param message serialized message
+	 * Writes serialized message data into this message.
+	 * @param message serialized data
 	 * @return true on success, false on error (invalid data)
 	 */
 	bool pack(const unsigned char *message) noexcept;
 	//-----------------------------------------------------------------
 	/**
-	 * Appends additional data the payload and updates message's length.
+	 * Appends additional data to the payload and updates message's length.
 	 * @param format payload data's format string. Payload data is passed
 	 * through the arguments following it.
 	 * @return true on success, false on error (invalid data or format)
 	 */
 	bool append(const char *format, ...) noexcept;
 	/**
-	 * Appends additional data to this message's payload and updates this
-	 * message's length.
+	 * Appends additional data to the payload and updates message's length.
 	 * @param format payload data's format string
 	 * @param ap payload data
 	 * @return true on success, false on error (invalid data or format)
@@ -585,25 +541,24 @@ public:
 	bool append(const char *format, va_list ap) noexcept;
 	//-----------------------------------------------------------------
 	/**
-	 * Extracts this message's payload data.
+	 * Reads message's payload data.
 	 * @param format payload data's format string. Payload data is stored
 	 * at locations provided by the pointer arguments following it.
 	 * @return true on success, false on error (invalid message or format)
 	 */
 	bool unpack(const char *format, ...) const noexcept;
 	/**
-	 * Extracts this message's payload data.
+	 * Reads message's payload data.
 	 * @param format payload data's format string
-	 * @param ap pointers to the output memory locations
+	 * @param ap pointers to the output buffers
 	 * @return true on success, false on error (invalid message or format)
 	 */
 	bool unpack(const char *format, va_list ap) const noexcept;
 	//-----------------------------------------------------------------
 	/**
-	 * Checks if a given number of messages can be created.
+	 * Checks if a given number of messages can be allocated.
 	 * @param count number of messages to create
-	 * @return true if the given number of messages can be allocated from the
-	 * memory pool, false otherwise.
+	 * @return true if messages can be created, false otherwise
 	 */
 	static bool available(unsigned int count) noexcept;
 	//-----------------------------------------------------------------

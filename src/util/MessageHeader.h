@@ -25,11 +25,11 @@ class MessageHeader final: public MessageAddress,
 		public MessageContext {
 public:
 	/**
-	 * Default constructor: zero-initializes the data members.
+	 * Default constructor: clears (zeroes out) the header data.
 	 */
 	MessageHeader() noexcept;
 	/**
-	 * Constructor: extracts values from a serialized object.
+	 * Constructor: reads the serialized header data.
 	 * @param data serialized header
 	 */
 	MessageHeader(const unsigned char *data) noexcept;
@@ -38,20 +38,94 @@ public:
 	 */
 	~MessageHeader();
 	/**
-	 * Clears (zeroes out) the header data
+	 * Clears (zeroes out) the header data.
 	 */
 	void clear() noexcept;
 	//-----------------------------------------------------------------
 	/**
-	 * Extracts values from a serialized header.
+	 * Returns a reference to the message address.
+	 * @return address's reference
+	 */
+	MessageAddress& address() noexcept;
+	/**
+	 * Returns a constant reference to the message address.
+	 * @return address's reference
+	 */
+	const MessageAddress& address() const noexcept;
+	/**
+	 * Returns a reference to the message control.
+	 * @return control's reference
+	 */
+	MessageControl& control() noexcept;
+	/**
+	 * Returns a constant reference to the message control.
+	 * @return control's reference
+	 */
+	const MessageControl& control() const noexcept;
+	/**
+	 * Returns a reference to the message context.
+	 * @return context's reference
+	 */
+	MessageContext& context() noexcept;
+	/**
+	 * Returns a constant reference to the message context.
+	 * @return context's reference
+	 */
+	const MessageContext& context() const noexcept;
+	//-----------------------------------------------------------------
+	/**
+	 * Returns source and destination identifiers.
+	 * @param source stores source identifier
+	 * @param destination stores destination identifier
+	 */
+	void getAddress(uint64_t &source, uint64_t &destination) const noexcept;
+	/**
+	 * Sets new source and destination identifiers.
+	 * @param source new source
+	 * @param destination new destination
+	 */
+	void setAddress(uint64_t source, uint64_t destination) noexcept;
+	/**
+	 * Returns length, sequence-number, and session values.
+	 * @param length stores length
+	 * @param sequenceNumber stores sequence number
+	 * @param session stores session identifier
+	 */
+	void getControl(uint16_t &length, uint16_t &sequenceNumber,
+			uint8_t &session) const noexcept;
+	/**
+	 * Sets new length, sequence-number, and session values.
+	 * @param length new length
+	 * @param sequenceNumber new sequence number
+	 * @param session new session identifier
+	 */
+	void setControl(uint16_t length, uint16_t sequenceNumber,
+			uint8_t session) noexcept;
+	/**
+	 * Returns command, qualifier, and status values.
+	 * @param command stores command
+	 * @param qualifier stores qualifier
+	 * @param status stores status code
+	 */
+	void getContext(uint8_t &command, uint8_t &qualifier,
+			uint8_t &status) const noexcept;
+	/**
+	 * Sets command, qualifier, and status values.
+	 * @param command new command
+	 * @param qualifier new qualifier
+	 * @param status new status code
+	 */
+	void setContext(uint8_t command, uint8_t qualifier, uint8_t status) noexcept;
+	//-----------------------------------------------------------------
+	/**
+	 * Reads the serialized header data.
 	 * @param data serialized header
 	 * @return serialized header's size in bytes
 	 */
 	unsigned int read(const unsigned char *data) noexcept;
 	/**
-	 * Serializes this object.
-	 * @param data output buffer (MessageHeader::SIZE is the minimum required
-	 * buffer size in bytes).
+	 * Serializes the header data.
+	 * @param data output buffer
 	 * @return serialized header's size in bytes
 	 */
 	unsigned int write(unsigned char *data) const noexcept;
@@ -67,7 +141,7 @@ public:
 	 */
 	void writeAddress(unsigned char *data) const noexcept;
 	/**
-	 * Reads the serialized header's flow control.
+	 * Reads serialized header's flow control.
 	 * @param data serialized header
 	 */
 	void readControl(const unsigned char *data) noexcept;
@@ -88,7 +162,7 @@ public:
 	void writeContext(unsigned char *data) const noexcept;
 	//-----------------------------------------------------------------
 	/**
-	 * For debugging: prints header's data to stderr.
+	 * For debugging: prints the header data to stderr.
 	 */
 	void print() const noexcept;
 	//-----------------------------------------------------------------
@@ -113,7 +187,7 @@ public:
 	/**
 	 * Updates serialized header's source identifier.
 	 * @param data serialized header
-	 * @param source new source identifier
+	 * @param source new source
 	 */
 	static void writeSource(unsigned char *data, uint64_t source) noexcept;
 	/**
@@ -125,7 +199,7 @@ public:
 	/**
 	 * Updates serialized header's destination identifier.
 	 * @param data serialized header
-	 * @param destination new destination identifier
+	 * @param destination new destination
 	 */
 	static void writeDestination(unsigned char *data,
 			uint64_t destination) noexcept;
@@ -158,13 +232,13 @@ public:
 	/**
 	 * Reads serialized header's session identifier.
 	 * @param data serialized header
-	 * @return session identifier
+	 * @return session
 	 */
 	static uint8_t readSession(const unsigned char *data) noexcept;
 	/**
 	 * Updates serialized header's session identifier.
 	 * @param data serialized header
-	 * @param session new session identifier
+	 * @param session new session
 	 */
 	static void writeSession(unsigned char *data, uint8_t session) noexcept;
 	//-----------------------------------------------------------------
@@ -195,17 +269,17 @@ public:
 	/**
 	 * Reads serialized header's status code.
 	 * @param data serialized header
-	 * @return status code
+	 * @return status
 	 */
 	static uint8_t readStatus(const unsigned char *data) noexcept;
 	/**
 	 * Updates serialized header's status code.
 	 * @param data serialized header
-	 * @param status new status code
+	 * @param status new status
 	 */
 	static void writeStatus(unsigned char *data, uint8_t status) noexcept;
 public:
-	/** Serialized header's size in bytes */
+	/*! Serialized header's size in bytes */
 	static constexpr unsigned int SIZE = (MessageAddress::SIZE
 			+ MessageControl::SIZE + MessageContext::SIZE);
 };

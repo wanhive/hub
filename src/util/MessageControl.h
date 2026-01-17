@@ -16,16 +16,16 @@
 
 namespace wanhive {
 /**
- * Message flow control implementation
+ * Message flow control
  */
 class MessageControl {
 public:
 	/**
-	 * Default constructor: zero-initializes the data members.
+	 * Default constructor: sets all fields to zero.
 	 */
 	MessageControl() noexcept;
 	/**
-	 * Constructor: initializes data members with the given values.
+	 * Constructor: populates the flow control data.
 	 * @param length length's value
 	 * @param sequenceNumber sequence number's value
 	 * @param session session identifier's value
@@ -33,8 +33,8 @@ public:
 	MessageControl(uint16_t length, uint16_t sequenceNumber,
 			uint8_t session) noexcept;
 	/**
-	 * Constructor: extracts values from a serialized object.
-	 * @param data serialized object
+	 * Constructor: reads the serialized flow control data.
+	 * @param data serialized flow control data
 	 */
 	MessageControl(const unsigned char *data) noexcept;
 	/**
@@ -79,7 +79,7 @@ public:
 	 * @param sequenceNumber stores sequence number's value
 	 * @param session stores session identifier's value
 	 */
-	void getControl(uint16_t &length, uint16_t &sequenceNumber,
+	void get(uint16_t &length, uint16_t &sequenceNumber,
 			uint8_t &session) const noexcept;
 	/**
 	 * Sets new length, sequence-number, and session values.
@@ -87,65 +87,63 @@ public:
 	 * @param sequenceNumber new sequence number
 	 * @param session new session identifier
 	 */
-	void setControl(uint16_t length, uint16_t sequenceNumber,
-			uint8_t session) noexcept;
+	void set(uint16_t length, uint16_t sequenceNumber, uint8_t session) noexcept;
+protected:
+	/**
+	 * Reads the serialized flow control data.
+	 * @param data serialized flow control data
+	 */
+	void read(const unsigned char *data) noexcept;
+	/**
+	 * Serializes the flow control data.
+	 * @param data output buffer
+	 */
+	void write(unsigned char *data) const noexcept;
 	//-----------------------------------------------------------------
 	/**
-	 * Extracts values from a serialized object.
-	 * @param data serialized object
-	 */
-	void readControl(const unsigned char *data) noexcept;
-	/**
-	 * Translates control data into a serialized object.
-	 * @param data output buffer (MessageControl::SIZE is the minimum required
-	 * buffer size in bytes).
-	 */
-	void writeControl(unsigned char *data) const noexcept;
-	//-----------------------------------------------------------------
-	/**
-	 * Reads serialized object's length field.
-	 * @param data serialized object
+	 * Reads serialized flow control data's length field.
+	 * @param data serialized flow control data
 	 * @return length
 	 */
 	static uint16_t readLength(const unsigned char *data) noexcept;
 	/**
-	 * Updates serialized object's length field.
-	 * @param data serialized object
+	 * Updates serialized flow control data's length field.
+	 * @param data serialized flow control data
 	 * @param length new length
 	 */
 	static void writeLength(unsigned char *data, uint16_t length) noexcept;
 	/**
-	 * Reads serialized object's sequence number.
-	 * @param data serialized object
+	 * Reads serialized flow control data's sequence number.
+	 * @param data serialized flow control data
 	 * @return sequence number
 	 */
 	static uint16_t readSequenceNumber(const unsigned char *data) noexcept;
 	/**
-	 * Updates serialized object's sequence number.
-	 * @param data serialized object
+	 * Updates serialized flow control data's sequence number.
+	 * @param data serialized flow control data
 	 * @param sequenceNumber new sequence number
 	 */
 	static void writeSequenceNumber(unsigned char *data,
 			uint16_t sequenceNumber) noexcept;
 	/**
-	 * Reads serialized object's session identifier.
-	 * @param data serialized object
-	 * @return session identifier
+	 * Reads serialized flow control data's session identifier.
+	 * @param data serialized flow control data
+	 * @return session
 	 */
 	static uint8_t readSession(const unsigned char *data) noexcept;
 	/**
-	 * Updates serialized object's session identifier.
-	 * @param data serialized object
-	 * @param session new session identifier
+	 * Updates serialized flow control data's session identifier.
+	 * @param data serialized flow control data
+	 * @param session new session
 	 */
 	static void writeSession(unsigned char *data, uint8_t session) noexcept;
 public:
-	/** Serialized object's size in bytes */
+	/*! Serialized flow control data's size in bytes */
 	static constexpr unsigned int SIZE = 5;
 private:
-	uint16_t length; //Length in bytes
-	uint16_t sequenceNumber; //Sequence number
-	uint8_t session; //Communication channel
+	uint16_t length;
+	uint16_t sequenceNumber;
+	uint8_t session;
 };
 
 } /* namespace wanhive */

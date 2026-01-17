@@ -27,7 +27,7 @@ MessageControl::MessageControl(uint16_t length, uint16_t sequenceNumber,
 }
 
 MessageControl::MessageControl(const unsigned char *data) noexcept {
-	readControl(data);
+	read(data);
 }
 
 MessageControl::~MessageControl() {
@@ -58,27 +58,27 @@ void MessageControl::setSession(uint8_t session) noexcept {
 	this->session = session;
 }
 
-void MessageControl::getControl(uint16_t &length, uint16_t &sequenceNumber,
+void MessageControl::get(uint16_t &length, uint16_t &sequenceNumber,
 		uint8_t &session) const noexcept {
 	length = getLength();
 	sequenceNumber = getSequenceNumber();
 	session = getSession();
 }
 
-void MessageControl::setControl(uint16_t length, uint16_t sequenceNumber,
+void MessageControl::set(uint16_t length, uint16_t sequenceNumber,
 		uint8_t session) noexcept {
 	setLength(length);
 	setSequenceNumber(sequenceNumber);
 	setSession(session);
 }
 
-void MessageControl::readControl(const unsigned char *data) noexcept {
+void MessageControl::read(const unsigned char *data) noexcept {
 	setLength(readLength(data));
 	setSequenceNumber(readSequenceNumber(data));
 	setSession(readSession(data));
 }
 
-void MessageControl::writeControl(unsigned char *data) const noexcept {
+void MessageControl::write(unsigned char *data) const noexcept {
 	writeLength(data, getLength());
 	writeSequenceNumber(data, getSequenceNumber());
 	writeSession(data, getSession());

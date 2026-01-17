@@ -27,7 +27,7 @@ MessageAddress::MessageAddress(uint64_t source, uint64_t destination,
 }
 
 MessageAddress::MessageAddress(const unsigned char *data) noexcept {
-	readAddress(data);
+	read(data);
 }
 
 MessageAddress::~MessageAddress() {
@@ -58,24 +58,23 @@ void MessageAddress::setDestination(uint64_t destination) noexcept {
 	this->destination = destination;
 }
 
-void MessageAddress::getAddress(uint64_t &source,
-		uint64_t &destination) const noexcept {
+void MessageAddress::get(uint64_t &source, uint64_t &destination) const noexcept {
 	source = getSource();
 	destination = getDestination();
 }
 
-void MessageAddress::setAddress(uint64_t source, uint64_t destination) noexcept {
+void MessageAddress::set(uint64_t source, uint64_t destination) noexcept {
 	setSource(source);
 	setDestination(destination);
 }
 
-void MessageAddress::readAddress(const unsigned char *data) noexcept {
+void MessageAddress::read(const unsigned char *data) noexcept {
 	setLabel(readLabel(data));
 	setSource(readSource(data));
 	setDestination(readDestination(data));
 }
 
-void MessageAddress::writeAddress(unsigned char *data) const noexcept {
+void MessageAddress::write(unsigned char *data) const noexcept {
 	writeLabel(data, getLabel());
 	writeSource(data, getSource());
 	writeDestination(data, getDestination());

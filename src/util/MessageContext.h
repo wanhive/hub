@@ -16,24 +16,24 @@
 
 namespace wanhive {
 /**
- * Message context implementation
+ * Message context
  */
 class MessageContext {
 public:
 	/**
-	 * Default constructor: zero-initializes the data members.
+	 * Default constructor: sets all fields to zero.
 	 */
 	MessageContext() noexcept;
 	/**
-	 * Constructor: initializes data members with the given values.
+	 * Constructor: populates the context data.
 	 * @param command command's value
 	 * @param qualifier qualifier's value
 	 * @param status status code's value
 	 */
 	MessageContext(uint8_t command, uint8_t qualifier, uint8_t status) noexcept;
 	/**
-	 * Constructor: extracts values from a serialized object.
-	 * @param data serialized object
+	 * Constructor: reads the serialized context data.
+	 * @param data serialized context
 	 */
 	MessageContext(const unsigned char *data) noexcept;
 	/**
@@ -78,7 +78,7 @@ public:
 	 * @param qualifier stores qualifier's value
 	 * @param status stores status code's value
 	 */
-	void getContext(uint8_t &command, uint8_t &qualifier,
+	void get(uint8_t &command, uint8_t &qualifier,
 			uint8_t &status) const noexcept;
 	/**
 	 * Sets command, qualifier, and status values.
@@ -86,63 +86,62 @@ public:
 	 * @param qualifier new qualifier
 	 * @param status new status code
 	 */
-	void setContext(uint8_t command, uint8_t qualifier, uint8_t status) noexcept;
+	void set(uint8_t command, uint8_t qualifier, uint8_t status) noexcept;
+protected:
+	/**
+	 * Reads the serialized context data.
+	 * @param data serialized context
+	 */
+	void read(const unsigned char *data) noexcept;
+	/**
+	 * Serializes the context data.
+	 * @param data output buffer
+	 */
+	void write(unsigned char *data) const noexcept;
 	//-----------------------------------------------------------------
 	/**
-	 * Extracts values from a serialized object.
-	 * @param data serialized object
-	 */
-	void readContext(const unsigned char *data) noexcept;
-	/**
-	 * Translates context data into a serialized object.
-	 * @param data output buffer (MessageContext::SIZE is the minimum required
-	 * buffer size in bytes).
-	 */
-	void writeContext(unsigned char *data) const noexcept;
-	//-----------------------------------------------------------------
-	/**
-	 * Reads serialized object's command.
-	 * @param data serialized object
+	 * Reads serialized context's command.
+	 * @param data serialized context
 	 * @return command
 	 */
 	static uint8_t readCommand(const unsigned char *data) noexcept;
 	/**
-	 * Updates serialized object's command.
-	 * @param data serialized object
+	 * Updates serialized context's command.
+	 * @param data serialized context
 	 * @param command new command
 	 */
 	static void writeCommand(unsigned char *data, uint8_t command) noexcept;
 	/**
-	 * Reads serialized object's qualifier.
-	 * @param data serialized object
+	 * Reads serialized context's qualifier.
+	 * @param data serialized context
 	 * @return qualifier
 	 */
 	static uint8_t readQualifier(const unsigned char *data) noexcept;
 	/**
-	 * Updates serialized object's qualifier.
-	 * @param data serialized object
+	 * Updates serialized context's qualifier.
+	 * @param data serialized context
 	 * @param qualifier new qualifier
 	 */
 	static void writeQualifier(unsigned char *data, uint8_t qualifier) noexcept;
 	/**
-	 * Reads serialized object's status code.
-	 * @param data serialized object
+	 * Reads serialized context's status code.
+	 * @param data serialized context
 	 * @return status code
 	 */
 	static uint8_t readStatus(const unsigned char *data) noexcept;
 	/**
-	 * Updates serialized object's status code.
-	 * @param data serialized object
+	 * Updates serialized context's status code.
+	 * @param data serialized context
 	 * @param status new status code
 	 */
 	static void writeStatus(unsigned char *data, uint8_t status) noexcept;
 public:
-	/** Serialized object's size in bytes */
+	/*! Serialized context's size in bytes */
 	static constexpr unsigned int SIZE = 3;
 private:
-	uint8_t command; //Command
-	uint8_t qualifier; //Command's type
-	uint8_t status; //Command's status
+	uint8_t command;
+	uint8_t qualifier;
+	uint8_t status;
 };
 
 } /* namespace wanhive */
