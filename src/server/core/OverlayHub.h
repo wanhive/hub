@@ -204,6 +204,8 @@ private:
 		bool enroll;
 		//Authenticate every Client Registration Request
 		bool authenticate;
+		//Token bucket refill rate
+		unsigned int refill;
 		//If true, server will try to connect to the overlay network
 		bool join;
 		//Frequency of Routing Table Update
@@ -261,8 +263,7 @@ private:
 	Topics topics;
 	//-----------------------------------------------------------------
 	/*
-	 * TODO: This is an EXPERIMENTAL FEATURE.
-	 * Registration request flood prevention.
+	 * Token bucket for registration rate limiting
 	 */
 	Tokens tokens;
 };

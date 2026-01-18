@@ -24,18 +24,18 @@ enum PurgeType {
 
 /* Connections purge control structure */
 struct PurgeControl {
-	unsigned int target { 0 };
-	unsigned int count { 0 };
-	wanhive::OverlayHub *hub { nullptr };
+	unsigned int target { };
+	unsigned int count { };
+	wanhive::OverlayHub *hub { };
 };
 //-----------------------------------------------------------------
 /* Message trace types */
 enum MessageTrace : uint32_t {
-	SESSION_TRACE = 1U
+	TRACE_SESSION = 1U
 };
 
-/* Token bucket's default level (for the registration requests) */
-constexpr unsigned long long DEF_TOKENS_COUNT = 200;
+/* Token bucket's default refill rate */
+constexpr unsigned int TOKEN_RATE = 100;
 
 //-----------------------------------------------------------------
 }// namespace
@@ -62,6 +62,7 @@ void OverlayHub::configure(void *arg) {
 		auto &conf = Identity::getOptions();
 		ctx.enroll = conf.getBoolean("OVERLAY", "enroll");
 		ctx.authenticate = conf.getBoolean("OVERLAY", "authenticate");
+		ctx.refill = conf.getNumber("OVERLAY", "refill", TOKEN_RATE);
 		ctx.join = conf.getBoolean("OVERLAY", "join");
 		ctx.period = conf.getNumber("OVERLAY", "period", 5000);
 		ctx.timeout = conf.getNumber("OVERLAY", "timeout", 5000);
@@ -79,8 +80,8 @@ void OverlayHub::configure(void *arg) {
 		ctx.nodes[n] = 0;
 
 		WH_LOG_DEBUG(
-				"\nENABLE_REGISTRATION=%s, AUTHENTICATE_CLIENTS=%s, JOIN_OVERLAY=%s,\n" "UPDATE_CYCLE=%ums, IO_TIMEOUT=%ums, RETRY_INTERVAL=%ums,\n" "NETMASK=%#llx, GROUP_ID=%u\n",
-				WH_BOOLF(ctx.enroll), WH_BOOLF(ctx.authenticate),
+				"\nENABLE_REGISTRATION=%s, AUTHENTICATE_CLIENTS=%s, TOKEN_RATE=%u,\n" "JOIN_OVERLAY=%s, UPDATE_CYCLE=%ums, IO_TIMEOUT=%ums, RETRY_INTERVAL=%ums,\n" "NETMASK=%#llx, GROUP_ID=%u\n",
+				WH_BOOLF(ctx.enroll), WH_BOOLF(ctx.authenticate), ctx.refill,
 				WH_BOOLF(ctx.join), ctx.period, ctx.timeout, ctx.pause,
 				ctx.netmask, ctx.group);
 		installService();
@@ -139,6 +140,7 @@ void OverlayHub::route(Message *message) noexcept {
 	if (isHost(message->getDestination()) && !message->testFlags(MSG_INVALID)) {
 		//Maintain this order
 		serve(message); //Process the local request
+		message->putTrace(0); //Ignore the trace
 		message->setGroup(0); //Ignore the group ID
 	}
 	//-----------------------------------------------------------------
@@ -152,7 +154,7 @@ void OverlayHub::route(Message *message) noexcept {
 
 void OverlayHub::onAlarm(unsigned long long uid,
 		unsigned long long ticks) noexcept {
-	tokens.fill(DEF_TOKENS_COUNT);
+	tokens.fill(ctx.refill);
 }
 
 void OverlayHub::onInotification(unsigned long long uid,
@@ -688,7 +690,7 @@ bool OverlayHub::serveNullRequest(Message *request) noexcept {
 
 bool OverlayHub::serveBasicRequest(Message *request) noexcept {
 	if (request->getCommand() != WH_DHT_CMD_BASIC) {
-		return handleFindRootRequest(request);
+		return handleInvalidRequest(request);
 	}
 
 	switch (request->getQualifier()) {
@@ -904,13 +906,12 @@ bool OverlayHub::handleTokenRequest(Message *msg) noexcept {
 	}
 	//-----------------------------------------------------------------
 	/*
-	 * TODO: This is an EXPERIMENTAL FEATURE.
 	 * Session key request misuse prevention.
 	 */
-	if (msg->testTrace(SESSION_TRACE)) {
+	if (msg->testTrace(TRACE_SESSION)) {
 		return handleInvalidRequest(msg);
 	}
-	msg->setTrace(SESSION_TRACE);
+	msg->setTrace(TRACE_SESSION);
 	//-----------------------------------------------------------------
 	/*
 	 * This call succeeds if the caller is a temporary connection and the
