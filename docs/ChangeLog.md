@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- Token bucket refill-rate option in the overlay hub.
 - Base class for bidirectional (**Duplex**) channels.
 - **KeyPair** class for asymmetric cryptographic keys management.
 - **Ed25519** digital signature scheme.
@@ -21,6 +22,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - The byte stream callback in **Hub** takes the stream channel as a parameter.
 - Restructure the cryptographic facility.
 - Update database management interfaces.
+- Update message header implementation.
+
+### Fixed
+
+- Session-trace propagation in the overlay hub.
 
 ### Removed
 
