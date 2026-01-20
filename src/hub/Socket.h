@@ -172,12 +172,9 @@ private:
 	ssize_t sslWrite(const void *buf, size_t count);
 	//=================================================================
 	//Create IOVECs from outgoing messages and return the count
-	unsigned int fillEgress() noexcept;
+	unsigned int post() noexcept;
 	//Adjust the IOVECs for the next write cycle
-	void fixEgress(size_t bytes) noexcept;
-
-	//Clear internal state
-	void clear() noexcept;
+	void offload(size_t bytes) noexcept;
 	//Free internal resources
 	void cleanup() noexcept;
 public:

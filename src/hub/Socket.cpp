@@ -23,12 +23,12 @@ SSLContext *Socket::sslCtx { };
 
 Socket::Socket(int fd) noexcept :
 		Pooled { 0 }, Watcher { fd } {
-	clear();
+	egress.rewind();
 }
 
 Socket::Socket(SSL *ssl) :
 		Pooled { 0 } {
-	clear();
+	egress.rewind();
 	if (ssl && sslCtx && sslCtx->inContext(ssl)) {
 		secure.ssl = ssl;
 		Descriptor::setHandle(SSLContext::getSocket(ssl));
@@ -40,7 +40,7 @@ Socket::Socket(SSL *ssl) :
 Socket::Socket(const NameInfo &ni, bool blocking, int timeout) :
 		Pooled { 0 } {
 	try {
-		clear();
+		egress.rewind();
 		SocketAddress sa;
 		if (!strcasecmp(ni.service, "unix")) {
 			Descriptor::setHandle(
@@ -63,7 +63,7 @@ Socket::Socket(const NameInfo &ni, bool blocking, int timeout) :
 Socket::Socket(const char *service, int backlog, bool isUnix, bool blocking) :
 		Pooled { 0 } {
 	try {
-		clear();
+		egress.rewind();
 		SocketAddress sa;
 		if (!isUnix) {
 			Descriptor::setHandle(Network::serverSocket(service, sa, blocking));
@@ -289,11 +289,11 @@ ssize_t Socket::socketRead() {
 }
 
 ssize_t Socket::socketWrite() {
-	auto iovCount = Twiddler::min(fillEgress(), IOV_MAX);
+	auto iovCount = Twiddler::min(post(), IOV_MAX);
 	if (iovCount) {
 		auto vec = egress.offset();
 		auto nSent = Descriptor::writev(vec, iovCount);
-		fixEgress(nSent);
+		offload(nSent);
 		return nSent;
 	} else {
 		//Nothing queued up
@@ -335,7 +335,7 @@ ssize_t Socket::secureWrite() {
 		return secureRead();
 	}
 
-	auto count = fillEgress();
+	auto count = post();
 	if (count) {
 		CryptoUtils::clearErrors();
 		ssize_t nSent = 0;
@@ -349,7 +349,7 @@ ssize_t Socket::secureWrite() {
 				break;
 			}
 		}
-		fixEgress(nSent);
+		offload(nSent);
 		return nSent;
 	} else {
 		//Nothing queued up
@@ -448,7 +448,7 @@ ssize_t Socket::sslWrite(const void *buf, size_t count) {
 	}
 }
 
-unsigned int Socket::fillEgress() noexcept {
+unsigned int Socket::post() noexcept {
 	if (!egress.hasSpace()) {
 		CircularBufferVector<Message*> vector;
 		auto space = out.getReadable(vector);
@@ -478,7 +478,7 @@ unsigned int Socket::fillEgress() noexcept {
 	return egress.space();
 }
 
-void Socket::fixEgress(size_t bytes) noexcept {
+void Socket::offload(size_t bytes) noexcept {
 	size_t total = 0;
 	unsigned int sentMessages = 0;
 	auto iovecs = egress.offset();
@@ -502,10 +502,6 @@ void Socket::fixEgress(size_t bytes) noexcept {
 		++sentMessages;
 	}
 	egress.setIndex(egress.getIndex() + sentMessages);
-}
-
-void Socket::clear() noexcept {
-	egress.rewind();
 }
 
 void Socket::cleanup() noexcept {
