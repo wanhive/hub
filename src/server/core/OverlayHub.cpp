@@ -1503,7 +1503,7 @@ Watcher* OverlayHub::connect(int &sfd, bool blocking, int timeout) {
 	Socket *local = nullptr;
 	int socket = -1;
 	try {
-		local = Socket::createSocketPair(socket);
+		local = Socket::pair(socket);
 		if (blocking) {
 			Network::setBlocking(socket, true);
 			Network::setSocketTimeout(socket, timeout, timeout);

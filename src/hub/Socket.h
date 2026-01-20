@@ -130,22 +130,33 @@ public:
 	 * messages queue is empty.
 	 */
 	ssize_t write();
+	//-----------------------------------------------------------------
 	/**
-	 * Returns an incoming message (see Socket::read()).
-	 * @return incoming message
+	 * Obtains the next incoming message.
+	 * @return incoming message, nullptr if not available
 	 */
-	Message* getMessage();
+	Message* obtain();
+	/**
+	 * Returns the number of received messages.
+	 * @return received messages count
+	 */
+	unsigned long long received() const noexcept;
+	/**
+	 * Returns the number of sent messages.
+	 * @return sent messages count
+	 */
+	unsigned long long sent() const noexcept;
 	//-----------------------------------------------------------------
 	/**
 	 * Creates an unnamed socket pair.
-	 * @param sfd stores the remote end's file descriptor
+	 * @param sfd stores the paired file descriptor
 	 * @param blocking true for blocking IO, false for non-blocking IO
-	 * @return socket connection object
+	 * @return paired connection
 	 */
-	static Socket* createSocketPair(int &sfd, bool blocking = false);
+	static Socket* pair(int &sfd, bool blocking = false);
 	/**
 	 * Sets secure connections' context.
-	 * @param ctx object containing the SSL/TLS context
+	 * @param ctx SSL/TLS context
 	 */
 	static void setSSLContext(SSLContext *ctx) noexcept;
 private:
@@ -178,13 +189,13 @@ private:
 	//Free internal resources
 	void cleanup() noexcept;
 public:
-	/** Minimum value for active socket identifier */
+	/*! Minimum value for active socket identifier */
 	static constexpr uint64_t MIN_ACTIVE_ID = 0;
-	/** Maximum value for active socket identifier */
+	/*! Maximum value for active socket identifier */
 	static constexpr uint64_t MAX_ACTIVE_ID = INT64_MAX;
-	/** Incoming message buffer's size in bytes (must be power of two) */
+	/*! Incoming message buffer's size in bytes (must be power of two) */
 	static constexpr unsigned int READ_BUFFER_SIZE = (Message::MTU << 3);
-	/** Outgoing message queue's size (must be power of two) */
+	/*! Outgoing message queue's size (must be power of two) */
 	static constexpr unsigned int OUT_QUEUE_SIZE = 1024;
 private:
 	//-----------------------------------------------------------------
@@ -205,10 +216,10 @@ private:
 		//Sent messages count
 		unsigned long long out { };
 	} traffic;
-	//Maximum limit for the number of queued outgoing messages
+	//Maximum queued-up outgoing messages count
 	unsigned int backlog { };
 	//Serialized I/P
-	Message *received { };
+	Message *next { };
 	//Collection of incoming raw bytes
 	StaticCircularBuffer<unsigned char, READ_BUFFER_SIZE> in;
 	//Collection of outgoing messages

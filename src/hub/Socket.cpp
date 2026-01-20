@@ -218,38 +218,46 @@ ssize_t Socket::write() {
 	}
 }
 
-Message* Socket::getMessage() {
-	if (received == nullptr) {
+Message* Socket::obtain() {
+	if (next == nullptr) {
 		if (in.isEmpty()) { //:-)
 			return nullptr;
 		}
-		received = Message::create(getUid());
-		if (received == nullptr) {
+		next = Message::create(getUid());
+		if (next == nullptr) {
 			return nullptr;
 		}
-		received->setType(getType());
-		received->putTrace(getTrace());
-		received->setGroup(getGroup());
-		received->setMarked();
+		next->setType(getType());
+		next->putTrace(getTrace());
+		next->setGroup(getGroup());
+		next->setMarked();
 	}
 
 	try {
-		if (received->build(*this)) {
+		if (next->build(*this)) {
 			traffic.in += 1;
-			auto msg = received;
-			received = nullptr;
+			auto msg = next;
+			next = nullptr;
 			return msg;
 		} else {
 			return nullptr;
 		}
 	} catch (BaseException &e) {
-		Message::recycle(received);
-		received = nullptr;
+		Message::recycle(next);
+		next = nullptr;
 		throw;
 	}
 }
 
-Socket* Socket::createSocketPair(int &sfd, bool blocking) {
+unsigned long long Socket::received() const noexcept {
+	return traffic.in;
+}
+
+unsigned long long Socket::sent() const noexcept {
+	return traffic.out;
+}
+
+Socket* Socket::pair(int &sfd, bool blocking) {
 	int sv[2] = { -1, -1 };
 	try {
 		Network::socketPair(sv, blocking);
@@ -506,7 +514,7 @@ void Socket::offload(size_t bytes) noexcept {
 
 void Socket::cleanup() noexcept {
 	SSLContext::destroy(secure.ssl);
-	Message::recycle(received);
+	Message::recycle(next);
 
 	Message *message;
 	while ((out.get(message))) {

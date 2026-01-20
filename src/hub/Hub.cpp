@@ -863,7 +863,7 @@ bool Hub::processConnection(Socket *connection) noexcept {
 		 */
 		unsigned int msgCount = 0;
 		while (msgCount < cycleLimit) {
-			Message *message = connection->getMessage();
+			Message *message = connection->obtain();
 			if (message) {
 				in.put(message);
 				countReceived(message->getLength());
