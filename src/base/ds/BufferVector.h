@@ -25,6 +25,11 @@ template<typename X> struct BufferVector {
 };
 
 /**
+ * Mutable binary data.
+ */
+using Cache = BufferVector<unsigned char>;
+
+/**
  * Immutable binary data.
  */
 using Data = BufferVector<const unsigned char>;
