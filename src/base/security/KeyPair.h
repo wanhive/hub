@@ -129,14 +129,14 @@ protected:
 	 * @param bits key size in bits
 	 * @return generated key, nullptr on error
 	 */
-	EVP_PKEY* generate(size_t bits = 0) const noexcept;
+	EVP_PKEY* generate(unsigned int bits = 0) const noexcept;
 	/**
 	 * generates a new asymmetric key pair and stores them. On error, the old
 	 * keys remain preserved.
 	 * @param bits key size in bits
 	 * @return generated key, nullptr on error
 	 */
-	EVP_PKEY* generate(size_t bits = 0) noexcept;
+	EVP_PKEY* generate(unsigned int bits = 0) noexcept;
 	/**
 	 * Generates a key pair and stores them in PEM-encoded text files.
 	 * @param privateKey private key file's path
@@ -146,8 +146,9 @@ protected:
 	 * @param cipher optional encryption cipher (default: AES256-CBC)
 	 *  @return true on success, false on error
 	 */
-	bool generate(const char *privateKey, const char *publicKey, size_t bits,
-			char *secret, const EVP_CIPHER *cipher) const noexcept;
+	bool generate(const char *privateKey, const char *publicKey,
+			unsigned int bits, char *secret,
+			const EVP_CIPHER *cipher) const noexcept;
 	/**
 	 * Returns the cryptographic length of a key in bits.
 	 * @param pkey asymmetric key
