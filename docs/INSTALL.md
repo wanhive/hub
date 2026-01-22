@@ -173,7 +173,7 @@ Required steps:
 [HOSTS]
 .
 .
-hostsFile = <pathname-of-hosts-file>
+file = <pathname-of-hosts-file>
 ```
 
 ### The hosts file
@@ -266,7 +266,7 @@ wanhive -m
 [HOSTS]
 .
 .
-hostsDb = <pathname-of-hosts-database>
+database = <pathname-of-hosts-database>
 ```
 
 ## Bootstrap
@@ -344,8 +344,8 @@ wanhive -m
 
 ```
 [KEYS]
-privateKey = <pathname-of-private-key-file>
-publicKey = <pathname-of-public-key-file>
+private = <pathname-of-private-key-file>
+public = <pathname-of-public-key-file>
 ```
 
 # Program invocation
@@ -373,14 +373,14 @@ Update the configuration file(s) to enable clustering:
 ```
 [HUB]
 .
-answerRatio = 0.15
-forwardRatio = 0.70
+answer = 0.15
+forward = 0.70
 .
 .
 
 [OVERLAY]
 .
-connectToOverlay = YES
+join = YES
 ```
 
 Start the **controller** that is an overlay hub having the identity **0** (zero):
@@ -411,13 +411,14 @@ Client authentication is disabled by default, i.e., an overlay hub accepts all t
 To enable client authentication at an overlay hub:
 
 1. Install the [network key](#network-key-optional).
-2. Set the following property in the configuration file.
+2. Set the following properties in the configuration file.
 
 ```
 [OVERLAY]
 .
 .
-authenticateClient = YES
+enroll = YES
+authenticate = YES
 ```
 
 ### Domain controlled access (optional)
@@ -434,7 +435,7 @@ Set the following property in an overlay hub's configuration file to turn on the
 [OVERLAY]
 .
 .
-netMask = 0xfffffffffffffc00
+netmask = 0xfffffffffffffc00
 ```
 
 **NOTE**: A client's type further restricts communication with the other clients (not covered in this documentation).
@@ -453,7 +454,7 @@ An authentication hub acts as a *trusted third party* during the authentication 
 [AUTH]
 .
 .
-connInfo = user=<user-name> dbname=<database-name>
+database = user=<user-name> dbname=<database-name>
 ```
 
 ```
@@ -513,7 +514,7 @@ Following "additional" instructions are applicable for a [standard setup](#stand
 ```
 [CLIENT]
 password = <password>
-passwordHashRounds = <rounds>
+rounds = <rounds>
 ```
 
 Start the multicast consumer:
@@ -529,7 +530,7 @@ Wanhive hubs use TLS/SSL for communication security.
 
 ## Enabling SSL (server)
 
-1. Create a root CA if required [HOWTO](HOWTO-crypto.md).
+1. Create a root CA if required [HOWTO](HOWTO-ssl.md).
 2. Generate key and certificate for each server (overlay and authentication hubs).
 3. Enable SSL by setting the *SSL/enable* option to TRUE in the configuration file.
 4. Install the root certificate by updating the *SSL/trust* option in the configuration file.
