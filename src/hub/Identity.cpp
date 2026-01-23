@@ -314,8 +314,7 @@ void Identity::loadKeys() {
 			auth.enabled = false;
 			auth.verify = false;
 		} else {
-			auth.enabled = auth.pki.initialize(paths.privateKey,
-					paths.publicKey);
+			auth.enabled = auth.pki.setup(paths.privateKey, paths.publicKey);
 			if (auth.enabled) {
 				WH_LOG_INFO("Public key infrastructure enabled");
 			} else {

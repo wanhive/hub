@@ -23,7 +23,7 @@ PKI::~PKI() {
 
 }
 
-bool PKI::initialize(const char *privateKey, const char *publicKey) noexcept {
+bool PKI::setup(const char *privateKey, const char *publicKey) noexcept {
 	return rsa.setup(privateKey, publicKey);
 }
 

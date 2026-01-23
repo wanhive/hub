@@ -48,7 +48,7 @@ public:
 	 * @param publicKey public key file's path (can be nullptr)
 	 * @return true on success, false otherwise
 	 */
-	bool initialize(const char *privateKey, const char *publicKey) noexcept;
+	bool setup(const char *privateKey, const char *publicKey) noexcept;
 	/**
 	 * Loads private key from PEM-encoded file (discards existing key).
 	 * @param key private key file's path (can be nullptr)
@@ -64,7 +64,7 @@ public:
 	//-----------------------------------------------------------------
 	/**
 	 * Checks private key's availability.
-	 * @return true if a host (private) key exists, false otherwise
+	 * @return true if a private key exists, false otherwise
 	 */
 	bool hasPrivateKey() const noexcept;
 	/**
