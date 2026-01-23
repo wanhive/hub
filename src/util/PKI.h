@@ -44,29 +44,29 @@ public:
 	//-----------------------------------------------------------------
 	/**
 	 * Loads key pair from PEM-encoded files (discards existing keys).
-	 * @param hostKey host (private) key file's path (can be nullptr)
+	 * @param privateKey private key file's path (can be nullptr)
 	 * @param publicKey public key file's path (can be nullptr)
 	 * @return true on success, false otherwise
 	 */
-	bool initialize(const char *hostKey, const char *publicKey) noexcept;
+	bool initialize(const char *privateKey, const char *publicKey) noexcept;
 	/**
-	 * Loads host (private) key from PEM-encoded file (discards existing key).
-	 * @param hostKey host (private) key file's path (can be nullptr)
+	 * Loads private key from PEM-encoded file (discards existing key).
+	 * @param key private key file's path (can be nullptr)
 	 * @return true on success, false otherwise
 	 */
-	bool loadHostKey(const char *hostKey) noexcept;
+	bool loadPrivateKey(const char *key) noexcept;
 	/**
 	 * Loads public key from PEM-encoded file (discards existing key).
-	 * @param publicKey public key file's path (can be nullptr)
+	 * @param key public key file's path (can be nullptr)
 	 * @return true on success, false otherwise
 	 */
-	bool loadPublicKey(const char *publicKey) noexcept;
+	bool loadPublicKey(const char *key) noexcept;
 	//-----------------------------------------------------------------
 	/**
-	 * Checks host (private) key's availability.
+	 * Checks private key's availability.
 	 * @return true if a host (private) key exists, false otherwise
 	 */
-	bool hasHostKey() const noexcept;
+	bool hasPrivateKey() const noexcept;
 	/**
 	 * Checks public key's availability.
 	 * @return true if a public key exists, false otherwise
@@ -115,10 +115,10 @@ public:
 	//-----------------------------------------------------------------
 	/**
 	 * Generates and stores key pair as PEM-encoded text files.
-	 * @param hostKey host (private) key file's path
+	 * @param privateKey private key file's path
 	 * @param publicKey public key file's path
 	 */
-	static void generate(const char *hostKey, const char *publicKey);
+	static void generate(const char *privateKey, const char *publicKey);
 public:
 	/*! Key size in bits */
 	static constexpr unsigned int KEY_LENGTH = WH_PKI_KEY_LENGTH;

@@ -129,8 +129,9 @@ private:
 	void loadHostsFile();
 	void loadPrivateKey();
 	void loadPublicKey();
+	void loadSSLRoot();
 	void loadSSLCertificate();
-	void loadSSLHostKey();
+	void loadSSLKey();
 private:
 	char* locateConfigurationFile() noexcept;
 public:
@@ -192,7 +193,7 @@ private:
 		//SSL certificate chain file's pathname
 		char *sslCertificate { };
 		//SSL private key file's pathname
-		char *sslHostKey { };
+		char *sslKey { };
 	} paths;
 };
 

@@ -1,7 +1,7 @@
 /*
  * CryptoUtils.cpp
  *
- * Cipher initialization and error handling routines
+ * OpenSSL initializer and error handler
  *
  *
  * Copyright (C) 2018 Amit Kumar (amitkriit@gmail.com)
@@ -11,24 +11,18 @@
  */
 
 #include "CryptoUtils.h"
-#include <openssl/conf.h>
 #include <openssl/err.h>
-#include <openssl/ssl.h>
 
 namespace wanhive {
 
 class CryptoUtils::initializer {
 public:
 	initializer() noexcept {
-		OPENSSL_init_ssl(0, nullptr);
-		OpenSSL_add_all_algorithms();
-		SSL_load_error_strings();
+
 	}
 
 	~initializer() {
-		CRYPTO_cleanup_all_ex_data();
-		ERR_free_strings();
-		EVP_cleanup();
+
 	}
 };
 
@@ -44,7 +38,9 @@ void CryptoUtils::getErrorMessage(char *buffer, unsigned int length) noexcept {
 
 void CryptoUtils::getErrorMessage(unsigned long error, char *buffer,
 		unsigned int length) noexcept {
-	ERR_error_string_n(error, buffer, length);
+	if (buffer && length) {
+		ERR_error_string_n(error, buffer, length);
+	}
 }
 
 void CryptoUtils::clearErrors() noexcept {

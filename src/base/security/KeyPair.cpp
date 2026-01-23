@@ -42,27 +42,27 @@ void KeyPair::reset() noexcept {
 	freePrivateKey();
 }
 
-bool KeyPair::loadPrivateKey(const char *privateKey, char *secret,
+bool KeyPair::loadPrivateKey(const char *key, char *secret,
 		bool memory) noexcept {
 	freePrivateKey();
-	if (!privateKey) {
+	if (!key) {
 		return true;
 	} else if (memory) {
-		_private = fromMemory(privateKey, false, secret);
+		_private = fromMemory(key, false, secret);
 	} else {
-		_private = fromFile(privateKey, false, secret);
+		_private = fromFile(key, false, secret);
 	}
 	return _private != nullptr;
 }
 
-bool KeyPair::loadPublicKey(const char *publicKey, bool memory) noexcept {
+bool KeyPair::loadPublicKey(const char *key, bool memory) noexcept {
 	freePublicKey();
-	if (!publicKey) {
+	if (!key) {
 		return true;
 	} else if (memory) {
-		_public = fromMemory(publicKey, true, nullptr);
+		_public = fromMemory(key, true, nullptr);
 	} else {
-		_public = fromFile(publicKey, true, nullptr);
+		_public = fromFile(key, true, nullptr);
 	}
 	return _public != nullptr;
 }

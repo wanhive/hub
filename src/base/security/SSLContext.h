@@ -1,7 +1,7 @@
 /*
  * SSLContext.h
  *
- * Secure connection's context
+ * SSL/TLS context
  *
  *
  * Copyright (C) 2018 Amit Kumar (amitkriit@gmail.com)
@@ -17,7 +17,7 @@
 
 namespace wanhive {
 /**
- * Secure connection's context
+ * SSL/TLS context
  */
 class SSLContext: private NonCopyable {
 public:
@@ -28,80 +28,83 @@ public:
 	/**
 	 * Constructor: initializes the SSL/TLS context.
 	 * @param certificate certificate file's path
-	 * @param privateKey private key file's path
+	 * @param key private key file's path
 	 */
-	SSLContext(const char *certificate, const char *privateKey);
+	SSLContext(const char *certificate, const char *key);
 	/**
 	 * Destructor
 	 */
 	~SSLContext();
 	//-----------------------------------------------------------------
 	/**
-	 * Returns The current SSL/TLS context.
-	 * @return pointer to SSL/TLS context, nullptr if not initialized.
-	 */
-	SSL_CTX* getContext() const noexcept;
-	/**
-	 * Initializes the SSL/TLS context.
+	 * Initializes the context and loads the certificate and the private key
+	 * from PEM-encoded files.
 	 * @param certificate certificate file's path
-	 * @param privateKey private key file's path
+	 * @param key private key file's path
 	 */
-	void initialize(const char *certificate, const char *privateKey);
+	void setup(const char *certificate, const char *key);
 	/**
-	 * Sets the CA certificates' location. If neither value is provided then the
-	 * default system values are used.
-	 * @param file CA certificate file's path
-	 * @param CA certificates' directory name
+	 * Sets the location of CA certificates. If no value is provided, the system
+	 * defaults are used.
+	 * @param file trusted CA certificate file's path
+	 * @param path trusted CA certificates' directory name
 	 */
-	void loadTrustedPaths(const char *file, const char *path);
+	void trust(const char *file, const char *path);
 	//-----------------------------------------------------------------
 	/**
 	 * Creates a new secure connection.
-	 * @param fd socket's descriptor
+	 * @param fd socket file descriptor
 	 * @param server true for server-side configuration, false for client
 	 * @return secure connection
 	 */
 	SSL* create(int fd, bool server);
 	/**
-	 * Checks secure connection's context.
-	 * @param ssl secure connection to check
-	 * @return true if the connection is in context, false otherwise
+	 * Verifies that a secure connection was created from this context.
+	 * @param ssl secure connection
+	 * @return true if the connection belongs to this context, false otherwise
 	 */
-	bool inContext(const SSL *ssl) const noexcept;
+	bool linked(const SSL *ssl) const noexcept;
 	/**
 	 * Establishes secure connection with a server.
-	 * @param fd blocking socket's descriptor
+	 * @param fd socket file descriptor configured for blocking IO
 	 * @return secure connection
 	 */
 	SSL* connect(int fd);
 	//-----------------------------------------------------------------
 	/**
-	 * Returns secure connection's file descriptor.
+	 * Returns secure connection's socket file descriptor.
 	 * @param ssl secure connection
-	 * @return socket's descriptor
+	 * @return file descriptor, -1 on error
 	 */
 	static int getSocket(const SSL *ssl) noexcept;
 	/**
-	 * Associates SSL with a socket.
+	 * Sets socket file descriptor for a secure connection.
 	 * @param ssl secure connection
-	 * @param fd socket's descriptor
+	 * @param fd file descriptor
 	 * @return true on success, false on error
 	 */
 	static bool setSocket(SSL *ssl, int fd) noexcept;
 	/**
-	 * Returns the remote peer certificate verification status.
+	 * Returns the peer certificate verification status.
 	 * @param ssl secure connection
-	 * @return true if verification succeeded, false otherwise
+	 * @return true on successful verification, false on error
 	 */
 	static bool verify(const SSL *ssl) noexcept;
 	/**
-	 * Frees a secure connection (Doesn't close the underlying socket).
+	 * Shuts down a secure connection gracefully (Doesn't close the socket).
+	 * @param ssl secure connection
+	 * @return 0 if the shutdown process is ongoing, 1 on successful completion
+	 * (or nullptr argument), negative value on error.
+	 */
+	static int shutdown(SSL *ssl) noexcept;
+	/**
+	 * Frees a secure connection (Doesn't close the socket).
 	 * @param ssl secure connection
 	 */
 	static void destroy(SSL *ssl) noexcept;
 	//-----------------------------------------------------------------
 	/**
-	 * Reads specified number of bytes from a blocking SSL connection.
+	 * Reads specified number of bytes from a blocking secure connection.
 	 * @param ssl secure connection
 	 * @param buf stores the incoming data
 	 * @param bytes number of bytes to read
@@ -109,15 +112,21 @@ public:
 	 */
 	static size_t receive(SSL *ssl, unsigned char *buf, size_t bytes);
 	/**
-	 * Writes specified number bytes to a blocking SSL connection.
+	 * Writes specified number bytes to a blocking secure connection.
 	 * @param ssl secure connection
 	 * @param buf outgoing data buffer
 	 * @param bytes number of bytes to write
 	 * @return number of bytes transferred
 	 */
 	static size_t send(SSL *ssl, const unsigned char *buf, size_t bytes);
+protected:
+	/**
+	 * Returns The current SSL/TLS context.
+	 * @return pointer to SSL/TLS context, nullptr if not initialized
+	 */
+	SSL_CTX* get() const noexcept;
 private:
-	bool installKeys(const char *certificate, const char *privateKey) noexcept;
+	bool install(const char *certificate, const char *key) noexcept;
 	void clear() noexcept;
 private:
 	SSL_CTX *ctx { };

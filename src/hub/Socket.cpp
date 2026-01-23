@@ -29,7 +29,7 @@ Socket::Socket(int fd) noexcept :
 Socket::Socket(SSL *ssl) :
 		Pooled { 0 } {
 	egress.rewind();
-	if (ssl && sslCtx && sslCtx->inContext(ssl)) {
+	if (ssl && sslCtx && sslCtx->linked(ssl)) {
 		secure.ssl = ssl;
 		Descriptor::setHandle(SSLContext::getSocket(ssl));
 	} else {

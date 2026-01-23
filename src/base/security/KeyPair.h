@@ -49,22 +49,22 @@ public:
 	void reset() noexcept;
 	/**
 	 * Loads a private key (discards the existing key).
-	 * @param privateKey private key (can be nullptr)
+	 * @param key private key (can be nullptr)
 	 * @param secret private key's pass phrase
 	 * @param memory true to treat the key data as PEM-encoded string, false to
 	 * treat it as a PEM-encoded file's path.
 	 * @return true on success, false on error
 	 */
-	bool loadPrivateKey(const char *privateKey, char *secret = nullptr,
-			bool memory = false) noexcept;
+	bool loadPrivateKey(const char *key, char *secret = nullptr, bool memory =
+			false) noexcept;
 	/**
 	 * Loads a public key (discards the existing key).
-	 * @param publicKey public key (can be nullptr)
+	 * @param key public key (can be nullptr)
 	 * @param memory true to treat the key data as PEM-encoded string, false to
 	 * treat it as a PEM-encoded file's path.
 	 * @return true on success, false on error
 	 */
-	bool loadPublicKey(const char *publicKey, bool memory = false) noexcept;
+	bool loadPublicKey(const char *key, bool memory = false) noexcept;
 	/**
 	 * Disposes of the private key.
 	 */

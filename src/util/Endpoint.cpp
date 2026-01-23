@@ -93,7 +93,7 @@ void Endpoint::setSocket(int sfd) {
 void Endpoint::setSecureSocket(SSL *ssl) {
 	if (ssl == this->ssl) {
 		return;
-	} else if (ssl && sslContext && sslContext->inContext(ssl)) {
+	} else if (ssl && sslContext && sslContext->linked(ssl)) {
 		disconnect();
 		this->sockfd = SSLContext::getSocket(ssl);
 		this->ssl = ssl;
@@ -136,7 +136,7 @@ int Endpoint::swapSocket(int sfd) {
 SSL* Endpoint::swapSecureSocket(SSL *ssl) {
 	if (ssl == this->ssl) {
 		return ssl;
-	} else if (ssl && this->ssl && sslContext && sslContext->inContext(ssl)
+	} else if (ssl && this->ssl && sslContext && sslContext->linked(ssl)
 			&& this->sockfd == SSLContext::getSocket(this->ssl)) {
 		auto tmp = this->ssl;
 		this->ssl = ssl;

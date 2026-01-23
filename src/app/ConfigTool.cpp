@@ -64,16 +64,16 @@ void ConfigTool::execute() noexcept {
 }
 
 void ConfigTool::generateKeyPair() {
-	char pkf[1024] = { '\0' };
-	char skf[1024] = { '\0' };
+	char pkf[1024] { };
+	char skf[1024] { };
 	try {
-		std::cout << "Pathname of the public key file: ";
+		std::cout << "Public key file: ";
 		std::cin.ignore();
 		std::cin.getline(pkf, sizeof(pkf));
 		if (CommandLine::inputError()) {
 			return;
 		}
-		std::cout << "Pathname of the secret key file: ";
+		std::cout << "Private key file: ";
 		std::cin.getline(skf, sizeof(skf));
 		if (CommandLine::inputError()) {
 			return;
@@ -88,8 +88,8 @@ void ConfigTool::generateKeyPair() {
 }
 
 void ConfigTool::manageHosts() {
-	char hf[1024] = { '\0' };
-	char sf[1024] = { '\0' };
+	char hf[1024] { };
+	char sf[1024] { };
 	unsigned int mode; //unsigned
 
 	std::cout << "Select operation\n"
@@ -104,7 +104,7 @@ void ConfigTool::manageHosts() {
 
 	std::cin.ignore();
 	if (mode <= 3) {
-		std::cout << "Pathname of the \"hosts\" file: ";
+		std::cout << "Hosts file: ";
 		std::cin.getline(hf, sizeof(hf));
 		if (CommandLine::inputError()) {
 			return;
@@ -112,7 +112,7 @@ void ConfigTool::manageHosts() {
 	}
 
 	if (mode <= 2) {
-		std::cout << "Pathname of the \"hosts\" database: ";
+		std::cout << "Hosts database: ";
 		std::cin.getline(sf, sizeof(sf));
 		if (CommandLine::inputError()) {
 			return;
@@ -136,9 +136,9 @@ void ConfigTool::manageHosts() {
 }
 
 void ConfigTool::generateVerifier() {
-	char name[64] = { '\0' };
-	char secret[64] = { '\0' };
-	unsigned int rounds { 0 };
+	char name[64] { };
+	char secret[64] { };
+	unsigned int rounds { };
 
 	std::cout << "Identity: ";
 	std::cin.ignore();
@@ -153,7 +153,7 @@ void ConfigTool::generateVerifier() {
 		return;
 	}
 
-	std::cout << "Password hashing rounds: ";
+	std::cout << "Hashing rounds: ";
 	std::cin >> rounds;
 	if (CommandLine::inputError()) {
 		return;
@@ -169,7 +169,7 @@ void ConfigTool::generateVerifier() {
 		char buffer[4096];
 		Data data;
 
-		std::cout << "{\n";
+		std::cout << "\n{\n";
 		std::cout << " \"id\": \"" << name << "\",\n";
 		verifier.salt(data);
 		buffer[0] = '\0';

@@ -316,9 +316,9 @@ void OverlayHub::refresh(unsigned int context) noexcept {
 		case Identity::CTX_SSL_ROOT:
 			if (watchlist[context].identifier != -1) {
 				WH_LOG_DEBUG(
-						"SSL trusted certificate has been modified (restart required)");
+						"SSL Root CA certificate has been modified (restart required)");
 			} else {
-				WH_LOG_DEBUG("SSL trusted certificate has been ignored");
+				WH_LOG_DEBUG("SSL Root CA certificate has been ignored");
 			}
 			break;
 		case Identity::CTX_SSL_CERT:
@@ -331,10 +331,10 @@ void OverlayHub::refresh(unsigned int context) noexcept {
 			break;
 		case Identity::CTX_SSL_PRIVATE:
 			if (watchlist[context].identifier != -1) {
-				WH_LOG_DEBUG("SSL host key has been modified");
+				WH_LOG_DEBUG("SSL private key has been modified");
 				Identity::refresh(Identity::CTX_SSL_PRIVATE);
 			} else {
-				WH_LOG_DEBUG("SSL host key has been ignored");
+				WH_LOG_DEBUG("SSL private key has been ignored");
 			}
 			break;
 		default:

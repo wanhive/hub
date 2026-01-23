@@ -1,7 +1,7 @@
 /*
  * SSLContext.cpp
  *
- * Secure connection's context
+ * SSL/TLS context
  *
  *
  * Copyright (C) 2018 Amit Kumar (amitkriit@gmail.com)
@@ -20,11 +20,10 @@ SSLContext::SSLContext() noexcept {
 
 }
 
-SSLContext::SSLContext(const char *certificate, const char *privateKey) {
+SSLContext::SSLContext(const char *certificate, const char *key) {
 	try {
-		initialize(certificate, privateKey);
+		setup(certificate, key);
 	} catch (const BaseException &e) {
-		//Clean up the partially initialized object
 		clear();
 		throw;
 	}
@@ -34,24 +33,21 @@ SSLContext::~SSLContext() {
 	clear();
 }
 
-SSL_CTX* SSLContext::getContext() const noexcept {
-	return ctx;
-}
-
-void SSLContext::initialize(const char *certificate, const char *privateKey) {
+void SSLContext::setup(const char *certificate, const char *key) {
 	if (!ctx && (ctx = SSL_CTX_new(SSLv23_method()))) {
 		SSL_CTX_set_mode(ctx, SSL_MODE_AUTO_RETRY);
 		SSL_CTX_set_options(ctx,
 				SSL_OP_ALL | SSL_OP_NO_SSLv2 | SSL_OP_NO_SSLv3 | SSL_OP_NO_TLSv1
 						| SSL_OP_NO_TLSv1_1);
+		SSL_CTX_set_quiet_shutdown(ctx, 1);
 	}
 
-	if (!installKeys(certificate, privateKey)) {
+	if (!install(certificate, key)) {
 		throw Exception(EX_SECURITY);
 	}
 }
 
-void SSLContext::loadTrustedPaths(const char *file, const char *path) {
+void SSLContext::trust(const char *file, const char *path) {
 	if (!ctx) {
 		throw Exception(EX_RESOURCE);
 	} else if ((file || path)
@@ -83,7 +79,7 @@ SSL* SSLContext::create(int fd, bool server) {
 	}
 }
 
-bool SSLContext::inContext(const SSL *ssl) const noexcept {
+bool SSLContext::linked(const SSL *ssl) const noexcept {
 	return ssl && (SSL_get_SSL_CTX(ssl) == ctx);
 }
 
@@ -109,25 +105,16 @@ bool SSLContext::verify(const SSL *ssl) noexcept {
 	return ssl && (SSL_get_verify_result(ssl) == X509_V_OK);
 }
 
-void SSLContext::destroy(SSL *ssl) noexcept {
-	SSL_free(ssl);
-}
-
-bool SSLContext::installKeys(const char *certificate,
-		const char *privateKey) noexcept {
-	if (!ctx) {
-		return false;
+int SSLContext::shutdown(SSL *ssl) noexcept {
+	if (ssl) {
+		return SSL_shutdown(ssl);
 	} else {
-		return (!certificate
-				|| SSL_CTX_use_certificate_chain_file(ctx, certificate) == 1)
-				&& (!privateKey || (SSL_CTX_use_PrivateKey_file(ctx, privateKey,
-				SSL_FILETYPE_PEM) == 1 && SSL_CTX_check_private_key(ctx) == 1));
+		return 1;
 	}
 }
 
-void SSLContext::clear() noexcept {
-	SSL_CTX_free(ctx);
-	ctx = nullptr;
+void SSLContext::destroy(SSL *ssl) noexcept {
+	SSL_free(ssl);
 }
 
 size_t SSLContext::receive(SSL *ssl, unsigned char *buf, size_t bytes) {
@@ -170,6 +157,26 @@ size_t SSLContext::send(SSL *ssl, const unsigned char *buf, size_t bytes) {
 		}
 		return (bytes - toSend);
 	}
+}
+
+SSL_CTX* SSLContext::get() const noexcept {
+	return ctx;
+}
+
+bool SSLContext::install(const char *certificate, const char *key) noexcept {
+	if (!ctx) {
+		return false;
+	} else {
+		return (!certificate
+				|| SSL_CTX_use_certificate_chain_file(ctx, certificate) == 1)
+				&& (!key || (SSL_CTX_use_PrivateKey_file(ctx, key,
+				SSL_FILETYPE_PEM) == 1 && SSL_CTX_check_private_key(ctx) == 1));
+	}
+}
+
+void SSLContext::clear() noexcept {
+	SSL_CTX_free(ctx);
+	ctx = nullptr;
 }
 
 } /* namespace wanhive */

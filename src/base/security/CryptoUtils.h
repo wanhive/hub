@@ -1,7 +1,7 @@
 /*
  * CryptoUtils.h
  *
- * Cipher initialization and error handling routines
+ * OpenSSL initializer and error handler
  *
  *
  * Copyright (C) 2018 Amit Kumar (amitkriit@gmail.com)
@@ -15,7 +15,7 @@
 
 namespace wanhive {
 /**
- * Cipher initializer and error handler
+ * OpenSSL initializer and error handler
  */
 class CryptoUtils {
 public:
@@ -25,14 +25,13 @@ public:
 	 */
 	static unsigned long getError() noexcept;
 	/**
-	 * Consumes and reports the most recent error. This call is equivalent to
-	 * CryptoUtils::getErrorMessage(Cryptoutils::getError(), buffer, length).
+	 * Describes the most recent error.
 	 * @param buffer stores error's description
 	 * @param length buffer's size in bytes
 	 */
 	static void getErrorMessage(char *buffer, unsigned int length) noexcept;
 	/**
-	 * Describes the given error code.
+	 * Describes an error code.
 	 * @param error error code
 	 * @param buffer stores error's description
 	 * @param length buffer's size in bytes
@@ -44,7 +43,7 @@ public:
 	 */
 	static void clearErrors() noexcept;
 private:
-	class initializer;  //Forward declaration
+	class initializer;
 	static const initializer _init;
 };
 
