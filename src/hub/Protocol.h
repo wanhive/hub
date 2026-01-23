@@ -336,33 +336,24 @@ public:
 	static unsigned int processFindRootResponse(const Message *msg,
 			uint64_t identity, uint64_t &root) noexcept;
 private:
-	//Returns message length on success, 0 on failure
 	static unsigned int createIdentificationRequest(
 			const MessageAddress &address, uint16_t sequenceNumber,
 			const Data &nonce, Packet &packet) noexcept;
-	//Returns message length on success, 0 on failure
 	static unsigned int processIdentificationResponse(const Packet &packet,
 			Data &salt, Data &nonce) noexcept;
-	//Returns message length on success, 0 on failure
 	static unsigned int createAuthenticationRequest(
 			const MessageAddress &address, uint16_t sequenceNumber,
 			const Data &proof, Packet &packet) noexcept;
-	//Returns message length on success, 0 on failure
 	static unsigned int processAuthenticationResponse(const Packet &packet,
 			Data &proof) noexcept;
-	//Returns message length on success, 0 on failure
 	static unsigned int createRegisterRequest(const MessageAddress &address,
 			uint16_t sequenceNumber, const Digest *hc, Packet &packet) noexcept;
-	//Returns message length on success, 0 on failure
 	static unsigned int createTokenRequest(const MessageAddress &address,
 			uint16_t sequenceNumber, const Token &tk, Packet &packet) noexcept;
-	//Returns message length on success, 0 on failure (<hc> is the value-result argument)
 	static unsigned int processTokenResponse(const Packet &packet,
 			Digest *hc) noexcept;
-	//Returns message length on success, 0 on failure
 	static unsigned int createFindRootRequest(const MessageAddress &address,
 			uint64_t identity, uint16_t sequenceNumber, Packet &packet) noexcept;
-	//Returns message length on success, 0 on failure
 	static unsigned int processFindRootResponse(const Packet &packet,
 			uint64_t identity, uint64_t &root) noexcept;
 };

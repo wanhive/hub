@@ -1,7 +1,7 @@
 /*
  * Topic.h
  *
- * Topics subscription
+ * Topic subscriptions
  *
  *
  * Copyright (C) 2019 Amit Kumar (amitkriit@gmail.com)
@@ -15,7 +15,7 @@
 
 namespace wanhive {
 /**
- * Topics subscription
+ * Topic subscriptions
  */
 class Topic {
 public:
@@ -58,7 +58,7 @@ public:
 	/** Maximum topic identifier */
 	static constexpr unsigned int MAX_ID = 255;
 private:
-	unsigned int _count { 0 };
+	unsigned int _count { };
 	unsigned char bits[(COUNT + 7) / 8] { };
 };
 

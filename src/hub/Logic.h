@@ -20,17 +20,18 @@ namespace wanhive {
  * Digital logic transitions
  */
 enum class LogicEdge {
-	RISING, /**< Low-to-High */
-	FALLING,/**< High-to-Low */
+	RISING, /**< Rising edge */
+	FALLING,/**< Falling edge */
 	NONE /**< Neither */
 };
+
 /**
  * Digital logic data structure
  */
 struct LogicEvent {
-	/*! Logic transition type */
+	/*! Transition type */
 	LogicEdge type { LogicEdge::NONE };
-	/*! Event's time-stamp */
+	/*! Time stamp */
 	unsigned long long timestamp { 0 };
 };
 //-----------------------------------------------------------------
@@ -55,7 +56,7 @@ public:
 	bool publish(void *arg) noexcept override;
 	//-----------------------------------------------------------------
 	/**
-	 * Reports the next event.
+	 * Reports a change in state.
 	 * @param event stores the event
 	 * @return number of bytes read on success, 0 on non-fatal error, -1 on
 	 * fatal error.

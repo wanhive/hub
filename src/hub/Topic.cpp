@@ -1,7 +1,7 @@
 /*
  * Topic.cpp
  *
- * Topics subscription
+ * Topic subscriptions
  *
  *
  * Copyright (C) 2019 Amit Kumar (amitkriit@gmail.com)
