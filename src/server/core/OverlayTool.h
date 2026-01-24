@@ -56,8 +56,8 @@ private:
 	 */
 	void registerCmd();
 	void tokenCmd();
-	void findRoot();
-	void findBootstrapNode();
+	void findRootCmd();
+	void bootstrapCmd();
 	//-----------------------------------------------------------------
 	/*
 	 * Pub-Sub commands

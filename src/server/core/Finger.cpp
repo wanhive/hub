@@ -37,12 +37,12 @@ void Finger::setId(unsigned int id) noexcept {
 	this->id = id;
 }
 
-unsigned int Finger::getOldId() const noexcept {
-	return oldId;
+unsigned int Finger::getPrior() const noexcept {
+	return prior;
 }
 
-void Finger::setOldId(unsigned int oldId) noexcept {
-	this->oldId = oldId;
+void Finger::setPrior(unsigned int prior) noexcept {
+	this->prior = prior;
 }
 
 bool Finger::isConnected() const noexcept {
@@ -54,12 +54,12 @@ void Finger::setConnected(bool connected) noexcept {
 }
 
 bool Finger::isConsistent() const noexcept {
-	return getId() == getOldId();
+	return getId() == getPrior();
 }
 
 unsigned int Finger::commit() noexcept {
-	auto old = getOldId();
-	setOldId(getId());
+	auto old = getPrior();
+	setPrior(getId());
 	return old;
 }
 

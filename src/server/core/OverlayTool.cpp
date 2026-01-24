@@ -23,8 +23,8 @@
 namespace wanhive {
 
 OverlayTool::OverlayTool(const char *path, unsigned int timeout) noexcept :
-		Identity(path), timeout(timeout), hostId(0), destinationId(0), auth(
-				false) {
+		Identity { path }, timeout { timeout }, hostId { 0 }, destinationId { 0 }, auth {
+				false } {
 }
 
 OverlayTool::~OverlayTool() {
@@ -84,9 +84,9 @@ void OverlayTool::execute() noexcept {
 				} else if (qualifier == WH_DHT_QLF_TOKEN) {
 					tokenCmd();
 				} else if (qualifier == WH_DHT_QLF_FINDROOT) {
-					findRoot();
+					findRootCmd();
 				} else if (qualifier == WH_DHT_QLF_BOOTSTRAP) {
-					findBootstrapNode();
+					bootstrapCmd();
 				} else {
 					std::cout << "Invalid command" << std::endl;
 				}
@@ -352,7 +352,7 @@ void OverlayTool::tokenCmd() {
 	}
 }
 
-void OverlayTool::findRoot() {
+void OverlayTool::findRootCmd() {
 	std::cout << "CMD: [FINDROOT]" << std::endl;
 	uint64_t startNode = destinationId;
 	uint64_t qid = 0;
@@ -376,7 +376,7 @@ void OverlayTool::findRoot() {
 	}
 }
 
-void OverlayTool::findBootstrapNode() {
+void OverlayTool::bootstrapCmd() {
 	std::cout << "CMD: [BOOTSTRAP]" << std::endl;
 	uint64_t id = destinationId;
 

@@ -217,7 +217,7 @@ void Node::print() noexcept {
 	for (unsigned int i = 0; i < TABLESIZE; ++i) {
 		auto f = getFinger(i);
 		fprintf(stderr, "%3u%9u%9u%9u%12s\n", (i + 1), f->getStart(),
-				f->getId(), f->getOldId(), WH_BOOLF(f->isConnected()));
+				f->getId(), f->getPrior(), WH_BOOLF(f->isConnected()));
 	}
 }
 

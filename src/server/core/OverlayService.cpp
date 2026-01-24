@@ -18,7 +18,7 @@
 namespace wanhive {
 
 OverlayService::OverlayService(unsigned long long uid) noexcept :
-		uid(uid) {
+		uid { uid } {
 	clear();
 }
 

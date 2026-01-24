@@ -30,62 +30,62 @@ public:
 	~Finger();
 	//-----------------------------------------------------------------
 	/**
-	 * Returns the start index on the identifier ring.
-	 * @return start index's value
+	 * Returns start index on the identifier ring.
+	 * @return start index
 	 */
 	unsigned int getStart() const noexcept;
 	/**
-	 * Sets the start index on the identifier ring.
-	 * @param start index's value
+	 * Sets start index on the identifier ring.
+	 * @param start index
 	 */
 	void setStart(unsigned int start) noexcept;
 
 	/**
-	 * Returns the current index on the on the identifier ring.
-	 * @return current index's value
+	 * Returns current index on the identifier ring.
+	 * @return current index
 	 */
 	unsigned int getId() const noexcept;
 	/**
-	 * Sets the current index on the identifier ring.
-	 * @param id current index's value
+	 * Sets current index on the identifier ring.
+	 * @param id current index
 	 */
 	void setId(unsigned int id) noexcept;
 	/**
-	 * Returns the old index on the on the identifier ring.
-	 * @return old index's value
+	 * Returns prior index on the identifier ring.
+	 * @return prior index
 	 */
-	unsigned int getOldId() const noexcept;
+	unsigned int getPrior() const noexcept;
 	/**
-	 * Sets the current index on the identifier ring.
-	 * @param oldId old index's value
+	 * Sets prior index on the identifier ring.
+	 * @param prior prior index
 	 */
-	void setOldId(unsigned int oldId) noexcept;
+	void setPrior(unsigned int prior) noexcept;
 	/**
-	 * Returns the "connected" status.
+	 * Returns the connected status.
 	 * @return true if connected, false otherwise
 	 */
 	bool isConnected() const noexcept;
 	/**
-	 * Sets the "connected" status.
-	 * @param connected true if connected, false if not connected
+	 * Sets the connected status.
+	 * @param connected true for connected, false for not connected
 	 */
 	void setConnected(bool connected) noexcept;
 	//-----------------------------------------------------------------
 	/**
-	 * Checks whether the current index matches the old index.
-	 * @return true if current and old indexes are equal, false otherwise.
+	 * Checks whether the current index matches the prior index.
+	 * @return true on positive match, false otherwise
 	 */
 	bool isConsistent() const noexcept;
 	/**
-	 * Updates the old index to match the current index.
-	 * @return previous value of the old index
+	 * Updates the prior index to match the current index.
+	 * @return prior index's value before the update
 	 */
 	unsigned int commit() noexcept;
 private:
-	unsigned int start { 0 };
-	unsigned int id { 0 };
-	unsigned int oldId { 0 };
-	bool connected { false };
+	unsigned int start { };
+	unsigned int id { };
+	unsigned int prior { };
+	bool connected { };
 };
 
 } /* namespace wanhive */

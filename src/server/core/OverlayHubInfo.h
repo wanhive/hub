@@ -17,14 +17,19 @@
 
 namespace wanhive {
 /**
- * Routing table's information
+ * Routing table entry
  */
 struct RouteInfo {
+	/*! Start index */
 	unsigned long long start;
+	/*! Current index */
 	unsigned long long current;
+	/*! Old index */
 	unsigned long long old;
+	/*! Connection status */
 	bool connected;
 };
+
 /**
  * Overlay hub's runtime metrics
  */
@@ -39,39 +44,39 @@ public:
 	 */
 	~OverlayHubInfo();
 	/**
-	 * Clears the data.
+	 * Clears all data.
 	 */
 	void clear() noexcept;
 	//-----------------------------------------------------------------
 	/**
 	 * Returns predecessor's identifier.
-	 * @return predecessor's value
+	 * @return predecessor
 	 */
 	unsigned long long getPredecessor() const noexcept;
 	/**
 	 * Sets predecessor's identifier.
-	 * @param predecessor the new predecessor's value
+	 * @param predecessor new predecessor
 	 */
 	void setPredecessor(unsigned long long predecessor) noexcept;
 	/**
 	 * Returns successor's identifier.
-	 * @return successor value
+	 * @return successor
 	 */
 	unsigned long long getSuccessor() const noexcept;
 	/**
 	 * Sets successor's identifier.
-	 * @param successor the new successor's value
+	 * @param successor new successor
 	 */
 	void setSuccessor(unsigned long long successor) noexcept;
 	//-----------------------------------------------------------------
 	/**
-	 * Returns number of routes in the routing table.
-	 * @return the routes count
+	 * Returns the number of routes in the routing table.
+	 * @return routes count
 	 */
 	unsigned int getRoutes() const noexcept;
 	/**
-	 * Sets number of routes in the routing table.
-	 * @param routes the new routes count
+	 * Sets the number of routes in the routing table.
+	 * @param routes new routes count
 	 */
 	void setRoutes(unsigned int routes) noexcept;
 	/**
@@ -88,30 +93,29 @@ public:
 	/**
 	 * Returns a routing table entry.
 	 * @param index entry's index
-	 * @return pointer to routing table's entry at the given index, nullptr if
-	 * the index is invalid (see OverlayHubInfo::getRoutes()).
+	 * @return pointer to routing table's entry, nullptr on invalid index
 	 */
 	const RouteInfo* getRoute(unsigned int index) const noexcept;
 	/**
-	 * Sets a routing table entry.
+	 * Updates the routing table entry at a given index. Fails silently if the
+	 * index is invalid.
 	 * @param table entry's data
-	 * @param index entry's index, the call will fail silently if the index is
-	 * invalid (see OverlayHubInfo::getRoutes()).
+	 * @param index entry's index
 	 */
 	void setRoute(const RouteInfo &table, unsigned int index) noexcept;
 	//-----------------------------------------------------------------
 	/**
-	 * Serializes this object.
-	 * @param buffer pointer to data buffer
+	 * Serializes the runtime metrics.
+	 * @param buffer output buffer
 	 * @param size buffer's size in bytes
-	 * @return size of serialized data on success, 0 on error.
+	 * @return serialized data's size in bytes on success, 0 on error.
 	 */
 	unsigned int pack(unsigned char *buffer, unsigned int size) const noexcept;
 	/**
-	 * Deserializes binary data into this object.
-	 * @param buffer pointer to serialized data buffer
+	 * Loads the serialized runtime metrics data.
+	 * @param buffer serialized data
 	 * @param size buffer's size in bytes
-	 * @return the number of bytes read on success, 0 on error.
+	 * @return number of bytes read on success, 0 on error
 	 */
 	unsigned int unpack(const unsigned char *buffer, unsigned int size) noexcept;
 	//-----------------------------------------------------------------

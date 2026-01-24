@@ -1640,7 +1640,7 @@ void OverlayHub::metrics(OverlayHubInfo &info) const noexcept {
 	info.setStable(isStable());
 	for (unsigned int i = 0; i < TABLESIZE; ++i) {
 		auto f = getFinger(i);
-		RouteInfo ri = { f->getStart(), f->getId(), f->getOldId(),
+		RouteInfo ri = { f->getStart(), f->getId(), f->getPrior(),
 				f->isConnected() };
 		info.setRoute(ri, i);
 	}
