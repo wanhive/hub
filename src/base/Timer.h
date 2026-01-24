@@ -68,10 +68,10 @@ public:
 	 */
 	static size_t print(double timestamp, char *buffer, size_t size) noexcept;
 	/**
-	 * Generate a 64-bit value for seeding the non-cryptographic RNGs.
-	 * @return 64-byte value based on the current time-stamp.
+	 * Generates 64-bit integral value for seeding the non-cryptographic RNGs.
+	 * @return 64-bit (8 bytes) integral value
 	 */
-	static unsigned long long timeSeed() noexcept;
+	static unsigned long long seed() noexcept;
 private:
 	static unsigned long long currentTime() noexcept;
 	static double difference(unsigned long long start,

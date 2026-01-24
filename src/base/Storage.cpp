@@ -33,7 +33,7 @@ int rmHelper(const char *path, const struct stat *s, int flag,
 
 namespace wanhive {
 
-FILE* Storage::openStream(const char *path, const char *modes) noexcept {
+FILE* Storage::open(const char *path, const char *modes) noexcept {
 	auto createPath = false;
 	for (auto x = modes; x && *x; ++x) {
 		auto c = *x;
@@ -54,7 +54,7 @@ FILE* Storage::openStream(const char *path, const char *modes) noexcept {
 	return f;
 }
 
-int Storage::closeStream(FILE *fp) noexcept {
+int Storage::close(FILE *fp) noexcept {
 	return fclose(fp);
 }
 

@@ -221,7 +221,7 @@ bool KeyPair::store(const char *path, EVP_PKEY *pkey, bool isPublic,
 		return false;
 	}
 
-	auto file = Storage::openStream(path, "w");
+	auto file = Storage::open(path, "w");
 	if (!file) {
 		return false;
 	}
@@ -236,7 +236,7 @@ bool KeyPair::store(const char *path, EVP_PKEY *pkey, bool isPublic,
 				(const unsigned char*) secret, slen, nullptr, nullptr);
 	}
 
-	Storage::closeStream(file);
+	Storage::close(file);
 	return (ret == 1);
 }
 
@@ -273,7 +273,7 @@ EVP_PKEY* KeyPair::fromFile(const char *path, bool isPublic,
 		return nullptr;
 	}
 
-	auto fp = Storage::openStream(path, "r");
+	auto fp = Storage::open(path, "r");
 	if (fp == nullptr) {
 		return nullptr;
 	}
@@ -290,7 +290,7 @@ EVP_PKEY* KeyPair::fromFile(const char *path, bool isPublic,
 		pkey = nullptr;
 	}
 
-	Storage::closeStream(fp);
+	Storage::close(fp);
 	return pkey;
 }
 

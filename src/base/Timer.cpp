@@ -92,7 +92,7 @@ size_t Timer::print(double timestamp, char *buffer, size_t size) noexcept {
 	}
 }
 
-unsigned long long Timer::timeSeed() noexcept {
+unsigned long long Timer::seed() noexcept {
 	Time t(CLOCK_MONOTONIC); //Cannot fail
 	decltype(auto) ts = t.get();
 	return Twiddler::FVN1aHash(&ts, sizeof(ts));

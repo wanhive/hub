@@ -76,7 +76,7 @@ void Hosts::load(const char *path) {
 		throw Exception(EX_RESOURCE);
 	}
 
-	auto f = Storage::openStream(path, "r");
+	auto f = Storage::open(path, "r");
 	if (!f) {
 		throw Exception(EX_ARGUMENT);
 	}
@@ -100,11 +100,11 @@ void Hosts::load(const char *path) {
 				break;
 			}
 		}
-		Storage::closeStream(f);
+		Storage::close(f);
 		//-----------------------------------------------------------------
 		SQLite::transact(SQLiteStage::COMMIT);
 	} catch (const BaseException &e) {
-		Storage::closeStream(f);
+		Storage::close(f);
 		throw;
 	}
 }
@@ -113,7 +113,7 @@ void Hosts::dump(const char *path, int version) {
 	auto query = "SELECT uid, name, service, type FROM hosts ORDER BY uid ASC";
 	auto stmt = SQLite::prepare(query);
 
-	auto f = Storage::openStream(path, "w");
+	auto f = Storage::open(path, "w");
 	if (!f) {
 		SQLite::finalize(stmt);
 		throw Exception(EX_ARGUMENT);
@@ -131,7 +131,7 @@ void Hosts::dump(const char *path, int version) {
 			writeTuple(f, id, host, service);
 		}
 	}
-	Storage::closeStream(f);
+	Storage::close(f);
 	SQLite::finalize(stmt);
 }
 
@@ -225,7 +225,7 @@ int Hosts::list(unsigned long long uids[], unsigned int &count,
 }
 
 void Hosts::dummy(const char *path, int version) {
-	auto f = Storage::openStream(path, "w");
+	auto f = Storage::open(path, "w");
 	if (f) {
 		auto host = "127.0.0.1";
 		char service[32];
@@ -239,7 +239,7 @@ void Hosts::dummy(const char *path, int version) {
 				writeTuple(f, id, host, service);
 			}
 		}
-		Storage::closeStream(f);
+		Storage::close(f);
 	} else {
 		throw Exception(EX_ARGUMENT);
 	}

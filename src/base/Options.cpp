@@ -73,7 +73,7 @@ bool Options::load(const char *filename, size_t *count) noexcept {
 		return false;
 	}
 
-	auto fp = Storage::openStream(filename, "r");
+	auto fp = Storage::open(filename, "r");
 	if (fp == nullptr) {
 		return false;
 	}
@@ -106,7 +106,7 @@ bool Options::load(const char *filename, size_t *count) noexcept {
 	}
 	//-----------------------------------------------------------------
 	//Close the file
-	if (Storage::closeStream(fp)) {
+	if (Storage::close(fp)) {
 		success = false;
 	}
 
@@ -124,7 +124,7 @@ bool Options::store(const char *filename) noexcept {
 	FILE *fp = nullptr;
 	auto success = true;
 
-	if ((fp = Storage::openStream(filename, "w"))) {
+	if ((fp = Storage::open(filename, "w"))) {
 		//Print sections and entries
 		success = print(fp, strrchr(filename, Storage::PATH_SEPARATOR) + 1);
 	} else {
@@ -132,7 +132,7 @@ bool Options::store(const char *filename) noexcept {
 		return false;
 	}
 
-	if (Storage::closeStream(fp)) {
+	if (Storage::close(fp)) {
 		success = false;
 	}
 

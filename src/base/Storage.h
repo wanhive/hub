@@ -28,13 +28,13 @@ public:
 	 * @param modes string describing how to open the file
 	 * @return file stream on success, nullptr on error
 	 */
-	static FILE* openStream(const char *path, const char *modes) noexcept;
+	static FILE* open(const char *path, const char *modes) noexcept;
 	/**
 	 * Closes a file stream (wrapper for fclose(3)).
 	 * @param fp the file pointer
 	 * @return value returned by fclose(3)
 	 */
-	static int closeStream(FILE *fp) noexcept;
+	static int close(FILE *fp) noexcept;
 	//-----------------------------------------------------------------
 	/**
 	 * Opens a file (wrapper for open(2)).

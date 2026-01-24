@@ -147,7 +147,7 @@ unsigned int Identity::getIdentifiers(const char *section, const char *option,
 		return 0;
 	}
 
-	auto fp = Storage::openStream(filename, "r");
+	auto fp = Storage::open(filename, "r");
 	free(filename);
 	if (!fp) {
 		return 0;
@@ -157,10 +157,10 @@ unsigned int Identity::getIdentifiers(const char *section, const char *option,
 	while (i < count && fscanf(fp, "%llu", &nodes[i]) == 1) {
 		++i;
 	}
-	Storage::closeStream(fp);
+	Storage::close(fp);
 	//--------------------------------------------------------------------------
 	//Apply Fisher–Yates shuffle algorithm
-	MersenneTwister mt(Timer::timeSeed());
+	MersenneTwister mt(Timer::seed());
 	for (unsigned int x = 0; x < i; ++x) {
 		auto j = mt.next() % (x + 1);
 		auto tmp = nodes[j];
