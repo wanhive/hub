@@ -22,8 +22,7 @@
 
 namespace wanhive {
 
-int Network::serverSocket(const char *service, SocketAddress &sa,
-		bool blocking) {
+int Network::server(const char *service, SocketAddress &sa, bool blocking) {
 	SocketTraits traits = { AF_UNSPEC, SOCK_STREAM, 0, AI_PASSIVE };
 	DNS dns(nullptr, service, &traits);
 
@@ -53,8 +52,8 @@ int Network::serverSocket(const char *service, SocketAddress &sa,
 	throw SystemException();
 }
 
-int Network::connectedSocket(const char *name, const char *service,
-		SocketAddress &sa, bool blocking) {
+int Network::connect(const char *name, const char *service, SocketAddress &sa,
+		bool blocking) {
 	SocketTraits traits = { AF_UNSPEC, SOCK_STREAM, 0, 0 };
 	DNS dns(name, service, &traits);
 
@@ -83,9 +82,8 @@ int Network::connectedSocket(const char *name, const char *service,
 	throw SystemException();
 }
 
-int Network::connectedSocket(const NameInfo &ni, SocketAddress &sa,
-		bool blocking) {
-	return connectedSocket(ni.host, ni.service, sa, blocking);
+int Network::connect(const NameInfo &ni, SocketAddress &sa, bool blocking) {
+	return connect(ni.host, ni.service, sa, blocking);
 }
 
 void Network::listen(int listener, int backlog) {
@@ -131,8 +129,7 @@ bool Network::isBlocking(int sfd) {
 	return !(val & O_NONBLOCK);
 }
 
-int Network::unixServerSocket(const char *path, SocketAddress &sa,
-		bool blocking) {
+int Network::unixServer(const char *path, SocketAddress &sa, bool blocking) {
 	if (!path) {
 		throw Exception(EX_NULL);
 	}
@@ -164,8 +161,7 @@ int Network::unixServerSocket(const char *path, SocketAddress &sa,
 	return sfd;
 }
 
-int Network::unixConnectedSocket(const char *path, SocketAddress &sa,
-		bool blocking) {
+int Network::unixConnect(const char *path, SocketAddress &sa, bool blocking) {
 	if (!path) {
 		throw Exception(EX_NULL);
 	}
@@ -253,7 +249,7 @@ void Network::setSendTimeout(int sfd, unsigned int timeout) {
 	}
 }
 
-void Network::setSocketTimeout(int sfd, int input, int output) {
+void Network::setTimeout(int sfd, int input, int output) {
 	if (input >= 0) {
 		setReceiveTimeout(sfd, input);
 	}

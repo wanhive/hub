@@ -272,12 +272,11 @@ bool Protocol::unsubscribeRequest(uint64_t host, uint8_t topic) {
 
 //-----------------------------------------------------------------
 Message* Protocol::createIdentificationRequest(const MessageAddress &address,
-		const Data &nonce, uint16_t sequenceNumber) noexcept {
+		const Data &nonce, uint16_t seq) noexcept {
 	auto msg = Message::create();
 	if (!msg) {
 		return nullptr;
-	} else if (!createIdentificationRequest(address, sequenceNumber, nonce,
-			*msg)) {
+	} else if (!createIdentificationRequest(address, seq, nonce, *msg)) {
 		Message::recycle(msg);
 		return nullptr;
 	} else {
@@ -291,12 +290,11 @@ unsigned int Protocol::processIdentificationResponse(const Message *msg,
 }
 
 Message* Protocol::createAuthenticationRequest(const MessageAddress &address,
-		const Data &proof, uint16_t sequenceNumber) noexcept {
+		const Data &proof, uint16_t seq) noexcept {
 	auto msg = Message::create();
 	if (!msg) {
 		return nullptr;
-	} else if (!createAuthenticationRequest(address, sequenceNumber, proof,
-			*msg)) {
+	} else if (!createAuthenticationRequest(address, seq, proof, *msg)) {
 		Message::recycle(msg);
 		return nullptr;
 	} else {
@@ -331,12 +329,11 @@ unsigned int Protocol::processTokenResponse(const Message *msg,
 }
 
 Message* Protocol::createFindRootRequest(const MessageAddress &address,
-		uint64_t identity, uint16_t sequenceNumber) noexcept {
+		uint64_t identity, uint16_t seq) noexcept {
 	auto msg = Message::create();
 	if (!msg) {
 		return nullptr;
-	} else if (!createFindRootRequest(address, identity, sequenceNumber,
-			*msg)) {
+	} else if (!createFindRootRequest(address, identity, seq, *msg)) {
 		Message::recycle(msg);
 		return nullptr;
 	} else {
@@ -352,8 +349,8 @@ unsigned int Protocol::processFindRootResponse(const Message *msg,
 //-----------------------------------------------------------------
 
 unsigned int Protocol::createIdentificationRequest(
-		const MessageAddress &address, uint16_t sequenceNumber,
-		const Data &nonce, Packet &packet) noexcept {
+		const MessageAddress &address, uint16_t seq, const Data &nonce,
+		Packet &packet) noexcept {
 	if (!nonce.base || !nonce.length || nonce.length > PAYLOAD_SIZE) {
 		return 0;
 	} else {
@@ -361,7 +358,7 @@ unsigned int Protocol::createIdentificationRequest(
 		auto len = HEADER_SIZE + nonce.length;
 		packet.header().setAddress(address.getSource(),
 				address.getDestination());
-		packet.header().setControl(len, sequenceNumber, 0);
+		packet.header().setControl(len, seq, 0);
 		packet.header().setContext(WH_CMD_NULL, WH_QLF_IDENTIFY,
 				WH_AQLF_REQUEST);
 		packet.packHeader();
@@ -393,8 +390,8 @@ unsigned int Protocol::processIdentificationResponse(const Packet &packet,
 }
 
 unsigned int Protocol::createAuthenticationRequest(
-		const MessageAddress &address, uint16_t sequenceNumber,
-		const Data &proof, Packet &packet) noexcept {
+		const MessageAddress &address, uint16_t seq, const Data &proof,
+		Packet &packet) noexcept {
 	if (!proof.base || !proof.length || proof.length > PAYLOAD_SIZE) {
 		return 0;
 	} else {
@@ -402,7 +399,7 @@ unsigned int Protocol::createAuthenticationRequest(
 		auto len = HEADER_SIZE + proof.length;
 		packet.header().setAddress(address.getSource(),
 				address.getDestination());
-		packet.header().setControl(len, sequenceNumber, 0);
+		packet.header().setControl(len, seq, 0);
 		packet.header().setContext(WH_CMD_NULL, WH_QLF_AUTHENTICATE,
 				WH_AQLF_REQUEST);
 		packet.packHeader();
@@ -426,7 +423,7 @@ unsigned int Protocol::processAuthenticationResponse(const Packet &packet,
 }
 
 unsigned int Protocol::createRegisterRequest(const MessageAddress &address,
-		uint16_t sequenceNumber, const Digest *hc, Packet &packet) noexcept {
+		uint16_t seq, const Digest *hc, Packet &packet) noexcept {
 	packet.clear();
 	auto length = HEADER_SIZE;
 	if (hc) {
@@ -436,14 +433,14 @@ unsigned int Protocol::createRegisterRequest(const MessageAddress &address,
 	}
 
 	packet.header().setAddress(address.getSource(), address.getDestination());
-	packet.header().setControl(length, sequenceNumber, 0);
+	packet.header().setControl(length, seq, 0);
 	packet.header().setContext(WH_CMD_BASIC, WH_QLF_REGISTER, WH_AQLF_REQUEST);
 	packet.packHeader();
 	return packet.header().getLength();
 }
 
 unsigned int Protocol::createTokenRequest(const MessageAddress &address,
-		uint16_t sequenceNumber, const Token &tk, Packet &packet) noexcept {
+		uint16_t seq, const Token &tk, Packet &packet) noexcept {
 	auto length = HEADER_SIZE;
 	packet.clear();
 	if (tk.nonce && tk.keys) {
@@ -462,7 +459,7 @@ unsigned int Protocol::createTokenRequest(const MessageAddress &address,
 	}
 
 	packet.header().setAddress(address.getSource(), address.getDestination());
-	packet.header().setControl(length, sequenceNumber, 0);
+	packet.header().setControl(length, seq, 0);
 	packet.header().setContext(WH_CMD_BASIC, WH_QLF_TOKEN, WH_AQLF_REQUEST);
 	packet.packHeader();
 	return packet.header().getLength();
@@ -485,11 +482,11 @@ unsigned int Protocol::processTokenResponse(const Packet &packet,
 }
 
 unsigned int Protocol::createFindRootRequest(const MessageAddress &address,
-		uint64_t identity, uint16_t sequenceNumber, Packet &packet) noexcept {
+		uint64_t identity, uint16_t seq, Packet &packet) noexcept {
 	packet.clear();
 	auto len = HEADER_SIZE + sizeof(uint64_t);
 	packet.header().setAddress(address.getSource(), address.getDestination());
-	packet.header().setControl(len, sequenceNumber, 0);
+	packet.header().setControl(len, seq, 0);
 	packet.header().setContext(WH_CMD_BASIC, WH_QLF_FINDROOT, WH_AQLF_REQUEST);
 	packet.packHeader();
 	Serializer::pack(packet.payload(), "Q", identity);

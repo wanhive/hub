@@ -1506,7 +1506,7 @@ Watcher* OverlayHub::connect(int &sfd, bool blocking, int timeout) {
 		local = Socket::pair(socket);
 		if (blocking) {
 			Network::setBlocking(socket, true);
-			Network::setSocketTimeout(socket, timeout, timeout);
+			Network::setTimeout(socket, timeout, timeout);
 		}
 		attach(local, IO_WR, WATCHER_ACTIVE);
 		sfd = socket;

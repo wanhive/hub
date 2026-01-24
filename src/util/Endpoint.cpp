@@ -41,11 +41,11 @@ PKI* Endpoint::getKeyPair() const noexcept {
 	return pki;
 }
 
-void Endpoint::connect(const NameInfo &ni, int timeoutMils) {
+void Endpoint::connect(const NameInfo &ni, int timeout) {
 	auto sfd = -1;
 	try {
 		SocketAddress sa;
-		sfd = connect(ni, sa, timeoutMils);
+		sfd = connect(ni, sa, timeout);
 		if (sa.address.ss_family == AF_UNIX) {
 			setSSLContext(nullptr);
 		}
@@ -147,8 +147,8 @@ SSL* Endpoint::swapSecureSocket(SSL *ssl) {
 	}
 }
 
-void Endpoint::setSocketTimeout(int recvTimeout, int sendTimeout) const {
-	Network::setSocketTimeout(sockfd, recvTimeout, sendTimeout);
+void Endpoint::setSocketTimeout(int input, int output) const {
+	Network::setTimeout(sockfd, input, output);
 }
 
 void Endpoint::send(bool sign) {
@@ -160,12 +160,12 @@ void Endpoint::send(bool sign) {
 	}
 }
 
-void Endpoint::receive(unsigned int sequenceNumber, bool verify) {
+void Endpoint::receive(unsigned int seq, bool verify) {
 	auto pki = verify ? getKeyPair() : nullptr;
 	if (!ssl) {
-		receive(sockfd, *this, sequenceNumber, pki);
+		receive(sockfd, *this, seq, pki);
 	} else {
-		receive(ssl, *this, sequenceNumber, pki);
+		receive(ssl, *this, seq, pki);
 	}
 }
 
@@ -183,15 +183,15 @@ void Endpoint::sendPong() {
 	send();
 }
 
-int Endpoint::connect(const NameInfo &ni, SocketAddress &sa, int timeoutMils) {
+int Endpoint::connect(const NameInfo &ni, SocketAddress &sa, int timeout) {
 	auto sfd = -1;
 	try {
 		if (!strcasecmp(ni.service, "unix")) {
-			sfd = Network::unixConnectedSocket(ni.host, sa, true);
+			sfd = Network::unixConnect(ni.host, sa, true);
 		} else {
-			sfd = Network::connectedSocket(ni, sa, true);
+			sfd = Network::connect(ni, sa, true);
 		}
-		Network::setSocketTimeout(sfd, timeoutMils, timeoutMils);
+		Network::setTimeout(sfd, timeout, timeout);
 	} catch (const BaseException &e) {
 		if (sfd != -1) {
 			Network::close(sfd);
@@ -221,8 +221,7 @@ void Endpoint::send(SSL *ssl, Packet &packet, PKI *pki) {
 	}
 }
 
-void Endpoint::receive(int sfd, Packet &packet, unsigned int sequenceNumber,
-		PKI *pki) {
+void Endpoint::receive(int sfd, Packet &packet, unsigned int seq, PKI *pki) {
 	packet.clear();
 	do {
 		//Receive the header
@@ -236,16 +235,14 @@ void Endpoint::receive(int sfd, Packet &packet, unsigned int sequenceNumber,
 		//Receive the payload
 		auto payloadLength = packet.header().getLength() - HEADER_SIZE;
 		Network::read(sfd, packet.payload(), payloadLength);
-	} while (sequenceNumber
-			&& (packet.header().getSequenceNumber() != sequenceNumber));
+	} while (seq && (packet.header().getSequenceNumber() != seq));
 
 	if (!packet.verify(pki)) {
 		throw Exception(EX_SECURITY);
 	}
 }
 
-void Endpoint::receive(SSL *ssl, Packet &packet, unsigned int sequenceNumber,
-		PKI *pki) {
+void Endpoint::receive(SSL *ssl, Packet &packet, unsigned int seq, PKI *pki) {
 	packet.clear();
 	do {
 		//Receive the header
@@ -259,8 +256,7 @@ void Endpoint::receive(SSL *ssl, Packet &packet, unsigned int sequenceNumber,
 		//Receive the payload
 		auto payloadLength = packet.header().getLength() - HEADER_SIZE;
 		SSLContext::receive(ssl, packet.payload(), payloadLength);
-	} while (sequenceNumber
-			&& (packet.header().getSequenceNumber() != sequenceNumber));
+	} while (seq && (packet.header().getSequenceNumber() != seq));
 
 	if (!packet.verify(pki)) {
 		throw Exception(EX_SECURITY);

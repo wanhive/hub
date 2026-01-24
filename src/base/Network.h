@@ -27,8 +27,7 @@ public:
 	 * @param blocking true for blocking mode, false otherwise
 	 * @return listening socket file descriptor
 	 */
-	static int serverSocket(const char *service, SocketAddress &sa,
-			bool blocking);
+	static int server(const char *service, SocketAddress &sa, bool blocking);
 	/**
 	 * Creates a connected socket.
 	 * @param name host's name (usually the IP address)
@@ -37,8 +36,8 @@ public:
 	 * @param blocking true for blocking mode, false otherwise
 	 * @return connected socket file descriptor
 	 */
-	static int connectedSocket(const char *name, const char *service,
-			SocketAddress &sa, bool blocking);
+	static int connect(const char *name, const char *service, SocketAddress &sa,
+			bool blocking);
 	/**
 	 * Creates a connected socket.
 	 * @param ni resource name
@@ -46,8 +45,7 @@ public:
 	 * @param blocking true for blocking mode, false otherwise
 	 * @return connected socket file descriptor
 	 */
-	static int connectedSocket(const NameInfo &ni, SocketAddress &sa,
-			bool blocking);
+	static int connect(const NameInfo &ni, SocketAddress &sa, bool blocking);
 	//-----------------------------------------------------------------
 	/**
 	 * Listens for incoming connections on a socket.
@@ -96,8 +94,7 @@ public:
 	 * @param blocking true to set blocking mode on the socket, false otherwise
 	 * @return socket file descriptor
 	 */
-	static int unixServerSocket(const char *path, SocketAddress &sa,
-			bool blocking);
+	static int unixServer(const char *path, SocketAddress &sa, bool blocking);
 	/**
 	 * Establishes a unix domain socket connection.
 	 * @param path socket file's path
@@ -105,8 +102,7 @@ public:
 	 * @param blocking true to set blocking mode on the socket, false otherwise
 	 * @return socket file descriptor
 	 */
-	static int unixConnectedSocket(const char *path, SocketAddress &sa,
-			bool blocking);
+	static int unixConnect(const char *path, SocketAddress &sa, bool blocking);
 	/**
 	 * Creates an unnamed unix domain socket pair.
 	 * @param sv stores the socket file descriptors
@@ -153,7 +149,7 @@ public:
 	 * @param input receive timeout value in milliseconds
 	 * @param output send timeout value in milliseconds
 	 */
-	static void setSocketTimeout(int sfd, int input, int output);
+	static void setTimeout(int sfd, int input, int output);
 };
 
 } /* namespace wanhive */

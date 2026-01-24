@@ -242,11 +242,11 @@ public:
 	 * Creates an identification request.
 	 * @param address message's address
 	 * @param nonce public ephemeral value
-	 * @param sequenceNumber message's sequence number
+	 * @param seq message's sequence number
 	 * @return identification request on success, nullptr on error
 	 */
 	static Message* createIdentificationRequest(const MessageAddress &address,
-			const Data &nonce, uint16_t sequenceNumber) noexcept;
+			const Data &nonce, uint16_t seq) noexcept;
 	/**
 	 * Processes an identification response.
 	 * @param msg identification response
@@ -261,11 +261,11 @@ public:
 	 * Creates an authentication request.
 	 * @param address message's address
 	 * @param proof caller's proof of identity
-	 * @param sequenceNumber message's sequence number
+	 * @param seq message's sequence number
 	 * @return authentication request on success, nullptr on error
 	 */
 	static Message* createAuthenticationRequest(const MessageAddress &address,
-			const Data &proof, uint16_t sequenceNumber) noexcept;
+			const Data &proof, uint16_t seq) noexcept;
 	/**
 	 * Processes an authentication response.
 	 * @param msg authentication response
@@ -308,11 +308,11 @@ public:
 	 * Creates a find-root request to find the root host.
 	 * @param address message's address
 	 * @param identity client's identity
-	 * @param sequenceNumber message's sequence number
+	 * @param seq message's sequence number
 	 * @return find-root request on success, nullptr on error
 	 */
 	static Message* createFindRootRequest(const MessageAddress &address,
-			uint64_t identity, uint16_t sequenceNumber) noexcept;
+			uint64_t identity, uint16_t seq) noexcept;
 	/**
 	 * Processes a find-root response.
 	 * @param msg find-root response
@@ -324,23 +324,23 @@ public:
 			uint64_t identity, uint64_t &root) noexcept;
 private:
 	static unsigned int createIdentificationRequest(
-			const MessageAddress &address, uint16_t sequenceNumber,
-			const Data &nonce, Packet &packet) noexcept;
+			const MessageAddress &address, uint16_t seq, const Data &nonce,
+			Packet &packet) noexcept;
 	static unsigned int processIdentificationResponse(const Packet &packet,
 			Data &salt, Data &nonce) noexcept;
 	static unsigned int createAuthenticationRequest(
-			const MessageAddress &address, uint16_t sequenceNumber,
-			const Data &proof, Packet &packet) noexcept;
+			const MessageAddress &address, uint16_t seq, const Data &proof,
+			Packet &packet) noexcept;
 	static unsigned int processAuthenticationResponse(const Packet &packet,
 			Data &proof) noexcept;
 	static unsigned int createRegisterRequest(const MessageAddress &address,
-			uint16_t sequenceNumber, const Digest *hc, Packet &packet) noexcept;
+			uint16_t seq, const Digest *hc, Packet &packet) noexcept;
 	static unsigned int createTokenRequest(const MessageAddress &address,
-			uint16_t sequenceNumber, const Token &tk, Packet &packet) noexcept;
+			uint16_t seq, const Token &tk, Packet &packet) noexcept;
 	static unsigned int processTokenResponse(const Packet &packet,
 			Digest *hc) noexcept;
 	static unsigned int createFindRootRequest(const MessageAddress &address,
-			uint64_t identity, uint16_t sequenceNumber, Packet &packet) noexcept;
+			uint64_t identity, uint16_t seq, Packet &packet) noexcept;
 	static unsigned int processFindRootResponse(const Packet &packet,
 			uint64_t identity, uint64_t &root) noexcept;
 };

@@ -43,14 +43,13 @@ Socket::Socket(const NameInfo &ni, bool blocking, int timeout) :
 		egress.rewind();
 		SocketAddress sa;
 		if (!strcasecmp(ni.service, "unix")) {
-			Descriptor::set(
-					Network::unixConnectedSocket(ni.host, sa, blocking));
+			Descriptor::set(Network::unixConnect(ni.host, sa, blocking));
 			setFlags(SOCKET_LOCAL);
 		} else {
-			Descriptor::set(Network::connectedSocket(ni, sa, blocking));
+			Descriptor::set(Network::connect(ni, sa, blocking));
 		}
 		if (blocking) {
-			Network::setSocketTimeout(Descriptor::get(), timeout, timeout);
+			Network::setTimeout(Descriptor::get(), timeout, timeout);
 		}
 		setType(SOCKET_PROXY);
 	} catch (const BaseException &e) {
@@ -65,9 +64,9 @@ Socket::Socket(const char *service, int backlog, bool isUnix, bool blocking) :
 		egress.rewind();
 		SocketAddress sa;
 		if (!isUnix) {
-			Descriptor::set(Network::serverSocket(service, sa, blocking));
+			Descriptor::set(Network::server(service, sa, blocking));
 		} else {
-			Descriptor::set(Network::unixServerSocket(service, sa, blocking));
+			Descriptor::set(Network::unixServer(service, sa, blocking));
 			setFlags(SOCKET_LOCAL);
 		}
 		Network::listen(Descriptor::get(), backlog);

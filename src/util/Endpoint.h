@@ -58,10 +58,10 @@ public:
 	/**
 	 * Connects to a new host (terminates existing connection).
 	 * @param ni host's resource name
-	 * @param timeoutMils send/receive timeout value in milliseconds. Set 0 to
-	 * block forever, negative value to ignore.
+	 * @param timeout IO timeout value in milliseconds. Set 0 to block forever,
+	 * negative value to ignore.
 	 */
-	void connect(const NameInfo &ni, int timeoutMils = -1);
+	void connect(const NameInfo &ni, int timeout = -1);
 	/**
 	 * Terminates existing connection.
 	 */
@@ -110,12 +110,12 @@ public:
 	SSL* swapSecureSocket(SSL *ssl);
 	/**
 	 * Sets existing connection's receive and send timeout values.
-	 * @param recvTimeout receive timeout in milliseconds. Set 0 to block
-	 * forever, negative value to ignore.
-	 * @param sendTimeout send timeout in milliseconds.  Set 0 block forever,
+	 * @param input receive timeout in milliseconds. Set 0 to block forever,
+	 * negative value to ignore.
+	 * @param output send timeout in milliseconds.  Set 0 block forever,
 	 * negative value to ignore.
 	 */
-	void setSocketTimeout(int recvTimeout, int sendTimeout) const;
+	void setSocketTimeout(int input, int output) const;
 	//-----------------------------------------------------------------
 	/**
 	 * Sends out a request, routing header's length field determines the
@@ -125,10 +125,10 @@ public:
 	void send(bool sign = false);
 	/**
 	 * Receives a response.
-	 * @param sequenceNumber expected sequence number (0 to ignore)
+	 * @param seq expected sequence number (0 to ignore)
 	 * @param verify true for message verification, false otherwise
 	 */
-	void receive(unsigned int sequenceNumber = 0, bool verify = false);
+	void receive(unsigned int seq = 0, bool verify = false);
 	/**
 	 * Executes a request: sends a request and receives the response.
 	 * @param sign true to sign the outgoing request, false otherwise
@@ -145,12 +145,11 @@ public:
 	 * Connects to a host and returns the socket file descriptor.
 	 * @param ni host's resource name
 	 * @param sa object for storing the socket address on success
-	 * @param timeoutMils send and receive timeout in milliseconds for the new
-	 * connection. Set 0 to block forever, negative value to ignore.
+	 * @param timeout IO timeout in milliseconds for the new connection. Set 0
+	 * to block forever, negative value to ignore.
 	 * @return socket file descriptor
 	 */
-	static int connect(const NameInfo &ni, SocketAddress &sa, int timeoutMils =
-			-1);
+	static int connect(const NameInfo &ni, SocketAddress &sa, int timeout = -1);
 	/**
 	 * Sends a request. If a signing key is provided (not nullptr) then the
 	 * outgoing request is digitally signed.
@@ -174,11 +173,11 @@ public:
 	 * match the expected sequence number get silently dropped.
 	 * @param sfd socket file descriptor
 	 * @param packet stores the incoming response
-	 * @param sequenceNumber expected sequence number
+	 * @param seq expected sequence number
 	 * @param pki verification key
 	 */
-	static void receive(int sfd, Packet &packet,
-			unsigned int sequenceNumber = 0, PKI *pki = nullptr);
+	static void receive(int sfd, Packet &packet, unsigned int seq = 0,
+			PKI *pki = nullptr);
 	/**
 	 * Receives a response. If a verification key is provided (not nullptr) then
 	 * the response's digital signature is verified. If an "expected" sequence
@@ -186,11 +185,11 @@ public:
 	 * match the expected sequence number get silently dropped.
 	 * @param ssl secure connection object
 	 * @param packet stores the incoming response
-	 * @param sequenceNumber expected sequence number
+	 * @param seq expected sequence number
 	 * @param pki verification key
 	 */
-	static void receive(SSL *ssl, Packet &packet, unsigned int sequenceNumber =
-			0, PKI *pki = nullptr);
+	static void receive(SSL *ssl, Packet &packet, unsigned int seq = 0,
+			PKI *pki = nullptr);
 private:
 	int sockfd { -1 };
 	SSL *ssl { };
