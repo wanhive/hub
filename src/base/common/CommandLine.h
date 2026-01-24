@@ -1,7 +1,7 @@
 /*
  * CommandLine.h
  *
- * C++ iostream error handling routines
+ * C++ iostream error handler
  *
  *
  * Copyright (C) 2019 Amit Kumar (amitkriit@gmail.com)
@@ -15,7 +15,7 @@
 
 namespace wanhive {
 /**
- * C++ iostream error handling
+ * C++ iostream error handler
  */
 class CommandLine {
 public:
@@ -29,8 +29,8 @@ public:
 	~CommandLine();
 	/**
 	 * Consumes the cause of error while processing the input at std::cin.
-	 * @param verbose if true then a message is printed to std::cerr on error,
-	 * if false then no message is printed.
+	 * @param verbose set true to print a message to std::cerr on error, set
+	 * false for silent operation.
 	 * @return true if an error occurred, false otherwise
 	 */
 	static bool inputError(bool verbose = true);

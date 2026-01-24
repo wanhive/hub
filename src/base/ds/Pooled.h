@@ -34,7 +34,7 @@ public:
 	~Pooled() = default;
 	/**
 	 * Initializes the object pool.
-	 * @param count number of objects in the pool
+	 * @param count number of objects
 	 */
 	static void initPool(unsigned int count);
 	/**
@@ -43,17 +43,17 @@ public:
 	static void destroyPool();
 	/**
 	 * Returns the capacity.
-	 * @return object pool's capacity
+	 * @return pool's capacity
 	 */
 	static unsigned int poolSize() noexcept;
 	/**
 	 * Returns the number of objects currently allocated.
-	 * @return the allocated objects count
+	 * @return allocated objects count
 	 */
 	static unsigned int allocated() noexcept;
 	/**
 	 * Returns the number of additional objects which can be allocated.
-	 * @return the unallocated objects count
+	 * @return unallocated objects count
 	 */
 	static unsigned int unallocated() noexcept;
 protected:
@@ -64,7 +64,7 @@ protected:
 	void* operator new(size_t size) noexcept;
 	/**
 	 * The delete operator that works with the preallocated memory pool.
-	 * @param p pointer to the object being recycled
+	 * @param p object's pointer
 	 */
 	void operator delete(void *p) noexcept;
 private:

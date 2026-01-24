@@ -160,33 +160,15 @@ public:
 	 */
 	static void setSSLContext(SSLContext *ctx) noexcept;
 private:
-	//Read from a raw socket connection
 	ssize_t socketRead();
-	//Write to a raw socket connection
 	ssize_t socketWrite();
-	//Read from a secure connection
 	ssize_t secureRead();
-	//Write to a secure connection
 	ssize_t secureWrite();
-	//=================================================================
-	//Set up a SSL/TLS secure connection to a good state
 	void initSSL();
-	/*
-	 * Read operations return the number of bytes read on success (possibly 0),
-	 * and 0 if the file descriptor is non-blocking and the operation would block.
-	 */
 	ssize_t sslRead(void *buf, size_t count);
-	/*
-	 * Write operations return the number of bytes written on success (possibly 0),
-	 * and 0 if the file descriptor is non-blocking and the operation would block.
-	 */
 	ssize_t sslWrite(const void *buf, size_t count);
-	//=================================================================
-	//Create IOVECs from outgoing messages and return the count
 	unsigned int post() noexcept;
-	//Adjust the IOVECs for the next write cycle
 	void offload(size_t bytes) noexcept;
-	//Free internal resources
 	void cleanup() noexcept;
 public:
 	/*! Minimum value for active socket identifier */
@@ -198,33 +180,24 @@ public:
 	/*! Outgoing message queue's size (must be power of two) */
 	static constexpr unsigned int OUT_QUEUE_SIZE = 1024;
 private:
-	//-----------------------------------------------------------------
-	//Subscriptions
 	Topic subscriptions;
 	//-----------------------------------------------------------------
 	struct {
-		SSL *ssl { }; //Secure connection
-		bool callRead { }; //Call read instead of write
-		bool callWrite { }; //Call write instead of read
-		bool verified { }; //Host certificate verified
+		SSL *ssl { };
+		bool callRead { };
+		bool callWrite { };
+		bool verified { };
 	} secure;
 	//-----------------------------------------------------------------
-	//Traffic statistics
 	struct {
-		//Received messages count
 		unsigned long long in { };
-		//Sent messages count
 		unsigned long long out { };
 	} traffic;
-	//Maximum queued-up outgoing messages count
+
 	unsigned int backlog { };
-	//Serialized I/P
 	Message *next { };
-	//Collection of incoming raw bytes
 	StaticCircularBuffer<unsigned char, READ_BUFFER_SIZE> in;
-	//Collection of outgoing messages
 	StaticCircularBuffer<Message*, OUT_QUEUE_SIZE> out;
-	//Container for scatter-gather O/P
 	StaticBuffer<iovec, OUT_QUEUE_SIZE> egress;
 	//-----------------------------------------------------------------
 	static SSLContext *sslCtx; //SSL/TLS context

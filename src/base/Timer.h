@@ -80,7 +80,6 @@ public:
 	/*! ISO8601 (UTC) format for date and time representation */
 	static constexpr const char *ISO8601_UTC_FMT = "%Y-%m-%dT%H:%M:%SZ";
 private:
-	//Time in microseconds, sufficient for 300,000 years
 	unsigned long long t;
 };
 

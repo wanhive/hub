@@ -126,15 +126,7 @@ private:
 	 */
 	virtual void expel(Watcher *w) noexcept = 0;
 private:
-	/**
-	 * Returns the next watcher from the ready list.
-	 * @return next watcher
-	 */
 	Watcher* ready() noexcept;
-	/**
-	 * Removes a watcher permanently from the event loop.
-	 * @param w watcher being removed
-	 */
 	void remove(Watcher *w) noexcept;
 private:
 	int timeout { -1 };

@@ -25,22 +25,10 @@ class TestClient: protected Identity, protected Protocol {
 public:
 	TestClient(uint64_t id, const char *path) noexcept;
 	virtual ~TestClient();
-	//Identifier of the current host
 	uint64_t getHostId() const noexcept;
-	/*
-	 * Connect with the network via host <id>; <id> can be 0 (Controller).
-	 * On success the socket is created in blocking mode and the <timeout>
-	 * value is preserved.
-	 */
 	void bootstrap(uint64_t id, int timeout = -1);
-	/*
-	 * Authenticate at the currently connected host.
-	 * Default implementation uses public key for authentication.
-	 * Must return true on successful authentication.
-	 */
 	virtual bool authenticate();
 private:
-	//Connect with the host <id>
 	void connect(uint64_t id, int timeout);
 private:
 	uint64_t hostId;

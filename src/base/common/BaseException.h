@@ -29,8 +29,8 @@ public:
 	 */
 	virtual const char* what() const noexcept = 0;
 	/**
-	 * Returns the error code.
-	 * @return the error code
+	 * Returns an error code.
+	 * @return error code
 	 */
 	virtual int errorCode() const noexcept = 0;
 };

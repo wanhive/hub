@@ -17,8 +17,6 @@
 namespace wanhive {
 /**
  * Multicast client, consumes multicast messages.
- * (For testing purpose only)
- * Thread safe at class level
  */
 class MulticastConsumer final: public Agent {
 public:
@@ -32,18 +30,11 @@ private:
 	void route(Message *message) noexcept override;
 	void maintain() noexcept override;
 	//-----------------------------------------------------------------
-	//Process message published to a subscribed topic
-	void processMulticastMessage(const Message *msg) noexcept;
-	//Process everything other than a pub-sub message
 	void process(Message *message) noexcept;
-	//-----------------------------------------------------------------
+	void processMulticastMessage(const Message *msg) noexcept;
 	void processSubscribeResponse(const Message *msg) noexcept;
-	//-----------------------------------------------------------------
-	/**
-	 * Helper functions
-	 */
 	void handleInvalidMessage(const Message *msg) noexcept;
-	//Sends subscription request to the server
+	//-----------------------------------------------------------------
 	void subscribe(unsigned int topic) noexcept;
 public:
 	static constexpr unsigned int TOPICS = Topic::COUNT;

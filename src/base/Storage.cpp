@@ -1,7 +1,7 @@
 /*
  * Storage.cpp
  *
- * Common file/directory handling routines
+ * Common file system routines
  *
  *
  * Copyright (C) 2018 Amit Kumar (amitkriit@gmail.com)
@@ -151,11 +151,11 @@ void Storage::fill(int fd, size_t size, unsigned char c) {
 	}
 }
 
-void Storage::createDirectory(const char *pathname) {
-	if (pathname && pathname[0]) {
+void Storage::createDirectory(const char *path) {
+	if (path && path[0]) {
 		char tmp[PATH_MAX];
 		memset(tmp, 0, sizeof(tmp));
-		strncpy(tmp, pathname, (sizeof(tmp) - 1));
+		strncpy(tmp, path, (sizeof(tmp) - 1));
 		if (!_createDirectory(tmp)) {
 			throw SystemException();
 		}
@@ -164,52 +164,52 @@ void Storage::createDirectory(const char *pathname) {
 	}
 }
 
-void Storage::removeDirectory(const char *pathname) {
+void Storage::removeDirectory(const char *path) {
 	// Traverse depth-first, do not follow symbolic links
-	if (pathname && nftw(pathname, rmHelper, 64, FTW_DEPTH | FTW_PHYS) == -1) {
+	if (path && nftw(path, rmHelper, 64, FTW_DEPTH | FTW_PHYS) == -1) {
 		throw SystemException();
 	}
 }
 
-int Storage::testDirectory(const char *pathname) noexcept {
+int Storage::testDirectory(const char *path) noexcept {
 	struct stat data;
-	if (!pathname) {
+	if (!path) {
 		return -1;
-	} else if (stat(pathname, &data) == 0) {
+	} else if (stat(path, &data) == 0) {
 		return S_ISDIR(data.st_mode) ? 1 : 0;
 	} else {
 		return -1;
 	}
 }
 
-int Storage::testFile(const char *pathname) noexcept {
+int Storage::testFile(const char *path) noexcept {
 	struct stat data;
-	if (!pathname) {
+	if (!path) {
 		return -1;
-	} else if (stat(pathname, &data) == 0) {
+	} else if (stat(path, &data) == 0) {
 		return S_ISREG(data.st_mode) ? 1 : 0;
 	} else {
 		return -1;
 	}
 }
 
-int Storage::testLink(const char *pathname) noexcept {
+int Storage::testLink(const char *path) noexcept {
 	struct stat linkstat;
-	if (!pathname) {
+	if (!path) {
 		return -1;
-	} else if (lstat(pathname, &linkstat) == 0) {
+	} else if (lstat(path, &linkstat) == 0) {
 		return S_ISLNK(linkstat.st_mode) ? 1 : 0;
 	} else {
 		return -1;
 	}
 }
 
-char* Storage::expandPathName(const char *pathname) noexcept {
-	if (pathname) {
+char* Storage::expand(const char *path) noexcept {
+	if (path) {
 		char *buffer = nullptr;
 		wordexp_t p;
 		memset(&p, 0, sizeof(p));
-		if (wordexp(pathname, &p, WRDE_NOCMD) == 0) {
+		if (wordexp(path, &p, WRDE_NOCMD) == 0) {
 			char **w = p.we_wordv;
 			//Take the first one
 			if (p.we_wordc) {
@@ -223,11 +223,11 @@ char* Storage::expandPathName(const char *pathname) noexcept {
 	}
 }
 
-bool Storage::createDirectoryForFile(const char *pathname) noexcept {
-	if (pathname && pathname[0]) {
+bool Storage::createDirectoryForFile(const char *path) noexcept {
+	if (path && path[0]) {
 		char tmp[PATH_MAX];
 		memset(tmp, 0, sizeof(tmp));
-		strncpy(tmp, pathname, (sizeof(tmp) - 1));
+		strncpy(tmp, path, (sizeof(tmp) - 1));
 		Twiddler::stripLast(tmp, PATH_SEPARATOR);
 		return _createDirectory(tmp);
 	} else {
@@ -235,12 +235,12 @@ bool Storage::createDirectoryForFile(const char *pathname) noexcept {
 	}
 }
 
-bool Storage::_createDirectory(char *pathname) noexcept {
-	if (!pathname || !pathname[0]) {
+bool Storage::_createDirectory(char *path) noexcept {
+	if (!path || !path[0]) {
 		return false;
 	}
 
-	auto mark = pathname;
+	auto mark = path;
 	for (; *mark == PATH_SEPARATOR; ++mark) {
 		//skip heading '/'s
 	}
@@ -252,14 +252,14 @@ bool Storage::_createDirectory(char *pathname) noexcept {
 			*mark = 0;
 		}
 		//-----------------------------------------------------------------
-		if (access(pathname, F_OK) == -1) {
+		if (access(path, F_OK) == -1) {
 			//Directory doesn't exist, try to create one
 			constexpr mode_t mode = S_IRWXU | S_IRGRP | S_IXGRP | S_IROTH
 					| S_IXOTH;
-			if (mkdir(pathname, mode) == -1) {
+			if (mkdir(path, mode) == -1) {
 				return false;
 			}
-		} else if (testDirectory(pathname) != 1) {
+		} else if (testDirectory(path) != 1) {
 			return false; //Not a directory
 		}
 		//-----------------------------------------------------------------

@@ -16,9 +16,9 @@
 
 namespace wanhive {
 //-----------------------------------------------------------------
-//We are using SHA-512, 64-bytes (512-bits) digest
+/*! SHA-512, 64-bytes (512-bits) digest */
 using Digest = unsigned char[64];
-//Base 64 encoding of a raw Digest, 89 bytes are used including the NUL-terminator
+/*! Base 64 encoding of a raw Digest */
 using EncodedDigest = char[128];
 //-----------------------------------------------------------------
 /**
@@ -62,7 +62,7 @@ public:
 	static unsigned int encode(const Digest *digest,
 			EncodedDigest *enc) noexcept;
 public:
-	/** The output size in bytes (64 bytes) **/
+	/*! The output size in bytes (64 bytes) **/
 	static constexpr unsigned int SIZE = Sha::length(WH_SHA512);
 private:
 	Sha sha;

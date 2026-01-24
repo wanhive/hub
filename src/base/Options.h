@@ -27,8 +27,8 @@ public:
 	 */
 	Options() noexcept;
 	/**
-	 * Constructor: loads configuration data from the given file.
-	 * @param filename pathname of the configuration file
+	 * Constructor: loads configuration data from a file.
+	 * @param filename configuration file's path
 	 */
 	Options(const char *filename);
 	/**
@@ -41,23 +41,21 @@ public:
 	 */
 	void clear() noexcept;
 	/**
-	 * Loads configuration data from the given file, overwrites existing data
-	 * on conflict.
-	 * @param filename pathname of the configuration file
-	 * @param count if not nullptr then the total number of rows processed is
-	 * stored here.
+	 * Loads configuration data from a file, overwrites data on conflict.
+	 * @param filename configuration file's path
+	 * @param count if not nullptr then stores the processed rows count
 	 * @return true on success, false on error (parsing error)
 	 */
 	bool load(const char *filename, size_t *count = nullptr) noexcept;
 	/**
-	 * Stores the configuration data in the given file.
-	 * @param filename pathname of the configuration file
+	 * Stores the configuration data in a file.
+	 * @param filename configuration file's path
 	 * @return true on success, false on error
 	 */
 	bool store(const char *filename) noexcept;
 	/**
-	 * Prints configuration data to the given stream.
-	 * @param stream describes the output stream
+	 * Prints configuration data to a stream.
+	 * @param stream output stream
 	 * @param name a name/tag for the configuration data
 	 * @return true on success, false on error
 	 */
@@ -65,7 +63,7 @@ public:
 	//-----------------------------------------------------------------
 	/**
 	 * Writes a property as key-value pair.
-	 * @param section section/group name, can be empty string
+	 * @param section section name, can be empty string
 	 * @param option key's name, cannot be empty string
 	 * @param value key's value, cannot be empty string
 	 * @return true on success, false on error
@@ -74,18 +72,18 @@ public:
 			const char *value) noexcept;
 	/**
 	 * Reads a property and returns it's value as string.
-	 * @param section section/group name, can be empty string
+	 * @param section section name, can be empty string
 	 * @param option key's name
-	 * @param defaultValue default value to return if the key not found
+	 * @param preset default value to return if the key not found
 	 * @return pointer to the value (valid until a configuration update, caller
 	 * must copy the string).
 	 */
 	const char* getString(const char *section, const char *option,
-			const char *defaultValue = nullptr) const noexcept;
+			const char *preset = nullptr) const noexcept;
 	//-----------------------------------------------------------------
 	/**
 	 * Writes a property as key-value pair where value is a number.
-	 * @param section section/group name, can be empty string
+	 * @param section section name, can be empty string
 	 * @param option key's name
 	 * @param value key's value
 	 * @return true on success, false on failure
@@ -94,17 +92,17 @@ public:
 			unsigned long long value) noexcept;
 	/**
 	 * Reads a property and returns it's value as a number.
-	 * @param section section/group name, can be empty string
+	 * @param section section name, can be empty string
 	 * @param option key's name
-	 * @param defaultValue default value to return if no valid entry found
+	 * @param preset default value to return if no valid entry found
 	 * @return numerical value associated with the given key
 	 */
 	unsigned long long getNumber(const char *section, const char *option,
-			unsigned long long defaultValue = 0) const noexcept;
+			unsigned long long preset = 0) const noexcept;
 	//-----------------------------------------------------------------
 	/**
 	 * Writes a property as key-value pair where the value is decimal oriented.
-	 * @param section section/group name, can be empty string
+	 * @param section section name, can be empty string
 	 * @param option key's name
 	 * @param value key's value
 	 * @return true on success, false on failure
@@ -113,17 +111,17 @@ public:
 			double value) noexcept;
 	/**
 	 * Reads a property and returns it's decimal oriented value.
-	 * @param section section/group name, can be empty string
+	 * @param section section name, can be empty string
 	 * @param option key's name
-	 * @param defaultValue default value to return if no valid entry found
+	 * @param preset default value to return if no valid entry found
 	 * @return decimal value associated with the given key
 	 */
 	double getDouble(const char *section, const char *option,
-			double defaultValue = 0) const noexcept;
+			double preset = 0) const noexcept;
 	//-----------------------------------------------------------------
 	/**
 	 * Writes a property as key-value pair where the value is of boolean type.
-	 * @param section section/group name, can be empty string
+	 * @param section section name, can be empty string
 	 * @param option key's name
 	 * @param value key's value
 	 * @return true on success, false otherwise
@@ -132,13 +130,13 @@ public:
 			bool value) noexcept;
 	/**
 	 * Reads a property and returns it's boolean value.
-	 * @param section section/group name, can be empty string
+	 * @param section section name, can be empty string
 	 * @param option key's name
-	 * @param defaultValue default value to return if no valid entry found
+	 * @param preset default value to return if no valid entry found
 	 * @return boolean value associated with the given key
 	 */
-	bool getBoolean(const char *section, const char *option, bool defaultValue =
-			false) const noexcept;
+	bool getBoolean(const char *section, const char *option,
+			bool preset = false) const noexcept;
 	//-----------------------------------------------------------------
 	/**
 	 * Reads a property and expands/converts it's value into a pathname. If the
@@ -147,18 +145,18 @@ public:
 	 * 1. the option corresponding to the substring from "PATHS" section or,
 	 * 2. a environment variable matching the substring and,
 	 * finally, a posix shell like expansion of the pathname is performed.
-	 * @param section section/group name, can be empty string
+	 * @param section section name, can be empty string
 	 * @param option key's name
-	 * @param defaultValue default value to process if no valid entry found
+	 * @param preset default value to process if no valid entry found
 	 * @return expanded pathname associated with the given key (caller must free
 	 * this string).
 	 */
 	char* getPathName(const char *section, const char *option,
-			const char *defaultValue = nullptr) const noexcept;
+			const char *preset = nullptr) const noexcept;
 	//-----------------------------------------------------------------
 	/**
 	 * Traverses a given section within the configuration.
-	 * @param section section/group name, can be empty string
+	 * @param section section name, can be empty string
 	 * @param f the callback function (return 0 to continue, 1 to halt)
 	 * @param data additional argument for the callback function
 	 */
@@ -173,26 +171,26 @@ public:
 	unsigned int sections() const noexcept;
 	/**
 	 * Returns the number of properties within a section.
-	 * @param section section/group name, can be empty string
+	 * @param section section name, can be empty string
 	 * @return properties count
 	 */
 	unsigned int entries(const char *section) const noexcept;
 	/**
 	 * Checks if a given property exists.
-	 * @param section section/group name, can be empty string
+	 * @param section section name, can be empty string
 	 * @param option key's name
 	 * @return true if the property exists, false otherwise
 	 */
 	bool exists(const char *section, const char *option) const noexcept;
 	/**
 	 * Removes a property.
-	 * @param section section/group name, can be empty string
+	 * @param section section name, can be empty string
 	 * @param option key's name
 	 */
 	void remove(const char *section, const char *option) noexcept;
 	/**
-	 * Removes a section/group.
-	 * @param section section/group name, can be empty string
+	 * Removes a section.
+	 * @param section section name, can be empty string
 	 */
 	void remove(const char *section) noexcept;
 	//-----------------------------------------------------------------
@@ -210,7 +208,7 @@ public:
 private:
 	struct Entry;	//Forward Declaration
 	struct Section;	//Forward Declaration
-	char* expandPath(const char *pathname) const noexcept;
+	char* expand(const char *path) const noexcept;
 	Section* findSection(const char *section) const noexcept;
 	Entry* findEntry(const char *section, const char *key, Section **secP =
 			nullptr) const noexcept;

@@ -40,7 +40,7 @@ class Exception final: public BaseException {
 public:
 	/**
 	 * Constructor: creates a new exception.
-	 * @param type the error code
+	 * @param type exception type
 	 */
 	Exception(ExceptionType type) noexcept;
 	/**

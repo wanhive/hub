@@ -145,7 +145,7 @@ public:
 	 */
 	void print() const noexcept;
 public:
-	/** Serialized data size in bytes */
+	/*! Serialized data size in bytes */
 	static constexpr unsigned int BYTES = 68;
 private:
 	unsigned long long uid { };

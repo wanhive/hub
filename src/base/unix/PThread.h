@@ -46,11 +46,6 @@ public:
 	 */
 	static void exit(void *arg);
 	/**
-	 * Returns the running thread's identifier.
-	 * @return thread identifier
-	 */
-	pthread_t getId() const noexcept;
-	/**
 	 * Returns task's status (see Task::getStatus()).
 	 * @return task's status
 	 */
@@ -61,6 +56,11 @@ public:
 	 */
 	void setStatus(int status) noexcept;
 	//-----------------------------------------------------------------
+	/**
+	 * Returns the running thread's identifier.
+	 * @return thread identifier
+	 */
+	pthread_t getId() const noexcept;
 	/**
 	 * Wrapper for pthread_self(3): returns calling thread's identifier.
 	 * @return calling thread's identifier

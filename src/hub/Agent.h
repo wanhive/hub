@@ -53,33 +53,21 @@ protected:
 	void setPassword(const unsigned char *password, unsigned int length,
 			unsigned int rounds) noexcept;
 private:
-	//Connect to an authentication hub
 	void connectToAuthenticator() noexcept;
-	//Connect to the overlay network
 	void connectToOverlay() noexcept;
-	//Checks whether the current stage is taking longer than expected to finish
 	bool overdue(unsigned int milliseconds) const noexcept;
-	//Helper for identification routine
 	void initAuthentication() noexcept;
-	//Helper for bootstrapping routine
 	void findRoot() noexcept;
-	//Helper for session key routine
 	void initAuthorization() noexcept;
-
 	Message* createIdentificationRequest();
 	void processIdentificationResponse(const Message *msg) noexcept;
-
 	Message* createAuthenticationRequest();
 	void processAuthenticationResponse(const Message *msg) noexcept;
-
 	Message* createFindRootRequest();
 	void processFindRootResponse(const Message *msg) noexcept;
-
 	void processTokenResponse(const Message *msg) noexcept;
-
 	Message* createRegistrationRequest(bool sign);
 	void processRegistrationResponse(Message *msg) noexcept;
-
 	void setStage(int stage) noexcept;
 	int getStage() const noexcept;
 	bool isStage(int stage) const noexcept;
@@ -87,25 +75,14 @@ private:
 	void clearIdentifiers() noexcept;
 	void clear() noexcept;
 private:
-	/*
-	 * Configuration data
-	 */
 	struct {
-		//Password for authentication
 		unsigned char password[64];
-		//Password length
 		unsigned int passwordLength;
-		//Password hash rounds
 		unsigned int rounds;
-		//Communication timeout
 		unsigned int timeout;
-		//Wait for these many milliseconds before reconnecting
 		unsigned int pause;
 	} ctx;
-
-	/*
-	 * Bootstrapping and connection management
-	 */
+	//-----------------------------------------------------------------
 	struct {
 		StaticBuffer<unsigned long long, 16> identifiers;
 		unsigned long long root;

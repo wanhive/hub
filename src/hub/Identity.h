@@ -155,44 +155,30 @@ public:
 		CTX_SSL_PRIVATE /**< SSL private key */
 	};
 private:
-	//Unique ID of the currently running instance
 	InstanceID *instanceId { };
-	//Application's properties
 	Options options;
-	//The hosts database
 	Hosts hosts;
 
-	//For authentication
 	struct {
 		PKI pki;
 		bool enabled { };
 		bool verify { };
 	} auth;
 
-	//For SSL/TLS
 	struct {
 		SSLContext ctx;
 		bool enabled { };
 	} ssl;
 
 	struct {
-		//Configuration file's pathname from the command line
 		char *config { };
-		//Configuration file's resolved pathname
 		char *options { };
-		//Hosts database file's pathname
 		char *hostsDB { };
-		//Clear text hosts file's pathname
 		char *hostsFile { };
-		//Private key file's pathname
 		char *privateKey { };
-		//Public key file's pathname
 		char *publicKey { };
-		//SSL trusted certificate chain file's pathname
 		char *sslRoot { };
-		//SSL certificate chain file's pathname
 		char *sslCertificate { };
-		//SSL private key file's pathname
 		char *sslKey { };
 	} paths;
 };

@@ -41,7 +41,7 @@ private:
 private:
 	int error;
 	const char *errorMessage;
-	char buffer[256]; //Should be sufficient
+	char buffer[256];
 };
 
 } /* namespace wanhive */

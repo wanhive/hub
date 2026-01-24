@@ -28,7 +28,7 @@ public:
 	static void raise(int signum);
 	/**
 	 * Wrapper for kill(2): sends signal to a process
-	 * @param pid process identifier
+	 * @param pid process's identifier
 	 * @param signum signal number
 	 */
 	static void raise(pid_t pid, int signum);
@@ -93,7 +93,7 @@ public:
 	//-----------------------------------------------------------------
 	/**
 	 * Wrapper for sigqueue(2): queues up a signal to a process
-	 * @param pid process' identifier
+	 * @param pid process's identifier
 	 * @param signum signal number
 	 * @param value additional data
 	 */

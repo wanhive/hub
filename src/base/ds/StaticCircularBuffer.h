@@ -187,14 +187,12 @@ private:
 		}
 	}
 
-	//Load-Load barrier:  memory operations below this barrier remain below it.
 	void acquireBarrier() const noexcept {
 		if constexpr (ATOMIC) {
 			Atomic<>::threadFence(MO_ACQUIRE);
 		}
 	}
 
-	//Store-Store barrier: memory operations above this barrier remain above it.
 	void releaseBarrier() const noexcept {
 		if constexpr (ATOMIC) {
 			Atomic<>::threadFence(MO_RELEASE);

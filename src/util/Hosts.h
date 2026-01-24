@@ -111,10 +111,10 @@ public:
 	};
 private:
 	struct {
-		sqlite3_stmt *pi { }; //Insert
-		sqlite3_stmt *pq { }; //Get
-		sqlite3_stmt *pd { }; //Delete
-		sqlite3_stmt *pl { }; //List
+		sqlite3_stmt *put { }; //Insert
+		sqlite3_stmt *get { }; //Get
+		sqlite3_stmt *remove { }; //Delete
+		sqlite3_stmt *list { }; //List
 	} stmt;
 };
 

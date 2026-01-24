@@ -123,14 +123,12 @@ public:
 	 */
 	const X* array() const noexcept;
 private:
-	//Swaps the slots at the indices <i> and <j>
 	void swap(unsigned int i, unsigned int j) noexcept {
 		X tmp = storage[i];
 		set(storage[j], i);
 		set(tmp, j);
 	}
 
-	//Writes the value <e> at the <index>
 	void set(const X &e, unsigned int index) noexcept {
 		storage[index] = e;
 		indexer(storage[index], index);

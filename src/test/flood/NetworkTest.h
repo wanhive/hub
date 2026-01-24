@@ -23,12 +23,9 @@ class NetworkTest: private Task, private TestClient {
 public:
 	NetworkTest(uint64_t clientId, uint64_t serverId, const char *path) noexcept;
 	~NetworkTest();
-	//Run one of the available tests, <path> is the path to the configuration file
 	static void test(const char *path) noexcept;
 private:
-	//Flood the destination and wait for it to echo back the packets
 	void flood(uint64_t destination, unsigned int iterations = 0);
-	//Echo the message back to the source
 	void echo(unsigned int iterations = 0);
 	void produce() noexcept;
 	void consume() noexcept;

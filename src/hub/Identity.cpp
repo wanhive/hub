@@ -487,7 +487,7 @@ char* Identity::locateConfigurationFile() noexcept {
 	try {
 		//Configuration file's path supplied from the command line
 		if (paths.config) {
-			return Storage::expandPathName(paths.config);
+			return Storage::expand(paths.config);
 		}
 
 		//For resolution of default configuration file paths
@@ -508,7 +508,7 @@ char* Identity::locateConfigurationFile() noexcept {
 		}
 
 		//STEP 3: Search in home
-		auto cfgPath = Storage::expandPathName(WH_CONF_PATH);
+		auto cfgPath = Storage::expand(WH_CONF_PATH);
 		if (Storage::testFile(cfgPath) == 1) {
 			return cfgPath;
 		} else {

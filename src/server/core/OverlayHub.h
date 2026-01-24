@@ -53,44 +53,27 @@ private:
 	void installTracker();
 	void refresh(unsigned int context) noexcept;
 	//-----------------------------------------------------------------
-	//Routing table maintenance
 	bool converge() noexcept;
-	//Connect to a route
 	bool bridge(unsigned long long id, Digest *hc) noexcept;
 	//-----------------------------------------------------------------
-	//Called after registration
 	void onboard(Watcher *w) noexcept;
-	//Called before removal
 	void offboard(Watcher *w) noexcept;
-	//Temporarily memorize an identifier
 	void memorize(unsigned long long id) noexcept;
 	//-----------------------------------------------------------------
-	//Approve a registration request
 	int enroll(const Message *request) noexcept;
-	//Approve a registration request
 	int enroll(unsigned long long source, unsigned long long request) noexcept;
-	//Authenticate a registration request
 	bool authenticate(const Message *request) noexcept;
-	//Validate a registration request
 	bool validate(unsigned long long source,
 			unsigned long long request) const noexcept;
 	//-----------------------------------------------------------------
-	//Intercept registration and session key requests
 	bool intercept(Message *message) noexcept;
-	//Annotate a message before forwarding
 	void annotate(Message *message) noexcept;
-	//Plot a course for a message
 	bool plot(Message *message) noexcept;
-	//Corroborate a stabilization response
 	bool corroborate(const Message *response) const noexcept;
-	//Find the next hop towards a destination
 	unsigned long long gateway(unsigned long long to) const noexcept;
-	//Approve a communication
 	bool approve(unsigned long long from, unsigned long long to) const noexcept;
-	//Permit a communication
 	bool permit(unsigned long long from, unsigned long long to) const noexcept;
 	//-----------------------------------------------------------------
-	//Process a direct request
 	bool serve(Message *request) noexcept;
 	bool serveNullRequest(Message *request) noexcept;
 	bool serveBasicRequest(Message *request) noexcept;
@@ -123,133 +106,61 @@ private:
 	bool handlePingNodeRequest(Message *msg) noexcept;
 	bool handleMapRequest(Message *msg) noexcept;
 	//-----------------------------------------------------------------
-	//0: continue; 1: success/discontinue; -1: error/discontinue
 	int mapFunction(Message *msg) noexcept;
-	/*
-	 * Build a direct response header. Set to this hub's identifier as message's
-	 * source. If <length> isn't zero then update message's length.
-	 */
 	void buildDirectResponse(Message *msg, unsigned int length = 0) noexcept;
 	//-----------------------------------------------------------------
-	//Map an arbitrary 64-bit key to the dht key-space
 	static unsigned int mapKey(unsigned long long key) noexcept;
-	//Returns the identifier associated with the given hash code
 	unsigned long long nonceToId(const Digest *hc) const noexcept;
-	//Worker task's connection ID (hub's ID if no worker)
 	unsigned long long getWorker() const noexcept;
-	//Checks whether the <id> belongs to the worker task
 	bool isWorker(unsigned long long uid) const noexcept;
-	//Checks whether connection <uid> can send privileged requests
 	bool isPrivileged(unsigned long long uid) const noexcept;
-	//Checks if this hub is part of overlay network (excl. Controller)
 	bool isSuperNode() const noexcept;
-	//Returns true if <uid> equals this hub's identifier
 	bool isHost(unsigned long long uid) const noexcept;
-	//Returns true if <uid> belongs to controller
 	static bool isController(unsigned long long uid) noexcept;
-	//Returns true if <uid> belongs to the overlay nodes (incl. controller)
 	static bool isInternal(unsigned long long uid) noexcept;
-	//Returns true if <uid> doesn't belong to the overlay nodes
 	static bool isExternal(unsigned long long uid) noexcept;
-	//Returns true if <uid> is an ephemeral (temporary) value
 	static bool isEphemeral(unsigned long long uid) noexcept;
 	//-----------------------------------------------------------------
-	/*
-	 * Creates a local unix socket connection, returning the other end in <sfd>.
-	 * If <blocking> is true then <sfd> is configured as a blocking socket with
-	 * the given IO <timeout>. Setting <timeout> to zero (0) will make <sfd> to
-	 * block forever. The returned Watcher is always nonblocking.
-	 */
 	Watcher* connect(int &sfd, bool blocking = false, int timeout = 0);
-	//Connects with a remote hub <id> asynchronously
 	Watcher* connect(unsigned long long id, Digest *hc);
-	/*
-	 * Creates an outgoing Socket connection to a remote node <id>.
-	 * Returns a unique session token in <hc>.
-	 */
 	Watcher* createProxyConnection(unsigned long long id, Digest *hc);
-	/*
-	 * Purges connections of particular type.
-	 * <mode>: 0[TEMPORARY]; 1[INVALID]; DEFAULT[TEMPORARY|CLIENT]
-	 * <target>: Maximum number of connections to purge (0 = no limit).
-	 */
 	unsigned int reap(int mode, unsigned int target = 0) noexcept;
-	//Removes invalid active connections after network churn
 	static int reapInvalid(Watcher *w, void *arg) noexcept;
-	//Removes client connections
 	static int reapClient(Watcher *w, void *arg) noexcept;
 	//-----------------------------------------------------------------
-	//Resets the internal state
 	void clear() noexcept;
-	//Returns the runtime metrics
 	void metrics(OverlayHubInfo &info) const noexcept;
 private:
-	/*
-	 * Worker thread management
-	 */
-	//The object which runs the stabilization protocol
+	//-----------------------------------------------------------------
 	OverlayService stabilizer;
+
 	struct {
-		//To guard against invalid responses
 		MessageHeader header;
-		//Service watcher's identifier (defaults to hub's UID)
 		unsigned long long id;
 	} worker;
 	//-----------------------------------------------------------------
-	/*
-	 * Configuration data
-	 */
 	struct {
-		//Enable client Registration
 		bool enroll;
-		//Authenticate every Client Registration Request
 		bool authenticate;
-		//Token bucket refill rate
 		unsigned int refill;
-		//If true, server will try to connect to the overlay network
 		bool join;
-		//Frequency of Routing Table Update
 		unsigned int period;
-		//Timeout for blocking I/O
 		unsigned int timeout;
-		//Waiting period after stabilization error
 		unsigned int pause;
-		//64-bit bitmask to restrict client<->client communication
 		unsigned long long netmask;
-		//Group ID of the hub
 		unsigned int group;
-		//Bootstrap nodes
 		unsigned long long nodes[128];
 	} ctx;
 	//-----------------------------------------------------------------
-	/*
-	 * Cache of recently seen overlay nodes
-	 */
-	static constexpr unsigned int NODECACHE_SIZE = 32; //Must be power of 2
+	static constexpr unsigned int NODECACHE_SIZE = 32;
 	struct {
 		unsigned int index;
 		unsigned long long cache[NODECACHE_SIZE];
 	} nodes;
 	//-----------------------------------------------------------------
-	/*
-	 * For authentication
-	 */
-	//For authentication of proxy connections, +1 for the controller
 	Digest sessions[TABLESIZE + 1];
-	//Cryptographic hash function provider
 	Hash hash;
 	//-----------------------------------------------------------------
-	/*
-	 * Watch list of application data files
-	 * [0]: Configuration file
-	 * [1]: Hosts database
-	 * [2]: Hosts file
-	 * [3]: Private key file
-	 * [4]: Public key file
-	 * [5]: SSL trusted certificate
-	 * [6]: SSL certificate
-	 * [7]: SSL host key
-	 */
 	static constexpr unsigned int WATCHLIST_SIZE = 8;
 	struct {
 		int context;
@@ -257,14 +168,7 @@ private:
 		uint32_t events;
 	} watchlist[WATCHLIST_SIZE];
 	//-----------------------------------------------------------------
-	/*
-	 * For Pub/Sub: 256 topics in the range [0-255] are available
-	 */
 	Topics topics;
-	//-----------------------------------------------------------------
-	/*
-	 * Token bucket for registration rate limiting
-	 */
 	Tokens tokens;
 };
 

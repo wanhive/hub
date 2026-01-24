@@ -42,7 +42,7 @@ protected:
 	void stop();
 private:
 	/*
-	 * Activity interface adapters.
+	 * Activity interface adapters
 	 */
 	bool doable() const noexcept override;
 	void act(void *arg) noexcept override;

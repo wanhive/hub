@@ -50,7 +50,7 @@ public:
 	bool verifyNonce(Hash &hash, uint64_t salt, uint64_t id,
 			const Digest *nonce) const noexcept;
 private:
-	uint64_t buffer[4]; //256 bits of the instance id
+	uint64_t buffer[4];
 };
 
 } /* namespace wanhive */

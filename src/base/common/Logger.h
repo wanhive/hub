@@ -38,8 +38,7 @@ enum LogTarget : unsigned char {
 };
 
 /**
- * Thread-safe logging utility for sending application-generated logs
- * to syslog or stderr.
+ * Thread-safe logging utility
  */
 class Logger {
 public:
@@ -54,59 +53,59 @@ public:
 	~Logger();
 	//-----------------------------------------------------------------
 	/**
-	 * Sets the log priority (level) filter.
-	 * @param level the priority value, where 0 is the highest priority and 7
-	 * (or greater) is the lowest priority.
+	 * Sets the log priority filter, where 0 is the highest priority and 7 (or
+	 * greater) is the lowest priority.
+	 * @param level priority value
 	 */
 	void setLevel(unsigned int level) noexcept;
 	/**
-	 * Sets the log priority (level) filter.
+	 * Sets the log priority filter.
 	 * @param level the priority code
 	 */
 	void setLevel(LogLevel level) noexcept;
 	/**
-	 * Returns a value describing the current priority (level) filter.
-	 * @return the priority code
+	 * Returns the current priority filter.
+	 * @return priority code
 	 */
 	LogLevel getLevel() const noexcept;
 	/**
-	 * Sets the default target for writing the message logs.
-	 * @param target the output target, set zero (0) to select stderr and set any
-	 * other value to select the syslog facility.
+	 * Sets the default message logs output target. Set zero (0) to select
+	 * stderr and set any other value to select the syslog facility.
+	 * @param target target code
 	 */
 	void setTarget(unsigned int target) noexcept;
 	/**
-	 * Sets the default target for writing the message logs.
-	 * @param target the target code.
+	 * Sets the default message logs output target.
+	 * @param target target code
 	 */
 	void setTarget(LogTarget target) noexcept;
 	/**
-	 * Returns a value describing the output target.
-	 * @return the target code
+	 * Returns the output target.
+	 * @return target code
 	 */
 	LogTarget getTarget() const noexcept;
 	/**
 	 * Writes a message log.
-	 * @param level message's level/priority
+	 * @param level message's priority
 	 * @param format message's format (same as the printf format string).
 	 */
 	void log(LogLevel level, const char *format, ...) const noexcept;
 	//-----------------------------------------------------------------
 	/**
 	 * Returns the default logger that writes to the stderr.
-	 * @return reference to the default logger
+	 * @return default logger's reference
 	 */
 	static Logger& getDefault() noexcept;
 	/**
-	 * Returns a string that describes the priority (level) code.
-	 * @param level the priority code
-	 * @return the level description string
+	 * Returns a string describing the priority code.
+	 * @param level priority code
+	 * @return string description
 	 */
 	static const char* levelString(LogLevel level) noexcept;
 	/**
-	 * Returns a string that describes the target for writing the message logs.
-	 * @param target the output target's code
-	 * @return the output target describing string
+	 * Returns a string describing the message logs output target.
+	 * @param target target's code
+	 * @return string description
 	 */
 	static const char* targetString(LogTarget target) noexcept;
 private:

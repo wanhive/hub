@@ -22,14 +22,14 @@ class System {
 public:
 	/**
 	 * Returns the executable file's (running in the current process) directory.
-	 * @param buffer stores directory's pathname
+	 * @param buffer stores directory's path
 	 * @param length buffer's size in bytes
 	 * @return buffer's pointer
 	 */
 	static const char* executableDirectory(char *buffer, size_t length);
 	/**
 	 * Returns the current working directory.
-	 * @param buffer stores directory's pathname
+	 * @param buffer stores directory's path
 	 * @param length buffer's size in bytes
 	 * @return buffer's pointer
 	 */

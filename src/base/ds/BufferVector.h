@@ -20,7 +20,9 @@ namespace wanhive {
  * @tparam X storage type
  */
 template<typename X> struct BufferVector {
+	/*! Base pointer */
 	X *base;
+	/*! Elements count */
 	size_t length;
 };
 

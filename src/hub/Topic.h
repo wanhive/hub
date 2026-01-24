@@ -51,11 +51,11 @@ public:
 	 */
 	unsigned int count() const noexcept;
 public:
-	/** Maximum number of topics */
+	/*! Maximum number of topics */
 	static constexpr unsigned int COUNT = 256;
-	/** Minimum topic identifier */
+	/*! Minimum topic identifier */
 	static constexpr unsigned int MIN_ID = 0;
-	/** Maximum topic identifier */
+	/*! Maximum topic identifier */
 	static constexpr unsigned int MAX_ID = 255;
 private:
 	unsigned int _count { };

@@ -332,34 +332,21 @@ private:
 	void clear() noexcept;
 	static int deleteWatchers(Watcher *w, void *arg) noexcept;
 private:
-	//Hub's unique identifier
 	const unsigned long long uid;
-	//Hub's termination status
 	bool healthy;
-	//Event loop's running status
 	volatile int running;
 	//-----------------------------------------------------------------
-	//Watchers being monitored
 	Watchers watchers;
-	//Incoming messages ready for processing
 	CircularBuffer<Message*> in;
-	//Outgoing messages ready for dispatch
 	CircularBuffer<Message*> out;
-	//Temporary connections
 	Buffer<unsigned long long> guests;
 	//-----------------------------------------------------------------
-	/*
-	 * Hub statistics
-	 */
 	Timer uptime;
 	struct {
 		TrafficInfo received;
 		TrafficInfo dropped;
 	} traffic;
 	//-----------------------------------------------------------------
-	/*
-	 * Special watchers, first among equals
-	 */
 	struct {
 		Socket *listener;
 		Alarm *alarm;
@@ -368,53 +355,28 @@ private:
 		Interrupt *interrupt;
 	} prime;
 	//-----------------------------------------------------------------
-	/*
-	 * Hub configuration
-	 */
 	struct {
-		//Accept incoming connections
 		bool listen;
-		//Listening backlog
 		int backlog;
-		//Default binding address
 		char name[128];
-		//Default binding address type
 		char type[8];
-		//Limit on the number of IO events processed in each event loop
 		unsigned int events;
-		//Timer settings: initial expiration in milliseconds
 		unsigned int expiration;
-		//Timer settings: periodic expiration in milliseconds
 		unsigned int interval;
-		//Enable or disable semaphore-like behavior for the event notifier
 		bool semaphore;
-		//Enable or disable synchronous signal handling
 		bool signal;
-		//Connection pool size
 		unsigned int connections;
-		//Message pool size
 		unsigned int messages;
-		//Maximum number of new connections
 		unsigned int guests;
-		//Temporary connection expiration in milliseconds
 		unsigned int lease;
-
-		//Limit on the messages accepted from each connection in an event loop
 		unsigned int inward;
-		//Limit on the queued up outgoing messages for each connection
 		unsigned int outward;
-		//Traffic shaping and policing
 		bool regulate;
-		//Reserved messages for internal purposes
 		unsigned int reserved;
-		//Message TTL
 		unsigned int ttl;
-		//Reservation ratios
-		double answer;		//Reserved for answering
-		double forward;	//Reserved for routing
-		//Log level
+		double answer;
+		double forward;
 		unsigned int logging;
-		//Sensitive information handling
 		bool redact;
 	} ctx;
 };

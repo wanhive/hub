@@ -192,10 +192,10 @@ public:
 	static void receive(SSL *ssl, Packet &packet, unsigned int sequenceNumber =
 			0, PKI *pki = nullptr);
 private:
-	int sockfd { -1 }; //Socket file descriptor
-	SSL *ssl { };  //SSL/TLS connection
-	SSLContext *sslContext { }; //SSL/TLS context
-	PKI *pki { }; //Keys for asymmetric cryptography
+	int sockfd { -1 };
+	SSL *ssl { };
+	SSLContext *sslContext { };
+	PKI *pki { };
 };
 
 } /* namespace wanhive */

@@ -229,17 +229,17 @@ private:
 	bool setFinger(Finger &f, unsigned int key, bool checkConsistent = true,
 			bool checkConnected = true) noexcept;
 public:
-	/** Identifier length in bits */
+	/*! Identifier length in bits */
 	static constexpr unsigned int KEYLENGTH = DHT::KEY_LENGTH;
-	/** Maximum number of nodes in the identifier ring */
+	/*! Maximum number of nodes in the identifier ring */
 	static constexpr unsigned long MAX_NODES = ((1UL << KEYLENGTH));
-	/** Controller's identifier, must be 0 */
+	/*! Controller's identifier, must be 0 */
 	static constexpr unsigned int CONTROLLER = 0;
-	/** Minimum value on the identifier ring */
+	/*! Minimum value on the identifier ring */
 	static constexpr unsigned int MIN_ID = 1;
-	/** Maximum value on the identifier ring */
+	/*! Maximum value on the identifier ring */
 	static constexpr unsigned int MAX_ID = ((1UL << KEYLENGTH) - 1);
-	/** Number of finger table entries */
+	/*! Number of finger table entries */
 	static constexpr unsigned int TABLESIZE = KEYLENGTH;
 private:
 	const unsigned int _key;

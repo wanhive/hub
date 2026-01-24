@@ -202,16 +202,16 @@ bool Options::setString(const char *section, const char *option,
 }
 
 const char* Options::getString(const char *section, const char *option,
-		const char *defaultValue) const noexcept {
+		const char *preset) const noexcept {
 	if (section && option && option[0]) {
 		auto entry = findEntry(section, option);
 		if (entry) {
 			return entry->value;
 		} else {
-			return defaultValue;
+			return preset;
 		}
 	} else {
-		return defaultValue;
+		return preset;
 	}
 }
 
@@ -224,13 +224,13 @@ bool Options::setNumber(const char *section, const char *option,
 }
 
 unsigned long long Options::getNumber(const char *section, const char *option,
-		unsigned long long defaultValue) const noexcept {
+		unsigned long long preset) const noexcept {
 	unsigned long long num;
 	auto val = getString(section, option);
 	if (val && sscanf(val, "%llu", &num) == 1) {
 		return num;
 	} else {
-		return defaultValue;
+		return preset;
 	}
 }
 
@@ -243,13 +243,13 @@ bool Options::setDouble(const char *section, const char *option,
 }
 
 double Options::getDouble(const char *section, const char *option,
-		double defaultValue) const noexcept {
+		double preset) const noexcept {
 	double num;
 	auto val = getString(section, option);
 	if (val && sscanf(val, "%lf", &num) == 1) {
 		return num;
 	} else {
-		return defaultValue;
+		return preset;
 	}
 }
 
@@ -259,10 +259,10 @@ bool Options::setBoolean(const char *section, const char *option,
 }
 
 bool Options::getBoolean(const char *section, const char *option,
-		bool defaultValue) const noexcept {
+		bool preset) const noexcept {
 	auto val = getString(section, option);
 	if (!val) {
-		return defaultValue;
+		return preset;
 	} else if (strcasecmp("TRUE", val) == 0) {
 		return true;
 	} else if (strcasecmp("YES", val) == 0) {
@@ -275,8 +275,8 @@ bool Options::getBoolean(const char *section, const char *option,
 }
 
 char* Options::getPathName(const char *section, const char *option,
-		const char *defaultValue) const noexcept {
-	return expandPath(getString(section, option, defaultValue));
+		const char *preset) const noexcept {
+	return expand(getString(section, option, preset));
 }
 
 void Options::map(const char *section,
@@ -370,15 +370,15 @@ void Options::resetStatus() noexcept {
 	data.status = 0;
 }
 
-char* Options::expandPath(const char *pathname) const noexcept {
-	if (!pathname) {
+char* Options::expand(const char *path) const noexcept {
+	if (!path) {
 		return nullptr;
-	} else if (pathname[0] != '$') {
-		return Storage::expandPathName(pathname);
+	} else if (path[0] != '$') {
+		return Storage::expand(path);
 	}
 	//-----------------------------------------------------------------
 	char orig[PATH_MAX] { };
-	strncpy(orig, pathname, sizeof(orig) - 1);
+	strncpy(orig, path, sizeof(orig) - 1);
 	//-----------------------------------------------------------------
 	/*
 	 * Resolve the postfix substring succeeding the first path separator
@@ -407,7 +407,7 @@ char* Options::expandPath(const char *pathname) const noexcept {
 		//Restore the original string
 		orig[i] = postfix[0] ? Storage::PATH_SEPARATOR : '\0';
 		//Expand into the full path and return
-		return Storage::expandPathName(orig);
+		return Storage::expand(orig);
 	} else {
 		//1. Construct a string in the format: prefix/postfix
 		auto prefixLen = strlen(prefix);
@@ -429,7 +429,7 @@ char* Options::expandPath(const char *pathname) const noexcept {
 		//2. Expand into the full path and return
 		if ((prefixLen + postfixLen) < PATH_MAX) {
 			memcpy(result + prefixLen, postfix, postfixLen);
-			return Storage::expandPathName(result);
+			return Storage::expand(result);
 		} else {
 			return nullptr;
 		}

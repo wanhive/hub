@@ -234,7 +234,6 @@ public:
 	 */
 	void clear() noexcept;
 private:
-	//Delete the key-value buffer
 	void deleteContainer() noexcept {
 		if constexpr (ISMAP) {
 			Memory<Pair>::free(bucket.entries);
@@ -244,7 +243,7 @@ private:
 			bucket.keys = nullptr;
 		}
 	}
-	//Resize the  key-value buffer
+
 	void resizeContainer(unsigned int size) noexcept {
 		if constexpr (ISMAP) {
 			Memory<Pair>::resize(bucket.entries, size);
@@ -253,24 +252,22 @@ private:
 		}
 	}
 
-	//Update the capacity
 	void capacity(unsigned int capacity) noexcept {
 		bucket.capacity = capacity;
 	}
-	//Update the size (number of items in the hash table)
+
 	void size(unsigned int size) noexcept {
 		bucket.size = size;
 	}
-	//Update the occupied slots count (size + deleted)
+
 	void occupied(unsigned int occupied) noexcept {
 		bucket.occupied = occupied;
 	}
-	//Update the upper bound
+
 	void upperBound(unsigned int upperBound) noexcept {
 		bucket.upperBound = upperBound;
 	}
 
-	//Get the iterator's key
 	const KEY& getKey(unsigned int x) const noexcept {
 		if constexpr (ISMAP) {
 			return bucket.entries[x].key;
@@ -279,7 +276,6 @@ private:
 		}
 	}
 
-	//Set the iterator's key
 	void setKey(unsigned int x, KEY const &key) noexcept {
 		if constexpr (ISMAP) {
 			bucket.entries[x].key = key;
@@ -288,46 +284,38 @@ private:
 		}
 	}
 
-	//Get the iterator's value
 	const VALUE& getValue(unsigned int x) const noexcept {
 		return (bucket.entries[x].value);
 	}
 
-	//Get the iterator's value as lvalue
 	VALUE& valueAt(unsigned int x) noexcept {
 		return (bucket.entries[x].value);
 	}
 
-	//Get the flags buffer
 	uint32_t* getFlags() const noexcept {
 		return (bucket.flags);
 	}
 
-	//Set a new flags buffer (frees the existing one)
 	void setFlags(uint32_t *flags) noexcept {
 		Memory<uint32_t>::free(bucket.flags);
 		bucket.flags = flags;
 	}
 
-	//Reset the flags (set default value)
 	void resetFlags() noexcept {
 		resetFlags(bucket.flags, bucket.capacity);
 	}
 
-	//Delete the flags buffer
 	void deleteFlags() noexcept {
 		Memory<uint32_t>::free(bucket.flags);
 		bucket.flags = nullptr;
 	}
 
-	//Create a new flags buffer for the given capacity
 	static uint32_t* createFlags(unsigned int entries) noexcept {
 		auto flags = Memory<uint32_t>::allocate(fSize(entries));
 		resetFlags(flags, entries);
 		return flags;
 	}
 
-	//Reset the flags (set default value)
 	static void resetFlags(uint32_t *flags, unsigned int entries) noexcept {
 		if (flags) {
 			memset(flags, 0xaa, fSize(entries) * sizeof(uint32_t));
@@ -383,25 +371,21 @@ private:
 	};
 
 	struct {
-		unsigned int capacity;	//Total number of slots, always power of two
-		unsigned int size;			//Total number of filled up slots
-		unsigned int occupied;//Total number of occupied slots (size + deleted)
-		unsigned int upperBound;	//Upper Limit on occupied slots
-		uint32_t *flags;	//Status of each slot, need to specify data width
-		Pair *entries; //Used by HASH-MAP
-		KEY *keys; //Used by HASH-SET
+		unsigned int capacity;
+		unsigned int size;
+		unsigned int occupied;
+		unsigned int upperBound;
+		uint32_t *flags;
+		Pair *entries;
+		KEY *keys;
 	} bucket;
 
-	HFN hash; //Hash functor (must return unsigned int)
-	EQFN equal; //Equality functor
+	HFN hash;
+	EQFN equal;
 
-	//Minimum designated capacity of the hash table
 	static constexpr unsigned int MIN_CAPACITY = 16;
-	//The load factor
 	static constexpr double LOAD_FACTOR = 0.77;
-	//KEY must be POD
 	WH_POD_ASSERT(KEY);
-	//VALUE must be POD
 	WH_POD_ASSERT(VALUE);
 };
 

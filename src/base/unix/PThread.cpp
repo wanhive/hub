@@ -43,16 +43,16 @@ void PThread::exit(void *arg) {
 	::pthread_exit(arg);
 }
 
-pthread_t PThread::getId() const noexcept {
-	return tid;
-}
-
 int PThread::getStatus() const noexcept {
 	return task.getStatus();
 }
 
 void PThread::setStatus(int status) noexcept {
 	task.setStatus(status);
+}
+
+pthread_t PThread::getId() const noexcept {
+	return tid;
 }
 
 pthread_t PThread::self() noexcept {

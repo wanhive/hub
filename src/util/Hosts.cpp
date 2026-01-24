@@ -136,62 +136,63 @@ void Hosts::dump(const char *path, int version) {
 }
 
 int Hosts::get(unsigned long long uid, NameInfo &ni) noexcept {
-	if (!stmt.pq) {
+	if (!stmt.get) {
 		return -1;
 	}
 
 	int ret = 0;
 	int z;
 	memset(&ni, 0, sizeof(ni));
-	SQLite::bindLongInteger(stmt.pq, 1, uid);
-	if ((z = SQLite::step(stmt.pq)) == SQLITE_ROW) {
-		strncpy(ni.host, (const char*) SQLite::getText(stmt.pq, 0),
+	SQLite::bindLongInteger(stmt.get, 1, uid);
+	if ((z = SQLite::step(stmt.get)) == SQLITE_ROW) {
+		strncpy(ni.host, (const char*) SQLite::getText(stmt.get, 0),
 				sizeof(ni.host) - 1);
-		strncpy(ni.service, (const char*) SQLite::getText(stmt.pq, 1),
+		strncpy(ni.service, (const char*) SQLite::getText(stmt.get, 1),
 				sizeof(ni.service) - 1);
-		ni.type = SQLite::getInteger(stmt.pq, 2);
+		ni.type = SQLite::getInteger(stmt.get, 2);
 	} else if (z == SQLITE_DONE) {
 		//No record found
 		ret = 1;
 	} else {
 		ret = -1;
 	}
-	SQLite::reset(stmt.pq);
-	SQLite::unbind(stmt.pq);
+	SQLite::reset(stmt.get);
+	SQLite::unbind(stmt.get);
 	return ret;
 }
 
 int Hosts::put(unsigned long long uid, const NameInfo &ni) noexcept {
-	if (!stmt.pi) {
+	if (!stmt.put) {
 		return -1;
 	}
 
 	int ret = 0;
-	SQLite::bindLongInteger(stmt.pi, 1, uid);
-	SQLite::bindText(stmt.pi, 2, ni.host, strlen(ni.host), SQLiteScope::STATIC);
-	SQLite::bindText(stmt.pi, 3, ni.service, strlen(ni.service),
+	SQLite::bindLongInteger(stmt.put, 1, uid);
+	SQLite::bindText(stmt.put, 2, ni.host, strlen(ni.host),
 			SQLiteScope::STATIC);
-	SQLite::bindInteger(stmt.pi, 4, ni.type);
-	if (SQLite::step(stmt.pi) != SQLITE_DONE) {
+	SQLite::bindText(stmt.put, 3, ni.service, strlen(ni.service),
+			SQLiteScope::STATIC);
+	SQLite::bindInteger(stmt.put, 4, ni.type);
+	if (SQLite::step(stmt.put) != SQLITE_DONE) {
 		ret = -1;
 	}
-	SQLite::reset(stmt.pi);
-	SQLite::unbind(stmt.pi);
+	SQLite::reset(stmt.put);
+	SQLite::unbind(stmt.put);
 	return ret;
 }
 
 int Hosts::remove(unsigned long long uid) noexcept {
-	if (!stmt.pd) {
+	if (!stmt.remove) {
 		return -1;
 	}
 
 	int ret = 0;
-	SQLite::bindLongInteger(stmt.pd, 1, uid);
-	if (SQLite::step(stmt.pd) != SQLITE_DONE) {
+	SQLite::bindLongInteger(stmt.remove, 1, uid);
+	if (SQLite::step(stmt.remove) != SQLITE_DONE) {
 		ret = -1;
 	}
-	SQLite::reset(stmt.pd);
-	SQLite::unbind(stmt.pd);
+	SQLite::reset(stmt.remove);
+	SQLite::unbind(stmt.remove);
 	return ret;
 }
 
@@ -201,20 +202,20 @@ int Hosts::list(unsigned long long uids[], unsigned int &count,
 		return 0;
 	}
 
-	if (!uids || !stmt.pl) {
+	if (!uids || !stmt.list) {
 		count = 0;
 		return -1;
 	}
 
-	SQLite::bindInteger(stmt.pl, 1, type);
-	SQLite::bindInteger(stmt.pl, 2, count);
+	SQLite::bindInteger(stmt.list, 1, type);
+	SQLite::bindInteger(stmt.list, 2, count);
 	unsigned int x = 0;
 	int z = 0;
-	while ((x < count) && ((z = SQLite::step(stmt.pl)) == SQLITE_ROW)) {
-		uids[x++] = SQLite::getLongInteger(stmt.pl, 0);
+	while ((x < count) && ((z = SQLite::step(stmt.list)) == SQLITE_ROW)) {
+		uids[x++] = SQLite::getLongInteger(stmt.list, 0);
 	}
-	SQLite::reset(stmt.pl);
-	SQLite::unbind(stmt.pl);
+	SQLite::reset(stmt.list);
+	SQLite::unbind(stmt.list);
 	count = x;
 	if (z == SQLITE_ROW || z == SQLITE_DONE) {
 		return 0;
@@ -261,10 +262,10 @@ void Hosts::prepareStatements() {
 
 	try {
 		closeStatements();
-		stmt.pi = SQLite::prepare(iq);
-		stmt.pq = SQLite::prepare(sq);
-		stmt.pd = SQLite::prepare(dq);
-		stmt.pl = SQLite::prepare(lq);
+		stmt.put = SQLite::prepare(iq);
+		stmt.get = SQLite::prepare(sq);
+		stmt.remove = SQLite::prepare(dq);
+		stmt.list = SQLite::prepare(lq);
 		resetStatements();
 	} catch (...) {
 		closeStatements();
@@ -273,21 +274,21 @@ void Hosts::prepareStatements() {
 }
 
 void Hosts::resetStatements() noexcept {
-	SQLite::reset(stmt.pi);
-	SQLite::unbind(stmt.pi);
-	SQLite::reset(stmt.pq);
-	SQLite::unbind(stmt.pq);
-	SQLite::reset(stmt.pd);
-	SQLite::unbind(stmt.pd);
-	SQLite::reset(stmt.pl);
-	SQLite::unbind(stmt.pl);
+	SQLite::reset(stmt.put);
+	SQLite::unbind(stmt.put);
+	SQLite::reset(stmt.get);
+	SQLite::unbind(stmt.get);
+	SQLite::reset(stmt.remove);
+	SQLite::unbind(stmt.remove);
+	SQLite::reset(stmt.list);
+	SQLite::unbind(stmt.list);
 }
 
 void Hosts::closeStatements() noexcept {
-	SQLite::finalize(stmt.pi);
-	SQLite::finalize(stmt.pq);
-	SQLite::finalize(stmt.pd);
-	SQLite::finalize(stmt.pl);
+	SQLite::finalize(stmt.put);
+	SQLite::finalize(stmt.get);
+	SQLite::finalize(stmt.remove);
+	SQLite::finalize(stmt.list);
 	stmt = { nullptr, nullptr, nullptr, nullptr };
 }
 

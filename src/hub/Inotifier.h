@@ -93,11 +93,8 @@ public:
 	 */
 	static const char* getFileName(const InotifyEvent *e) noexcept;
 private:
-	//Offset within the buffer
-	unsigned int offset { 0 };
-	//Notifications count
-	unsigned int limit { 0 };
-	//MIN: sizeof(inotify_event) + NAME_MAX + 1
+	unsigned int offset { }; //
+	unsigned int limit { }; //
 	alignas(InotifyEvent) unsigned char buffer[4096];
 };
 

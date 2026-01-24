@@ -71,10 +71,6 @@ void MulticastConsumer::maintain() noexcept {
 	}
 }
 
-void MulticastConsumer::processMulticastMessage(const Message *msg) noexcept {
-	msg->printHeader();
-}
-
 void MulticastConsumer::process(Message *message) noexcept {
 	auto origin = message->getOrigin();
 	auto source = message->getSource();
@@ -103,6 +99,10 @@ void MulticastConsumer::process(Message *message) noexcept {
 		handleInvalidMessage(message);
 		break;
 	}
+}
+
+void MulticastConsumer::processMulticastMessage(const Message *msg) noexcept {
+	msg->printHeader();
 }
 
 void MulticastConsumer::processSubscribeResponse(const Message *msg) noexcept {

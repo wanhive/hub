@@ -21,18 +21,18 @@ namespace wanhive {
  */
 struct wh_hash_fn {
 	unsigned int operator()(int key) const noexcept {
-		return static_cast<unsigned int>(key); //Just return the key
+		return static_cast<unsigned int>(key);
 	}
 
 	unsigned int operator()(unsigned int key) const noexcept {
-		return key; //Just return the key
+		return key;
 	}
 
 	unsigned int operator()(unsigned long key) const noexcept {
 		if constexpr (sizeof(unsigned long) > 4) {
 			return operator()((unsigned long long) key);
 		} else {
-			return key; //Just return the key
+			return key;
 		}
 	}
 

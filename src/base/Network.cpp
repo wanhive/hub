@@ -1,7 +1,7 @@
 /*
  * Network.cpp
  *
- * Stream socket routines
+ * Stream (TCP/IP) socket routines
  *
  *
  * Copyright (C) 2018 Amit Kumar (amitkriit@gmail.com)

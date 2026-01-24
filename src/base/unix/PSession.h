@@ -32,7 +32,7 @@ public:
 	static pid_t get() noexcept;
 	/**
 	 * Wrapper for getsid(2): returns the session ID of a process.
-	 * @param pid process' identifier
+	 * @param pid process's identifier
 	 * @return session identifier
 	 */
 	static pid_t get(pid_t pid);

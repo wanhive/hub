@@ -1,7 +1,7 @@
 /*
  * CommandLine.cpp
  *
- * C++ iostream error handling routines
+ * C++ iostream error handler
  *
  *
  * Copyright (C) 2019 Amit Kumar (amitkriit@gmail.com)

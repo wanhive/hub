@@ -39,7 +39,7 @@ public:
 #ifndef WH_DHT_KEYLEN
 #define WH_DHT_KEYLEN 10U
 #endif
-	/** The maximum key length in bits */
+	/*! The maximum key length in bits */
 	static constexpr unsigned int KEY_LENGTH =
 			(WH_DHT_KEYLEN > 16 || WH_DHT_KEYLEN <= 0) ? 16 : WH_DHT_KEYLEN;
 #undef WH_DHT_KEYLEN

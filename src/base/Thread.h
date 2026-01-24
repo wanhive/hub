@@ -23,8 +23,8 @@ class Thread: private PThread {
 public:
 	/**
 	 * Constructor: creates and executes a posix thread.
-	 * @param task the task to execute
-	 * @param arg additional argument for the task (see Task::run())
+	 * @param task executable task
+	 * @param arg additional argument
 	 */
 	Thread(Task &task, void *arg = nullptr);
 	/**

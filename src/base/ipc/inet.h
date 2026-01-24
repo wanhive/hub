@@ -19,8 +19,11 @@ namespace wanhive {
  * Resource name
  */
 struct NameInfo {
+	/*! Host name */
 	char host[NI_MAXHOST];
+	/*! Service name */
 	char service[NI_MAXSERV];
+	/*! Host type */
 	int type;
 };
 
@@ -28,7 +31,9 @@ struct NameInfo {
  * Socket address
  */
 struct SocketAddress {
+	/*! Generic address information container */
 	sockaddr_storage address;
+	/*! Address information size in bytes */
 	socklen_t length;
 };
 
@@ -36,10 +41,14 @@ struct SocketAddress {
  * Socket connection properties
  */
 struct SocketTraits {
-	int domain; //Protocol family
-	int type; //Socket type
-	int protocol; //Socket's protocol
-	int flags; //Additional flags
+	/*! Protocol family */
+	int domain;
+	/*! Socket type */
+	int type;
+	/*! Socket's protocol */
+	int protocol;
+	/*! Additional flags */
+	int flags;
 };
 
 }  // namespace wanhive
