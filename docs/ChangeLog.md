@@ -23,7 +23,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Restructure the cryptographic facility.
 - Update database management interfaces.
 - Update message header implementation.
-- Update **Socket** class's interface.
+- Update networking interfaces.
+- Update reactor pattern implementation.
 - Update software documentation.
 
 ### Fixed
