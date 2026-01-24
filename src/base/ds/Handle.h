@@ -1,7 +1,7 @@
 /*
  * Handle.h
  *
- * Generic data handle
+ * Selective data access handle
  *
  *
  * Copyright (C) 2022 Amit Kumar (amitkriit@gmail.com)
@@ -16,17 +16,17 @@
 
 namespace wanhive {
 /**
- * Generic handle that selectively provides data's access to a module.
- * @tparam F friend class' name
- * @tparam V data type
+ * Generic handle for controlled data access.
+ * @tparam F friend class
+ * @tparam X data type
  */
-template<typename F, typename V = int> class Handle {
+template<typename F, typename X = int> class Handle {
 public:
 	/**
 	 * Constructor: assigns a given value.
-	 * @param value the value
+	 * @param value handle's value
 	 */
-	Handle(const V &value) noexcept :
+	Handle(const X &value) noexcept :
 			value { value } {
 
 	}
@@ -35,12 +35,12 @@ public:
 	 */
 	~Handle() = default;
 private:
-	operator V() const noexcept {
+	operator X() const noexcept {
 		return value;
 	}
 private:
-	WH_POD_ASSERT(V);
-	V value;
+	WH_POD_ASSERT(X);
+	X value;
 	friend F;
 };
 
