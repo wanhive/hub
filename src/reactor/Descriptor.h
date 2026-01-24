@@ -55,28 +55,11 @@ public:
 	 */
 	bool hasTimedOut(unsigned int timeout) const noexcept;
 protected:
-	/**
-	 * Returns the managed file descriptor (call Descriptor::closeHandle() to
-	 * close the file descriptor, don't use the close() system call).
-	 * @return the managed file descriptor (can be invalid)
-	 */
-	int getHandle() const noexcept;
-	/**
-	 * Replaces the managed file descriptor (closes the previously managed
-	 * file descriptor).
-	 * @param fd new file descriptor
-	 */
-	void setHandle(int fd) noexcept;
-	/**
-	 * Returns the managed file descriptor and releases its ownership.
-	 * @return the released file descriptor (can be invalid)
-	 */
-	int releaseHandle() noexcept;
-	/**
-	 * Closes and invalidates the managed file descriptor.
-	 * @return true on success, false on system error
-	 */
-	bool closeHandle() noexcept;
+	//-----------------------------------------------------------------
+	using File::get;
+	using File::set;
+	using File::release;
+	using File::close;
 	//-----------------------------------------------------------------
 	/**
 	 * Checks whether an IO operation is pending on this object. Checks for

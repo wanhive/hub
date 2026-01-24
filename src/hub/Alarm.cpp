@@ -79,7 +79,7 @@ const Period& Alarm::getPeriod() const noexcept {
 void Alarm::create(bool blocking) {
 	auto fd = timerfd_create(CLOCK_MONOTONIC, blocking ? 0 : TFD_NONBLOCK);
 	if (fd != -1) {
-		Descriptor::setHandle(fd);
+		Descriptor::set(fd);
 	} else {
 		throw SystemException();
 	}
@@ -89,14 +89,14 @@ void Alarm::update(const Period &period) {
 	struct itimerspec time;
 	time.it_value = Time::convert(period.once);
 	time.it_interval = Time::convert(period.interval);
-	if (timerfd_settime(Descriptor::getHandle(), 0, &time, nullptr)) {
+	if (timerfd_settime(Descriptor::get(), 0, &time, nullptr)) {
 		throw SystemException();
 	}
 }
 
 void Alarm::settings(Period &period) {
 	struct itimerspec time;
-	if (timerfd_gettime(Descriptor::getHandle(), &time) == 0) {
+	if (timerfd_gettime(Descriptor::get(), &time) == 0) {
 		period.once = Time::milliseconds(time.it_value);
 		period.interval = Time::milliseconds(time.it_interval);
 	} else {

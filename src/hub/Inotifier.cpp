@@ -20,7 +20,7 @@ namespace wanhive {
 Inotifier::Inotifier(bool blocking) {
 	auto fd = inotify_init1(!blocking ? IN_NONBLOCK : 0);
 	if (fd != -1) {
-		Descriptor::setHandle(fd);
+		Descriptor::set(fd);
 	} else {
 		throw SystemException();
 	}
@@ -52,7 +52,7 @@ bool Inotifier::publish(void *arg) noexcept {
 }
 
 int Inotifier::add(const char *pathname, uint32_t mask) {
-	auto wd = inotify_add_watch(Descriptor::getHandle(), pathname, mask);
+	auto wd = inotify_add_watch(Descriptor::get(), pathname, mask);
 	if (wd != -1) {
 		return wd;
 	} else {
@@ -61,7 +61,7 @@ int Inotifier::add(const char *pathname, uint32_t mask) {
 }
 
 void Inotifier::remove(int identifier) {
-	if (inotify_rm_watch(Descriptor::getHandle(), identifier)) {
+	if (inotify_rm_watch(Descriptor::get(), identifier)) {
 		throw SystemException();
 	}
 }

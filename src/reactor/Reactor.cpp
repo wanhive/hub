@@ -37,7 +37,7 @@ void Reactor::add(Watcher *w, uint32_t events) {
 		admit(w);
 
 		events |= (IO_CLOSE | TRIGGER_EDGE);
-		selector.add(w->getHandle(), events, w);
+		selector.add(w->get(), events, w);
 
 		w->setFlags(WATCHER_RUNNING);
 	} else {
@@ -48,7 +48,7 @@ void Reactor::add(Watcher *w, uint32_t events) {
 void Reactor::modify(Watcher *w, uint32_t events) {
 	if (w && w->testFlags(WATCHER_RUNNING)) {
 		events |= (IO_CLOSE | TRIGGER_EDGE);
-		selector.modify(w->getHandle(), events, w);
+		selector.modify(w->get(), events, w);
 	} else {
 		throw Exception(EX_ARGUMENT);
 	}
@@ -134,7 +134,7 @@ Watcher* Reactor::ready() noexcept {
 
 void Reactor::remove(Watcher *w) noexcept {
 	try {
-		selector.remove(w->getHandle());
+		selector.remove(w->get());
 		w->clearFlags(WATCHER_RUNNING);
 		expel(w);
 	} catch (const BaseException &e) {

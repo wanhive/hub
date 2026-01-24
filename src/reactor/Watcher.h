@@ -40,8 +40,8 @@ enum WatcherOption {
 	WATCHER_OUTBOUND_MAX /**< Write buffer's maximum size */
 };
 //-----------------------------------------------------------------
-//Reactor-specific file handle
 class Reactor;
+/*! Reactor-specific file handle */
 using WatcherHandle=Handle<Reactor>;
 //-----------------------------------------------------------------
 /**
@@ -126,7 +126,7 @@ public:
 	 * Returns a file handle to the reactor.
 	 * @return the file handle
 	 */
-	WatcherHandle getHandle() const noexcept;
+	WatcherHandle get() const noexcept;
 };
 
 } /* namespace wanhive */

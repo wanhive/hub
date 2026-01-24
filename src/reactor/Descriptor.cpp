@@ -25,7 +25,7 @@ Descriptor::Descriptor() noexcept {
 }
 
 Descriptor::Descriptor(int fd) noexcept :
-		File(fd) {
+		File { fd } {
 
 }
 
@@ -45,44 +45,28 @@ bool Descriptor::hasTimedOut(unsigned int timeout) const noexcept {
 	return timer.hasTimedOut(timeout);
 }
 
-int Descriptor::getHandle() const noexcept {
-	return File::get();
-}
-
-void Descriptor::setHandle(int fd) noexcept {
-	File::set(fd);
-}
-
-int Descriptor::releaseHandle() noexcept {
-	return File::release();
-}
-
-bool Descriptor::closeHandle() noexcept {
-	return File::close();
-}
-
 bool Descriptor::isReady(bool outgoing) const noexcept {
 	return (getEvents() && ((getEvents() != IO_WRITE) || outgoing));
 }
 
 bool Descriptor::isBlocking() {
-	auto ret = Fcntl::getStatusFlag(getHandle());
+	auto ret = Fcntl::getStatusFlag(File::get());
 	return !(ret & O_NONBLOCK);
 }
 
 void Descriptor::setBlocking(bool block) {
-	auto flags = Fcntl::getStatusFlag(getHandle());
+	auto flags = Fcntl::getStatusFlag(File::get());
 	if (block) {
 		flags &= ~O_NONBLOCK;
 	} else {
 		flags |= O_NONBLOCK;
 	}
 
-	Fcntl::setStatusFlag(getHandle(), flags);
+	Fcntl::setStatusFlag(File::get(), flags);
 }
 
 ssize_t Descriptor::readv(const iovec *vectors, unsigned int count) {
-	auto nRead = ::readv(getHandle(), vectors, count);
+	auto nRead = ::readv(File::get(), vectors, count);
 	if (nRead > 0) {
 		return nRead;
 	} else if (nRead == 0) {
@@ -98,7 +82,7 @@ ssize_t Descriptor::readv(const iovec *vectors, unsigned int count) {
 }
 
 ssize_t Descriptor::read(void *buffer, size_t count) {
-	auto nRead = ::read(getHandle(), buffer, count);
+	auto nRead = ::read(File::get(), buffer, count);
 	if (nRead > 0) {
 		return nRead;
 	} else if (nRead == 0) {
@@ -114,7 +98,7 @@ ssize_t Descriptor::read(void *buffer, size_t count) {
 }
 
 ssize_t Descriptor::writev(const iovec *vectors, unsigned int count) {
-	auto nWrite = ::writev(getHandle(), vectors, count);
+	auto nWrite = ::writev(File::get(), vectors, count);
 	if (nWrite != -1) {
 		return nWrite;
 	} else if (errno == EAGAIN || errno == EWOULDBLOCK) {
@@ -127,7 +111,7 @@ ssize_t Descriptor::writev(const iovec *vectors, unsigned int count) {
 }
 
 ssize_t Descriptor::write(const void *buffer, size_t count) {
-	auto nWrite = ::write(getHandle(), buffer, count);
+	auto nWrite = ::write(File::get(), buffer, count);
 	if (nWrite != -1) {
 		return nWrite;
 	} else if (errno == EAGAIN || errno == EWOULDBLOCK) {

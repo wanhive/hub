@@ -31,7 +31,7 @@ Socket::Socket(SSL *ssl) :
 	egress.rewind();
 	if (ssl && sslCtx && sslCtx->linked(ssl)) {
 		secure.ssl = ssl;
-		Descriptor::setHandle(SSLContext::getSocket(ssl));
+		Descriptor::set(SSLContext::getSocket(ssl));
 	} else {
 		throw Exception(EX_SECURITY);
 	}
@@ -43,19 +43,18 @@ Socket::Socket(const NameInfo &ni, bool blocking, int timeout) :
 		egress.rewind();
 		SocketAddress sa;
 		if (!strcasecmp(ni.service, "unix")) {
-			Descriptor::setHandle(
+			Descriptor::set(
 					Network::unixConnectedSocket(ni.host, sa, blocking));
 			setFlags(SOCKET_LOCAL);
 		} else {
-			Descriptor::setHandle(Network::connectedSocket(ni, sa, blocking));
+			Descriptor::set(Network::connectedSocket(ni, sa, blocking));
 		}
 		if (blocking) {
-			Network::setSocketTimeout(Descriptor::getHandle(), timeout,
-					timeout);
+			Network::setSocketTimeout(Descriptor::get(), timeout, timeout);
 		}
 		setType(SOCKET_PROXY);
 	} catch (const BaseException &e) {
-		Descriptor::closeHandle();
+		Descriptor::close();
 		throw;
 	}
 }
@@ -66,16 +65,15 @@ Socket::Socket(const char *service, int backlog, bool isUnix, bool blocking) :
 		egress.rewind();
 		SocketAddress sa;
 		if (!isUnix) {
-			Descriptor::setHandle(Network::serverSocket(service, sa, blocking));
+			Descriptor::set(Network::serverSocket(service, sa, blocking));
 		} else {
-			Descriptor::setHandle(
-					Network::unixServerSocket(service, sa, blocking));
+			Descriptor::set(Network::unixServerSocket(service, sa, blocking));
 			setFlags(SOCKET_LOCAL);
 		}
-		Network::listen(Descriptor::getHandle(), backlog);
+		Network::listen(Descriptor::get(), backlog);
 		setType(SOCKET_LISTENER);
 	} catch (const BaseException &e) {
-		Descriptor::closeHandle();
+		Descriptor::close();
 		throw;
 	}
 }
@@ -119,7 +117,7 @@ void Socket::start() {
 }
 
 void Socket::stop() noexcept {
-	Network::shutdown(Descriptor::getHandle());
+	Network::shutdown(Descriptor::get());
 }
 
 bool Socket::callback(void *arg) noexcept {
@@ -186,7 +184,7 @@ Socket* Socket::accept(bool blocking) {
 	auto sfd = -1;
 	try {
 		SocketAddress sa;
-		sfd = Network::accept(Descriptor::getHandle(), sa, blocking);
+		sfd = Network::accept(Descriptor::get(), sa, blocking);
 		if (sfd == -1) {
 			clearEvents(IO_READ); //Would block
 			return nullptr;
@@ -370,8 +368,7 @@ void Socket::initSSL() {
 	if (!sslCtx || (secure.callRead && secure.callWrite)) {
 		throw Exception(EX_STATE);
 	} else if (!secure.ssl) {
-		secure.ssl = sslCtx->create(Descriptor::getHandle(),
-				!isType(SOCKET_PROXY));
+		secure.ssl = sslCtx->create(Descriptor::get(), !isType(SOCKET_PROXY));
 	} else if (secure.verified || !isType(SOCKET_PROXY)) {
 		return;
 	} else if (!SSL_is_init_finished(secure.ssl)) {
