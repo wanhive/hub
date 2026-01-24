@@ -64,6 +64,8 @@ And we can have an idea of the number of certificates created by a CA.
 
 ```
 openssl x509 -req -in server.csr -CA ca.crt -CAkey ca.key -CAcreateserial -out server.crt -days 365 -sha256
+
+openssl x509 -req -in server.csr -CA ca.crt -CAkey ca.key -CAserial ca.srl -out server.crt -days 365 -sha256
 ```
 
 *This uses ca.crt to sign server.csr, creating server.crt (your signed certificate).*
