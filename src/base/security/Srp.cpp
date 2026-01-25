@@ -162,8 +162,8 @@ const unsigned char zeros[1024] { };
 
 namespace wanhive {
 
-Srp::Srp(SrpGroup type, DigestType dType) noexcept :
-		type(type), ctx(nullptr), H(dType), status(0) {
+Srp::Srp(SrpGroup type, HashType hf) noexcept :
+		type { type }, ctx { }, H { hf }, status { } {
 	memset(key.K, 0, MDSIZE);
 	memset(proof.M, 0, MDSIZE);
 	memset(proof.AMK, 0, MDSIZE);
@@ -851,11 +851,11 @@ void Srp::test() noexcept {
 }
 
 void Srp::test(const char *I, const unsigned char *p, unsigned int pwdLen,
-		unsigned int iterations, SrpGroup type, DigestType dType) noexcept {
+		unsigned int iterations, SrpGroup type, HashType hf) noexcept {
 	Srp *host = nullptr;
 	Srp *user = nullptr;
-	if (!(host = new (std::nothrow) Srp(type, dType))
-			|| !(user = new (std::nothrow) Srp(type, dType))) {
+	if (!(host = new (std::nothrow) Srp(type, hf))
+			|| !(user = new (std::nothrow) Srp(type, hf))) {
 		printf("Insufficient memory");
 		delete host;
 		delete user;

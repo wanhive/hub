@@ -1,7 +1,7 @@
 /*
  * Hash.h
  *
- * SHA512 based message digest
+ * Cryptographic hashing
  *
  *
  * Copyright (C) 2018 Amit Kumar (amitkriit@gmail.com)
@@ -22,7 +22,7 @@ using Digest = unsigned char[64];
 using EncodedDigest = char[128];
 //-----------------------------------------------------------------
 /**
- * SHA512 based message digest
+ * Cryptographic hashing facility
  */
 class Hash {
 public:
@@ -37,32 +37,32 @@ public:
 	//-----------------------------------------------------------------
 	/**
 	 * Hashes a block of data.
-	 * @param block the input data
-	 * @param size size of the input data in bytes
-	 * @param digest the object for storing the digest value
+	 * @param data input data
+	 * @param size input data's size in bytes
+	 * @param digest stores the message digest
 	 * @return true on success, false otherwise
 	 */
-	bool create(const void *block, unsigned int size, Digest *digest) noexcept;
+	bool create(const void *data, unsigned int size, Digest *digest) noexcept;
 	/**
-	 * Verifies a digest value with the original data.
-	 * @param digest the digest value to verify
-	 * @param block the reference data
-	 * @param size reference data's size in bytes
+	 * Verifies a message digest with the original data.
+	 * @param digest message digest
+	 * @param data reference data
+	 * @param size data's size in bytes
 	 * @return true on successful verification, false otherwise
 	 */
-	bool verify(const Digest *digest, const void *block,
+	bool verify(const Digest *digest, const void *data,
 			unsigned int size) noexcept;
 	//-----------------------------------------------------------------
 	/**
-	 * Base-64 encodes the given digest value.
-	 * @param digest the digest value to encode
-	 * @param enc the object for storing the result
-	 * @return length of the output (excluding the nul-terminator)
+	 * Base-64 encodes a message digest.
+	 * @param digest message digest
+	 * @param encoded stores the output
+	 * @return output's length in bytes (excluding the nul-terminator)
 	 */
 	static unsigned int encode(const Digest *digest,
-			EncodedDigest *enc) noexcept;
+			EncodedDigest *encoded) noexcept;
 public:
-	/*! The output size in bytes (64 bytes) **/
+	/*! Message digest size in bytes **/
 	static constexpr unsigned int SIZE = Sha::length(WH_SHA512);
 private:
 	Sha sha;

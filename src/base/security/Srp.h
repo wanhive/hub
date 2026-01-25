@@ -41,9 +41,9 @@ public:
 	/**
 	 * Constructor: assigns the SRP-6a context.
 	 * @param type group type
-	 * @param dType message digest type
+	 * @param hf hash function type
 	 */
-	Srp(SrpGroup type = SRP_1024, DigestType dType = WH_SHA1) noexcept;
+	Srp(SrpGroup type = SRP_1024, HashType hf = WH_SHA1) noexcept;
 	/**
 	 * Destructor
 	 */
@@ -363,11 +363,11 @@ public:
 	 * @param pwdLen password length in bytes
 	 * @param iterations iterations count
 	 * @param type group type
-	 * @param dType digest type
+	 * @param hf hash function type
 	 */
 	static void test(const char *I, const unsigned char *p, unsigned int pwdLen,
-			unsigned int iterations, SrpGroup type = SRP_1024,
-			DigestType dType = WH_SHA1) noexcept;
+			unsigned int iterations, SrpGroup type = SRP_1024, HashType hf =
+					WH_SHA1) noexcept;
 private:
 	//For initialization
 	bool loadPrime() noexcept;

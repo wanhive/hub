@@ -1,7 +1,7 @@
 /*
  * Hash.cpp
  *
- * SHA512 based message digest
+ * Cryptographic hashing
  *
  *
  * Copyright (C) 2018 Amit Kumar (amitkriit@gmail.com)
@@ -23,19 +23,17 @@ Hash::~Hash() {
 
 }
 
-bool Hash::create(const void *block, unsigned int size, Digest *digest) noexcept {
-	return sha.create((const unsigned char*) block, size,
-			(unsigned char*) digest);
+bool Hash::create(const void *data, unsigned int size, Digest *digest) noexcept {
+	return sha.create(data, size, (unsigned char*) digest);
 }
 
-bool Hash::verify(const Digest *digest, const void *block,
+bool Hash::verify(const Digest *digest, const void *data,
 		unsigned int size) noexcept {
-	return sha.verify((const unsigned char*) block, size,
-			(const unsigned char*) digest);
+	return sha.verify(data, size, (const unsigned char*) digest);
 }
 
-unsigned int Hash::encode(const Digest *digest, EncodedDigest *enc) noexcept {
-	return Encoding::encode(ENC_BASE64, (char*) enc, digest, Hash::SIZE,
+unsigned int Hash::encode(const Digest *digest, EncodedDigest *encoded) noexcept {
+	return Encoding::encode(ENC_BASE64, (char*) encoded, digest, Hash::SIZE,
 			sizeof(EncodedDigest));
 }
 

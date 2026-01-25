@@ -19,17 +19,16 @@
 namespace wanhive {
 //-----------------------------------------------------------------
 /**
- * Supported message digest types
+ * Supported hash functions
  */
-enum DigestType {
+enum HashType {
 	WH_SHA1, /**< SHA-1 */
 	WH_SHA256,/**< SHA-256 */
 	WH_SHA512 /**< SHA-512 */
 };
 //-----------------------------------------------------------------
 /**
- * SHA message digest implementation. Supported message digest types have been
- * enumerated above.
+ * SHA secure hash
  */
 class Sha: private NonCopyable {
 public:
@@ -37,7 +36,7 @@ public:
 	 * Constructor: assigns a message digest context.
 	 * @param type message digest type
 	 */
-	Sha(DigestType type) noexcept;
+	Sha(HashType type) noexcept;
 	/**
 	 * Destructor
 	 */
@@ -50,62 +49,66 @@ public:
 	/**
 	 * Hashes the given data, can be called again to hash additional data.
 	 * @param data input data for hashing
-	 * @param dataLength input data's size in bytes
+	 * @param bytes input data's size in bytes
 	 * @return true on success, false on error
 	 */
-	bool update(const void *data, size_t dataLength) noexcept;
+	bool update(const void *data, unsigned int bytes) noexcept;
 	/**
 	 * Retrieves the digest value.
-	 * @param messageDigest buffer for storing the digest value
-	 * @param size object for storing the digest size in bytes (can be nullptr)
+	 * @param digest stores the message digest
+	 * @param size stores the digest size in bytes (can be nullptr)
 	 * @return true on success, false on error
 	 */
-	bool final(unsigned char *messageDigest,
-			unsigned int *size = nullptr) noexcept;
+	bool final(unsigned char *digest, unsigned int *size = nullptr) noexcept;
 	/**
 	 * Hashes the given data and returns the hash value.
 	 * @param data input data for hashing
-	 * @param dataLength input data's size in bytes
-	 * @param messageDigest buffer for storing the digest value
-	 * @param size object for storing the digest size in bytes (can be nullptr)
+	 * @param bytes input data's size in bytes
+	 * @param digest stores the message digest
+	 * @param size stores the digest size in bytes (can be nullptr)
 	 * @return true on success, false on error
 	 */
-	bool create(const unsigned char *data, size_t dataLength,
-			unsigned char *messageDigest, unsigned int *size = nullptr) noexcept;
+	bool create(const void *data, unsigned int bytes, unsigned char *digest,
+			unsigned int *size = nullptr) noexcept;
 	/**
 	 * Compares the given digest value with digest value of the given data.
 	 * @param data input data for verification
-	 * @param dataLength input data's size in bytes
-	 * @param messageDigest the digest value for comparison
+	 * @param bytes input data's size in bytes
+	 * @param digest the digest value for comparison
 	 * @return true on successful match, false otherwise
 	 */
-	bool verify(const unsigned char *data, size_t dataLength,
-			const unsigned char *messageDigest) noexcept;
+	bool verify(const void *data, unsigned int bytes,
+			const unsigned char *digest) noexcept;
 	/**
 	 * Returns the expected digest size.
 	 * @return digest size in bytes
 	 */
 	unsigned int length() const noexcept;
 	/**
-	 * Returns the expected digest size for the given type.
-	 * @param type the message digest type
+	 * Returns the message digest size for a type.
+	 * @param type hash function type
 	 * @return digest size in bytes
 	 */
-	static constexpr unsigned int length(DigestType type) noexcept {
+	static constexpr unsigned int length(HashType type) noexcept {
 		switch (type) {
 		case WH_SHA1:
 			return SHA_DIGEST_LENGTH;
 		case WH_SHA256:
 			return SHA256_DIGEST_LENGTH;
-		default:
+		case WH_SHA512:
 			return SHA512_DIGEST_LENGTH;
+		default:
+			return MAX_MD_SIZE;
 		}
 	}
+public:
+	/*! Maximum message digest size in bytes */
+	static constexpr unsigned int MAX_MD_SIZE = EVP_MAX_MD_SIZE;
 private:
-	const EVP_MD* selectType() const noexcept;
+	const EVP_MD* get() const noexcept;
 private:
 	EVP_MD_CTX *ctx;
-	const DigestType type;
+	const HashType _type;
 	const unsigned int _length; //Digest length in bytes
 };
 

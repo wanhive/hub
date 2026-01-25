@@ -15,8 +15,8 @@
 
 namespace wanhive {
 
-Sha::Sha(DigestType type) noexcept :
-		ctx { }, type { type }, _length { length(type) } {
+Sha::Sha(HashType type) noexcept :
+		ctx { }, _type { type }, _length { length(type) } {
 
 }
 
@@ -26,46 +26,43 @@ Sha::~Sha() {
 
 bool Sha::init() noexcept {
 	if (!ctx) {
-		return (ctx = EVP_MD_CTX_new())
-				&& (EVP_DigestInit(ctx, selectType()) > 0);
+		return (ctx = EVP_MD_CTX_new()) && (EVP_DigestInit(ctx, get()) > 0);
 	} else {
 		return (EVP_DigestInit_ex(ctx, nullptr, nullptr) > 0);
 	}
 }
 
-bool Sha::update(const void *data, size_t dataLength) noexcept {
-	if (ctx && (!dataLength || data)) {
-		return (EVP_DigestUpdate(ctx, data, dataLength) > 0);
+bool Sha::update(const void *data, unsigned int bytes) noexcept {
+	if (ctx && (!bytes || data)) {
+		return (EVP_DigestUpdate(ctx, data, bytes) > 0);
 	} else {
 		return false;
 	}
 }
 
-bool Sha::final(unsigned char *messageDigest, unsigned int *size) noexcept {
-	if (ctx && messageDigest) {
-		return (EVP_DigestFinal_ex(ctx, messageDigest, size) > 0);
+bool Sha::final(unsigned char *digest, unsigned int *size) noexcept {
+	if (ctx && digest) {
+		return (EVP_DigestFinal_ex(ctx, digest, size) > 0);
 	} else {
 		return false;
 	}
 }
 
-bool Sha::create(const unsigned char *data, size_t dataLength,
-		unsigned char *messageDigest, unsigned int *size) noexcept {
-	if (!dataLength || (data && messageDigest)) {
-		return (EVP_Digest(data, dataLength, messageDigest, size, selectType(),
-				nullptr) > 0);
+bool Sha::create(const void *data, unsigned int bytes, unsigned char *digest,
+		unsigned int *size) noexcept {
+	if (!bytes || (data && digest)) {
+		return (EVP_Digest(data, bytes, digest, size, get(), nullptr) > 0);
 	} else {
 		return false;
 	}
 }
 
-bool Sha::verify(const unsigned char *data, size_t dataLength,
-		const unsigned char *messageDigest) noexcept {
-	if (messageDigest) {
-		unsigned char md[EVP_MAX_MD_SIZE];
-		unsigned int len;
-		return create(data, dataLength, md, &len)
-				&& (memcmp(md, messageDigest, len) == 0);
+bool Sha::verify(const void *data, unsigned int bytes,
+		const unsigned char *digest) noexcept {
+	if (digest) {
+		unsigned char md[MAX_MD_SIZE];
+		unsigned int len { };
+		return create(data, bytes, md, &len) && (memcmp(md, digest, len) == 0);
 	} else {
 		return false;
 	}
@@ -75,8 +72,8 @@ unsigned int Sha::length() const noexcept {
 	return _length;
 }
 
-const EVP_MD* Sha::selectType() const noexcept {
-	switch (type) {
+const EVP_MD* Sha::get() const noexcept {
+	switch (_type) {
 	case WH_SHA1:
 		return EVP_sha1();
 	case WH_SHA256:
