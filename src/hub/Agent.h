@@ -68,6 +68,7 @@ private:
 	void processTokenResponse(const Message *msg) noexcept;
 	Message* createRegistrationRequest(bool sign);
 	void processRegistrationResponse(Message *msg) noexcept;
+	//-----------------------------------------------------------------
 	void setStage(int stage) noexcept;
 	int getStage() const noexcept;
 	bool isStage(int stage) const noexcept;

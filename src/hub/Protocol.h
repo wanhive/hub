@@ -195,7 +195,6 @@ public:
 	 * @return true on success, false on error (request denied by the host)
 	 */
 	bool publishRequest(uint64_t host, uint8_t topic, const Data &data);
-
 	/**
 	 * Creates a subscription request to a topic.
 	 * @param host host's identifier (can be set to zero)
@@ -216,7 +215,6 @@ public:
 	 * @return true on success, false on error (request denied by the host)
 	 */
 	bool subscribeRequest(uint64_t host, uint8_t topic);
-
 	/**
 	 * Creates an un-subscription request to a topic.
 	 * @param host host's identifier (can be set to zero)
@@ -256,7 +254,6 @@ public:
 	 */
 	static unsigned int processIdentificationResponse(const Message *msg,
 			Data &salt, Data &nonce);
-
 	/**
 	 * Creates an authentication request.
 	 * @param address message's address
@@ -274,7 +271,6 @@ public:
 	 */
 	static unsigned int processAuthenticationResponse(const Message *msg,
 			Data &proof) noexcept;
-
 	/**
 	 * Creates a registration request.
 	 * @param address message's address
@@ -303,7 +299,6 @@ public:
 	 */
 	static unsigned int processTokenResponse(const Message *msg,
 			Digest *hc) noexcept;
-
 	/**
 	 * Creates a find-root request to find the root host.
 	 * @param address message's address

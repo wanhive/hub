@@ -38,8 +38,7 @@ public:
 	 */
 	unsigned int createDescribeRequest(uint64_t host) noexcept;
 	/**
-	 * Processes the response to a describe-node request to fetch a host's
-	 * information.
+	 * Processes a describe-node response to fetch a host's information.
 	 * @param info stores host's information
 	 * @return message length on success, 0 on error
 	 */
@@ -60,8 +59,7 @@ public:
 	 */
 	unsigned int createGetPredecessorRequest(uint64_t host) noexcept;
 	/**
-	 * Processes the response to a get-predecessor request to fetch a host's
-	 * predecessor.
+	 * Processes a get-predecessor response to fetch a host's predecessor.
 	 * @param key stores predecessor's identifier
 	 * @return message length on success, 0 on error
 	 */
@@ -84,8 +82,7 @@ public:
 	unsigned int createSetPredecessorRequest(uint64_t host,
 			uint64_t key) noexcept;
 	/**
-	 * Processes the response to a set-predecessor request to update a host's
-	 * predecessor.
+	 * Processes a set-predecessor response to update a host's predecessor.
 	 * @param key expected predecessor's identifier
 	 * @return message length on success, 0 on error
 	 */
@@ -106,8 +103,7 @@ public:
 	 */
 	unsigned int createGetSuccessorRequest(uint64_t host) noexcept;
 	/**
-	 * Processes the response to a get-successor request to fetch a host's
-	 * successor.
+	 * Processes a get-successor response to fetch a host's successor.
 	 * @param key stores successor's identifier
 	 * @return message length on success, 0 on error
 	 */
@@ -129,8 +125,7 @@ public:
 	 */
 	unsigned int createSetSuccessorRequest(uint64_t host, uint64_t key) noexcept;
 	/**
-	 * Processes the response to a set-successor request to update a host's
-	 * successor.
+	 * Processes a set-successor response to update a host's successor.
 	 * @param key expected successor's identifier
 	 * @return message length on success, 0 on error
 	 */
@@ -152,8 +147,7 @@ public:
 	 */
 	unsigned int createGetFingerRequest(uint64_t host, uint32_t index) noexcept;
 	/**
-	 * Processes the response to a get-finger request to fetch a host's finger
-	 * table entry.
+	 * Processes a get-finger response to fetch a host's finger table entry.
 	 * @param index finger table's index
 	 * @param key stores finger table entry's value
 	 * @return message length on success, 0 on error
@@ -180,8 +174,7 @@ public:
 	unsigned int createSetFingerRequest(uint64_t host, uint32_t index,
 			uint64_t key) noexcept;
 	/**
-	 * Processes the response to a set-finger request to update a host's
-	 * finger table.
+	 * Processes a set-finger response to update a host's finger table.
 	 * @param index finger table's index
 	 * @param key expected value at the given index
 	 * @return message length on success, 0 on error
@@ -199,14 +192,13 @@ public:
 	bool setFingerRequest(uint64_t host, uint32_t index, uint64_t key);
 	//-----------------------------------------------------------------
 	/**
-	 * Creates a get-neighbours request to fetch a host's immediate neighbors.
+	 * Creates a get-neighbours request to fetch a host's neighbors.
 	 * @param host host's identifier
 	 * @return message length on success, 0 on error
 	 */
 	unsigned int createGetNeighboursRequest(uint64_t host) noexcept;
 	/**
-	 * Processes the response to a get-neighbours request to fetch a host's
-	 * immediate neighbors.
+	 * Processes a get-neighbours response to fetch a host's neighbors.
 	 * @param predecessor stores prdecessor's identifier
 	 * @param successor stores successor's identifier
 	 * @return message length on success, 0 on error
@@ -215,7 +207,7 @@ public:
 			uint64_t &successor) const noexcept;
 	/**
 	 * Prepares and executes a get-neighbours request to fetch a host's
-	 * immediate neighbors.
+	 * neighbors.
 	 * @param host host's identifier
 	 * @param predecessor stores predecessor's identifier
 	 * @param successor stores successor's identifier
@@ -233,8 +225,7 @@ public:
 	unsigned int createNotifyRequest(uint64_t host,
 			uint64_t predecessor) noexcept;
 	/**
-	 * Processes the response to a notify request to inform a host about
-	 * predecessor change.
+	 * Processes a notify response to inform a host about predecessor change.
 	 * @return message length on success, 0 on error
 	 */
 	unsigned int processNotifyResponse() const noexcept;
@@ -248,7 +239,7 @@ public:
 	bool notifyRequest(uint64_t host, uint64_t predecessor);
 	//-----------------------------------------------------------------
 	/**
-	 * Creates a find-successor request to recursively find a key's successor.
+	 * Creates a find-successor request to find a key's successor.
 	 * @param host bootstrap node's identifier
 	 * @param uid key's value
 	 * @return message length on success, 0 on error
@@ -256,8 +247,7 @@ public:
 	unsigned int createFindSuccessorRequest(uint64_t host,
 			uint64_t uid) noexcept;
 	/**
-	 * Processes the response to a find-successor request to recursively find a
-	 * key's successor.
+	 * Processes a find-successor response to find a key's successor.
 	 * @param uid key's value
 	 * @param successor stores the key's successor
 	 * @return message length on success, 0 on error
@@ -265,8 +255,7 @@ public:
 	unsigned int processFindSuccessorResponse(uint64_t uid,
 			uint64_t &successor) const noexcept;
 	/**
-	 * Prepares and executes a find-successor request to recursively find a
-	 * key's successor.
+	 * Prepares and executes a find-successor request to find a key's successor.
 	 * @param host bootstrap node's identifier
 	 * @param uid key's value
 	 * @param key stores the key's successor
@@ -281,7 +270,7 @@ public:
 	 */
 	unsigned int createPingRequest(uint64_t host) noexcept;
 	/**
-	 * Processes the response to a ping request.
+	 * Processes a ping response.
 	 * @return message length on success, 0 on error
 	 */
 	unsigned int processPingRequest() const noexcept;
@@ -299,7 +288,7 @@ public:
 	 */
 	unsigned int createMapRequest(uint64_t host) noexcept;
 	/**
-	 * Processes the response to a map request.
+	 * Processes a map response.
 	 * @return message length on success, 0 on error
 	 */
 	unsigned int processMapRequest() const noexcept;

@@ -200,7 +200,7 @@ private:
 	StaticCircularBuffer<Message*, OUT_QUEUE_SIZE> out;
 	StaticBuffer<iovec, OUT_QUEUE_SIZE> egress;
 	//-----------------------------------------------------------------
-	static SSLContext *sslCtx; //SSL/TLS context
+	static SSLContext *sslCtx;
 };
 
 } /* namespace wanhive */

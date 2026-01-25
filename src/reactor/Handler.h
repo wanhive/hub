@@ -15,8 +15,8 @@
 
 namespace wanhive {
 /**
- * Data handler/processor interface
- * @tparam T working data type
+ * Handler interface
+ * @tparam T data type
  */
 template<typename T> class Handler {
 public:
@@ -25,7 +25,7 @@ public:
 	 */
 	virtual ~Handler() = default;
 	/**
-	 * Handles (processes) an object.
+	 * Processes an object.
 	 * @param t object to process
 	 * @return true on success, false otherwise
 	 */
