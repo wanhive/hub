@@ -33,8 +33,8 @@ enum HashType {
 class Sha: private NonCopyable {
 public:
 	/**
-	 * Constructor: assigns a message digest context.
-	 * @param type message digest type
+	 * Constructor: assigns a hash function type.
+	 * @param type hash function type
 	 */
 	Sha(HashType type) noexcept;
 	/**
@@ -101,11 +101,11 @@ public:
 			return MAX_MD_SIZE;
 		}
 	}
+private:
+	const EVP_MD* type() const noexcept;
 public:
 	/*! Maximum message digest size in bytes */
 	static constexpr unsigned int MAX_MD_SIZE = EVP_MAX_MD_SIZE;
-private:
-	const EVP_MD* get() const noexcept;
 private:
 	EVP_MD_CTX *ctx;
 	const HashType _type;
