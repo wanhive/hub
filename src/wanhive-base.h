@@ -1,7 +1,7 @@
 /*
  * wanhive-base.h
  *
- * Basic functions headers
+ * Base headers
  *
  *
  * Copyright (C) 2020 Wanhive Systems Private Limited (info@wanhive.com)

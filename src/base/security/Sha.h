@@ -109,7 +109,7 @@ public:
 private:
 	EVP_MD_CTX *ctx;
 	const HashType _type;
-	const unsigned int _length; //Digest length in bytes
+	const unsigned int _length;
 };
 
 } /* namespace wanhive */

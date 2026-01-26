@@ -1,7 +1,7 @@
 /*
  * PKI.h
  *
- * Asymmetric cryptography facility
+ * Asymmetric cryptography
  *
  *
  * Copyright (C) 2018 Amit Kumar (amitkriit@gmail.com)
@@ -29,7 +29,7 @@ using Signature = unsigned char[WH_PKI_ENCODING_LEN];
 using CipherText = unsigned char[WH_PKI_ENCODING_LEN];
 //-----------------------------------------------------------------
 /**
- * Asymmetric cryptography facility
+ * Asymmetric cryptography
  */
 class PKI {
 public:

@@ -1,7 +1,7 @@
 /*
  * Random.h
  *
- * Cryptographically secure pseudo random number generator
+ * Cryptographic pseudo random number generator
  *
  *
  * Copyright (C) 2018 Amit Kumar (amitkriit@gmail.com)
@@ -15,7 +15,7 @@
 
 namespace wanhive {
 /**
- * Cryptographically secure PRNG
+ * Cryptographic pseudo random number generator (PRNG)
  */
 class Random {
 public:

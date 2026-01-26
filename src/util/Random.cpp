@@ -1,7 +1,7 @@
 /*
  * Random.cpp
  *
- * Cryptographically secure pseudo random number generator
+ * Cryptographic pseudo random number generator
  *
  *
  * Copyright (C) 2018 Amit Kumar (amitkriit@gmail.com)

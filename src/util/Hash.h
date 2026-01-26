@@ -22,7 +22,7 @@ using Digest = unsigned char[64];
 using EncodedDigest = char[128];
 //-----------------------------------------------------------------
 /**
- * Cryptographic hashing facility
+ * Cryptographic hashing
  */
 class Hash {
 public:

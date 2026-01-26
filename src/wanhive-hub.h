@@ -1,7 +1,7 @@
 /*
  * wanhive-hub.h
  *
- * Wanhive Hub implementation header
+ * Wanhive Hub headers
  *
  *
  * Copyright (C) 2020 Wanhive Systems Private Limited (info@wanhive.com)

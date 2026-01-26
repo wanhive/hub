@@ -1,7 +1,7 @@
 /*
  * all-headers.h
  *
- * Enumeration of all the library headers
+ * Enumeration of library headers
  *
  *
  * Copyright (C) 2020 Wanhive Systems Private Limited (info@wanhive.com)

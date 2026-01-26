@@ -1,7 +1,7 @@
 /*
  * PKI.cpp
  *
- * Asymmetric cryptography facility
+ * Asymmetric cryptography
  *
  *
  * Copyright (C) 2018 Amit Kumar (amitkriit@gmail.com)
