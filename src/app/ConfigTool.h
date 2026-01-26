@@ -1,5 +1,5 @@
-/*
- * ConfigTool.h
+/**
+ * @file ConfigTool.h
  *
  * Settings generator
  *
@@ -13,6 +13,7 @@
 #ifndef WH_APP_CONFIGTOOL_H_
 #define WH_APP_CONFIGTOOL_H_
 
+/*! @namespace wanhive */
 namespace wanhive {
 /**
  * Command line tool for generating basic settings.

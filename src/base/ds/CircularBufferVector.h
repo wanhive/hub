@@ -1,5 +1,5 @@
-/*
- * CircularBufferVector.h
+/**
+ * @file CircularBufferVector.h
  *
  * Circular buffer segments
  *
@@ -14,6 +14,7 @@
 #define WH_BASE_DS_CIRCULARBUFFERVECTOR_H_
 #include "BufferVector.h"
 
+/*! @namespace wanhive */
 namespace wanhive {
 /**
  * Data structure for vectored read/write operations on the circular buffer

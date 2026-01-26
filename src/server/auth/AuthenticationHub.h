@@ -1,5 +1,5 @@
-/*
- * AuthenticationHub.h
+/**
+ * @file AuthenticationHub.h
  *
  * Authentication hub
  *
@@ -15,6 +15,7 @@
 #include "Things.h"
 #include "../../hub/Hub.h"
 
+/*! @namespace wanhive */
 namespace wanhive {
 /**
  * Authentication hub implementation

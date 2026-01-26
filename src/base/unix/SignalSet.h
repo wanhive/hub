@@ -1,5 +1,5 @@
-/*
- * SignalSet.h
+/**
+ * @file SignalSet.h
  *
  * Signal set operations
  *
@@ -14,6 +14,7 @@
 #define WH_BASE_UNIX_SIGNALSET_H_
 #include <signal.h>
 
+/*! @namespace wanhive */
 namespace wanhive {
 /**
  * Signal set operations

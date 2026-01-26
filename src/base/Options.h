@@ -1,5 +1,5 @@
-/*
- * Options.h
+/**
+ * @file Options.h
  *
  * Configuration management
  *
@@ -15,6 +15,7 @@
 #include "common/NonCopyable.h"
 #include <cstdio>
 
+/*! @namespace wanhive */
 namespace wanhive {
 /**
  * Configuration manager that accepts simplified INI file format.

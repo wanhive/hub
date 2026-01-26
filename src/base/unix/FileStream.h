@@ -1,5 +1,5 @@
-/*
- * FileStream.h
+/**
+ * @file FileStream.h
  *
  * File stream
  *
@@ -15,6 +15,7 @@
 #include "../common/NonCopyable.h"
 #include <cstdio>
 
+/*! @namespace wanhive */
 namespace wanhive {
 /**
  * File stream

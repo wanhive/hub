@@ -1,5 +1,5 @@
-/*
- * PThread.h
+/**
+ * @file PThread.h
  *
  * Posix thread
  *
@@ -16,6 +16,7 @@
 #include "../common/Task.h"
 #include <pthread.h>
 
+/*! @namespace wanhive */
 namespace wanhive {
 /**
  * Posix thread abstraction

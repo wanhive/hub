@@ -1,5 +1,5 @@
-/*
- * wanhive-reactor.h
+/**
+ * @file wanhive-reactor.h
  *
  * Reactor pattern implementation headers
  *

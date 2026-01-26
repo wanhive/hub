@@ -1,5 +1,5 @@
-/*
- * File.h
+/**
+ * @file File.h
  *
  * File descriptor management
  *
@@ -17,6 +17,7 @@
 #include <sys/stat.h>
 #include <fcntl.h>
 
+/*! @namespace wanhive */
 namespace wanhive {
 /**
  * File descriptor management

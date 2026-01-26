@@ -1,5 +1,5 @@
-/*
- * CSPRNG.h
+/**
+ * @file CSPRNG.h
  *
  * Cryptographically secure pseudo random number generator
  *
@@ -13,6 +13,7 @@
 #ifndef WH_BASE_SECURITY_CSPRNG_H_
 #define WH_BASE_SECURITY_CSPRNG_H_
 
+/*! @namespace wanhive */
 namespace wanhive {
 /**
  * Cryptographically secure PRNG

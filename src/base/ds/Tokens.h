@@ -1,5 +1,5 @@
-/*
- * Tokens.h
+/**
+ * @file Tokens.h
  *
  * Token Bucket
  *
@@ -14,6 +14,7 @@
 #define WH_BASE_DS_TOKENS_H_
 #include "Counter.h"
 
+/*! @namespace wanhive */
 namespace wanhive {
 /**
  * Token bucket implementation.

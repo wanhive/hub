@@ -1,5 +1,5 @@
-/*
- * Message.h
+/**
+ * @file Message.h
  *
  * Wanhive Message
  *
@@ -18,6 +18,7 @@
 #include "../base/ds/State.h"
 #include <cstdarg>
 
+/*! @namespace wanhive */
 namespace wanhive {
 //-----------------------------------------------------------------
 /**

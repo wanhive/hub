@@ -1,5 +1,5 @@
-/*
- * ReadyList.h
+/**
+ * @file ReadyList.h
  *
  * Resizable ready list
  *
@@ -15,6 +15,7 @@
 #include "../common/Memory.h"
 #include "../common/NonCopyable.h"
 
+/*! @namespace wanhive */
 namespace wanhive {
 /**
  * Light weight ready list of POD types.

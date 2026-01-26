@@ -1,5 +1,5 @@
-/*
- * Event.h
+/**
+ * @file Event.h
  *
  * Events counter
  *
@@ -14,6 +14,7 @@
 #define WH_HUB_EVENT_H_
 #include "../reactor/Watcher.h"
 
+/*! @namespace wanhive */
 namespace wanhive {
 /**
  * Events counter

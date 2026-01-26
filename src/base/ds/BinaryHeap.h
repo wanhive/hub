@@ -1,5 +1,5 @@
-/*
- * BinaryHeap.h
+/**
+ * @file BinaryHeap.h
  *
  * Binary heap implementation
  *
@@ -18,6 +18,7 @@
 #include "../common/NonCopyable.h"
 #include "../common/reflect.h"
 
+/*! @namespace wanhive */
 namespace wanhive {
 //-----------------------------------------------------------------
 /**

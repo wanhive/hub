@@ -1,5 +1,5 @@
-/*
- * Sha.h
+/**
+ * @file Sha.h
  *
  * SHA secure hash
  *
@@ -16,6 +16,7 @@
 #include <openssl/evp.h>
 #include <openssl/sha.h>
 
+/*! @namespace wanhive */
 namespace wanhive {
 //-----------------------------------------------------------------
 /**

@@ -1,5 +1,5 @@
-/*
- * Environment.h
+/**
+ * @file Environment.h
  *
  * Environment variables
  *
@@ -13,6 +13,7 @@
 #ifndef WH_BASE_UNIX_ENVIRONMENT_H_
 #define WH_BASE_UNIX_ENVIRONMENT_H_
 
+/*! @namespace wanhive */
 namespace wanhive {
 /**
  * Environment variables

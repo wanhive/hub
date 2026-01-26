@@ -1,5 +1,5 @@
-/*
- * Verifier.h
+/**
+ * @file Verifier.h
  *
  * System for mutual authentication
  *
@@ -16,6 +16,7 @@
 #include "../base/ds/State.h"
 #include "../base/security/Srp.h"
 
+/*! @namespace wanhive */
 namespace wanhive {
 /**
  * System for mutual authentication

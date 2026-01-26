@@ -1,5 +1,5 @@
-/*
- * Pooled.h
+/**
+ * @file Pooled.h
  *
  * Object pool implementation
  *
@@ -16,6 +16,7 @@
 #include "../common/Exception.h"
 #include <cstddef>
 
+/*! @namespace wanhive */
 namespace wanhive {
 /**
  * Object pool.

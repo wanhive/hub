@@ -1,5 +1,5 @@
-/*
- * PSignal.h
+/**
+ * @file PSignal.h
  *
  * Signal handling for processes
  *
@@ -15,6 +15,7 @@
 #include "SignalSet.h"
 #include <sys/types.h>
 
+/*! @namespace wanhive */
 namespace wanhive {
 /**
  * Signal handling for processes

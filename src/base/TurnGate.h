@@ -1,5 +1,5 @@
-/*
- * TurnGate.h
+/**
+ * @file TurnGate.h
  *
  * Turn gate for threads
  *
@@ -15,6 +15,7 @@
 #include "common/NonCopyable.h"
 #include <pthread.h>
 
+/*! @namespace wanhive */
 namespace wanhive {
 /**
  * Turn gate for threads

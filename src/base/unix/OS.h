@@ -1,5 +1,5 @@
-/*
- * OS.h
+/**
+ * @file OS.h
  *
  * System information
  *
@@ -15,6 +15,7 @@
 #include <climits>
 #include <sys/utsname.h>
 
+/*! @namespace wanhive */
 namespace wanhive {
 /**
  * System information

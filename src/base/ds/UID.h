@@ -1,5 +1,5 @@
-/*
- * UID.h
+/**
+ * @file UID.h
  *
  * Unique identifier
  *
@@ -14,6 +14,7 @@
 #define WH_BASE_DS_UID_H_
 #include <cstdint>
 
+/*! @namespace wanhive */
 namespace wanhive {
 /**
  * Thread-safe unique identifier generator

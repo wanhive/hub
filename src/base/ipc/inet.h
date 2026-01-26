@@ -1,5 +1,5 @@
-/*
- * inet.h
+/**
+ * @file inet.h
  *
  * Useful structures for the network-based IPC
  *
@@ -14,6 +14,7 @@
 #define WH_BASE_IPC_INET_H_
 #include <netdb.h>
 
+/*! @namespace wanhive */
 namespace wanhive {
 /**
  * Resource name

@@ -1,5 +1,5 @@
-/*
- * Random.h
+/**
+ * @file Random.h
  *
  * Cryptographic pseudo random number generator
  *
@@ -13,6 +13,7 @@
 #ifndef WH_UTIL_RANDOM_H_
 #define WH_UTIL_RANDOM_H_
 
+/*! @namespace wanhive */
 namespace wanhive {
 /**
  * Cryptographic pseudo random number generator (PRNG)

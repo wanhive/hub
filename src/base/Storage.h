@@ -1,5 +1,5 @@
-/*
- * Storage.h
+/**
+ * @file Storage.h
  *
  * Common file system routines
  *
@@ -16,6 +16,7 @@
 #include <fcntl.h>
 #include <sys/types.h>
 
+/*! @namespace wanhive */
 namespace wanhive {
 /**
  * Common file system routines

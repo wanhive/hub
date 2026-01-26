@@ -15,6 +15,7 @@
 #include "../../hub/Identity.h"
 #include "../../hub/Protocol.h"
 
+/*! @namespace wanhive */
 namespace wanhive {
 /**
  * Connects with an existing overlay network via any participant node, including

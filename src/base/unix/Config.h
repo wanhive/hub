@@ -1,5 +1,5 @@
-/*
- * Config.h
+/**
+ * @file Config.h
  *
  * Runtime configuration
  *
@@ -15,6 +15,7 @@
 #include <climits>
 #include <unistd.h>
 
+/*! @namespace wanhive */
 namespace wanhive {
 /**
  * Runtime configuration

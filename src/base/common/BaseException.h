@@ -1,5 +1,5 @@
-/*
- * BaseException.h
+/**
+ * @file BaseException.h
  *
  * Base class for exceptions
  *
@@ -13,6 +13,7 @@
 #ifndef WH_BASE_COMMON_BASEEXCEPTION_H_
 #define WH_BASE_COMMON_BASEEXCEPTION_H_
 
+/*! @namespace wanhive */
 namespace wanhive {
 /**
  * Base class for exceptions

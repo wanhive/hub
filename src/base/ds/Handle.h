@@ -1,5 +1,5 @@
-/*
- * Handle.h
+/**
+ * @file Handle.h
  *
  * Selective data access handle
  *
@@ -14,6 +14,7 @@
 #define WH_BASE_DS_HANDLE_H_
 #include "../common/reflect.h"
 
+/*! @namespace wanhive */
 namespace wanhive {
 /**
  * Generic handle for controlled data access.

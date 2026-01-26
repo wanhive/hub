@@ -1,5 +1,5 @@
-/*
- * DataStore.h
+/**
+ * @file DataStore.h
  *
  * Structured data repository
  *
@@ -14,6 +14,7 @@
 #define WH_BASE_DB_DATASTORE_H_
 #include "Postgres.h"
 
+/*! @namespace wanhive */
 namespace wanhive {
 /**
  * Database connection parameters.

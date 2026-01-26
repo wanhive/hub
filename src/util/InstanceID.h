@@ -1,5 +1,5 @@
-/*
- * InstanceID.h
+/**
+ * @file InstanceID.h
  *
  * Secure instance identifier
  *
@@ -15,6 +15,7 @@
 #include "Hash.h"
 #include "../base/common/NonCopyable.h"
 
+/*! @namespace wanhive */
 namespace wanhive {
 /**
  * Secure and unique identifier

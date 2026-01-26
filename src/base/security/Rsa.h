@@ -1,5 +1,5 @@
-/*
- * Rsa.h
+/**
+ * @file Rsa.h
  *
  * RSA cipher
  *
@@ -14,6 +14,7 @@
 #define WH_BASE_SECURITY_RSA_H_
 #include "KeyPair.h"
 
+/*! @namespace wanhive */
 namespace wanhive {
 /**
  * RSA asymmetric cipher

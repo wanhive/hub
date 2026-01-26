@@ -1,5 +1,5 @@
-/*
- * Agent.h
+/**
+ * @file Agent.h
  *
  * Wanhive Agent
  *
@@ -15,6 +15,7 @@
 #include "Hub.h"
 #include "../util/Verifier.h"
 
+/*! @namespace wanhive */
 namespace wanhive {
 /**
  * Agent implementation

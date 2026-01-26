@@ -1,5 +1,5 @@
-/*
- * StaticCircularBuffer.h
+/**
+ * @file StaticCircularBuffer.h
  *
  * Single producer - single consumer lock free circular buffer
  *
@@ -17,6 +17,7 @@
 #include "../common/Atomic.h"
 #include <cstring>
 
+/*! @namespace wanhive */
 namespace wanhive {
 /**
  * Lock free circular buffer for POD types, read/write operations are real-time

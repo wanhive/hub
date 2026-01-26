@@ -1,5 +1,5 @@
-/*
- * Encoding.h
+/**
+ * @file Encoding.h
  *
  * Binary-to-text encodings
  *
@@ -13,6 +13,7 @@
 #ifndef WH_BASE_DS_ENCODING_H_
 #define WH_BASE_DS_ENCODING_H_
 
+/*! @namespace wanhive */
 namespace wanhive {
 //-----------------------------------------------------------------
 /**

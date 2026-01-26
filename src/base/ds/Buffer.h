@@ -1,5 +1,5 @@
-/*
- * Buffer.h
+/**
+ * @file Buffer.h
  *
  * A sequential data container
  *
@@ -19,6 +19,7 @@
 #include "../common/reflect.h"
 #include <cstring>
 
+/*! @namespace wanhive */
 namespace wanhive {
 /**
  * A sequential container of POD (plain old data) types that simulates a single

@@ -1,5 +1,5 @@
-/*
- * SSLContext.h
+/**
+ * @file SSLContext.h
  *
  * SSL/TLS context
  *
@@ -15,6 +15,7 @@
 #include "../common/NonCopyable.h"
 #include <openssl/ssl.h>
 
+/*! @namespace wanhive */
 namespace wanhive {
 /**
  * SSL/TLS context

@@ -1,5 +1,5 @@
-/*
- * Serializer.h
+/**
+ * @file Serializer.h
  *
  * Byte order converter
  *
@@ -17,6 +17,7 @@
 #include <cstdarg>
 #include <cstddef>
 
+/*! @namespace wanhive */
 namespace wanhive {
 /**
  * Platform independent serializer and deserializer.

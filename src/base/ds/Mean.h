@@ -1,5 +1,5 @@
-/*
- * Mean.h
+/**
+ * @file Mean.h
  *
  * Arithmetic mean calculator
  *
@@ -14,6 +14,7 @@
 #define WH_BASE_DS_MEAN_H_
 #include "../common/reflect.h"
 
+/*! @namespace wanhive */
 namespace wanhive {
 /**
  * Arithmetic mean calculator.

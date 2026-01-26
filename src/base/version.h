@@ -1,5 +1,5 @@
-/*
- * version.h
+/**
+ * @file version.h
  *
  * Package information
  *

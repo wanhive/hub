@@ -1,5 +1,5 @@
-/*
- * Selector.h
+/**
+ * @file Selector.h
  *
  * IO multiplexer
  *
@@ -16,6 +16,7 @@
 #include "ds/Buffer.h"
 #include <sys/epoll.h>
 
+/*! @namespace wanhive */
 namespace wanhive {
 //-----------------------------------------------------------------
 /**

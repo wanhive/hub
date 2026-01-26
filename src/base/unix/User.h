@@ -1,5 +1,5 @@
-/*
- * User.h
+/**
+ * @file User.h
  *
  * User ID management of the calling process
  *
@@ -14,6 +14,7 @@
 #define WH_BASE_UNIX_USER_H_
 #include <sys/types.h>
 
+/*! @namespace wanhive */
 namespace wanhive {
 /**
  * User ID management of the calling process

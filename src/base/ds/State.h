@@ -1,5 +1,5 @@
-/*
- * State.h
+/**
+ * @file State.h
  *
  * State machine
  *
@@ -14,6 +14,7 @@
 #define WH_BASE_DS_STATE_H_
 #include <cstdint>
 
+/*! @namespace wanhive */
 namespace wanhive {
 /**
  * Basic state machine

@@ -1,5 +1,5 @@
-/*
- * Fcntl.h
+/**
+ * @file Fcntl.h
  *
  * File descriptor operations
  *
@@ -15,6 +15,7 @@
 #include <fcntl.h>
 #include <unistd.h>
 
+/*! @namespace wanhive */
 namespace wanhive {
 /**
  * File descriptor operations

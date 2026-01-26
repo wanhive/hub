@@ -1,5 +1,5 @@
-/*
- * Stream.h
+/**
+ * @file Stream.h
  *
  * Byte stream watcher
  *
@@ -16,6 +16,7 @@
 #include "../base/common/Duplex.h"
 #include "../base/ds/StaticCircularBuffer.h"
 
+/*! @namespace wanhive */
 namespace wanhive {
 /**
  * Byte stream watcher

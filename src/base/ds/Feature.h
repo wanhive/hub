@@ -1,5 +1,5 @@
-/*
- * Feature.h
+/**
+ * @file Feature.h
  *
  * Feature scaling and bitmap routines
  *
@@ -16,6 +16,7 @@
 #include "Spatial.h"
 #include <cmath>
 
+/*! @namespace wanhive */
 namespace wanhive {
 /**
  * Feature scaling and bitmap routines.

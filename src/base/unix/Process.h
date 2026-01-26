@@ -1,5 +1,5 @@
-/*
- * Process.h
+/**
+ * @file Process.h
  *
  * Process management
  *
@@ -18,6 +18,7 @@
 #include <sys/types.h>
 #include <sys/wait.h>
 
+/*! @namespace wanhive */
 namespace wanhive {
 /**
  * Process management

@@ -1,5 +1,5 @@
-/*
- * Handler.h
+/**
+ * @file Handler.h
  *
  * Generic handler interface
  *
@@ -13,6 +13,7 @@
 #ifndef WH_REACTOR_HANDLER_H_
 #define WH_REACTOR_HANDLER_H_
 
+/*! @namespace wanhive */
 namespace wanhive {
 /**
  * Handler interface

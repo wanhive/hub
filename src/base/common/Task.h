@@ -1,5 +1,5 @@
-/*
- * Task.h
+/**
+ * @file Task.h
  *
  * Base class for tasks
  *
@@ -13,6 +13,7 @@
 #ifndef WH_BASE_COMMON_TASK_H_
 #define WH_BASE_COMMON_TASK_H_
 
+/*! @namespace wanhive */
 namespace wanhive {
 /**
  * Base class for tasks

@@ -1,5 +1,5 @@
-/*
- * Identity.h
+/**
+ * @file Identity.h
  *
  * Hub's identity
  *
@@ -18,6 +18,7 @@
 #include "../util/InstanceID.h"
 #include "../util/PKI.h"
 
+/*! @namespace wanhive */
 namespace wanhive {
 /**
  * Hub's identity and properties

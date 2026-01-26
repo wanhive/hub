@@ -1,5 +1,5 @@
-/*
- * Descriptor.h
+/**
+ * @file Descriptor.h
  *
  * Resource descriptor
  *
@@ -18,6 +18,7 @@
 #include "../base/unix/File.h"
 #include <sys/uio.h>
 
+/*! @namespace wanhive */
 namespace wanhive {
 /**
  * File descriptor manager

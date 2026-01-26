@@ -1,5 +1,5 @@
-/*
- * Network.h
+/**
+ * @file Network.h
  *
  * Stream (TCP/IP) socket routines
  *
@@ -14,6 +14,7 @@
 #define WH_BASE_NETWORK_H_
 #include "ipc/inet.h"
 
+/*! @namespace wanhive */
 namespace wanhive {
 /**
  * Stream (TCP/IP) socket routines

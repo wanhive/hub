@@ -1,7 +1,7 @@
-/*
- * defines.h
+/**
+ * @file defines.h
  *
- * For compatibility with the compiler and the target platform
+ * Compiler and target platform specific macros
  *
  *
  * Copyright (C) 2018 Amit Kumar (amitkriit@gmail.com)

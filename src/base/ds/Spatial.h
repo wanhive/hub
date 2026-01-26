@@ -1,5 +1,5 @@
-/*
- * Spatial.h
+/**
+ * @file Spatial.h
  *
  * Common spatial data types
  *
@@ -13,6 +13,7 @@
 #ifndef WH_BASE_DS_SPATIAL_H_
 #define WH_BASE_DS_SPATIAL_H_
 
+/*! @namespace wanhive */
 namespace wanhive {
 /**
  * Two dimensional planar data type.

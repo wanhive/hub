@@ -1,5 +1,5 @@
-/*
- * wanhive.h
+/**
+ * @file wanhive.h
  *
  * All-in-one header
  *

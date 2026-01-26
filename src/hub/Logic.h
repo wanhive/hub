@@ -1,5 +1,5 @@
-/*
- * Logic.h
+/**
+ * @file Logic.h
  *
  * Digital logic watcher
  *
@@ -14,6 +14,7 @@
 #define WH_HUB_LOGIC_H_
 #include "../reactor/Watcher.h"
 
+/*! @namespace wanhive */
 namespace wanhive {
 //-----------------------------------------------------------------
 /**

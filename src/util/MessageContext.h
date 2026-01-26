@@ -1,5 +1,5 @@
-/*
- * MessageContext.h
+/**
+ * @file MessageContext.h
  *
  * Message's context
  *
@@ -14,6 +14,7 @@
 #define WH_UTIL_MESSAGECONTEXT_H_
 #include <cstdint>
 
+/*! @namespace wanhive */
 namespace wanhive {
 /**
  * Message context

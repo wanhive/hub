@@ -1,5 +1,5 @@
-/*
- * Manager.h
+/**
+ * @file Manager.h
  *
  * Real stuff happens here
  *
@@ -14,6 +14,7 @@
 #define WH_APP_MANAGER_H_
 #include "../wanhive.h"
 
+/*! @namespace wanhive */
 namespace wanhive {
 /**
  * Real stuff happens here

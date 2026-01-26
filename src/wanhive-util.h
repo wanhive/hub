@@ -1,5 +1,5 @@
-/*
- * wanhive-util.h
+/**
+ * @file wanhive-util.h
  *
  * Common utilities headers
  *

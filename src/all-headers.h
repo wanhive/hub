@@ -1,5 +1,5 @@
-/*
- * all-headers.h
+/**
+ * @file all-headers.h
  *
  * Enumeration of library headers
  *

@@ -1,5 +1,5 @@
-/*
- * Postgres.h
+/**
+ * @file Postgres.h
  *
  * PostgreSQL connection manager
  *
@@ -15,6 +15,7 @@
 #include "../common/NonCopyable.h"
 #include <postgresql/libpq-fe.h>
 
+/*! @namespace wanhive */
 namespace wanhive {
 /**
  * Connection parameters.

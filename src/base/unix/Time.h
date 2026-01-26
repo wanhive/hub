@@ -1,5 +1,5 @@
-/*
- * Time.h
+/**
+ * @file Time.h
  *
  * Time keeper
  *
@@ -14,6 +14,7 @@
 #define WH_BASE_UNIX_TIME_H_
 #include <ctime>
 
+/*! @namespace wanhive */
 namespace wanhive {
 /**
  * Time keeper

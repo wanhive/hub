@@ -1,5 +1,5 @@
-/*
- * MessageControl.h
+/**
+ * @file MessageControl.h
  *
  * Message's flow control
  *
@@ -14,6 +14,7 @@
 #define WH_UTIL_MESSAGECONTROL_H_
 #include <cstdint>
 
+/*! @namespace wanhive */
 namespace wanhive {
 /**
  * Message flow control

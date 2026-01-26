@@ -1,5 +1,5 @@
-/*
- * Hub.h
+/**
+ * @file Hub.h
  *
  * Wanhive Hub
  *
@@ -30,6 +30,7 @@
 #include "../reactor/Handler.h"
 #include "../reactor/Reactor.h"
 
+/*! @namespace wanhive */
 namespace wanhive {
 /**
  * Hub implementation

@@ -1,5 +1,5 @@
-/*
- * Gradient.h
+/**
+ * @file Gradient.h
  *
  * Heatmap generator
  *
@@ -14,6 +14,7 @@
 #define WH_BASE_DS_GRADIENT_H_
 #include "Spatial.h"
 
+/*! @namespace wanhive */
 namespace wanhive {
 /**
  * Heatmap generator

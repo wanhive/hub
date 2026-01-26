@@ -1,5 +1,5 @@
-/*
- * FileSystem.h
+/**
+ * @file FileSystem.h
  *
  * File-system operations
  *
@@ -18,6 +18,7 @@
 #include <sys/stat.h>
 #include <unistd.h>
 
+/*! @namespace wanhive */
 namespace wanhive {
 /**
  * File-system operations

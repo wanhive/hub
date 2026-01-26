@@ -1,5 +1,5 @@
-/*
- * Source.h
+/**
+ * @file Source.h
  *
  * Base class for sources
  *
@@ -14,6 +14,7 @@
 #define WH_BASE_COMMON_SOURCE_H_
 #include <cstddef>
 
+/*! @namespace wanhive */
 namespace wanhive {
 /**
  * Source interface

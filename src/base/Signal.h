@@ -1,5 +1,5 @@
-/*
- * Signal.h
+/**
+ * @file Signal.h
  *
  * Common signal handling routines
  *
@@ -14,6 +14,7 @@
 #define WH_BASE_SIGNAL_H_
 #include <signal.h>
 
+/*! @namespace wanhive */
 namespace wanhive {
 /**
  * Common signal handling routines

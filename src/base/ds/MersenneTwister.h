@@ -1,5 +1,5 @@
-/*
- * MersenneTwister.h
+/**
+ * @file MersenneTwister.h
  *
  * MT19937 based 32-bit random number generator
  *
@@ -13,6 +13,7 @@
 #ifndef WH_BASE_DS_MERSENNETWISTER_H_
 #define WH_BASE_DS_MERSENNETWISTER_H_
 
+/*! @namespace wanhive */
 namespace wanhive {
 /**
  * MT19937 (32-bit generator)

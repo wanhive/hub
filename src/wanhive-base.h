@@ -1,5 +1,5 @@
-/*
- * wanhive-base.h
+/**
+ * @file wanhive-base.h
  *
  * Base headers
  *

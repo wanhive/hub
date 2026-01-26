@@ -1,5 +1,5 @@
-/*
- * BufferVector.h
+/**
+ * @file BufferVector.h
  *
  * Buffer vector
  *
@@ -14,6 +14,7 @@
 #define WH_BASE_DS_BUFFERVECTOR_H_
 #include <cstddef>
 
+/*! @namespace wanhive */
 namespace wanhive {
 /**
  * Data structure for vectored read/write operations on linear buffers.

@@ -1,5 +1,5 @@
-/*
- * Frame.h
+/**
+ * @file Frame.h
  *
  * Message frame
  *
@@ -15,6 +15,7 @@
 #include "MessageHeader.h"
 #include "../base/ds/StaticBuffer.h"
 
+/*! @namespace wanhive */
 namespace wanhive {
 /**
  * Bare-bone data unit implementation. It consists of a routing header and a

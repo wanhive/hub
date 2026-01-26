@@ -1,5 +1,5 @@
-/*
- * Topics.h
+/**
+ * @file Topics.h
  *
  * Topics repository
  *
@@ -18,6 +18,7 @@
 #include "../../hub/Topic.h"
 #include "../../reactor/Watcher.h"
 
+/*! @namespace wanhive */
 namespace wanhive {
 /**
  * Topics repository
@@ -87,9 +88,7 @@ private:
 		}
 	};
 
-	//Lists of watchers organized by topics
 	ReadyList<const Watcher*> topics[Topic::COUNT];
-	//Index lookup table for fast insertion and deletion
 	Kmap<Key, unsigned int, HFN, EQFN> indexes;
 };
 

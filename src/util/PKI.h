@@ -1,5 +1,5 @@
-/*
- * PKI.h
+/**
+ * @file PKI.h
  *
  * Asymmetric cryptography
  *
@@ -14,6 +14,7 @@
 #define WH_UTIL_PKI_H_
 #include "../base/security/Rsa.h"
 
+/*! @namespace wanhive */
 namespace wanhive {
 //-----------------------------------------------------------------
 //Length of RSA key in bits

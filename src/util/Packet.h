@@ -1,5 +1,5 @@
-/*
- * Packet.h
+/**
+ * @file Packet.h
  *
  * Message packet
  *
@@ -15,6 +15,7 @@
 #include "Frame.h"
 #include "PKI.h"
 
+/*! @namespace wanhive */
 namespace wanhive {
 /**
  * Data unit enhancement with basic error-checking

@@ -1,5 +1,5 @@
-/*
- * OverlayHubInfo.h
+/**
+ * @file OverlayHubInfo.h
  *
  * Overlay hub's runtime statistics
  *
@@ -15,6 +15,7 @@
 #include "DHT.h"
 #include "../../hub/HubInfo.h"
 
+/*! @namespace wanhive */
 namespace wanhive {
 /**
  * Routing table entry

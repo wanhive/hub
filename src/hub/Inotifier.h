@@ -1,5 +1,5 @@
-/*
- * Inotifier.h
+/**
+ * @file Inotifier.h
  *
  * File system watcher
  *
@@ -15,6 +15,7 @@
 #include "../reactor/Watcher.h"
 #include <sys/inotify.h>
 
+/*! @namespace wanhive */
 namespace wanhive {
 /**
  * Treat this as an opaque object and use the methods provided by the Inotifier

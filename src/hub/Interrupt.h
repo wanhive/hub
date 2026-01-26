@@ -1,5 +1,5 @@
-/*
- * Interrupt.h
+/**
+ * @file Interrupt.h
  *
  * Signal watcher
  *
@@ -14,6 +14,7 @@
 #define WH_HUB_INTERRUPT_H_
 #include "../reactor/Watcher.h"
 
+/*! @namespace wanhive */
 namespace wanhive {
 /**
  * Signal watcher

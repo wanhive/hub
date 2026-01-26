@@ -1,5 +1,5 @@
-/*
- * X25519.h
+/**
+ * @file X25519.h
  *
  * X25519 key exchange
  *
@@ -14,6 +14,7 @@
 #define WH_BASE_SECURITY_X25519_H_
 #include "KeyPair.h"
 
+/*! @namespace wanhive */
 namespace wanhive {
 /**
  * X25519 key exchange

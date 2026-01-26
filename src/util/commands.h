@@ -1,5 +1,5 @@
-/*
- * commands.h
+/**
+ * @file commands.h
  *
  * Basic network commands
  *
@@ -13,6 +13,7 @@
 #ifndef WH_UTIL_COMMANDS_H_
 #define WH_UTIL_COMMANDS_H_
 
+/*! @namespace wanhive */
 namespace wanhive {
 
 /**

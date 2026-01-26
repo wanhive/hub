@@ -17,6 +17,7 @@
 #include "../../base/ds/CircularBuffer.h"
 #include "../../base/ds/StaticCircularBuffer.h"
 
+/*! @namespace wanhive */
 namespace wanhive {
 
 class BufferTest: private Task {

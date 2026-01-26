@@ -1,5 +1,5 @@
-/*
- * Activity.h
+/**
+ * @file Activity.h
  *
  * Base class for activities
  *
@@ -13,6 +13,7 @@
 #ifndef WH_BASE_COMMON_ACTIVITY_H_
 #define WH_BASE_COMMON_ACTIVITY_H_
 
+/*! @namespace wanhive */
 namespace wanhive {
 /**
  * Base class for activities

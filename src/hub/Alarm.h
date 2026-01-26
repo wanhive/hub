@@ -1,5 +1,5 @@
-/*
- * Alarm.h
+/**
+ * @file Alarm.h
  *
  * Periodic timer
  *
@@ -15,6 +15,7 @@
 #include "../base/ds/Spatial.h"
 #include "../reactor/Watcher.h"
 
+/*! @namespace wanhive */
 namespace wanhive {
 /**
  * Millisecond precision periodic timer

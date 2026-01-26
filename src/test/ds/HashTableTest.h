@@ -13,6 +13,7 @@
 #ifndef WH_TEST_DS_HASHTABLETEST_H_
 #define WH_TEST_DS_HASHTABLETEST_H_
 
+/*! @namespace wanhive */
 namespace wanhive {
 
 class HashTableTest {

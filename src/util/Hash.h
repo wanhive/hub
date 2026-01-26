@@ -1,5 +1,5 @@
-/*
- * Hash.h
+/**
+ * @file Hash.h
  *
  * Cryptographic hashing
  *
@@ -14,6 +14,7 @@
 #define WH_UTIL_HASH_H_
 #include "../base/security/Sha.h"
 
+/*! @namespace wanhive */
 namespace wanhive {
 //-----------------------------------------------------------------
 /*! SHA-512, 64-bytes (512-bits) digest */

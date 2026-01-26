@@ -1,5 +1,5 @@
-/*
- * Finger.h
+/**
+ * @file Finger.h
  *
  * Finger implementation for the chord (distributed hash table)
  *
@@ -13,6 +13,7 @@
 #ifndef WH_SERVER_CORE_FINGER_H_
 #define WH_SERVER_CORE_FINGER_H_
 
+/*! @namespace wanhive */
 namespace wanhive {
 /**
  * Finger implementation for the chord DHT (distributed hash table)

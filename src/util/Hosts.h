@@ -1,5 +1,5 @@
-/*
- * Hosts.h
+/**
+ * @file Hosts.h
  *
  * Hosts database
  *
@@ -16,6 +16,7 @@
 #include "../base/Storage.h"
 #include "../base/db/SQLite.h"
 
+/*! @namespace wanhive */
 namespace wanhive {
 /**
  * Hosts database

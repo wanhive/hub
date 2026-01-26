@@ -1,5 +1,5 @@
-/*
- * Node.h
+/**
+ * @file Node.h
  *
  * Chord DHT (distributed hash table)
  *
@@ -15,6 +15,7 @@
 #include "DHT.h"
 #include "Finger.h"
 
+/*! @namespace wanhive */
 namespace wanhive {
 /**
  * Chord DHT (distributed hash table) implementation

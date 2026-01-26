@@ -1,5 +1,5 @@
-/*
- * Ed25519.h
+/**
+ * @file Ed25519.h
  *
  * Ed25519 cipher
  *
@@ -14,6 +14,7 @@
 #define WH_BASE_SECURITY_ED25519_H_
 #include "KeyPair.h"
 
+/*! @namespace wanhive */
 namespace wanhive {
 /**
  * Ed25519 digital signature facility

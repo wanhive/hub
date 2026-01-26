@@ -1,5 +1,5 @@
-/*
- * MessageAddress.h
+/**
+ * @file MessageAddress.h
  *
  * Message's address
  *
@@ -14,6 +14,7 @@
 #define WH_UTIL_MESSAGEADDRESS_H_
 #include <cstdint>
 
+/*! @namespace wanhive */
 namespace wanhive {
 /**
  * Message address

@@ -1,5 +1,5 @@
-/*
- * TSignal.h
+/**
+ * @file TSignal.h
  *
  * Signal handling for posix threads
  *
@@ -15,6 +15,7 @@
 #include "SignalSet.h"
 #include <pthread.h>
 
+/*! @namespace wanhive */
 namespace wanhive {
 /**
  * Signal handling for posix threads

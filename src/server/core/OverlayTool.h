@@ -1,5 +1,5 @@
-/*
- * OverlayTool.h
+/**
+ * @file OverlayTool.h
  *
  * Overlay network tests
  *
@@ -16,6 +16,7 @@
 #include "../../hub/Identity.h"
 #include "../../util/Verifier.h"
 
+/*! @namespace wanhive */
 namespace wanhive {
 /**
  * Overlay network tests

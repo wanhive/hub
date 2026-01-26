@@ -1,5 +1,5 @@
-/*
- * FStat.h
+/**
+ * @file FStat.h
  *
  * File status information
  *
@@ -17,6 +17,7 @@
 #include <sys/stat.h>
 #include <unistd.h>
 
+/*! @namespace wanhive */
 namespace wanhive {
 /**
  * File status information

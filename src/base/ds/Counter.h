@@ -1,5 +1,5 @@
-/*
- * Counter.h
+/**
+ * @file Counter.h
  *
  * Up and down counter
  *
@@ -13,6 +13,7 @@
 #ifndef WH_BASE_DS_COUNTER_H_
 #define WH_BASE_DS_COUNTER_H_
 
+/*! @namespace wanhive */
 namespace wanhive {
 /**
  * Up and down counter

@@ -1,5 +1,5 @@
-/*
- * Socket.h
+/**
+ * @file Socket.h
  *
  * Message stream watcher
  *
@@ -22,6 +22,7 @@
 #include "../reactor/Watcher.h"
 #include "../util/Message.h"
 
+/*! @namespace wanhive */
 namespace wanhive {
 //-----------------------------------------------------------------
 /**

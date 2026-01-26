@@ -1,5 +1,5 @@
-/*
- * SQLite.h
+/**
+ * @file SQLite.h
  *
  * SQLite database manager
  *
@@ -16,6 +16,7 @@
 #include <sqlite3.h>
 #include <cstddef>
 
+/*! @namespace wanhive */
 namespace wanhive {
 
 /**

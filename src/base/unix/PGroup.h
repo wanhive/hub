@@ -1,5 +1,5 @@
-/*
- * PGroup.h
+/**
+ * @file PGroup.h
  *
  * Job control: process group management
  *
@@ -15,6 +15,7 @@
 #include <sys/types.h>
 #include <unistd.h>
 
+/*! @namespace wanhive */
 namespace wanhive {
 /**
  * Job control: process group management

@@ -1,5 +1,5 @@
-/*
- * DHT.h
+/**
+ * @file DHT.h
  *
  * Distributed hash table properties
  *
@@ -13,6 +13,7 @@
 #ifndef WH_SERVER_CORE_DHT_H_
 #define WH_SERVER_CORE_DHT_H_
 
+/*! @namespace wanhive */
 namespace wanhive {
 /**
  * Distributed hash table (DHT) properties

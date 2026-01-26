@@ -1,5 +1,5 @@
-/*
- * commands.h
+/**
+ * @file commands.h
  *
  * Overlay network commands
  *
@@ -14,6 +14,7 @@
 #define WH_SERVER_CORE_COMMANDS_H_
 #include "../../util/commands.h"
 
+/*! @namespace wanhive */
 namespace wanhive {
 /**
  * Enumeration of commands

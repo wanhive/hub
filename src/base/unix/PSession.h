@@ -1,5 +1,5 @@
-/*
- * PSession.h
+/**
+ * @file PSession.h
  *
  * Job control: session management
  *
@@ -14,6 +14,7 @@
 #define WH_BASE_UNIX_PSESSION_H_
 #include <sys/types.h>
 
+/*! @namespace wanhive */
 namespace wanhive {
 /**
  * Job control: session management

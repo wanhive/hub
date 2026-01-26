@@ -1,5 +1,5 @@
-/*
- * DNS.h
+/**
+ * @file DNS.h
  *
  * Domain name resolution and reverse lookup
  *
@@ -15,6 +15,7 @@
 #include "inet.h"
 #include "../common/NonCopyable.h"
 
+/*! @namespace wanhive */
 namespace wanhive {
 /**
  * Domain name resolution and reverse lookup

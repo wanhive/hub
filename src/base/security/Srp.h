@@ -1,5 +1,5 @@
-/*
- * Srp.h
+/**
+ * @file Srp.h
  *
  * SRP-6a implementation
  *
@@ -16,6 +16,7 @@
 #include "../common/NonCopyable.h"
 #include <openssl/bn.h>
 
+/*! @namespace wanhive */
 namespace wanhive {
 //-----------------------------------------------------------------
 /**

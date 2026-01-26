@@ -1,5 +1,5 @@
-/*
- * OverlayProtocol.h
+/**
+ * @file OverlayProtocol.h
  *
  * Overlay network protocol
  *
@@ -15,6 +15,7 @@
 #include "../../hub/Protocol.h"
 #include "OverlayHubInfo.h"
 
+/*! @namespace wanhive */
 namespace wanhive {
 /**
  * Overlay network protocol implementation

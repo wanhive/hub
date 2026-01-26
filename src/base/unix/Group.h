@@ -1,5 +1,5 @@
-/*
- * Group.h
+/**
+ * @file Group.h
  *
  * Group ID management of the calling process
  *
@@ -14,6 +14,7 @@
 #define WH_BASE_UNIX_GROUP_H_
 #include <sys/types.h>
 
+/*! @namespace wanhive */
 namespace wanhive {
 /**
  * Group ID management of the calling process

@@ -14,6 +14,7 @@
 #define WH_TEST_MULTICAST_MULTICASTCONSUMER_H_
 #include "../../hub/Agent.h"
 
+/*! @namespace wanhive */
 namespace wanhive {
 /**
  * Multicast client, consumes multicast messages.

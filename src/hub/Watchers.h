@@ -1,5 +1,5 @@
-/*
- * Watchers.h
+/**
+ * @file Watchers.h
  *
  * Hash table of watchers
  *
@@ -15,6 +15,7 @@
 #include "../base/ds/Khash.h"
 #include "../reactor/Watcher.h"
 
+/*! @namespace wanhive */
 namespace wanhive {
 /**
  * Hash table of watchers

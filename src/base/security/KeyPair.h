@@ -1,5 +1,5 @@
-/*
- * KeyPair.h
+/**
+ * @file KeyPair.h
  *
  * Key pair for asymmetric cryptography
  *
@@ -15,6 +15,7 @@
 #include "../common/NonCopyable.h"
 #include <openssl/evp.h>
 
+/*! @namespace wanhive */
 namespace wanhive {
 /**
  * Key pair for asymmetric cryptography

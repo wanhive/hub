@@ -1,5 +1,5 @@
-/*
- * SignalAction.h
+/**
+ * @file SignalAction.h
  *
  * Signal action/disposition
  *
@@ -14,6 +14,7 @@
 #define WH_BASE_UNIX_SIGNALACTION_H_
 #include "SignalSet.h"
 
+/*! @namespace wanhive */
 namespace wanhive {
 /**
  * Signal action/disposition

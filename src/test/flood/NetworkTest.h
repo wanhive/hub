@@ -15,6 +15,7 @@
 #include "TestClient.h"
 #include "../../base/common/Task.h"
 
+/*! @namespace wanhive */
 namespace wanhive {
 /**
  * Stress test of the overlay network

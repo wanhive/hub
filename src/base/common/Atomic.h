@@ -1,5 +1,5 @@
-/*
- * Atomic.h
+/**
+ * @file Atomic.h
  *
  * Atomic operations with integral and pointer types
  *
@@ -21,6 +21,7 @@
 #error "Unsupported GCC version."
 #endif
 
+/*! @namespace wanhive */
 namespace wanhive {
 /**
  * Enumeration of memory orders

@@ -1,5 +1,5 @@
-/*
- * Memory.h
+/**
+ * @file Memory.h
  *
  * C style memory management routines
  *
@@ -17,6 +17,7 @@
 #include "reflect.h"
 #include <cstdlib>
 
+/*! @namespace wanhive */
 namespace wanhive {
 /**
  * C style memory management routines.

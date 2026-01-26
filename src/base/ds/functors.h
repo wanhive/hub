@@ -1,5 +1,5 @@
-/*
- * functors.h
+/**
+ * @file functors.h
  *
  * Functors for common data structure operations
  *
@@ -14,6 +14,7 @@
 #define WH_BASE_DS_FUNCTORS_H_
 #include <cstring>
 
+/*! @namespace wanhive */
 namespace wanhive {
 //-----------------------------------------------------------------
 /**

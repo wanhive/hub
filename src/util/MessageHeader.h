@@ -1,5 +1,5 @@
-/*
- * MessageHeader.h
+/**
+ * @file MessageHeader.h
  *
  * Message header
  *
@@ -16,6 +16,7 @@
 #include "MessageContext.h"
 #include "MessageControl.h"
 
+/*! @namespace wanhive */
 namespace wanhive {
 /**
  * Message header implementation

@@ -1,5 +1,5 @@
-/*
- * Logger.h
+/**
+ * @file Logger.h
  *
  * Logging utility
  *
@@ -14,6 +14,7 @@
 #define WH_BASE_COMMON_LOGGER_H_
 #include "defines.h"
 
+/*! @namespace wanhive */
 namespace wanhive {
 /**
  * Enumeration of log priorities

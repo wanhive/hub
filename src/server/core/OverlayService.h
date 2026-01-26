@@ -1,5 +1,5 @@
-/*
- * OverlayService.h
+/**
+ * @file OverlayService.h
  *
  * Overlay network maintenance service
  *
@@ -16,6 +16,7 @@
 #include "OverlayProtocol.h"
 #include "../../base/TurnGate.h"
 
+/*! @namespace wanhive */
 namespace wanhive {
 /**
  * Overlay network stabilization service

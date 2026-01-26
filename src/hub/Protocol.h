@@ -1,5 +1,5 @@
-/*
- * Protocol.h
+/**
+ * @file Protocol.h
  *
  * Wanhive protocol implementation
  *
@@ -17,6 +17,7 @@
 #include "../util/Hash.h"
 #include "../util/Message.h"
 
+/*! @namespace wanhive */
 namespace wanhive {
 /**
  * Asymmetric key and nonce for handshaking

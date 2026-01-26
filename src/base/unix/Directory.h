@@ -1,5 +1,5 @@
-/*
- * Directory.h
+/**
+ * @file Directory.h
  *
  * Directory management
  *
@@ -19,6 +19,7 @@
 #include <sys/stat.h>
 #include <sys/types.h>
 
+/*! @namespace wanhive */
 namespace wanhive {
 /**
  * Directory management

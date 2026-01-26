@@ -1,5 +1,5 @@
-/*
- * wanhive-hub.h
+/**
+ * @file wanhive-hub.h
  *
  * Wanhive Hub headers
  *

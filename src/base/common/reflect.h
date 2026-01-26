@@ -1,5 +1,5 @@
-/*
- * reflect.h
+/**
+ * @file reflect.h
  *
  * Data structure inspection
  *
@@ -32,6 +32,7 @@
 #define WH_ATOMIC_ASSERT(X) static_assert(((WH_IS_INTEGRAL(X) || WH_IS_POINTER(X)) && (sizeof(X) <= 16)), #X" should be integral scalar or pointer type.")
 //-----------------------------------------------------------------
 
+/*! @namespace wanhive */
 namespace wanhive {
 
 /**

@@ -1,5 +1,5 @@
-/*
- * Topic.h
+/**
+ * @file Topic.h
  *
  * Topic subscriptions
  *
@@ -13,6 +13,7 @@
 #ifndef WH_HUB_TOPIC_H_
 #define WH_HUB_TOPIC_H_
 
+/*! @namespace wanhive */
 namespace wanhive {
 /**
  * Topic subscriptions

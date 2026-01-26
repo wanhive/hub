@@ -1,5 +1,5 @@
-/*
- * Job.h
+/**
+ * @file Job.h
  *
  * Asynchronous task
  *
@@ -15,6 +15,7 @@
 #include "../base/common/Activity.h"
 #include "../base/Thread.h"
 
+/*! @namespace wanhive */
 namespace wanhive {
 /**
  * Asynchronous task

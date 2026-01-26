@@ -1,5 +1,5 @@
-/*
- * CommandLine.h
+/**
+ * @file CommandLine.h
  *
  * C++ iostream error handler
  *
@@ -13,6 +13,7 @@
 #ifndef WH_BASE_COMMON_COMMANDLINE_H_
 #define WH_BASE_COMMON_COMMANDLINE_H_
 
+/*! @namespace wanhive */
 namespace wanhive {
 /**
  * C++ iostream error handler

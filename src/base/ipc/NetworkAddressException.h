@@ -1,5 +1,5 @@
-/*
- * NetworkAddressException.h
+/**
+ * @file NetworkAddressException.h
  *
  * Exceptions/errors generated during network address translation
  *
@@ -14,6 +14,7 @@
 #define WH_BASE_IPC_NETWORKADDRESSEXCEPTION_H_
 #include "../common/BaseException.h"
 
+/*! @namespace wanhive */
 namespace wanhive {
 /**
  * Exceptions generated during network address translation

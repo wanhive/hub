@@ -1,5 +1,5 @@
-/*
- * NonCopyable.h
+/**
+ * @file NonCopyable.h
  *
  * Non-copyable class
  *
@@ -13,6 +13,7 @@
 #ifndef WH_BASE_COMMON_NONCOPYABLE_H_
 #define WH_BASE_COMMON_NONCOPYABLE_H_
 
+/*! @namespace wanhive */
 namespace wanhive {
 /**
  * Non-copyable class: can't be copied or assigned

@@ -1,5 +1,5 @@
-/*
- * Duplex.h
+/**
+ * @file Duplex.h
  *
  * Base class for bidirectional channels
  *
@@ -15,6 +15,7 @@
 #include "Sink.h"
 #include "Source.h"
 
+/*! @namespace wanhive */
 namespace wanhive {
 /**
  * Two-way channel interface

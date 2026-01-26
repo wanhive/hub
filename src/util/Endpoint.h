@@ -1,5 +1,5 @@
-/*
- * Endpoint.h
+/**
+ * @file Endpoint.h
  *
  * Request-response pattern implementation
  *
@@ -17,6 +17,7 @@
 #include "../base/common/NonCopyable.h"
 #include "../base/security/SSLContext.h"
 
+/*! @namespace wanhive */
 namespace wanhive {
 /**
  * Request-response pattern implementation.

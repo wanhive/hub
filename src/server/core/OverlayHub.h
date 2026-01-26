@@ -1,5 +1,5 @@
-/*
- * OverlayHub.h
+/**
+ * @file OverlayHub.h
  *
  * Overlay hub
  *
@@ -17,6 +17,7 @@
 #include "../../base/ds/Tokens.h"
 #include "../../hub/Hub.h"
 
+/*! @namespace wanhive */
 namespace wanhive {
 /**
  * Overlay hub implementation

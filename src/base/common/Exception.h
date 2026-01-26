@@ -1,5 +1,5 @@
-/*
- * Exception.h
+/**
+ * @file Exception.h
  *
  * Application generated exceptions
  *
@@ -14,6 +14,7 @@
 #define WH_BASE_COMMON_EXCEPTION_H_
 #include "BaseException.h"
 
+/*! @namespace wanhive */
 namespace wanhive {
 //-----------------------------------------------------------------
 /**

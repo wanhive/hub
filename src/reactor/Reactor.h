@@ -1,5 +1,5 @@
-/*
- * Reactor.h
+/**
+ * @file Reactor.h
  *
  * Synchronous event selector and dispatcher
  *
@@ -16,6 +16,7 @@
 #include "../base/ds/ReadyList.h"
 #include "../base/Selector.h"
 
+/*! @namespace wanhive */
 namespace wanhive {
 /**
  * Reactor pattern implementation (synchronous event selector and dispatcher)

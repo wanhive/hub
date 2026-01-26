@@ -1,5 +1,5 @@
-/*
- * Sink.h
+/**
+ * @file Sink.h
  *
  * Base class for sinks
  *
@@ -14,6 +14,7 @@
 #define WH_BASE_COMMON_SINK_H_
 #include <cstddef>
 
+/*! @namespace wanhive */
 namespace wanhive {
 /**
  * Sink interface

@@ -1,5 +1,5 @@
-/*
- * MemoryPool.h
+/**
+ * @file MemoryPool.h
  *
  * Memory pool for fixed size objects
  *
@@ -14,6 +14,7 @@
 #define WH_BASE_DS_MEMORYPOOL_H_
 #include "../common/NonCopyable.h"
 
+/*! @namespace wanhive */
 namespace wanhive {
 /**
  * Memory pool for efficient memory allocation and deallocation.

@@ -1,5 +1,5 @@
-/*
- * WorkingDirectory.h
+/**
+ * @file WorkingDirectory.h
  *
  * Working directory management
  *
@@ -14,6 +14,7 @@
 #define WH_BASE_UNIX_WORKINGDIRECTORY_H_
 #include <cstddef>
 
+/*! @namespace wanhive */
 namespace wanhive {
 /**
  * Working directory management

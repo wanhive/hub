@@ -1,5 +1,5 @@
-/*
- * Khash.h
+/**
+ * @file Khash.h
  *
  * Hash table implementation
  *
@@ -41,6 +41,7 @@
 #include "Twiddler.h"
 #include "../common/Memory.h"
 
+/*! @namespace wanhive */
 namespace wanhive {
 /**
  * Hash table of POD (plain old data) types.

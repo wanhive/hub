@@ -1,5 +1,5 @@
-/*
- * System.h
+/**
+ * @file System.h
  *
  * Basic system information
  *
@@ -14,6 +14,7 @@
 #define WH_BASE_SYSTEM_H_
 #include <cstddef>
 
+/*! @namespace wanhive */
 namespace wanhive {
 /**
  * Basic system information

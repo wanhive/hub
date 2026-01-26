@@ -1,5 +1,5 @@
-/*
- * HubInfo.h
+/**
+ * @file HubInfo.h
  *
  * Hub's runtime information
  *
@@ -13,6 +13,7 @@
 #ifndef WH_HUB_HUBINFO_H_
 #define WH_HUB_HUBINFO_H_
 
+/*! @namespace wanhive */
 namespace wanhive {
 //-----------------------------------------------------------------
 /**

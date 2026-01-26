@@ -1,5 +1,5 @@
-/*
- * Thread.h
+/**
+ * @file Thread.h
  *
  * Lightweight thread implementation
  *
@@ -14,6 +14,7 @@
 #define WH_BASE_THREAD_H_
 #include "unix/PThread.h"
 
+/*! @namespace wanhive */
 namespace wanhive {
 /**
  * Lightweight thread implementation

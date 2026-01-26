@@ -1,5 +1,5 @@
-/*
- * Watcher.h
+/**
+ * @file Watcher.h
  *
  * Resource descriptor and request handler
  *
@@ -15,6 +15,7 @@
 #include "Descriptor.h"
 #include "../base/ds/Handle.h"
 
+/*! @namespace wanhive */
 namespace wanhive {
 //-----------------------------------------------------------------
 /**

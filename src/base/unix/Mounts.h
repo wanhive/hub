@@ -1,5 +1,5 @@
-/*
- * Mounts.h
+/**
+ * @file Mounts.h
  *
  * Mounted file systems information
  *
@@ -15,6 +15,7 @@
 #include <cstdio>
 #include <mntent.h>
 
+/*! @namespace wanhive */
 namespace wanhive {
 /**
  * Provides information about currently mounted file systems.

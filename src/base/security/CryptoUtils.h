@@ -1,5 +1,5 @@
-/*
- * CryptoUtils.h
+/**
+ * @file CryptoUtils.h
  *
  * OpenSSL initializer and error handler
  *
@@ -13,6 +13,7 @@
 #ifndef WH_BASE_SECURITY_CRYPTOUTILS_H_
 #define WH_BASE_SECURITY_CRYPTOUTILS_H_
 
+/*! @namespace wanhive */
 namespace wanhive {
 /**
  * OpenSSL initializer and error handler

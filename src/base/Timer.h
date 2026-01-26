@@ -1,5 +1,5 @@
-/*
- * Timer.h
+/**
+ * @file Timer.h
  *
  * Milliseconds precision timer
  *
@@ -14,6 +14,7 @@
 #define WH_BASE_TIMER_H_
 #include <cstddef>
 
+/*! @namespace wanhive */
 namespace wanhive {
 /**
  * Milliseconds precision "monotonic" time keeper

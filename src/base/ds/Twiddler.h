@@ -1,5 +1,5 @@
-/*
- * Twiddler.h
+/**
+ * @file Twiddler.h
  *
  * Bit and byte manipulations
  *
@@ -14,6 +14,7 @@
 #define WH_BASE_DS_TWIDDLER_H_
 #include <cstdint>
 
+/*! @namespace wanhive */
 namespace wanhive {
 /**
  * Integer operations
