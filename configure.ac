@@ -2,7 +2,7 @@
 # Process this file with autoconf to produce a configure script.
 
 AC_PREREQ([2.71])
-AC_INIT([wanhive], [16.0.0], [info@wanhive.com], , [www.wanhive.com])
+AC_INIT([wanhive], [17.0.0], [info@wanhive.com], , [www.wanhive.com])
 AC_CONFIG_AUX_DIR([config])
 AM_INIT_AUTOMAKE([-Wall -Werror foreign subdir-objects])
 AC_CONFIG_SRCDIR([src/wanhive-reactor.h])
@@ -11,15 +11,15 @@ AC_CONFIG_MACRO_DIRS([m4])
 PKG_INSTALLDIR
 
 # Release year
-INCEPTION_YEAR='2025'
+INCEPTION_YEAR='2026'
 AC_SUBST([INCEPTION_YEAR])
 AC_DEFINE_UNQUOTED([INCEPTION_YEAR], ["${INCEPTION_YEAR}"], [Release year])
 
 # Library version
 # https://www.gnu.org/software/libtool/manual/html_node/Updating-version-info.html
-WH_LIB_VERSION='17:0:0'
+WH_LIB_VERSION='18:0:0'
 AC_SUBST([WH_LIB_VERSION])
-AC_DEFINE_UNQUOTED([WH_LIB_VERSION], ["${WH_LIB_VERSION}"], [Version number of library])
+AC_DEFINE_UNQUOTED([WH_LIB_VERSION], ["${WH_LIB_VERSION}"], [Library version])
 
 # Checks for programs.
 AC_PROG_CXX([g++])
@@ -37,9 +37,16 @@ AC_CHECK_LIB([sqlite3], [sqlite3_open_v2], , [AC_MSG_ERROR([libsqlite3 not found
 AC_CHECK_LIB([ssl], [OPENSSL_init_ssl], , [AC_MSG_ERROR([libssl not found.])])
 
 # Check for packages.
-PKG_CHECK_MODULES([LIBPQ], [libpq >= 15.0.0], , [AC_MSG_ERROR([Incompatible libpq version.])])
-PKG_CHECK_MODULES([OPENSSL], [openssl >= 3.0.0], , [AC_MSG_ERROR([Incompatible OpenSSL version.])])
-PKG_CHECK_MODULES([SQLITE3], [sqlite3 >= 3.35.0], , [AC_MSG_ERROR([Incompatible SQLite3 version.])])
+LIBPQ_VERSION=16.0.0
+AC_SUBST(LIBPQ_VERSION)
+OPENSSL_VERSION=3.0.0
+AC_SUBST(OPENSSL_VERSION)
+SQLITE3_VERSION=3.35.0
+AC_SUBST(SQLITE3_VERSION)
+
+PKG_CHECK_MODULES([LIBPQ], [libpq >= $LIBPQ_VERSION], , [AC_MSG_ERROR([Incompatible libpq version.])])
+PKG_CHECK_MODULES([OPENSSL], [openssl >= $OPENSSL_VERSION], , [AC_MSG_ERROR([Incompatible OpenSSL version.])])
+PKG_CHECK_MODULES([SQLITE3], [sqlite3 >= $SQLITE3_VERSION], , [AC_MSG_ERROR([Incompatible SQLite3 version.])])
 
 # Checks for header files.
 AC_CHECK_HEADERS([arpa/inet.h fcntl.h mntent.h netdb.h sys/file.h sys/time.h syslog.h termios.h unistd.h], ,[AC_MSG_ERROR([Header files missing.])])

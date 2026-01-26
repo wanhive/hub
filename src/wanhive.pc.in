@@ -5,10 +5,10 @@ includedir=@includedir@
 pkgincludedir=@includedir@/@PACKAGE@
 
 Name: @PACKAGE@
-Description: Development files
+Description: Wanhive Hub development library
 URL: @PACKAGE_URL@
 Version: @VERSION@
-Requires.private: libpq >= 15.0.0 openssl >= 3.0.0 sqlite3 >= 3.35.0
+Requires.private: libpq >= @LIBPQ_VERSION@ openssl >= @OPENSSL_VERSION@ sqlite3 >= @SQLITE3_VERSION@
 Cflags: -I${includedir}
 Libs: -L${libdir} -lwanhive
 Libs.private: -lpthread

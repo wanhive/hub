@@ -5,7 +5,7 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased]
+## [17.0.0] - 2026-01-26
 
 ### Added
 
@@ -20,10 +20,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Combine **network traffic control** on/off options.
 - **Stream** class extends **Duplex** instead of **Sink** and **Source**.
 - The byte stream callback in **Hub** takes the stream channel as a parameter.
-- Restructure the cryptographic facility.
-- Update database management interfaces.
+- Update and restructure the cryptographic facility.
+- Update database management facility.
 - Update message header implementation.
 - Update networking interfaces.
+- Update file system management.
 - Update reactor pattern implementation.
 - Update software documentation.
 
