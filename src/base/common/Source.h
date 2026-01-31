@@ -23,7 +23,7 @@ namespace wanhive {
 template<typename X> class Source {
 public:
 	/**
-	 * Virtual destructor
+	 * Virtual destructor.
 	 */
 	virtual ~Source() = default;
 	/**

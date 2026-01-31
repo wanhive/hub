@@ -21,7 +21,7 @@ namespace wanhive {
 class Task {
 public:
 	/**
-	 * Virtual destructor
+	 * Virtual destructor.
 	 */
 	virtual ~Task() = default;
 	/**

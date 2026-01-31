@@ -23,7 +23,7 @@ namespace wanhive {
 template<typename X> class Sink {
 public:
 	/**
-	 * Virtual destructor
+	 * Virtual destructor.
 	 */
 	virtual ~Sink() = default;
 	/**

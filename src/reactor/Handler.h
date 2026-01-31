@@ -22,7 +22,7 @@ namespace wanhive {
 template<typename T> class Handler {
 public:
 	/**
-	 * The virtual destructor.
+	 * Virtual destructor.
 	 */
 	virtual ~Handler() = default;
 	/**

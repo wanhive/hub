@@ -20,6 +20,9 @@ namespace wanhive {
  */
 class Activity {
 public:
+	/**
+	 * Virtual destructor.
+	 */
 	virtual ~Activity() = default;
 	/**
 	 * Checks the ability to carry on with an activity.
