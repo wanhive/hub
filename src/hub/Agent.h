@@ -44,7 +44,7 @@ protected:
 	 * Checks the network connection.
 	 * @return true if connected, false otherwise
 	 */
-	bool isConnected() const noexcept;
+	bool connected() const noexcept;
 	/**
 	 * Sets a secure password for authentication.
 	 * @param password the secure password
@@ -86,20 +86,20 @@ private:
 	} ctx;
 	//-----------------------------------------------------------------
 	struct {
-		StaticBuffer<unsigned long long, 16> identifiers;
+		StaticBuffer<unsigned long long, 16> ids;
 		unsigned long long root;
 
 		Socket *auth;
 		Socket *node;
 
-		Hash hashFn;
+		Hash hf;
 		Digest nonce;
 		Verifier verifier;
 
 		Timer timer;
 		int stage;
 		bool connected;
-	} bs;
+	} boot;
 };
 
 } /* namespace wanhive */

@@ -52,7 +52,7 @@ void MulticastConsumer::configure(void *arg) {
 }
 
 void MulticastConsumer::route(Message *message) noexcept {
-	if (!isConnected()) {
+	if (!connected()) {
 		Agent::route(message);
 	} else {
 		process(message);
@@ -60,7 +60,7 @@ void MulticastConsumer::route(Message *message) noexcept {
 }
 
 void MulticastConsumer::maintain() noexcept {
-	if (!isConnected()) {
+	if (!connected()) {
 		Agent::maintain();
 	} else if (!subscribed && (topic <= Topic::MAX_ID)
 			&& timer.hasTimedOut(2000)) {

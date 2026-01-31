@@ -44,11 +44,11 @@ Agent::~Agent() {
 }
 
 void Agent::expel(Watcher *w) noexcept {
-	if (w == bs.auth) {
-		bs.auth = nullptr;
-	} else if (w == bs.node) {
-		bs.node = nullptr;
-		bs.connected = false;
+	if (w == boot.auth) {
+		boot.auth = nullptr;
+	} else if (w == boot.node) {
+		boot.node = nullptr;
+		boot.connected = false;
 	}
 
 	Hub::expel(w);
@@ -108,7 +108,7 @@ void Agent::maintain() noexcept {
 		}
 		break;
 	case WHC_REGISTERED:
-		if (!bs.node) {
+		if (!boot.node) {
 			setStage(WHC_ERROR);
 		}
 		break;
@@ -129,9 +129,9 @@ void Agent::route(Message *message) noexcept {
 	switch (command) {
 	case WH_CMD_NULL:
 		if (isStage(WHC_ERROR) || isStage(WHC_REGISTERED) || isStage(WHC_FATAL)
-				|| !bs.auth) {
+				|| !boot.auth) {
 			//Bad message
-		} else if (origin != bs.auth->getUid()) {
+		} else if (origin != boot.auth->getUid()) {
 			//Bad message
 		} else if (!(source == 0 || source == getUid())) {
 			//Bad message
@@ -145,10 +145,10 @@ void Agent::route(Message *message) noexcept {
 		break;
 	case WH_CMD_BASIC:
 		if (isStage(WHC_ERROR) || isStage(WHC_REGISTERED) || isStage(WHC_FATAL)
-				|| !bs.node || (ctx.passwordLength && !bs.auth)) {
+				|| !boot.node || (ctx.passwordLength && !boot.auth)) {
 			//Bad message
-		} else if (!(origin == bs.node->getUid()
-				|| (bs.auth && origin == bs.auth->getUid()))) {
+		} else if (!(origin == boot.node->getUid()
+				|| (boot.auth && origin == boot.auth->getUid()))) {
 			//Bad message
 		} else if (!(source == 0 || source == getUid())) {
 			//Bad message
@@ -168,8 +168,8 @@ void Agent::route(Message *message) noexcept {
 	}
 }
 
-bool Agent::isConnected() const noexcept {
-	return bs.connected;
+bool Agent::connected() const noexcept {
+	return boot.connected;
 }
 
 void Agent::setPassword(const unsigned char *password, unsigned int length,
@@ -202,22 +202,22 @@ void Agent::connectToAuthenticator() noexcept {
 		}
 		//-----------------------------------------------------------------
 		//Check for timed-out connection
-		if (bs.auth) {
-			if (bs.auth->hasTimedOut(ctx.timeout)) {
+		if (boot.auth) {
+			if (boot.auth->hasTimedOut(ctx.timeout)) {
 				WH_LOG_DEBUG("Connection timed out");
-				disable(bs.auth);
+				disable(boot.auth);
 			}
 			return;
 		}
 		//-----------------------------------------------------------------
 		//Load the identifiers list if necessary
-		if (!bs.identifiers.hasSpace()) {
+		if (!boot.ids.hasSpace()) {
 			loadIdentifiers(true);
 		}
 		//-----------------------------------------------------------------
 		//Get the next identifier to probe
 		unsigned long long id;
-		if (!bs.identifiers.get(id)) {
+		if (!boot.ids.get(id)) {
 			setStage(WHC_ERROR);
 			throw Exception(EX_RESOURCE);
 		}
@@ -229,8 +229,9 @@ void Agent::connectToAuthenticator() noexcept {
 		s->setUid(id);
 		s->publish(createIdentificationRequest());
 		attach(s, IO_WR, WATCHER_ACTIVE);
-		bs.auth = s;
-		WH_LOG_DEBUG("Contacting authentication node %llu", bs.auth->getUid());
+		boot.auth = s;
+		WH_LOG_DEBUG("Contacting authentication node %llu",
+				boot.auth->getUid());
 	} catch (const BaseException &e) {
 		WH_LOG_EXCEPTION(e);
 		delete s;
@@ -247,22 +248,22 @@ void Agent::connectToOverlay() noexcept {
 		}
 		//-----------------------------------------------------------------
 		//Check for timed-out connection
-		if (bs.node) {
-			if (bs.node->hasTimedOut(ctx.timeout)) {
+		if (boot.node) {
+			if (boot.node->hasTimedOut(ctx.timeout)) {
 				WH_LOG_DEBUG("Connection timed out");
-				disable(bs.node);
+				disable(boot.node);
 			}
 			return;
 		}
 		//-----------------------------------------------------------------
 		//Load the identifiers list if necessary
-		if (!bs.identifiers.hasSpace()) {
+		if (!boot.ids.hasSpace()) {
 			loadIdentifiers(false);
 		}
 		//-----------------------------------------------------------------
 		//Get the next identifier to probe
 		unsigned long long id;
-		if (!bs.identifiers.get(id)) {
+		if (!boot.ids.get(id)) {
 			setStage(WHC_ERROR);
 			throw Exception(EX_RESOURCE);
 		}
@@ -274,8 +275,8 @@ void Agent::connectToOverlay() noexcept {
 		s->setUid(id);
 		s->publish(createFindRootRequest());
 		attach(s, IO_WR, WATCHER_ACTIVE);
-		bs.node = s;
-		WH_LOG_DEBUG("Contacting bootstrap node %llu", bs.node->getUid());
+		boot.node = s;
+		WH_LOG_DEBUG("Contacting bootstrap node %llu", boot.node->getUid());
 	} catch (const BaseException &e) {
 		WH_LOG_EXCEPTION(e);
 		delete s;
@@ -283,12 +284,12 @@ void Agent::connectToOverlay() noexcept {
 }
 
 bool Agent::overdue(unsigned int milliseconds) const noexcept {
-	return bs.timer.hasTimedOut(milliseconds);
+	return boot.timer.hasTimedOut(milliseconds);
 }
 
 void Agent::initAuthentication() noexcept {
 	try {
-		if (!isStage(WHC_AUTHENTICATE) || !bs.auth) {
+		if (!isStage(WHC_AUTHENTICATE) || !boot.auth) {
 			throw Exception(EX_STATE);
 		} else {
 			//Message destination is correctly set
@@ -306,26 +307,26 @@ void Agent::findRoot() noexcept {
 	Socket *s { };
 	bool fresh { };
 	try {
-		if (!isStage(WHC_ROOT) || !bs.node) {
+		if (!isStage(WHC_ROOT) || !boot.node) {
 			throw Exception(EX_STATE);
-		} else if (bs.root == bs.node->getUid()) {
+		} else if (boot.root == boot.node->getUid()) {
 			fresh = false;
-			WH_LOG_DEBUG("Found the root node [%llu]", bs.root);
+			WH_LOG_DEBUG("Found the root node [%llu]", boot.root);
 		} else {
 			fresh = true;
 			NameInfo ni;
-			Identity::getAddress(bs.root, ni);
+			Identity::getAddress(boot.root, ni);
 			s = new Socket(ni);
-			s->setUid(bs.root);
-			WH_LOG_DEBUG("Connecting with the root node [%llu]", bs.root);
+			s->setUid(boot.root);
+			WH_LOG_DEBUG("Connecting with the root node [%llu]", boot.root);
 		}
 		//-----------------------------------------------------------------
 		uint64_t rnd[2];
 		Random prng;
 		prng.bytes(rnd, sizeof(rnd));
-		generateNonce(bs.hashFn, rnd[0], rnd[1], &bs.nonce);
+		generateNonce(boot.hf, rnd[0], rnd[1], &boot.nonce);
 		auto msg = Protocol::createTokenRequest( { 0, 0 },
-				{ verifyHost() ? getPKI() : nullptr, &bs.nonce }, nullptr);
+				{ verifyHost() ? getPKI() : nullptr, &boot.nonce }, nullptr);
 		//-----------------------------------------------------------------
 		if (!msg) {
 			throw Exception(EX_MEMORY);
@@ -333,11 +334,11 @@ void Agent::findRoot() noexcept {
 			s->publish(msg);
 			attach(s, IO_WR, WATCHER_ACTIVE);
 			//Swap and disable
-			auto w = bs.node;
-			bs.node = s;
+			auto w = boot.node;
+			boot.node = s;
 			disable(w);
 		} else {
-			msg->setDestination(bs.node->getUid());
+			msg->setDestination(boot.node->getUid());
 			Hub::forward(msg);
 		}
 		//-----------------------------------------------------------------
@@ -352,17 +353,17 @@ void Agent::findRoot() noexcept {
 
 void Agent::initAuthorization() noexcept {
 	try {
-		if (!isStage(WHC_AUTHORIZE) || !bs.node
-				|| (ctx.passwordLength && !bs.auth)) {
+		if (!isStage(WHC_AUTHORIZE) || !boot.node
+				|| (ctx.passwordLength && !boot.auth)) {
 			throw Exception(EX_STATE);
-		} else if (bs.auth) {
+		} else if (boot.auth) {
 			auto msg = createRegistrationRequest(false);
-			msg->setDestination(bs.auth->getUid());
+			msg->setDestination(boot.auth->getUid());
 			Hub::forward(msg);
 			WH_LOG_DEBUG("Initiating authorization");
 		} else {
 			auto msg = createRegistrationRequest(true);
-			msg->setDestination(bs.node->getUid());
+			msg->setDestination(boot.node->getUid());
 			Hub::forward(msg);
 			WH_LOG_DEBUG("Initiating registration");
 		}
@@ -376,7 +377,7 @@ Message* Agent::createIdentificationRequest() {
 	try {
 		Message *msg { };
 		Data nonce;
-		if (!bs.verifier.nonce(nonce)) {
+		if (!boot.verifier.nonce(nonce)) {
 			throw Exception(EX_SECURITY);
 		} else if (!(msg = Protocol::createIdentificationRequest(
 				{ getUid(), 0 }, nonce, 0))) {
@@ -395,13 +396,13 @@ void Agent::processIdentificationResponse(const Message *msg) noexcept {
 	Data nonce;
 	if (!isStage(WHC_IDENTIFY)) {
 		setStage(WHC_ERROR);
-	} else if (!bs.auth || msg->getOrigin() != bs.auth->getUid()) {
+	} else if (!boot.auth || msg->getOrigin() != boot.auth->getUid()) {
 		setStage(WHC_ERROR);
 	} else if (!Protocol::processIdentificationResponse(msg, salt, nonce)) {
 		setStage(WHC_ERROR);
 	} else {
 		Data password { ctx.password, ctx.passwordLength };
-		auto f = bs.verifier.scramble(getUid(), password, salt, nonce,
+		auto f = boot.verifier.scramble(getUid(), password, salt, nonce,
 				ctx.rounds);
 		if (!f) {
 			setStage(WHC_ERROR);
@@ -417,12 +418,12 @@ Message* Agent::createAuthenticationRequest() {
 	try {
 		Message *msg { };
 		Data proof;
-		if (!bs.auth) {
+		if (!boot.auth) {
 			throw Exception(EX_OPERATION);
-		} else if (!bs.verifier.userProof(proof)) {
+		} else if (!boot.verifier.userProof(proof)) {
 			throw Exception(EX_STATE);
 		} else if (!(msg = Protocol::createAuthenticationRequest(
-				{ 0, bs.auth->getUid() }, proof, 0))) {
+				{ 0, boot.auth->getUid() }, proof, 0))) {
 			throw Exception(EX_MEMORY);
 		} else {
 			return msg;
@@ -437,11 +438,11 @@ void Agent::processAuthenticationResponse(const Message *msg) noexcept {
 	Data proof;
 	if (!isStage(WHC_AUTHENTICATE)) {
 		setStage(WHC_ERROR);
-	} else if (!bs.auth || msg->getOrigin() != bs.auth->getUid()) {
+	} else if (!boot.auth || msg->getOrigin() != boot.auth->getUid()) {
 		setStage(WHC_ERROR);
 	} else if (!Protocol::processAuthenticationResponse(msg, proof)) {
 		setStage(WHC_ERROR);
-	} else if (!bs.verifier.verify(proof)) {
+	} else if (!boot.verifier.verify(proof)) {
 		setStage(WHC_ERROR);
 	} else {
 		WH_LOG_DEBUG("Authentication succeeded");
@@ -467,12 +468,12 @@ void Agent::processFindRootResponse(const Message *msg) noexcept {
 	uint64_t root { };
 	if (!isStage(WHC_BOOTSTRAP)) {
 		setStage(WHC_ERROR);
-	} else if (!bs.node || msg->getOrigin() != bs.node->getUid()) {
+	} else if (!boot.node || msg->getOrigin() != boot.node->getUid()) {
 		setStage(WHC_ERROR);
 	} else if (!Protocol::processFindRootResponse(msg, getUid(), root)) {
 		setStage(WHC_ERROR);
 	} else {
-		bs.root = root;
+		boot.root = root;
 		setStage(WHC_ROOT);
 		findRoot();
 	}
@@ -481,11 +482,11 @@ void Agent::processFindRootResponse(const Message *msg) noexcept {
 void Agent::processTokenResponse(const Message *msg) noexcept {
 	if (!isStage(WHC_GETKEY)) {
 		setStage(WHC_ERROR);
-	} else if (!bs.node || msg->getOrigin() != bs.node->getUid()) {
+	} else if (!boot.node || msg->getOrigin() != boot.node->getUid()) {
 		setStage(WHC_ERROR);
 	} else if (!msg->verify((verifyHost() ? getPKI() : nullptr))) {
 		setStage(WHC_ERROR);
-	} else if (!Protocol::processTokenResponse(msg, &bs.nonce)) {
+	} else if (!Protocol::processTokenResponse(msg, &boot.nonce)) {
 		setStage(WHC_ERROR);
 	} else {
 		WH_LOG_DEBUG("Session key received");
@@ -496,8 +497,8 @@ void Agent::processTokenResponse(const Message *msg) noexcept {
 
 Message* Agent::createRegistrationRequest(bool sign) {
 	try {
-		auto msg = Protocol::createRegisterRequest( { getUid(), 0 }, &bs.nonce,
-				nullptr);
+		auto msg = Protocol::createRegisterRequest( { getUid(), 0 },
+				&boot.nonce, nullptr);
 		if (msg) {
 			if (sign) {
 				msg->sign(getPKI());
@@ -517,37 +518,37 @@ void Agent::processRegistrationResponse(Message *msg) noexcept {
 	auto status = msg->getStatus();
 	if (!isStage(WHC_AUTHORIZE)) {
 		setStage(WHC_ERROR);
-	} else if (!bs.node || (ctx.passwordLength && !bs.auth)
+	} else if (!boot.node || (ctx.passwordLength && !boot.auth)
 			|| status == WH_AQLF_REJECTED) {
 		setStage(WHC_ERROR);
-	} else if (origin == bs.node->getUid() && status == WH_AQLF_ACCEPTED) {
-		if (move(bs.node->getUid(), 0, true)) {
+	} else if (origin == boot.node->getUid() && status == WH_AQLF_ACCEPTED) {
+		if (move(boot.node->getUid(), 0, true)) {
 			WH_LOG_INFO("Registration succeeded");
 			setStage(WHC_REGISTERED);
 		} else {
 			setStage(WHC_ERROR);
 		}
-	} else if (bs.auth && origin == bs.auth->getUid()
+	} else if (boot.auth && origin == boot.auth->getUid()
 			&& status == WH_AQLF_REQUEST) {
-		msg->setDestination(bs.node->getUid());
+		msg->setDestination(boot.node->getUid());
 	} else {
 		setStage(WHC_ERROR);
 	}
 }
 
 void Agent::setStage(int stage) noexcept {
-	if (stage != bs.stage) {
-		bs.timer.now();
-		bs.stage = stage;
-		bs.connected = (stage == WHC_REGISTERED);
+	if (stage != boot.stage) {
+		boot.timer.now();
+		boot.stage = stage;
+		boot.connected = (stage == WHC_REGISTERED);
 
 		if (stage == WHC_IDENTIFY || stage == WHC_BOOTSTRAP) {
 			clearIdentifiers();
 		} else if (stage == WHC_ERROR) {
-			disable(bs.auth);
-			disable(bs.node);
+			disable(boot.auth);
+			disable(boot.node);
 		} else if (stage == WHC_REGISTERED) {
-			disable(bs.auth);
+			disable(boot.auth);
 		} else {
 			return;
 		}
@@ -555,21 +556,21 @@ void Agent::setStage(int stage) noexcept {
 }
 
 int Agent::getStage() const noexcept {
-	return bs.stage;
+	return boot.stage;
 }
 
 bool Agent::isStage(int stage) const noexcept {
-	return (bs.stage == stage);
+	return (boot.stage == stage);
 }
 
 void Agent::loadIdentifiers(bool auth) {
 	try {
-		if (bs.identifiers.getStatus()) {
+		if (boot.ids.getStatus()) {
 			throw Exception(EX_STATE);
 		}
 
-		bs.identifiers.setStatus(1);
-		bs.identifiers.clear();
+		boot.ids.setStatus(1);
+		boot.ids.clear();
 		unsigned long long buffer[128];
 		//-----------------------------------------------------------------
 		auto n = Identity::getIdentifiers("BOOTSTRAP",
@@ -579,8 +580,8 @@ void Agent::loadIdentifiers(bool auth) {
 					(auth ? Hosts::AUTHENTICATOR : Hosts::BOOTSTRAP));
 		}
 		//-----------------------------------------------------------------
-		if (n && (n = bs.identifiers.put(buffer, n))) {
-			bs.identifiers.rewind();
+		if (n && (n = boot.ids.put(buffer, n))) {
+			boot.ids.rewind();
 			return;
 		} else {
 			throw Exception(EX_RESOURCE);
@@ -594,21 +595,21 @@ void Agent::loadIdentifiers(bool auth) {
 }
 
 void Agent::clearIdentifiers() noexcept {
-	bs.identifiers.setIndex(0);
-	bs.identifiers.setLimit(0);
-	bs.identifiers.setStatus(0);
-	bs.root = 0;
+	boot.ids.setIndex(0);
+	boot.ids.setLimit(0);
+	boot.ids.setStatus(0);
+	boot.root = 0;
 }
 
 void Agent::clear() noexcept {
 	memset(&ctx, 0, sizeof(ctx));
 
 	clearIdentifiers();
-	bs.auth = nullptr;
-	bs.node = nullptr;
-	memset(&bs.nonce, 0, sizeof(bs.nonce));
-	bs.stage = WHC_IDENTIFY;
-	bs.connected = false;
+	boot.auth = nullptr;
+	boot.node = nullptr;
+	memset(&boot.nonce, 0, sizeof(boot.nonce));
+	boot.stage = WHC_IDENTIFY;
+	boot.connected = false;
 }
 
 } /* namespace wanhive */
