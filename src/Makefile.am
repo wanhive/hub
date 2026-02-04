@@ -35,7 +35,7 @@ WH_BASE_IPCSOURCES = base/ipc/DNS.cpp base/ipc/NetworkAddressException.cpp
 WH_BASE_SECURITYHEADERS = base/security/CryptoUtils.h base/security/CSPRNG.h \
 	base/security/Ed25519.h base/security/KeyPair.h base/security/Rsa.h \
 	base/security/Sha.h base/security/Srp.h base/security/SSLContext.h \
-	base/security/X25519.h
+	base/security/Trust.h base/security/X25519.h
 WH_BASE_SECURITYSOURCES = base/security/CryptoUtils.cpp base/security/CSPRNG.cpp \
 	base/security/Ed25519.cpp base/security/KeyPair.cpp base/security/Rsa.cpp \
 	base/security/Sha.cpp base/security/Srp.cpp base/security/SSLContext.cpp \
