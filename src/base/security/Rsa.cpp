@@ -110,10 +110,10 @@ bool Rsa::sign(const unsigned char *data, size_t dataLength,
 		unsigned char *signature, size_t &signatureLength) const noexcept {
 	if (getPrivateKey() && (!dataLength || data)) {
 		unsigned char md[SHA_DIGEST_LENGTH];
-		unsigned int mdLength = 0;
-		auto type = EVP_sha1();
+		unsigned int mdLength { };
+		auto hf = EVP_sha1();
 
-		if (EVP_Digest(data, dataLength, md, &mdLength, type, nullptr) <= 0) {
+		if (EVP_Digest(data, dataLength, md, &mdLength, hf, nullptr) <= 0) {
 			return false;
 		}
 
@@ -132,7 +132,7 @@ bool Rsa::sign(const unsigned char *data, size_t dataLength,
 			return false;
 		}
 
-		if (EVP_PKEY_CTX_set_signature_md(ctx, type) <= 0) {
+		if (EVP_PKEY_CTX_set_signature_md(ctx, hf) <= 0) {
 			EVP_PKEY_CTX_free(ctx);
 			return false;
 		}
@@ -156,10 +156,10 @@ bool Rsa::verify(const unsigned char *data, size_t dataLength,
 		const unsigned char *signature, size_t signatureLength) const noexcept {
 	if (getPublicKey() && (!dataLength || data) && signature) {
 		unsigned char md[SHA_DIGEST_LENGTH];
-		unsigned int mdLength = 0;
-		auto type = EVP_sha1();
+		unsigned int mdLength { };
+		auto hf = EVP_sha1();
 
-		if (EVP_Digest(data, dataLength, md, &mdLength, type, nullptr) <= 0) {
+		if (EVP_Digest(data, dataLength, md, &mdLength, hf, nullptr) <= 0) {
 			return false;
 		}
 
@@ -178,7 +178,7 @@ bool Rsa::verify(const unsigned char *data, size_t dataLength,
 			return false;
 		}
 
-		if (EVP_PKEY_CTX_set_signature_md(ctx, type) <= 0) {
+		if (EVP_PKEY_CTX_set_signature_md(ctx, hf) <= 0) {
 			EVP_PKEY_CTX_free(ctx);
 			return false;
 		}

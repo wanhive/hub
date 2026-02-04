@@ -50,7 +50,7 @@ bool PKI::hasPublicKey() const noexcept {
 }
 
 bool PKI::encrypt(const Data &plaintext, Cache &ciphertext) noexcept {
-	return ((plaintext.length <= PAYLOAD_LENGTH))
+	return (plaintext.length <= PAYLOAD_LENGTH)
 			&& (!ciphertext.base || ciphertext.length >= ENCRYPTED_LENGTH)
 			&& rsa.encrypt(plaintext.base, plaintext.length, ciphertext.base,
 					ciphertext.length);
@@ -64,13 +64,15 @@ bool PKI::decrypt(const Data &ciphertext, Cache &plaintext) noexcept {
 }
 
 bool PKI::sign(const Data &message, Cache &signature) noexcept {
-	return rsa.sign(message.base, message.length, signature.base,
-			signature.length);
+	return (!signature.base || signature.length >= SIGNATURE_LENGTH)
+			&& rsa.sign(message.base, message.length, signature.base,
+					signature.length);
 }
 
 bool PKI::verify(const Data &message, const Data &signature) noexcept {
-	return rsa.verify(message.base, message.length, signature.base,
-			signature.length);
+	return (signature.base) && (signature.length == SIGNATURE_LENGTH)
+			&& rsa.verify(message.base, message.length, signature.base,
+					signature.length);
 }
 
 size_t PKI::payload() const noexcept {
