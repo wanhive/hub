@@ -40,8 +40,8 @@ public:
 	 * size in bytes as output (value-result argument).
 	 * @return true on success, false on error
 	 */
-	bool sign(const unsigned char *data, unsigned int dataLength,
-			unsigned char *signature, unsigned int &signatureLength) noexcept;
+	bool sign(const unsigned char *data, size_t dataLength,
+			unsigned char *signature, size_t &signatureLength) noexcept;
 	/**
 	 * Verifies the given data.
 	 * @param verifiable data
@@ -50,9 +50,8 @@ public:
 	 * @param signatureLength signature's size in bytes
 	 * @return true on successful verification, false otherwise
 	 */
-	bool verify(const unsigned char *data, unsigned int dataLength,
-			const unsigned char *signature,
-			unsigned int signatureLength) noexcept;
+	bool verify(const unsigned char *data, size_t dataLength,
+			const unsigned char *signature, size_t signatureLength) noexcept;
 	//-----------------------------------------------------------------
 	/**
 	 * Generates PEM encoded key pair.

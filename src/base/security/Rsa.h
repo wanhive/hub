@@ -41,9 +41,8 @@ public:
 	 * size in bytes as output (value-result argument).
 	 * @return true on success, false on error
 	 */
-	bool encrypt(const unsigned char *data, unsigned int dataLength,
-			unsigned char *encrypted,
-			unsigned int &encryptedLength) const noexcept;
+	bool encrypt(const unsigned char *data, size_t dataLength,
+			unsigned char *encrypted, size_t &encryptedLength) const noexcept;
 	/**
 	 * Decrypts a cipher-text. Uses RSA_PKCS1_OAEP_PADDING (EME-OAEP as defined
 	 * in PKCS #1 v2.0).
@@ -55,9 +54,8 @@ public:
 	 * size in bytes as output (value-result argument).
 	 * @return true on success, false on error
 	 */
-	bool decrypt(const unsigned char *data, unsigned int dataLength,
-			unsigned char *decrypted,
-			unsigned int &decryptedLength) const noexcept;
+	bool decrypt(const unsigned char *data, size_t dataLength,
+			unsigned char *decrypted, size_t &decryptedLength) const noexcept;
 	//-----------------------------------------------------------------
 	/**
 	 * Signs (PKCS #1 v2.0 SHA-1) the given data.
@@ -69,9 +67,8 @@ public:
 	 * size in bytes as output (value-result argument).
 	 * @return true on success, false on error
 	 */
-	bool sign(const unsigned char *data, unsigned int dataLength,
-			unsigned char *signature,
-			unsigned int &signatureLength) const noexcept;
+	bool sign(const unsigned char *data, size_t dataLength,
+			unsigned char *signature, size_t &signatureLength) const noexcept;
 	/**
 	 * Verifies (PKCS #1 v2.0 SHA-1) the given data.
 	 * @param data verifiable data
@@ -80,9 +77,9 @@ public:
 	 * @param signatureLength digital signature's size in bytes
 	 * @return true on successful verification, false otherwise
 	 */
-	bool verify(const unsigned char *data, unsigned int dataLength,
+	bool verify(const unsigned char *data, size_t dataLength,
 			const unsigned char *signature,
-			unsigned int signatureLength) const noexcept;
+			size_t signatureLength) const noexcept;
 	//-----------------------------------------------------------------
 	/**
 	 * Generates PEM encoded key pair.
@@ -92,7 +89,7 @@ public:
 	 * @param secret private key's pass phrase
 	 * @return true on success, false on error
 	 */
-	bool generate(const char *privateKey, const char *publicKey, int bits,
+	bool generate(const char *privateKey, const char *publicKey, size_t bits,
 			char *secret = nullptr) noexcept;
 };
 

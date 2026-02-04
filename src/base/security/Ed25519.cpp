@@ -23,10 +23,10 @@ Ed25519::~Ed25519() {
 	EVP_MD_CTX_free(mdctx);
 }
 
-bool Ed25519::sign(const unsigned char *data, unsigned int dataLength,
-		unsigned char *signature, unsigned int &signatureLength) noexcept {
+bool Ed25519::sign(const unsigned char *data, size_t dataLength,
+		unsigned char *signature, size_t &signatureLength) noexcept {
 	if (getPrivateKey() && (!dataLength || data)) {
-		size_t len { signatureLength };
+		auto len = signatureLength;
 		auto ctx = mdContext();
 		//Sign the data in a single shot
 		auto success = (ctx != nullptr)
@@ -40,8 +40,8 @@ bool Ed25519::sign(const unsigned char *data, unsigned int dataLength,
 	}
 }
 
-bool Ed25519::verify(const unsigned char *data, unsigned int dataLength,
-		const unsigned char *signature, unsigned int signatureLength) noexcept {
+bool Ed25519::verify(const unsigned char *data, size_t dataLength,
+		const unsigned char *signature, size_t signatureLength) noexcept {
 	if (getPublicKey() && (!dataLength || data) && signature) {
 		auto ctx = mdContext();
 		//Verify the data in a single shot

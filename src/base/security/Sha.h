@@ -43,50 +43,50 @@ public:
 	 */
 	~Sha();
 	/**
-	 * Resets the message digest's context.
+	 * Initializes or resets the digest context.
 	 * @return true on success, false on error
 	 */
 	bool init() noexcept;
 	/**
-	 * Hashes the given data, can be called again to hash additional data.
-	 * @param data input data for hashing
-	 * @param bytes input data's size in bytes
+	 * Updates the digest context with additional data.
+	 * @param data input data
+	 * @param bytes data's size in bytes
 	 * @return true on success, false on error
 	 */
-	bool update(const void *data, unsigned int bytes) noexcept;
+	bool update(const void *data, size_t bytes) noexcept;
 	/**
-	 * Retrieves the digest value.
+	 * Completes the message digest operation and returns the digest value.
 	 * @param digest stores the message digest
-	 * @param size stores the digest size in bytes (can be nullptr)
+	 * @param size stores the message digest size in bytes
 	 * @return true on success, false on error
 	 */
 	bool final(unsigned char *digest, unsigned int *size = nullptr) noexcept;
 	/**
-	 * Hashes the given data and returns the hash value.
-	 * @param data input data for hashing
-	 * @param bytes input data's size in bytes
+	 * Generates message digest from input data.
+	 * @param data input data
+	 * @param bytes data's size in bytes
 	 * @param digest stores the message digest
-	 * @param size stores the digest size in bytes (can be nullptr)
+	 * @param size stores the message digest size in bytes
 	 * @return true on success, false on error
 	 */
-	bool create(const void *data, unsigned int bytes, unsigned char *digest,
+	bool create(const void *data, size_t bytes, unsigned char *digest,
 			unsigned int *size = nullptr) noexcept;
 	/**
-	 * Compares the given digest value with digest value of the given data.
-	 * @param data input data for verification
-	 * @param bytes input data's size in bytes
-	 * @param digest the digest value for comparison
+	 * Verifies input data's message digest.
+	 * @param data input data
+	 * @param bytes data's size in bytes
+	 * @param digest message digest
 	 * @return true on successful match, false otherwise
 	 */
-	bool verify(const void *data, unsigned int bytes,
+	bool verify(const void *data, size_t bytes,
 			const unsigned char *digest) noexcept;
 	/**
-	 * Returns the expected digest size.
+	 * Returns the expected message digest size.
 	 * @return digest size in bytes
 	 */
 	unsigned int length() const noexcept;
 	/**
-	 * Returns the message digest size for a type.
+	 * Returns the message digest size for a hash function.
 	 * @param type hash function type
 	 * @return digest size in bytes
 	 */

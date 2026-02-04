@@ -19,7 +19,7 @@ namespace wanhive {
 //-----------------------------------------------------------------
 /*! SHA-512, 64-bytes (512-bits) digest */
 using Digest = unsigned char[64];
-/*! Base 64 encoding of a raw Digest */
+/*! Base-64 encoding of a raw Digest */
 using EncodedDigest = char[128];
 //-----------------------------------------------------------------
 /**
@@ -28,7 +28,7 @@ using EncodedDigest = char[128];
 class Hash {
 public:
 	/**
-	 * Constructor: initializes the SHA-512 algorithm.
+	 * Constructor: initializes SHA-512 hash function.
 	 */
 	Hash() noexcept;
 	/**
@@ -37,17 +37,17 @@ public:
 	~Hash();
 	//-----------------------------------------------------------------
 	/**
-	 * Hashes a block of data.
+	 * Generates input data's message digest.
 	 * @param data input data
-	 * @param size input data's size in bytes
+	 * @param size data's size in bytes
 	 * @param digest stores the message digest
 	 * @return true on success, false otherwise
 	 */
 	bool create(const void *data, unsigned int size, Digest *digest) noexcept;
 	/**
-	 * Verifies a message digest with the original data.
+	 * Verifies input data's message digest.
 	 * @param digest message digest
-	 * @param data reference data
+	 * @param data input data
 	 * @param size data's size in bytes
 	 * @return true on successful verification, false otherwise
 	 */
@@ -58,7 +58,7 @@ public:
 	 * Base-64 encodes a message digest.
 	 * @param digest message digest
 	 * @param encoded stores the output
-	 * @return output's length in bytes (excluding the nul-terminator)
+	 * @return output size in bytes (excluding the nul-terminator)
 	 */
 	static unsigned int encode(const Digest *digest,
 			EncodedDigest *encoded) noexcept;

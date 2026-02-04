@@ -32,7 +32,7 @@ bool Sha::init() noexcept {
 	}
 }
 
-bool Sha::update(const void *data, unsigned int bytes) noexcept {
+bool Sha::update(const void *data, size_t bytes) noexcept {
 	if (ctx && (!bytes || data)) {
 		return (EVP_DigestUpdate(ctx, data, bytes) == 1);
 	} else {
@@ -48,7 +48,7 @@ bool Sha::final(unsigned char *digest, unsigned int *size) noexcept {
 	}
 }
 
-bool Sha::create(const void *data, unsigned int bytes, unsigned char *digest,
+bool Sha::create(const void *data, size_t bytes, unsigned char *digest,
 		unsigned int *size) noexcept {
 	if ((!bytes || data) && digest) {
 		return (EVP_Digest(data, bytes, digest, size, type(), nullptr) == 1);
@@ -57,7 +57,7 @@ bool Sha::create(const void *data, unsigned int bytes, unsigned char *digest,
 	}
 }
 
-bool Sha::verify(const void *data, unsigned int bytes,
+bool Sha::verify(const void *data, size_t bytes,
 		const unsigned char *digest) noexcept {
 	if (digest) {
 		unsigned char md[MAX_MD_SIZE];

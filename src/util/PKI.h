@@ -39,6 +39,12 @@ public:
 	 */
 	PKI() noexcept;
 	/**
+	 * Constructor: loads key pair from PEM-encoded files.
+	 * @param privateKey private key file's path (can be nullptr)
+	 * @param publicKey public key file's path (can be nullptr)
+	 */
+	PKI(const char *privateKey, const char *publicKey);
+	/**
 	 * Destructor
 	 */
 	~PKI();

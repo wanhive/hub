@@ -19,6 +19,12 @@ PKI::PKI() noexcept {
 
 }
 
+PKI::PKI(const char *privateKey, const char *publicKey) {
+	if (!setup(privateKey, publicKey)) {
+		throw Exception(EX_SECURITY);
+	}
+}
+
 PKI::~PKI() {
 
 }
@@ -45,7 +51,7 @@ bool PKI::hasPublicKey() const noexcept {
 
 bool PKI::encrypt(const void *plaintext, unsigned int size,
 		CipherText *ciphertext) noexcept {
-	auto len = ENCRYPTED_LENGTH;
+	size_t len = ENCRYPTED_LENGTH;
 	return (size <= MAX_PT_LEN)
 			&& rsa.encrypt((const unsigned char*) plaintext, size,
 					(unsigned char*) ciphertext, len);
@@ -53,7 +59,7 @@ bool PKI::encrypt(const void *plaintext, unsigned int size,
 
 bool PKI::decrypt(const CipherText *ciphertext, void *plaintext,
 		unsigned int *size) noexcept {
-	auto len = ENCODING_LENGTH;
+	size_t len = ENCODING_LENGTH;
 	auto ret = rsa.decrypt((const unsigned char*) ciphertext, ENCRYPTED_LENGTH,
 			(unsigned char*) plaintext, len);
 	if (!ret) {
@@ -68,7 +74,7 @@ bool PKI::decrypt(const CipherText *ciphertext, void *plaintext,
 
 bool PKI::sign(const void *data, unsigned int size,
 		Signature *signature) noexcept {
-	auto len = SIGNATURE_LENGTH;
+	size_t len = SIGNATURE_LENGTH;
 	return rsa.sign((const unsigned char*) data, size,
 			(unsigned char*) signature, len) && (len == SIGNATURE_LENGTH);
 }

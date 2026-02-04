@@ -49,7 +49,7 @@ public:
 	 * Returns the asymmetric cryptography facility.
 	 * @return asymmetric cryptography object
 	 */
-	PKI* getPKI() noexcept;
+	PKI* getPKI() const noexcept;
 	/**
 	 * Checks whether the host verification is enabled.
 	 * @return true if enabled, false if disabled
@@ -161,8 +161,7 @@ private:
 	Hosts hosts;
 
 	struct {
-		PKI pki;
-		bool enabled { };
+		PKI *pki { };
 		bool verify { };
 	} auth;
 

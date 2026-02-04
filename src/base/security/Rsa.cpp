@@ -24,8 +24,8 @@ Rsa::~Rsa() {
 
 }
 
-bool Rsa::encrypt(const unsigned char *data, unsigned int dataLength,
-		unsigned char *encrypted, unsigned int &encryptedLength) const noexcept {
+bool Rsa::encrypt(const unsigned char *data, size_t dataLength,
+		unsigned char *encrypted, size_t &encryptedLength) const noexcept {
 	if (getPublicKey() && (!dataLength || data)) {
 		auto ctx = EVP_PKEY_CTX_new(getPublicKey(), nullptr);
 		if (!ctx) {
@@ -42,7 +42,7 @@ bool Rsa::encrypt(const unsigned char *data, unsigned int dataLength,
 			return false;
 		}
 
-		size_t len { encryptedLength };
+		auto len = encryptedLength;
 		if (EVP_PKEY_encrypt(ctx, encrypted, &len, data, dataLength) <= 0) {
 			EVP_PKEY_CTX_free(ctx);
 			return false;
@@ -58,8 +58,8 @@ bool Rsa::encrypt(const unsigned char *data, unsigned int dataLength,
 
 }
 
-bool Rsa::decrypt(const unsigned char *data, unsigned int dataLength,
-		unsigned char *decrypted, unsigned int &decryptedLength) const noexcept {
+bool Rsa::decrypt(const unsigned char *data, size_t dataLength,
+		unsigned char *decrypted, size_t &decryptedLength) const noexcept {
 	if (getPrivateKey() && (!dataLength || data)) {
 		auto ctx = EVP_PKEY_CTX_new(getPrivateKey(), nullptr);
 		if (!ctx) {
@@ -76,7 +76,7 @@ bool Rsa::decrypt(const unsigned char *data, unsigned int dataLength,
 			return false;
 		}
 
-		size_t len { decryptedLength };
+		auto len = decryptedLength;
 		if (EVP_PKEY_decrypt(ctx, decrypted, &len, data, dataLength) <= 0) {
 			EVP_PKEY_CTX_free(ctx);
 			return false;
@@ -91,8 +91,8 @@ bool Rsa::decrypt(const unsigned char *data, unsigned int dataLength,
 	}
 }
 
-bool Rsa::sign(const unsigned char *data, unsigned int dataLength,
-		unsigned char *signature, unsigned int &signatureLength) const noexcept {
+bool Rsa::sign(const unsigned char *data, size_t dataLength,
+		unsigned char *signature, size_t &signatureLength) const noexcept {
 	if (getPrivateKey() && (!dataLength || data)) {
 		unsigned char md[SHA_DIGEST_LENGTH];
 		unsigned int mdLength = 0;
@@ -122,7 +122,7 @@ bool Rsa::sign(const unsigned char *data, unsigned int dataLength,
 			return false;
 		}
 
-		size_t len = { signatureLength };
+		auto len = signatureLength;
 		if (EVP_PKEY_sign(ctx, signature, &len, md, mdLength) <= 0) {
 			EVP_PKEY_CTX_free(ctx);
 			return false;
@@ -137,9 +137,8 @@ bool Rsa::sign(const unsigned char *data, unsigned int dataLength,
 	}
 }
 
-bool Rsa::verify(const unsigned char *data, unsigned int dataLength,
-		const unsigned char *signature,
-		unsigned int signatureLength) const noexcept {
+bool Rsa::verify(const unsigned char *data, size_t dataLength,
+		const unsigned char *signature, size_t signatureLength) const noexcept {
 	if (getPublicKey() && (!dataLength || data) && signature) {
 		unsigned char md[SHA_DIGEST_LENGTH];
 		unsigned int mdLength = 0;
@@ -179,7 +178,7 @@ bool Rsa::verify(const unsigned char *data, unsigned int dataLength,
 	}
 }
 
-bool Rsa::generate(const char *privateKey, const char *publicKey, int bits,
+bool Rsa::generate(const char *privateKey, const char *publicKey, size_t bits,
 		char *secret) noexcept {
 	return KeyPair::generate(privateKey, publicKey, bits, secret, nullptr);
 }

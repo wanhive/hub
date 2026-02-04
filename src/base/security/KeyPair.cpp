@@ -89,6 +89,10 @@ bool KeyPair::hasPublicKey() const noexcept {
 	return _public != nullptr;
 }
 
+int KeyPair::type() const noexcept {
+	return nid;
+}
+
 bool KeyPair::validate(const EVP_PKEY *pkey) const noexcept {
 	return pkey && (EVP_PKEY_get_base_id(pkey) == nid);
 }
@@ -141,12 +145,12 @@ bool KeyPair::setPublicKey(EVP_PKEY *pkey) noexcept {
 	}
 }
 
-EVP_PKEY* KeyPair::generate(unsigned int bits) const noexcept {
+EVP_PKEY* KeyPair::generate(size_t bits) const noexcept {
 	if (!name) {
 		return nullptr;
 	}
 
-	auto pkey = EVP_PKEY_Q_keygen(nullptr, nullptr, name, (size_t) bits);
+	auto pkey = EVP_PKEY_Q_keygen(nullptr, nullptr, name, bits);
 
 	if (validate(pkey)) {
 		return pkey;
@@ -156,12 +160,12 @@ EVP_PKEY* KeyPair::generate(unsigned int bits) const noexcept {
 	}
 }
 
-EVP_PKEY* KeyPair::generate(unsigned int bits) noexcept {
+EVP_PKEY* KeyPair::generate(size_t bits) noexcept {
 	if (!name) {
 		return nullptr;
 	}
 
-	auto pkey = EVP_PKEY_Q_keygen(nullptr, nullptr, name, (size_t) bits);
+	auto pkey = EVP_PKEY_Q_keygen(nullptr, nullptr, name, bits);
 
 	if (validate(pkey)) {
 		reset();
@@ -174,8 +178,7 @@ EVP_PKEY* KeyPair::generate(unsigned int bits) noexcept {
 }
 
 bool KeyPair::generate(const char *privateKey, const char *publicKey,
-		unsigned int bits, char *secret,
-		const EVP_CIPHER *cipher) const noexcept {
+		size_t bits, char *secret, const EVP_CIPHER *cipher) const noexcept {
 	if (!privateKey || !publicKey) {
 		return false;
 	}

@@ -36,17 +36,18 @@
 #define WH_TEST_DIR WH_CONF_BASE "/testdata"
 
 namespace wanhive {
-//=================================================================
+
 const char Identity::CONF_FILE_NAME[] = WH_CONF_FILE;
 const char Identity::CONF_PATH[] = WH_CONF_PATH;
 const char Identity::CONF_SYSTEM_PATH[] = WH_CONF_SYSTEM_PATH;
-//=================================================================
+
 Identity::Identity(const char *path) noexcept {
 	paths.config = path ? strdup(path) : nullptr;
 }
 
 Identity::~Identity() {
 	delete instanceId;
+	delete auth.pki;
 	free(paths.config);
 	free(paths.options);
 	free(paths.hostsDB);
@@ -75,12 +76,8 @@ const Options& Identity::getOptions() const noexcept {
 	return options;
 }
 
-PKI* Identity::getPKI() noexcept {
-	if (auth.enabled) {
-		return &auth.pki;
-	} else {
-		return nullptr;
-	}
+PKI* Identity::getPKI() const noexcept {
+	return auth.pki;
 }
 
 bool Identity::verifyHost() const noexcept {
@@ -293,6 +290,8 @@ void Identity::loadHosts() {
 }
 
 void Identity::loadKeys() {
+	delete auth.pki;
+	auth.pki = nullptr;
 	free(paths.privateKey);
 	free(paths.publicKey);
 	paths.privateKey = options.getPathName("KEYS", "private");
@@ -311,25 +310,27 @@ void Identity::loadKeys() {
 	try {
 		if (!paths.publicKey && !paths.privateKey) {
 			WH_LOG_WARNING("Public key infrastructure disabled");
-			auth.enabled = false;
 			auth.verify = false;
 		} else {
-			auth.enabled = auth.pki.setup(paths.privateKey, paths.publicKey);
-			if (auth.enabled) {
-				WH_LOG_INFO("Public key infrastructure enabled");
-			} else {
-				throw Exception(EX_SECURITY);
-			}
+			auth.pki = new PKI(paths.privateKey, paths.publicKey);
+			WH_LOG_INFO("Public key infrastructure enabled");
 		}
 	} catch (const BaseException &e) {
 		WH_LOG_EXCEPTION(e);
-		auth.enabled = false;
 		auth.verify = false;
 		free(paths.privateKey);
 		paths.privateKey = nullptr;
 		free(paths.publicKey);
 		paths.publicKey = nullptr;
 		throw;
+	} catch (...) {
+		WH_LOG_EXCEPTION_U();
+		auth.verify = false;
+		free(paths.privateKey);
+		paths.privateKey = nullptr;
+		free(paths.publicKey);
+		paths.publicKey = nullptr;
+		throw Exception(EX_MEMORY);
 	}
 }
 
@@ -396,9 +397,11 @@ void Identity::loadHostsFile() {
 
 void Identity::loadPrivateKey() {
 	try {
-		if (!paths.privateKey) {
+		if (!auth.pki) {
+			throw Exception(EX_OPERATION);
+		} else if (!paths.privateKey) {
 			WH_LOG_WARNING("No private key file");
-		} else if (auth.pki.loadPrivateKey(paths.privateKey)) {
+		} else if (auth.pki->loadPrivateKey(paths.privateKey)) {
 			WH_LOG_DEBUG("Private key loaded from %s", paths.privateKey);
 			return;
 		} else {
@@ -412,9 +415,11 @@ void Identity::loadPrivateKey() {
 
 void Identity::loadPublicKey() {
 	try {
-		if (!paths.publicKey) {
+		if (!auth.pki) {
+			throw Exception(EX_OPERATION);
+		} else if (!paths.publicKey) {
 			WH_LOG_WARNING("No public key file");
-		} else if (auth.pki.loadPublicKey(paths.publicKey)) {
+		} else if (auth.pki->loadPublicKey(paths.publicKey)) {
 			WH_LOG_DEBUG("Public key loaded from %s", paths.publicKey);
 			return;
 		} else {
@@ -491,7 +496,7 @@ char* Identity::locateConfigurationFile() noexcept {
 		}
 
 		//For resolution of default configuration file paths
-		char buffer[PATH_MAX] = { };
+		char buffer[PATH_MAX] { };
 
 		//STEP 1: Search in the current working directory
 		System::currentWorkingDirectory(buffer, sizeof(buffer));
