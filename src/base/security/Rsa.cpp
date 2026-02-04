@@ -42,8 +42,23 @@ bool Rsa::encrypt(const unsigned char *data, size_t dataLength,
 			return false;
 		}
 
-		auto len = encryptedLength;
-		if (EVP_PKEY_encrypt(ctx, encrypted, &len, data, dataLength) <= 0) {
+		//-----------------------------------------------------------------
+		//BUGFIX
+		size_t len { };
+		if (EVP_PKEY_encrypt(ctx, nullptr, &len, data, dataLength) <= 0) {
+			EVP_PKEY_CTX_free(ctx);
+			return false;
+		}
+
+		if (!encrypted) {
+			encryptedLength = len;
+			EVP_PKEY_CTX_free(ctx);
+			return true;
+		}
+		//-----------------------------------------------------------------
+		if ((len > encryptedLength)
+				|| EVP_PKEY_encrypt(ctx, encrypted, &len, data, dataLength)
+						<= 0) {
 			EVP_PKEY_CTX_free(ctx);
 			return false;
 		}
