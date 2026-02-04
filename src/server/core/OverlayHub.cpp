@@ -874,6 +874,7 @@ bool OverlayHub::handleTokenRequest(Message *msg) noexcept {
 	 * TOTAL: 32+64=96 bytes in Request; 32+128=160 bytes in Response
 	 */
 	auto origin = msg->getOrigin();
+	auto payload = msg->getPayloadLength();
 	//-----------------------------------------------------------------
 	/*
 	 * [PROXY ESTABLISHMENT]
@@ -885,9 +886,7 @@ bool OverlayHub::handleTokenRequest(Message *msg) noexcept {
 		//Check message integrity
 		if (msg->getStatus() != WH_DHT_AQLF_ACCEPTED) {
 			return handleInvalidRequest(msg);
-		} else if (!((msg->getPayloadLength() == 2 * Hash::SIZE)
-				|| (msg->getPayloadLength()
-						== 2 * Hash::SIZE + PKI::SIGNATURE_LENGTH))) {
+		} else if (payload < (2 * Hash::SIZE)) {
 			return handleInvalidRequest(msg);
 		} else if (!msg->verify(verifyHost() ? getPKI() : nullptr)) {
 			return handleInvalidRequest(msg);
@@ -917,7 +916,7 @@ bool OverlayHub::handleTokenRequest(Message *msg) noexcept {
 	 * This call succeeds if the caller is a temporary connection and the
 	 * message is of proper size, otherwise a failure message is sent back.
 	 */
-	if (isEphemeral(origin) && msg->getPayloadLength() <= Hash::SIZE) {
+	if (isEphemeral(origin) && payload <= Hash::SIZE) {
 		Digest hc;	//Challenge Key
 		memset(&hc, 0, sizeof(hc));
 		generateNonce(hash, origin, getUid(), &hc);
@@ -926,14 +925,13 @@ bool OverlayHub::handleTokenRequest(Message *msg) noexcept {
 		msg->writeDestination(0);
 		msg->setDestination(origin);
 		msg->putStatus(WH_DHT_AQLF_ACCEPTED);
-	} else if (isEphemeral(origin)
-			&& msg->getPayloadLength() == PKI::ENCRYPTED_LENGTH && verifyHost()
+	} else if (isEphemeral(origin) && payload > Hash::SIZE && verifyHost()
 			&& getPKI()) {
 		//Extract the challenge key
-		unsigned char challenge[PKI::ENCODING_LENGTH]; //Challenge
-		memset(&challenge, 0, sizeof(challenge));
-		getPKI()->decrypt((const CipherText*) msg->getBytes(0), &challenge);
-		msg->setBytes(0, (const unsigned char*) &challenge, Hash::SIZE);
+		unsigned char pt[Message::PAYLOAD_SIZE] { }; //Challenge
+		Cache challenge { pt, sizeof(pt) };
+		getPKI()->decrypt( { msg->getBytes(0), payload }, challenge);
+		msg->setBytes(0, challenge.base, Hash::SIZE);
 		//Build and return the session key
 		Digest hc; //Response
 		memset(&hc, 0, sizeof(hc));

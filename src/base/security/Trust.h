@@ -41,28 +41,28 @@ public:
 	 * @param ciphertext stores the encrypted data
 	 * @return true on success, false on error
 	 */
-	virtual bool encrypt(Data &plaintext, Cache &ciphertext) noexcept = 0;
+	virtual bool encrypt(const Data &plaintext, Cache &ciphertext) noexcept = 0;
 	/**
 	 * Performs private key decryption of ciphertext.
 	 * @param ciphertext encrypted data
 	 * @param plaintext stores the original data
 	 * @return true on success, false on error
 	 */
-	virtual bool decrypt(Data &ciphertext, Cache &plaintext) noexcept = 0;
+	virtual bool decrypt(const Data &ciphertext, Cache &plaintext) noexcept = 0;
 	/**
 	 * Signs data using the private key.
 	 * @param message original data
 	 * @param signature stores the digital signature
 	 * @return true on success, false on error
 	 */
-	virtual bool sign(Data &message, Cache &signature) noexcept = 0;
+	virtual bool sign(const Data &message, Cache &signature) noexcept = 0;
 	/**
 	 * Verifies a digital signature using the public key.
 	 * @param message original data
 	 * @param signature digital signature
 	 * @return true on successful verification, false on error
 	 */
-	virtual bool verify(Data &message, Data &signature) noexcept = 0;
+	virtual bool verify(const Data &message, const Data &signature) noexcept = 0;
 	/**
 	 * Returns the maximum plaintext length in bytes that can be encrypted.
 	 * @return maximum plaintext size in bytes, 0 if not applicable

@@ -49,40 +49,41 @@ bool PKI::hasPublicKey() const noexcept {
 	return rsa.hasPublicKey();
 }
 
-bool PKI::encrypt(const void *plaintext, unsigned int size,
-		CipherText *ciphertext) noexcept {
-	size_t len = ENCRYPTED_LENGTH;
-	return (size <= MAX_PT_LEN)
-			&& rsa.encrypt((const unsigned char*) plaintext, size,
-					(unsigned char*) ciphertext, len);
+bool PKI::encrypt(const Data &plaintext, Cache &ciphertext) noexcept {
+	return ((plaintext.length <= PAYLOAD_LENGTH))
+			&& (!ciphertext.base || ciphertext.length >= ENCRYPTED_LENGTH)
+			&& rsa.encrypt(plaintext.base, plaintext.length, ciphertext.base,
+					ciphertext.length);
 }
 
-bool PKI::decrypt(const CipherText *ciphertext, void *plaintext,
-		unsigned int *size) noexcept {
-	size_t len = ENCODING_LENGTH;
-	auto ret = rsa.decrypt((const unsigned char*) ciphertext, ENCRYPTED_LENGTH,
-			(unsigned char*) plaintext, len);
-	if (!ret) {
-		return false;
-	} else if (size) {
-		*size = len;
-		return true;
-	} else {
-		return true;
-	}
+bool PKI::decrypt(const Data &ciphertext, Cache &plaintext) noexcept {
+	return (!plaintext.base || plaintext.length >= ENCODING_LENGTH)
+			&& (ciphertext.base && ciphertext.length == ENCRYPTED_LENGTH)
+			&& rsa.decrypt(ciphertext.base, ciphertext.length, plaintext.base,
+					plaintext.length);
 }
 
-bool PKI::sign(const void *data, unsigned int size,
-		Signature *signature) noexcept {
-	size_t len = SIGNATURE_LENGTH;
-	return rsa.sign((const unsigned char*) data, size,
-			(unsigned char*) signature, len) && (len == SIGNATURE_LENGTH);
+bool PKI::sign(const Data &message, Cache &signature) noexcept {
+	return rsa.sign(message.base, message.length, signature.base,
+			signature.length);
 }
 
-bool PKI::verify(const void *data, unsigned int size,
-		const Signature *signature) noexcept {
-	return rsa.verify((unsigned char*) data, size, (unsigned char*) signature,
-			SIGNATURE_LENGTH);
+bool PKI::verify(const Data &message, const Data &signature) noexcept {
+	return rsa.verify(message.base, message.length, signature.base,
+			signature.length);
+}
+
+size_t PKI::payload() const noexcept {
+	return PAYLOAD_LENGTH;
+}
+
+size_t PKI::fingerprint(bool &fixed) const noexcept {
+	fixed = true;
+	return SIGNATURE_LENGTH;
+}
+
+int PKI::algorithm() const noexcept {
+	return rsa.type();
 }
 
 void PKI::generate(const char *privateKey, const char *publicKey) {

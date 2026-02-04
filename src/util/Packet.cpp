@@ -113,33 +113,47 @@ bool Packet::checkContext(uint8_t command, uint8_t qualifier,
 }
 
 bool Packet::sign(PKI *pki) noexcept {
-	if (pki && validate()
-			&& header().getLength() <= (MTU - PKI::SIGNATURE_LENGTH)) {
-		const auto length = header().getLength(); //To roll back
+	if (!pki) {
+		return true;
+	}
 
-		//Finalize the frame, otherwise verification will fail
-		header().setLength(length + PKI::SIGNATURE_LENGTH);
-		bind();
+	bool fixed { };
+	auto siglen = pki->fingerprint(fixed);
+	const auto length = header().getLength();
+	if (!validate() || !fixed || (length + siglen) > MTU) {
+		return false;
+	}
 
-		if (pki->sign(buffer(), length, (Signature*) buffer(length))) {
-			return true;
-		} else {
-			//Roll back
-			header().setLength(length);
-			bind();
-			return false;
-		}
+	//Finalize the frame, otherwise verification will fail
+	header().setLength(length + siglen);
+	bind();
+
+	Data message { buffer(), length };
+	Cache signature { buffer(length), siglen };
+	if (pki->sign(message, signature)) {
+		return true;
 	} else {
-		return !pki;
+		//Roll back
+		header().setLength(length);
+		bind();
+		return false;
 	}
 }
 
 bool Packet::verify(PKI *pki) const noexcept {
-	if (pki && getPayloadLength() >= PKI::SIGNATURE_LENGTH) {
-		auto length = header().getLength() - PKI::SIGNATURE_LENGTH;
-		return pki->verify(buffer(), length, (const Signature*) buffer(length));
+	if (!pki) {
+		return true;
+	}
+
+	bool fixed { };
+	auto siglen = pki->fingerprint(fixed);
+	if (fixed && getPayloadLength() >= siglen) {
+		auto length = header().getLength() - siglen;
+		Data message { buffer(), length };
+		Data signature { buffer(length), siglen };
+		return pki->verify(message, signature);
 	} else {
-		return !pki;
+		return false;
 	}
 }
 

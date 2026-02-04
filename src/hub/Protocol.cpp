@@ -444,14 +444,13 @@ unsigned int Protocol::createTokenRequest(const MessageAddress &address,
 	auto length = HEADER_SIZE;
 	packet.clear();
 	if (tk.nonce && tk.keys) {
-		CipherText challenge;
-		memset(&challenge, 0, sizeof(challenge));
+		unsigned char ct[Packet::PAYLOAD_SIZE] { };
+		Cache challenge { ct, sizeof(ct) };
 		//Ignore the encryption error (Public key is used for encryption)
-		tk.keys->encrypt(tk.nonce, Hash::SIZE, &challenge);
+		tk.keys->encrypt( { *tk.nonce, Hash::SIZE }, challenge);
 		//Append the challenge at the start of the message
-		Serializer::packib(packet.payload(), (unsigned char*) challenge,
-				PKI::ENCRYPTED_LENGTH);
-		length += PKI::ENCRYPTED_LENGTH;
+		Serializer::packib(packet.payload(), challenge.base, challenge.length);
+		length += challenge.length;
 	} else if (tk.nonce) {
 		Serializer::packib(packet.payload(), (unsigned char*) tk.nonce,
 				Hash::SIZE);
