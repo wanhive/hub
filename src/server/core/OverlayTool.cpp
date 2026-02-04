@@ -142,11 +142,11 @@ void OverlayTool::execute() noexcept {
 				}
 				break;
 			case 6:
-				useKeyPair(Identity::getPKI());
+				setKeyPair(Identity::getPKI());
 				std::cout << "Keys loaded" << std::endl;
 				break;
 			case 7:
-				useKeyPair(nullptr);
+				setKeyPair(nullptr);
 				std::cout << "Keys discarded" << std::endl;
 				break;
 			case 8:

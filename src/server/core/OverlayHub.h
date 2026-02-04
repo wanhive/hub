@@ -61,16 +61,16 @@ private:
 	void offboard(Watcher *w) noexcept;
 	void memorize(unsigned long long id) noexcept;
 	//-----------------------------------------------------------------
-	int enroll(const Message *request) noexcept;
+	int enroll(const Message *message) noexcept;
 	int enroll(unsigned long long source, unsigned long long request) noexcept;
-	bool authenticate(const Message *request) noexcept;
+	bool authenticate(const Message *message) noexcept;
 	bool validate(unsigned long long source,
 			unsigned long long request) const noexcept;
 	//-----------------------------------------------------------------
 	bool intercept(Message *message) noexcept;
 	void annotate(Message *message) noexcept;
 	bool plot(Message *message) noexcept;
-	bool corroborate(const Message *response) const noexcept;
+	bool corroborate(const Message *message) const noexcept;
 	unsigned long long gateway(unsigned long long to) const noexcept;
 	bool approve(unsigned long long from, unsigned long long to) const noexcept;
 	bool permit(unsigned long long from, unsigned long long to) const noexcept;

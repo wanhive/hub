@@ -18,6 +18,7 @@
 #include "util/Hosts.h"
 #include "util/InstanceID.h"
 #include "util/Message.h"
+#include "util/PKI.h"
 #include "util/Random.h"
 #include "util/Verifier.h"
 #include "util/commands.h"

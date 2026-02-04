@@ -443,11 +443,11 @@ unsigned int Protocol::createTokenRequest(const MessageAddress &address,
 		uint16_t seq, const Token &tk, Packet &packet) noexcept {
 	auto length = HEADER_SIZE;
 	packet.clear();
-	if (tk.nonce && tk.keys) {
+	if (tk.nonce && tk.pki) {
 		unsigned char ct[Packet::PAYLOAD_SIZE] { };
 		Cache challenge { ct, sizeof(ct) };
 		//Ignore the encryption error (Public key is used for encryption)
-		tk.keys->encrypt( { *tk.nonce, Hash::SIZE }, challenge);
+		tk.pki->encrypt( { *tk.nonce, Hash::SIZE }, challenge);
 		//Append the challenge at the start of the message
 		Serializer::packib(packet.payload(), challenge.base, challenge.length);
 		length += challenge.length;

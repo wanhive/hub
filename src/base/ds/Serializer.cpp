@@ -13,6 +13,7 @@
 #include "Serializer.h"
 #include <cctype>
 #include <cfloat>
+#include <cstdarg>
 #include <cstdio>
 #include <cstring>
 #include <endian.h>

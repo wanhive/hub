@@ -76,7 +76,7 @@ const Options& Identity::getOptions() const noexcept {
 	return options;
 }
 
-PKI* Identity::getPKI() const noexcept {
+Trust* Identity::getPKI() const noexcept {
 	return auth.pki;
 }
 

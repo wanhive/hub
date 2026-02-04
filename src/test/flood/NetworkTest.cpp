@@ -89,7 +89,7 @@ void NetworkTest::test(const char *path) noexcept {
 void NetworkTest::flood(uint64_t destination, unsigned int iterations) {
 	try {
 		bootstrap(serverId, 5000);
-		useKeyPair(NULL);
+		setKeyPair(nullptr);
 		this->iterations = iterations;
 		this->destinationId = destination;
 		std::cout << "============START============" << std::endl;

@@ -33,11 +33,11 @@ SSLContext* Endpoint::getSSLContext() const noexcept {
 	return sslContext;
 }
 
-void Endpoint::useKeyPair(PKI *pki) noexcept {
+void Endpoint::setKeyPair(Trust *pki) noexcept {
 	this->pki = pki;
 }
 
-PKI* Endpoint::getKeyPair() const noexcept {
+Trust* Endpoint::getKeyPair() const noexcept {
 	return pki;
 }
 
@@ -201,7 +201,7 @@ int Endpoint::connect(const NameInfo &ni, SocketAddress &sa, int timeout) {
 	return sfd;
 }
 
-void Endpoint::send(int sfd, Packet &packet, PKI *pki) {
+void Endpoint::send(int sfd, Packet &packet, Trust *pki) {
 	if (!packet.validate()) {
 		throw Exception(EX_RANGE);
 	} else if (!packet.sign(pki)) {
@@ -211,7 +211,7 @@ void Endpoint::send(int sfd, Packet &packet, PKI *pki) {
 	}
 }
 
-void Endpoint::send(SSL *ssl, Packet &packet, PKI *pki) {
+void Endpoint::send(SSL *ssl, Packet &packet, Trust *pki) {
 	if (!packet.validate()) {
 		throw Exception(EX_RANGE);
 	} else if (!packet.sign(pki)) {
@@ -221,7 +221,7 @@ void Endpoint::send(SSL *ssl, Packet &packet, PKI *pki) {
 	}
 }
 
-void Endpoint::receive(int sfd, Packet &packet, unsigned int seq, PKI *pki) {
+void Endpoint::receive(int sfd, Packet &packet, unsigned int seq, Trust *pki) {
 	packet.clear();
 	do {
 		//Receive the header
@@ -242,7 +242,7 @@ void Endpoint::receive(int sfd, Packet &packet, unsigned int seq, PKI *pki) {
 	}
 }
 
-void Endpoint::receive(SSL *ssl, Packet &packet, unsigned int seq, PKI *pki) {
+void Endpoint::receive(SSL *ssl, Packet &packet, unsigned int seq, Trust *pki) {
 	packet.clear();
 	do {
 		//Receive the header

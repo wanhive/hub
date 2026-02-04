@@ -23,13 +23,15 @@ namespace wanhive {
  * Asymmetric key and nonce for handshaking
  */
 struct Token {
-	PKI *keys;
+	/*! Asymmetric key pair */
+	Trust *pki;
+	/*! Nonce for handshaking */
 	Digest *nonce;
 };
 //-----------------------------------------------------------------
 /**
  * Wanhive protocol implementation
- * @note Supports blocking IO only
+ * @note Requires blocking IO
  */
 class Protocol: protected Endpoint, protected FlowControl {
 public:

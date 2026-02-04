@@ -49,12 +49,12 @@ public:
 	 * Sets message signing and verification keys (nullptr to disable).
 	 * @param pki new asymmetric keys
 	 */
-	void useKeyPair(PKI *pki = nullptr) noexcept;
+	void setKeyPair(Trust *pki = nullptr) noexcept;
 	/**
 	 * Returns message signing and verification keys.
 	 * @return current asymmetric keys
 	 */
-	PKI* getKeyPair() const noexcept;
+	Trust* getKeyPair() const noexcept;
 	//-----------------------------------------------------------------
 	/**
 	 * Connects to a new host (terminates existing connection).
@@ -158,7 +158,7 @@ public:
 	 * @param packet outgoing request
 	 * @param pki signing key
 	 */
-	static void send(int sfd, Packet &packet, PKI *pki = nullptr);
+	static void send(int sfd, Packet &packet, Trust *pki = nullptr);
 	/**
 	 * Sends a request. If a signing key is provided (not nullptr) then the
 	 * outgoing request is digitally signed.
@@ -166,7 +166,7 @@ public:
 	 * @param packet outgoing request
 	 * @param pki signing key
 	 */
-	static void send(SSL *ssl, Packet &packet, PKI *pki = nullptr);
+	static void send(SSL *ssl, Packet &packet, Trust *pki = nullptr);
 	/**
 	 * Receives a response. If a verification key is provided (not nullptr) then
 	 * the response's digital signature is verified. If an "expected" sequence
@@ -178,7 +178,7 @@ public:
 	 * @param pki verification key
 	 */
 	static void receive(int sfd, Packet &packet, unsigned int seq = 0,
-			PKI *pki = nullptr);
+			Trust *pki = nullptr);
 	/**
 	 * Receives a response. If a verification key is provided (not nullptr) then
 	 * the response's digital signature is verified. If an "expected" sequence
@@ -190,12 +190,12 @@ public:
 	 * @param pki verification key
 	 */
 	static void receive(SSL *ssl, Packet &packet, unsigned int seq = 0,
-			PKI *pki = nullptr);
+			Trust *pki = nullptr);
 private:
 	int sockfd { -1 };
 	SSL *ssl { };
 	SSLContext *sslContext { };
-	PKI *pki { };
+	Trust *pki { };
 };
 
 } /* namespace wanhive */

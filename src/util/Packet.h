@@ -13,7 +13,7 @@
 #ifndef WH_UTIL_PACKET_H_
 #define WH_UTIL_PACKET_H_
 #include "Frame.h"
-#include "PKI.h"
+#include "../base/security/Trust.h"
 
 /*! @namespace wanhive */
 namespace wanhive {
@@ -144,13 +144,13 @@ public:
 	 * @param pki signing key
 	 * @return true on success (or the key is nullptr), false otherwise
 	 */
-	bool sign(PKI *pki) noexcept;
+	bool sign(Trust *pki) noexcept;
 	/**
 	 * Verifies this packet's signature.
 	 * @param pki verifying key
 	 * @return true on success (or the key is nullptr), false otherwise
 	 */
-	bool verify(PKI *pki) const noexcept;
+	bool verify(Trust *pki) const noexcept;
 	//-----------------------------------------------------------------
 	/**
 	 * For debugging: prints the header data to stderr.

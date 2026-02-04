@@ -442,16 +442,16 @@ void OverlayHub::memorize(unsigned long long id) noexcept {
 	}
 }
 
-int OverlayHub::enroll(const Message *request) noexcept {
-	if (request->getOrigin() != request->getSource()) {
+int OverlayHub::enroll(const Message *message) noexcept {
+	if (message->getOrigin() != message->getSource()) {
 		//Origin must match the source identifier (only direct requests)
 		return -1;
 	}
 
-	auto current = request->getSource();
-	auto requested = request->getDestination();
+	auto current = message->getSource();
+	auto requested = message->getDestination();
 	int mode = -1; //default: reject
-	if (request->getStatus() == WH_DHT_AQLF_ACCEPTED) {
+	if (message->getStatus() == WH_DHT_AQLF_ACCEPTED) {
 		mode = enroll(current, requested);
 	}
 
@@ -464,7 +464,7 @@ int OverlayHub::enroll(const Message *request) noexcept {
 	if (!conn) {
 		return -1;
 	} else {
-		conn->setGroup(request->getSession());
+		conn->setGroup(message->getSession());
 		onboard(conn);
 		return (mode == 0) ? 1 : 0;
 	}
@@ -490,14 +490,14 @@ int OverlayHub::enroll(unsigned long long source,
 	}
 }
 
-bool OverlayHub::authenticate(const Message *request) noexcept {
+bool OverlayHub::authenticate(const Message *message) noexcept {
 	/*
 	 * 1. Confirm that the requested ID is valid
 	 * 2. Analyze the security features
 	 * 3. Impose rate limit
 	 */
-	auto origin = request->getOrigin();
-	auto requested = request->getSource();
+	auto origin = message->getOrigin();
+	auto requested = message->getSource();
 
 	if (!validate(origin, requested)) {
 		//CASE 1
@@ -508,13 +508,12 @@ bool OverlayHub::authenticate(const Message *request) noexcept {
 	} else if (!getPKI()) {
 		//CASE 2
 		return true;
-	} else if (request->getPayloadLength()
-			== Hash::SIZE + PKI::SIGNATURE_LENGTH) {
+	} else if (message->getPayloadLength() > Hash::SIZE) {
 		//CASE 2 & 3
 		return tokens.take()
 				&& verifyNonce(hash, origin, getUid(),
-						(Digest*) request->getBytes(0))
-				&& request->verify(getPKI());
+						(Digest*) message->getBytes(0))
+				&& message->verify(getPKI());
 	} else {
 		return false;
 	}
@@ -602,15 +601,15 @@ bool OverlayHub::plot(Message *message) noexcept {
 	return true;
 }
 
-bool OverlayHub::corroborate(const Message *response) const noexcept {
+bool OverlayHub::corroborate(const Message *message) const noexcept {
 	auto &sh = worker.header;
-	return response->getStatus() != WH_DHT_AQLF_REQUEST
-			&& response->getLabel() == sh.getLabel()
-			&& isHost(response->getDestination())
-			&& response->getSequenceNumber() == sh.getSequenceNumber()
-			&& response->getSession() == sh.getSession()
-			&& response->getCommand() == sh.getCommand()
-			&& response->getQualifier() == sh.getQualifier();
+	return message->getStatus() != WH_DHT_AQLF_REQUEST
+			&& message->getLabel() == sh.getLabel()
+			&& isHost(message->getDestination())
+			&& message->getSequenceNumber() == sh.getSequenceNumber()
+			&& message->getSession() == sh.getSession()
+			&& message->getCommand() == sh.getCommand()
+			&& message->getQualifier() == sh.getQualifier();
 }
 
 unsigned long long OverlayHub::gateway(unsigned long long to) const noexcept {

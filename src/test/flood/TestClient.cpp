@@ -69,7 +69,7 @@ void TestClient::bootstrap(uint64_t id, int timeout) {
 bool TestClient::authenticate() {
 	try {
 		Digest hc;
-		useKeyPair(getPKI());
+		setKeyPair(getPKI());
 		return tokenRequest( { 0, hostId }, &hc, verifyHost())
 				&& registerRequest( { getSource(), hostId }, &hc);
 	} catch (const BaseException &e) {

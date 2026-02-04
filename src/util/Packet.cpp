@@ -112,7 +112,7 @@ bool Packet::checkContext(uint8_t command, uint8_t qualifier,
 	return checkContext(header(), command, qualifier, status);
 }
 
-bool Packet::sign(PKI *pki) noexcept {
+bool Packet::sign(Trust *pki) noexcept {
 	if (!pki) {
 		return true;
 	}
@@ -140,7 +140,7 @@ bool Packet::sign(PKI *pki) noexcept {
 	}
 }
 
-bool Packet::verify(PKI *pki) const noexcept {
+bool Packet::verify(Trust *pki) const noexcept {
 	if (!pki) {
 		return true;
 	}
