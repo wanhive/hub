@@ -50,7 +50,7 @@ public:
 	/**
 	 * Updates the digest context with additional data.
 	 * @param data input data
-	 * @param bytes data's size in bytes
+	 * @param bytes data size in bytes
 	 * @return true on success, false on error
 	 */
 	bool update(const void *data, size_t bytes) noexcept;
@@ -64,7 +64,7 @@ public:
 	/**
 	 * Generates message digest from input data.
 	 * @param data input data
-	 * @param bytes data's size in bytes
+	 * @param bytes data size in bytes
 	 * @param digest stores the message digest
 	 * @param size stores the message digest size in bytes
 	 * @return true on success, false on error
@@ -74,7 +74,7 @@ public:
 	/**
 	 * Verifies input data's message digest.
 	 * @param data input data
-	 * @param bytes data's size in bytes
+	 * @param bytes data size in bytes
 	 * @param digest message digest
 	 * @return true on successful match, false otherwise
 	 */
@@ -87,7 +87,7 @@ public:
 	unsigned int length() const noexcept;
 	/**
 	 * Returns the message digest size for a hash function.
-	 * @param type hash function type
+	 * @param type hash function identifier
 	 * @return digest size in bytes
 	 */
 	static constexpr unsigned int length(HashType type) noexcept {

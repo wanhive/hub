@@ -39,20 +39,19 @@ public:
 	/**
 	 * Generates input data's message digest.
 	 * @param data input data
-	 * @param size data's size in bytes
+	 * @param bytes data size in bytes
 	 * @param digest stores the message digest
 	 * @return true on success, false otherwise
 	 */
-	bool create(const void *data, unsigned int size, Digest *digest) noexcept;
+	bool create(const void *data, size_t bytes, Digest *digest) noexcept;
 	/**
 	 * Verifies input data's message digest.
 	 * @param digest message digest
 	 * @param data input data
-	 * @param size data's size in bytes
+	 * @param bytes data size in bytes
 	 * @return true on successful verification, false otherwise
 	 */
-	bool verify(const Digest *digest, const void *data,
-			unsigned int size) noexcept;
+	bool verify(const Digest *digest, const void *data, size_t bytes) noexcept;
 	//-----------------------------------------------------------------
 	/**
 	 * Base-64 encodes a message digest.

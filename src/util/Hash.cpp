@@ -23,13 +23,12 @@ Hash::~Hash() {
 
 }
 
-bool Hash::create(const void *data, unsigned int size, Digest *digest) noexcept {
-	return sha.create(data, size, (unsigned char*) digest);
+bool Hash::create(const void *data, size_t bytes, Digest *digest) noexcept {
+	return sha.create(data, bytes, (unsigned char*) digest);
 }
 
-bool Hash::verify(const Digest *digest, const void *data,
-		unsigned int size) noexcept {
-	return sha.verify(data, size, (const unsigned char*) digest);
+bool Hash::verify(const Digest *digest, const void *data, size_t bytes) noexcept {
+	return sha.verify(data, bytes, (const unsigned char*) digest);
 }
 
 unsigned int Hash::encode(const Digest *digest, EncodedDigest *encoded) noexcept {
