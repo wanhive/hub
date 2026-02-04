@@ -16,6 +16,7 @@
 #include "../base/common/Exception.h"
 #include "../base/common/Logger.h"
 #include "../base/ds/MersenneTwister.h"
+#include "../util/PKI.h"
 #include <cstdlib>
 #include <cstring>
 
@@ -401,7 +402,8 @@ void Identity::loadPrivateKey() {
 			throw Exception(EX_OPERATION);
 		} else if (!paths.privateKey) {
 			WH_LOG_WARNING("No private key file");
-		} else if (auth.pki->loadPrivateKey(paths.privateKey)) {
+		} else if (static_cast<PKI*>(auth.pki)->loadPrivateKey(
+				paths.privateKey)) {
 			WH_LOG_DEBUG("Private key loaded from %s", paths.privateKey);
 			return;
 		} else {
@@ -419,7 +421,8 @@ void Identity::loadPublicKey() {
 			throw Exception(EX_OPERATION);
 		} else if (!paths.publicKey) {
 			WH_LOG_WARNING("No public key file");
-		} else if (auth.pki->loadPublicKey(paths.publicKey)) {
+		} else if (static_cast<PKI*>(auth.pki)->loadPublicKey(
+				paths.publicKey)) {
 			WH_LOG_DEBUG("Public key loaded from %s", paths.publicKey);
 			return;
 		} else {

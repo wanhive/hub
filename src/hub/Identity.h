@@ -14,9 +14,9 @@
 #define WH_HUB_IDENTITY_H_
 #include "../base/Options.h"
 #include "../base/security/SSLContext.h"
+#include "../base/security/Trust.h"
 #include "../util/Hosts.h"
 #include "../util/InstanceID.h"
-#include "../util/PKI.h"
 
 /*! @namespace wanhive */
 namespace wanhive {
@@ -161,7 +161,7 @@ private:
 	Hosts hosts;
 
 	struct {
-		PKI *pki { };
+		Trust *pki { };
 		bool verify { };
 	} auth;
 
