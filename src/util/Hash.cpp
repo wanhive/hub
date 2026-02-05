@@ -24,15 +24,15 @@ Hash::~Hash() {
 }
 
 bool Hash::create(const void *data, size_t bytes, Digest *digest) noexcept {
-	return sha.create(data, bytes, (unsigned char*) digest);
+	return sha.create(data, bytes, *digest);
 }
 
 bool Hash::verify(const Digest *digest, const void *data, size_t bytes) noexcept {
-	return sha.verify(data, bytes, (const unsigned char*) digest);
+	return sha.verify(data, bytes, *digest);
 }
 
 unsigned int Hash::encode(const Digest *digest, EncodedDigest *encoded) noexcept {
-	return Encoding::encode(ENC_BASE64, (char*) encoded, digest, Hash::SIZE,
+	return Encoding::encode(ENC_BASE64, *encoded, *digest, Hash::SIZE,
 			sizeof(EncodedDigest));
 }
 
