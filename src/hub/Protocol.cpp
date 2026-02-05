@@ -75,7 +75,7 @@ unsigned int Protocol::processRegisterResponse() const noexcept {
 		return 0;
 	} else if (!checkContext(WH_CMD_BASIC, WH_QLF_REGISTER)) {
 		return 0;
-	} else if (header().getLength() != HEADER_SIZE) {
+	} else if (header().getLength() != HLEN) {
 		return 0;
 	} else {
 		return header().getLength();
@@ -139,7 +139,7 @@ bool Protocol::findRootRequest(uint64_t host, uint64_t identity,
 unsigned int Protocol::createBootstrapRequest(uint64_t host) noexcept {
 	clear();
 	header().setAddress(getSource(), host);
-	header().setControl(HEADER_SIZE, nextSequenceNumber(), 0);
+	header().setControl(HLEN, nextSequenceNumber(), 0);
 	header().setContext(WH_CMD_BASIC, WH_QLF_BOOTSTRAP, WH_AQLF_REQUEST);
 	packHeader();
 	return header().getLength();
@@ -179,13 +179,12 @@ bool Protocol::bootstrapRequest(uint64_t host, uint64_t keys[],
 
 unsigned int Protocol::createPublishRequest(uint64_t host, uint8_t topic,
 		const Data &data) noexcept {
-	if ((data.length && !data.base) || data.length > PAYLOAD_SIZE) {
+	if ((data.length && !data.base) || data.length > MPS) {
 		return 0;
 	} else {
 		clear();
 		header().setAddress(getSource(), host);
-		header().setControl(HEADER_SIZE + data.length, nextSequenceNumber(),
-				topic);
+		header().setControl(HLEN + data.length, nextSequenceNumber(), topic);
 		header().setContext(WH_CMD_MULTICAST, WH_QLF_PUBLISH, WH_AQLF_REQUEST);
 		packHeader();
 		if (data.base) {
@@ -208,7 +207,7 @@ unsigned int Protocol::createSubscribeRequest(uint64_t host,
 		uint8_t topic) noexcept {
 	clear();
 	header().setAddress(getSource(), host);
-	header().setControl(HEADER_SIZE, nextSequenceNumber(), topic);
+	header().setControl(HLEN, nextSequenceNumber(), topic);
 	header().setContext(WH_CMD_MULTICAST, WH_QLF_SUBSCRIBE, WH_AQLF_REQUEST);
 	packHeader();
 	return header().getLength();
@@ -219,8 +218,7 @@ unsigned int Protocol::processSubscribeResponse(uint8_t topic) const noexcept {
 		return 0;
 	} else if (!checkContext(WH_CMD_MULTICAST, WH_QLF_SUBSCRIBE)) {
 		return 0;
-	} else if (header().getLength() == HEADER_SIZE
-			&& header().getSession() == topic) {
+	} else if (header().getLength() == HLEN && header().getSession() == topic) {
 		return header().getLength();
 	} else {
 		return 0;
@@ -241,7 +239,7 @@ unsigned int Protocol::createUnsubscribeRequest(uint64_t host,
 		uint8_t topic) noexcept {
 	clear();
 	header().setAddress(getSource(), host);
-	header().setControl(HEADER_SIZE, nextSequenceNumber(), topic);
+	header().setControl(HLEN, nextSequenceNumber(), topic);
 	header().setContext(WH_CMD_MULTICAST, WH_QLF_UNSUBSCRIBE, WH_AQLF_REQUEST);
 	packHeader();
 	return header().getLength();
@@ -252,8 +250,7 @@ unsigned int Protocol::processUnsubscribeResponse(uint8_t topic) const noexcept 
 		return 0;
 	} else if (!checkContext(WH_CMD_MULTICAST, WH_QLF_UNSUBSCRIBE)) {
 		return 0;
-	} else if (header().getLength() == HEADER_SIZE
-			&& header().getSession() == topic) {
+	} else if (header().getLength() == HLEN && header().getSession() == topic) {
 		return header().getLength();
 	} else {
 		return 0;
@@ -351,11 +348,11 @@ unsigned int Protocol::processFindRootResponse(const Message *msg,
 unsigned int Protocol::createIdentificationRequest(
 		const MessageAddress &address, uint16_t seq, const Data &nonce,
 		Packet &packet) noexcept {
-	if (!nonce.base || !nonce.length || nonce.length > PAYLOAD_SIZE) {
+	if (!nonce.base || !nonce.length || nonce.length > MPS) {
 		return 0;
 	} else {
 		packet.clear();
-		auto len = HEADER_SIZE + nonce.length;
+		auto len = HLEN + nonce.length;
 		packet.header().setAddress(address.getSource(),
 				address.getDestination());
 		packet.header().setControl(len, seq, 0);
@@ -378,8 +375,7 @@ unsigned int Protocol::processIdentificationResponse(const Packet &packet,
 		nonce.length = Serializer::unpacku16(packet.payload(sizeof(uint16_t)));
 
 		if (!salt.length || !nonce.length
-				|| (salt.length + nonce.length + 2 * sizeof(uint16_t))
-						> PAYLOAD_SIZE) {
+				|| (salt.length + nonce.length + 2 * sizeof(uint16_t)) > MPS) {
 			return 0;
 		} else {
 			salt.base = packet.payload(2 * sizeof(uint16_t));
@@ -392,11 +388,11 @@ unsigned int Protocol::processIdentificationResponse(const Packet &packet,
 unsigned int Protocol::createAuthenticationRequest(
 		const MessageAddress &address, uint16_t seq, const Data &proof,
 		Packet &packet) noexcept {
-	if (!proof.base || !proof.length || proof.length > PAYLOAD_SIZE) {
+	if (!proof.base || !proof.length || proof.length > MPS) {
 		return 0;
 	} else {
 		packet.clear();
-		auto len = HEADER_SIZE + proof.length;
+		auto len = HLEN + proof.length;
 		packet.header().setAddress(address.getSource(),
 				address.getDestination());
 		packet.header().setControl(len, seq, 0);
@@ -425,7 +421,7 @@ unsigned int Protocol::processAuthenticationResponse(const Packet &packet,
 unsigned int Protocol::createRegisterRequest(const MessageAddress &address,
 		uint16_t seq, const Digest *hc, Packet &packet) noexcept {
 	packet.clear();
-	auto length = HEADER_SIZE;
+	auto length = HLEN;
 	if (hc) {
 		//Append the challenge key
 		Serializer::packib(packet.payload(), (unsigned char*) hc, Hash::SIZE);
@@ -441,10 +437,10 @@ unsigned int Protocol::createRegisterRequest(const MessageAddress &address,
 
 unsigned int Protocol::createTokenRequest(const MessageAddress &address,
 		uint16_t seq, const Token &tk, Packet &packet) noexcept {
-	auto length = HEADER_SIZE;
+	auto length = HLEN;
 	packet.clear();
 	if (tk.nonce && tk.pki) {
-		unsigned char ct[Packet::PAYLOAD_SIZE] { };
+		unsigned char ct[Packet::MPS] { };
 		Cache challenge { ct, sizeof(ct) };
 		//Ignore the encryption error (Public key is used for encryption)
 		tk.pki->encrypt( { *tk.nonce, Hash::SIZE }, challenge);
@@ -483,7 +479,7 @@ unsigned int Protocol::processTokenResponse(const Packet &packet,
 unsigned int Protocol::createFindRootRequest(const MessageAddress &address,
 		uint64_t identity, uint16_t seq, Packet &packet) noexcept {
 	packet.clear();
-	auto len = HEADER_SIZE + sizeof(uint64_t);
+	auto len = HLEN + sizeof(uint64_t);
 	packet.header().setAddress(address.getSource(), address.getDestination());
 	packet.header().setControl(len, seq, 0);
 	packet.header().setContext(WH_CMD_BASIC, WH_QLF_FINDROOT, WH_AQLF_REQUEST);

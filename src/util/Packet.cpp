@@ -69,12 +69,12 @@ bool Packet::bind() noexcept {
 bool Packet::validate() const noexcept {
 	return (frame().getIndex() == 0)
 			&& (frame().getLimit() == header().getLength())
-			&& (header().getLength() >= HEADER_SIZE);
+			&& (header().getLength() >= HLEN);
 }
 
 unsigned int Packet::getPayloadLength() const noexcept {
 	if (validate()) {
-		return header().getLength() - HEADER_SIZE;
+		return header().getLength() - HLEN;
 	} else {
 		return 0;
 	}
@@ -85,11 +85,11 @@ bool Packet::testLength() const noexcept {
 }
 
 bool Packet::testLength(unsigned int length) noexcept {
-	return (length >= HEADER_SIZE && length <= MTU);
+	return (length >= HLEN && length <= MTU);
 }
 
 unsigned int Packet::packets(unsigned int bytes) noexcept {
-	return ((unsigned long long) bytes + PAYLOAD_SIZE - 1) / PAYLOAD_SIZE;
+	return ((unsigned long long) bytes + MPS - 1) / MPS;
 }
 
 bool Packet::checkContext(const MessageHeader &header, uint8_t command,

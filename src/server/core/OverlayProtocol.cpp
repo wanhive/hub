@@ -28,7 +28,7 @@ OverlayProtocol::~OverlayProtocol() {
 unsigned int OverlayProtocol::createDescribeRequest(uint64_t host) noexcept {
 	Packet::clear();
 	header().setAddress(getSource(), host);
-	header().setControl(HEADER_SIZE, nextSequenceNumber(), getSession());
+	header().setControl(HLEN, nextSequenceNumber(), getSession());
 	header().setContext(WH_DHT_CMD_NULL, WH_DHT_QLF_DESCRIBE,
 			WH_DHT_AQLF_REQUEST);
 	packHeader();
@@ -60,7 +60,7 @@ unsigned int OverlayProtocol::createGetPredecessorRequest(
 		uint64_t host) noexcept {
 	Packet::clear();
 	header().setAddress(getSource(), host);
-	header().setControl(HEADER_SIZE, nextSequenceNumber(), getSession());
+	header().setControl(HLEN, nextSequenceNumber(), getSession());
 	header().setContext(WH_DHT_CMD_NODE, WH_DHT_QLF_GETPREDECESSOR,
 			WH_DHT_AQLF_REQUEST);
 	packHeader();
@@ -95,7 +95,7 @@ unsigned int OverlayProtocol::createSetPredecessorRequest(uint64_t host,
 		uint64_t key) noexcept {
 	Packet::clear();
 	header().setAddress(getSource(), host);
-	header().setControl((HEADER_SIZE + sizeof(uint64_t)), nextSequenceNumber(),
+	header().setControl((HLEN + sizeof(uint64_t)), nextSequenceNumber(),
 			getSession());
 	header().setContext(WH_DHT_CMD_NODE, WH_DHT_QLF_SETPREDECESSOR,
 			WH_DHT_AQLF_REQUEST);
@@ -134,7 +134,7 @@ bool OverlayProtocol::setPredecessorRequest(uint64_t host, uint64_t key) {
 unsigned int OverlayProtocol::createGetSuccessorRequest(uint64_t host) noexcept {
 	Packet::clear();
 	header().setAddress(getSource(), host);
-	header().setControl(HEADER_SIZE, nextSequenceNumber(), getSession());
+	header().setControl(HLEN, nextSequenceNumber(), getSession());
 	header().setContext(WH_DHT_CMD_NODE, WH_DHT_QLF_GETSUCCESSOR,
 			WH_DHT_AQLF_REQUEST);
 	packHeader();
@@ -169,7 +169,7 @@ unsigned int OverlayProtocol::createSetSuccessorRequest(uint64_t host,
 		uint64_t key) noexcept {
 	Packet::clear();
 	header().setAddress(getSource(), host);
-	header().setControl((HEADER_SIZE + sizeof(uint64_t)), nextSequenceNumber(),
+	header().setControl((HLEN + sizeof(uint64_t)), nextSequenceNumber(),
 			getSession());
 	header().setContext(WH_DHT_CMD_NODE, WH_DHT_QLF_SETSUCCESSOR,
 			WH_DHT_AQLF_REQUEST);
@@ -209,7 +209,7 @@ unsigned int OverlayProtocol::createGetFingerRequest(uint64_t host,
 		uint32_t index) noexcept {
 	Packet::clear();
 	header().setAddress(getSource(), host);
-	header().setControl((HEADER_SIZE + sizeof(uint32_t)), nextSequenceNumber(),
+	header().setControl((HLEN + sizeof(uint32_t)), nextSequenceNumber(),
 			getSession());
 	header().setContext(WH_DHT_CMD_NODE, WH_DHT_QLF_GETFINGER,
 			WH_DHT_AQLF_REQUEST);
@@ -254,7 +254,7 @@ unsigned int OverlayProtocol::createSetFingerRequest(uint64_t host,
 		uint32_t index, uint64_t key) noexcept {
 	Packet::clear();
 	header().setAddress(getSource(), host);
-	header().setControl((HEADER_SIZE + sizeof(uint32_t) + sizeof(uint64_t)),
+	header().setControl((HLEN + sizeof(uint32_t) + sizeof(uint64_t)),
 			nextSequenceNumber(), getSession());
 	header().setContext(WH_DHT_CMD_NODE, WH_DHT_QLF_SETFINGER,
 			WH_DHT_AQLF_REQUEST);
@@ -295,7 +295,7 @@ bool OverlayProtocol::setFingerRequest(uint64_t host, uint32_t index,
 unsigned int OverlayProtocol::createGetNeighboursRequest(uint64_t host) noexcept {
 	Packet::clear();
 	header().setAddress(getSource(), host);
-	header().setControl(HEADER_SIZE, nextSequenceNumber(), getSession());
+	header().setControl(HLEN, nextSequenceNumber(), getSession());
 	header().setContext(WH_DHT_CMD_NODE, WH_DHT_QLF_GETNEIGHBOURS,
 			WH_DHT_AQLF_REQUEST);
 	packHeader();
@@ -333,7 +333,7 @@ unsigned int OverlayProtocol::createNotifyRequest(uint64_t host,
 		uint64_t predecessor) noexcept {
 	Packet::clear();
 	header().setAddress(getSource(), host);
-	header().setControl((HEADER_SIZE + sizeof(uint64_t)), nextSequenceNumber(),
+	header().setControl((HLEN + sizeof(uint64_t)), nextSequenceNumber(),
 			getSession());
 	header().setContext(WH_DHT_CMD_NODE, WH_DHT_QLF_NOTIFY,
 			WH_DHT_AQLF_REQUEST);
@@ -347,7 +347,7 @@ unsigned int OverlayProtocol::processNotifyResponse() const noexcept {
 		return 0;
 	} else if (!checkContext(WH_DHT_CMD_NODE, WH_DHT_QLF_NOTIFY)) {
 		return 0;
-	} else if (header().getLength() != HEADER_SIZE) {
+	} else if (header().getLength() != HLEN) {
 		return 0;
 	} else {
 		return header().getLength();
@@ -368,7 +368,7 @@ unsigned int OverlayProtocol::createFindSuccessorRequest(uint64_t host,
 		uint64_t uid) noexcept {
 	Packet::clear();
 	header().setAddress(getSource(), host);
-	header().setControl((HEADER_SIZE + sizeof(uint64_t)), nextSequenceNumber(),
+	header().setControl((HLEN + sizeof(uint64_t)), nextSequenceNumber(),
 			getSession());
 	header().setContext(WH_DHT_CMD_OVERLAY, WH_DHT_QLF_FINDSUCCESSOR,
 			WH_DHT_AQLF_REQUEST);
@@ -411,7 +411,7 @@ bool OverlayProtocol::findSuccessorRequest(uint64_t host, uint64_t uid,
 unsigned int OverlayProtocol::createPingRequest(uint64_t host) noexcept {
 	Packet::clear();
 	header().setAddress(getSource(), host);
-	header().setControl(HEADER_SIZE, nextSequenceNumber(), getSession());
+	header().setControl(HLEN, nextSequenceNumber(), getSession());
 	header().setContext(WH_DHT_CMD_OVERLAY, WH_DHT_QLF_PING,
 			WH_DHT_AQLF_REQUEST);
 	packHeader();
@@ -440,7 +440,7 @@ bool OverlayProtocol::pingRequest(uint64_t host) {
 unsigned int OverlayProtocol::createMapRequest(uint64_t host) noexcept {
 	Packet::clear();
 	header().setAddress(getSource(), host);
-	header().setControl(HEADER_SIZE, nextSequenceNumber(), getSession());
+	header().setControl(HLEN, nextSequenceNumber(), getSession());
 	header().setContext(WH_DHT_CMD_OVERLAY, WH_DHT_QLF_MAP,
 			WH_DHT_AQLF_REQUEST);
 	packHeader();

@@ -129,11 +129,11 @@ protected:
 	}
 public:
 	/*! Serialized header size in bytes */
-	static constexpr unsigned int HEADER_SIZE = MessageHeader::SIZE;
+	static constexpr unsigned int HLEN = MessageHeader::SIZE;
 	/*! The maximum frame buffer size in bytes */
 	static constexpr unsigned int MTU = 1024;
 	/*! The maximum payload size in bytes */
-	static constexpr unsigned int PAYLOAD_SIZE = (MTU - HEADER_SIZE);
+	static constexpr unsigned int MPS = (MTU - HLEN);
 private:
 	unsigned int hops { };
 	unsigned int links { };

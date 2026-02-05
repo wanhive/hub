@@ -57,16 +57,16 @@ const unsigned char* Frame::buffer(unsigned int offset) const noexcept {
 }
 
 unsigned char* Frame::payload(unsigned int offset) noexcept {
-	if (offset < PAYLOAD_SIZE) {
-		return (_frame.array() + HEADER_SIZE + offset);
+	if (offset < MPS) {
+		return (_frame.array() + HLEN + offset);
 	} else {
 		return nullptr;
 	}
 }
 
 const unsigned char* Frame::payload(unsigned int offset) const noexcept {
-	if (offset < PAYLOAD_SIZE) {
-		return (_frame.array() + HEADER_SIZE + offset);
+	if (offset < MPS) {
+		return (_frame.array() + HLEN + offset);
 	} else {
 		return nullptr;
 	}

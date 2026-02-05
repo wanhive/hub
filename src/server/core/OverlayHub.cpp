@@ -797,15 +797,15 @@ bool OverlayHub::handleDescribeNodeRequest(Message *msg) noexcept {
 	 * BODY: 0 bytes in Request; 84+25*Node::TABLESIZE bytes in Response
 	 * TOTAL: 32 bytes in Request; 116+25*Node::TABLESIZE bytes in Response
 	 */
-	if (msg->getLength() != Message::HEADER_SIZE) {
+	if (msg->getLength() != Message::HLEN) {
 		return handleInvalidRequest(msg);
 	}
 
 	OverlayHubInfo info;
 	metrics(info);
-	auto index = info.pack(msg->payload(), Message::PAYLOAD_SIZE);
+	auto index = info.pack(msg->payload(), Message::MPS);
 	//-----------------------------------------------------------------
-	buildDirectResponse(msg, Message::HEADER_SIZE + index);
+	buildDirectResponse(msg, Message::HLEN + index);
 	msg->putStatus(index ? WH_DHT_AQLF_ACCEPTED : WH_DHT_AQLF_REJECTED);
 	return true;
 }
@@ -851,7 +851,7 @@ bool OverlayHub::handleRegistrationRequest(Message *msg) noexcept {
 		msg->writeSource(0);
 		msg->writeDestination(0);
 		msg->setDestination(requestedUid);
-		msg->putLength(Message::HEADER_SIZE);
+		msg->putLength(Message::HLEN);
 		msg->putStatus(WH_DHT_AQLF_ACCEPTED);
 	} else {
 		WH_LOG_DEBUG("Registration request %" PRIu64"->%" PRIu64" denied",
@@ -860,7 +860,7 @@ bool OverlayHub::handleRegistrationRequest(Message *msg) noexcept {
 		msg->writeSource(0);
 		msg->writeDestination(0);
 		msg->setDestination(origin);
-		msg->putLength(Message::HEADER_SIZE);
+		msg->putLength(Message::HLEN);
 		msg->putStatus(WH_DHT_AQLF_REJECTED);
 	}
 	return true;
@@ -927,7 +927,7 @@ bool OverlayHub::handleTokenRequest(Message *msg) noexcept {
 	} else if (isEphemeral(origin) && payload > Hash::SIZE && verifyHost()
 			&& getPKI()) {
 		//Extract the challenge key
-		unsigned char pt[Message::PAYLOAD_SIZE] { }; //Challenge
+		unsigned char pt[Message::MPS] { }; //Challenge
 		Cache challenge { pt, sizeof(pt) };
 		getPKI()->decrypt( { msg->getBytes(0), payload }, challenge);
 		msg->setBytes(0, challenge.base, Hash::SIZE);
@@ -939,14 +939,14 @@ bool OverlayHub::handleTokenRequest(Message *msg) noexcept {
 		msg->writeSource(0);
 		msg->writeDestination(0);
 		msg->setDestination(origin);
-		msg->putLength(Message::HEADER_SIZE + 2 * Hash::SIZE);
+		msg->putLength(Message::HLEN + 2 * Hash::SIZE);
 		msg->putStatus(WH_DHT_AQLF_ACCEPTED);
 		msg->sign(getPKI());
 	} else {
 		msg->writeSource(0);
 		msg->writeDestination(0);
 		msg->setDestination(origin);
-		msg->putLength(Message::HEADER_SIZE);
+		msg->putLength(Message::HLEN);
 		msg->putStatus(WH_DHT_AQLF_REJECTED);
 	}
 	return true;
@@ -967,7 +967,7 @@ bool OverlayHub::handleFindRootRequest(Message *msg) noexcept {
 	if (msg->getStatus() == WH_DHT_AQLF_ACCEPTED) {
 		if (isInternal(origin)
 				&& msg->getPayloadLength() == (4 * sizeof(uint64_t))) {
-			msg->putLength(Message::HEADER_SIZE + 2 * sizeof(uint64_t));
+			msg->putLength(Message::HLEN + 2 * sizeof(uint64_t));
 			msg->setDestination(msg->getData64(2 * sizeof(uint64_t)));
 			msg->writeSource(0);
 			if (isController(msg->getDestination())) {
@@ -991,7 +991,7 @@ bool OverlayHub::handleFindRootRequest(Message *msg) noexcept {
 		if (isExternal(origin) || isController(getUid())
 				|| isController(origin)) {
 			//Request was initiated locally, send direct response
-			msg->putLength(Message::HEADER_SIZE + 2 * sizeof(uint64_t));
+			msg->putLength(Message::HLEN + 2 * sizeof(uint64_t));
 			msg->setDestination(origin);
 			msg->writeSource(0);
 			msg->writeDestination(isController(origin) ? source : 0);
@@ -1006,7 +1006,7 @@ bool OverlayHub::handleFindRootRequest(Message *msg) noexcept {
 			//Received a fresh request
 			if (msg->getPayloadLength() == sizeof(uint64_t)
 					&& msg->getStatus() == WH_DHT_AQLF_REQUEST) {
-				msg->putLength(Message::HEADER_SIZE + 4 * sizeof(uint64_t));
+				msg->putLength(Message::HLEN + 4 * sizeof(uint64_t));
 				msg->setData64(2 * sizeof(uint64_t), origin); //Record the origin
 				msg->setData64(3 * sizeof(uint64_t), source); //Final destination
 				msg->writeSource(getUid()); //Result will be looped back here
@@ -1031,7 +1031,7 @@ bool OverlayHub::handleBootstrapRequest(Message *msg) noexcept {
 	auto origin = msg->getOrigin();
 	auto source = msg->getSource();
 	//-----------------------------------------------------------------
-	if (msg->getLength() != Message::HEADER_SIZE) {
+	if (msg->getLength() != Message::HLEN) {
 		return handleInvalidRequest(msg);
 	} else {
 		//Direct requests only
@@ -1041,7 +1041,7 @@ bool OverlayHub::handleBootstrapRequest(Message *msg) noexcept {
 	//-----------------------------------------------------------------
 	msg->setDestination(origin);
 	msg->putLength(
-			Message::HEADER_SIZE + sizeof(uint32_t)
+			Message::HLEN + sizeof(uint32_t)
 					+ (sizeof(uint64_t) * NODECACHE_SIZE));
 	msg->putStatus(WH_DHT_AQLF_ACCEPTED);
 	//-----------------------------------------------------------------
@@ -1087,11 +1087,11 @@ bool OverlayHub::handleSubscribeRequest(Message *msg) noexcept {
 	 * BODY: 0 in Request; 0 in Response
 	 * TOTAL: 32 bytes in Request; 32 bytes in Response
 	 */
-	if (msg->getLength() != Message::HEADER_SIZE) {
+	if (msg->getLength() != Message::HLEN) {
 		return handleInvalidRequest(msg);
 	}
 
-	buildDirectResponse(msg, Message::HEADER_SIZE);
+	buildDirectResponse(msg, Message::HLEN);
 	msg->writeSource(0); //Obfuscate the source (this hub)
 
 	auto topic = msg->getSession();
@@ -1116,7 +1116,7 @@ bool OverlayHub::handleUnsubscribeRequest(Message *msg) noexcept {
 	 * BODY: 0 in Request; 0 in Response
 	 * TOTAL: 32 bytes in Request; 32 bytes in Response
 	 */
-	if (msg->getLength() != Message::HEADER_SIZE) {
+	if (msg->getLength() != Message::HLEN) {
 		return handleInvalidRequest(msg);
 	}
 
@@ -1128,7 +1128,7 @@ bool OverlayHub::handleUnsubscribeRequest(Message *msg) noexcept {
 		topics.remove(topic, conn);
 	}
 
-	buildDirectResponse(msg, Message::HEADER_SIZE);
+	buildDirectResponse(msg, Message::HLEN);
 	msg->writeSource(0); //Obfuscate the source (this hub)
 	msg->putStatus(WH_DHT_AQLF_ACCEPTED);
 	return true;
@@ -1140,11 +1140,11 @@ bool OverlayHub::handleGetPredecessorRequest(Message *msg) noexcept {
 	 * BODY: 0 bytes in Request; 8 bytes as <predecessor> in Response
 	 * TOTAL: 32 bytes in Request; 32+8=40 bytes in Response
 	 */
-	if (msg->getLength() != Message::HEADER_SIZE) {
+	if (msg->getLength() != Message::HLEN) {
 		return handleInvalidRequest(msg);
 	}
 
-	buildDirectResponse(msg, Message::HEADER_SIZE + sizeof(uint64_t));
+	buildDirectResponse(msg, Message::HLEN + sizeof(uint64_t));
 	msg->putStatus(WH_DHT_AQLF_ACCEPTED);
 	msg->setData64(0, getPredecessor());
 	return true;
@@ -1180,11 +1180,11 @@ bool OverlayHub::handleGetSuccessorRequest(Message *msg) noexcept {
 	 * BODY: 0 bytes in Request; 8 bytes as <successor> in Response
 	 * TOTAL: 32 bytes in Request; 32+8=40 bytes in Response
 	 */
-	if (msg->getLength() != Message::HEADER_SIZE) {
+	if (msg->getLength() != Message::HLEN) {
 		return handleInvalidRequest(msg);
 	}
 
-	buildDirectResponse(msg, Message::HEADER_SIZE + sizeof(uint64_t));
+	buildDirectResponse(msg, Message::HLEN + sizeof(uint64_t));
 	msg->putStatus(WH_DHT_AQLF_ACCEPTED);
 	msg->setData64(0, getSuccessor());
 	return true;
@@ -1226,7 +1226,7 @@ bool OverlayHub::handleGetFingerRequest(Message *msg) noexcept {
 	}
 
 	buildDirectResponse(msg,
-			Message::HEADER_SIZE + sizeof(uint32_t) + sizeof(uint64_t));
+			Message::HLEN + sizeof(uint32_t) + sizeof(uint64_t));
 	auto index = msg->getData32(0);
 	msg->putStatus(WH_DHT_AQLF_ACCEPTED);
 	msg->setData64(sizeof(uint32_t), get(index));
@@ -1266,11 +1266,11 @@ bool OverlayHub::handleGetNeighboursRequest(Message *msg) noexcept {
 	 * as <successor> in Response
 	 * TOTAL: 32 bytes in Request; 32+8+8=48 bytes in Response
 	 */
-	if (msg->getLength() != Message::HEADER_SIZE) {
+	if (msg->getLength() != Message::HLEN) {
 		return handleInvalidRequest(msg);
 	}
 
-	buildDirectResponse(msg, Message::HEADER_SIZE + 2 * sizeof(uint64_t));
+	buildDirectResponse(msg, Message::HLEN + 2 * sizeof(uint64_t));
 	msg->putStatus(WH_DHT_AQLF_ACCEPTED);
 	msg->setData64(0, getPredecessor());
 	msg->setData64(sizeof(uint64_t), getSuccessor());
@@ -1286,7 +1286,7 @@ bool OverlayHub::handleNotifyRequest(Message *msg) noexcept {
 	if (msg->getPayloadLength() != sizeof(uint64_t)) {
 		return handleInvalidRequest(msg);
 	}
-	buildDirectResponse(msg, Message::HEADER_SIZE);
+	buildDirectResponse(msg, Message::HLEN);
 	msg->putStatus(WH_DHT_AQLF_ACCEPTED);
 	//Notify self about the probable predecessor
 	notify(msg->getData64(0));
@@ -1314,7 +1314,7 @@ bool OverlayHub::handleFindSuccesssorRequest(Message *msg) noexcept {
 	auto localSuccessor = Node::localSuccessor(mapKey(id));
 	if (localSuccessor) {
 		//Found the successor
-		buildDirectResponse(msg, Message::HEADER_SIZE + 2 * sizeof(uint64_t));
+		buildDirectResponse(msg, Message::HLEN + 2 * sizeof(uint64_t));
 		msg->putStatus(WH_DHT_AQLF_ACCEPTED);
 		msg->setData64(sizeof(uint64_t), localSuccessor);
 	} else {
@@ -1400,14 +1400,13 @@ bool OverlayHub::handleMapRequest(Message *msg) noexcept {
 		msg->putDestination(successor);
 	} else {
 		//Return back to the originator, final step
-		auto index = msg->getLength()
-				- (sizeof(uint64_t) + Message::HEADER_SIZE);
+		auto index = msg->getLength() - (sizeof(uint64_t) + Message::HLEN);
 		auto destination = msg->getData64(index);
 
 		msg->setDestination(0);
 		msg->writeDestination(destination);
 		msg->putSource(getUid());
-		msg->putLength(Message::HEADER_SIZE);
+		msg->putLength(Message::HLEN);
 		msg->putStatus(
 				(result == 0 || result == 1) ?
 						WH_DHT_AQLF_ACCEPTED : WH_DHT_AQLF_REJECTED);

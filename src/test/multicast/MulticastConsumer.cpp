@@ -125,7 +125,7 @@ void MulticastConsumer::subscribe(unsigned int topic) noexcept {
 	if (message) {
 		MessageHeader header;
 		header.setAddress(0, 0);
-		header.setControl(Message::HEADER_SIZE, 0, topic);
+		header.setControl(Message::HLEN, 0, topic);
 		header.setContext(WH_CMD_MULTICAST, WH_QLF_SUBSCRIBE, WH_AQLF_REQUEST);
 		message->putHeader(header);
 		forward(message);

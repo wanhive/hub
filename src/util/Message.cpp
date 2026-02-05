@@ -13,6 +13,7 @@
 #include "Message.h"
 #include "../base/common/Exception.h"
 #include "../base/ds/Serializer.h"
+#include <cstdarg>
 
 namespace wanhive {
 
@@ -61,12 +62,12 @@ bool Message::build(Source<unsigned char> &in) {
 	case 0:
 		/* no break */
 	case MSG_WAIT_HEADER:
-		if (in.available() >= Message::HEADER_SIZE) {
+		if (in.available() >= Message::HLEN) {
 			frame().clear();
-			in.emit(frame().offset(), Message::HEADER_SIZE);
+			in.emit(frame().offset(), Message::HLEN);
 			//Prepare the routing header
 			header().read(frame().array());
-			frame().setIndex(HEADER_SIZE);
+			frame().setIndex(HLEN);
 			putFlags(MSG_WAIT_DATA);
 		} else {
 			return false;
@@ -74,7 +75,7 @@ bool Message::build(Source<unsigned char> &in) {
 		/* no break */
 	case MSG_WAIT_DATA:
 		if (testLength()) {
-			auto payLoadLength = header().getLength() - HEADER_SIZE;
+			auto payLoadLength = header().getLength() - HLEN;
 			if (in.available() >= payLoadLength) {
 				in.emit(frame().offset(), payLoadLength);
 				//Set the correct limit and index
@@ -262,8 +263,8 @@ uint64_t Message::getData64(unsigned int index) const noexcept {
 	return data;
 }
 bool Message::getData64(unsigned int index, uint64_t &data) const noexcept {
-	if (index <= (PAYLOAD_SIZE - sizeof(uint64_t))) {
-		auto offset = HEADER_SIZE + index;
+	if (index <= (MPS - sizeof(uint64_t))) {
+		auto offset = HLEN + index;
 		data = Serializer::unpacku64(frame().array() + offset);
 		return true;
 	} else {
@@ -271,8 +272,8 @@ bool Message::getData64(unsigned int index, uint64_t &data) const noexcept {
 	}
 }
 bool Message::setData64(unsigned int index, uint64_t data) noexcept {
-	if (index <= (PAYLOAD_SIZE - sizeof(uint64_t))) {
-		auto offset = HEADER_SIZE + index;
+	if (index <= (MPS - sizeof(uint64_t))) {
+		auto offset = HLEN + index;
 		Serializer::packi64((frame().array() + offset), data);
 		return true;
 	} else {
@@ -295,8 +296,8 @@ uint32_t Message::getData32(unsigned int index) const noexcept {
 	return data;
 }
 bool Message::getData32(unsigned int index, uint32_t &data) const noexcept {
-	if (index <= (PAYLOAD_SIZE - sizeof(uint32_t))) {
-		auto offset = HEADER_SIZE + index;
+	if (index <= (MPS - sizeof(uint32_t))) {
+		auto offset = HLEN + index;
 		data = Serializer::unpacku32(frame().array() + offset);
 		return true;
 	} else {
@@ -304,8 +305,8 @@ bool Message::getData32(unsigned int index, uint32_t &data) const noexcept {
 	}
 }
 bool Message::setData32(unsigned int index, uint32_t data) noexcept {
-	if (index <= (PAYLOAD_SIZE - sizeof(uint32_t))) {
-		auto offset = HEADER_SIZE + index;
+	if (index <= (MPS - sizeof(uint32_t))) {
+		auto offset = HLEN + index;
 		Serializer::packi32((frame().array() + offset), data);
 		return true;
 	} else {
@@ -328,8 +329,8 @@ uint16_t Message::getData16(unsigned int index) const noexcept {
 	return data;
 }
 bool Message::getData16(unsigned int index, uint16_t &data) const noexcept {
-	if (index <= (PAYLOAD_SIZE - sizeof(uint16_t))) {
-		auto offset = HEADER_SIZE + index;
+	if (index <= (MPS - sizeof(uint16_t))) {
+		auto offset = HLEN + index;
 		data = Serializer::unpacku16(frame().array() + offset);
 		return true;
 	} else {
@@ -337,8 +338,8 @@ bool Message::getData16(unsigned int index, uint16_t &data) const noexcept {
 	}
 }
 bool Message::setData16(unsigned int index, uint16_t data) noexcept {
-	if (index <= (PAYLOAD_SIZE - sizeof(uint16_t))) {
-		auto offset = HEADER_SIZE + index;
+	if (index <= (MPS - sizeof(uint16_t))) {
+		auto offset = HLEN + index;
 		Serializer::packi16((frame().array() + offset), data);
 		return true;
 	} else {
@@ -361,8 +362,8 @@ uint8_t Message::getData8(unsigned int index) const noexcept {
 	return data;
 }
 bool Message::getData8(unsigned int index, uint8_t &data) const noexcept {
-	if (index <= (PAYLOAD_SIZE - sizeof(uint8_t))) {
-		auto offset = HEADER_SIZE + index;
+	if (index <= (MPS - sizeof(uint8_t))) {
+		auto offset = HLEN + index;
 		data = Serializer::unpacku8(frame().array() + offset);
 		return true;
 	} else {
@@ -370,8 +371,8 @@ bool Message::getData8(unsigned int index, uint8_t &data) const noexcept {
 	}
 }
 bool Message::setData8(unsigned int index, uint8_t data) noexcept {
-	if (index <= (PAYLOAD_SIZE - sizeof(uint8_t))) {
-		auto offset = HEADER_SIZE + index;
+	if (index <= (MPS - sizeof(uint8_t))) {
+		auto offset = HLEN + index;
 		Serializer::packi8((frame().array() + offset), data);
 		return true;
 	} else {
@@ -395,8 +396,8 @@ float Message::getFloat(unsigned int index) const noexcept {
 }
 
 bool Message::getFloat(unsigned int index, float &data) const noexcept {
-	if (index <= (PAYLOAD_SIZE - sizeof(uint32_t))) {
-		auto offset = HEADER_SIZE + index;
+	if (index <= (MPS - sizeof(uint32_t))) {
+		auto offset = HLEN + index;
 		data = Serializer::unpackf32(frame().array() + offset);
 		return true;
 	} else {
@@ -405,8 +406,8 @@ bool Message::getFloat(unsigned int index, float &data) const noexcept {
 }
 
 bool Message::setFloat(unsigned int index, float data) noexcept {
-	if (index <= (PAYLOAD_SIZE - sizeof(uint32_t))) {
-		auto offset = HEADER_SIZE + index;
+	if (index <= (MPS - sizeof(uint32_t))) {
+		auto offset = HLEN + index;
 		Serializer::packf32((frame().array() + offset), data);
 		return true;
 	} else {
@@ -430,8 +431,8 @@ double Message::getDouble(unsigned int index) const noexcept {
 	return data;
 }
 bool Message::getDouble(unsigned int index, double &data) const noexcept {
-	if (index <= (PAYLOAD_SIZE - sizeof(uint64_t))) {
-		auto offset = HEADER_SIZE + index;
+	if (index <= (MPS - sizeof(uint64_t))) {
+		auto offset = HLEN + index;
 		data = Serializer::unpackf64(frame().array() + offset);
 		return true;
 	} else {
@@ -439,8 +440,8 @@ bool Message::getDouble(unsigned int index, double &data) const noexcept {
 	}
 }
 bool Message::setDouble(unsigned int index, double data) noexcept {
-	if (index <= (PAYLOAD_SIZE - sizeof(uint64_t))) {
-		auto offset = HEADER_SIZE + index;
+	if (index <= (MPS - sizeof(uint64_t))) {
+		auto offset = HLEN + index;
 		Serializer::packf64((frame().array() + offset), data);
 		return true;
 	} else {
@@ -459,9 +460,8 @@ bool Message::appendDouble(double data) noexcept {
 
 bool Message::getBytes(unsigned int index, unsigned char *data,
 		unsigned int length) const noexcept {
-	if (length && data && (length <= PAYLOAD_SIZE)
-			&& (index <= (PAYLOAD_SIZE - length))) {
-		auto offset = HEADER_SIZE + index;
+	if (length && data && (length <= MPS) && (index <= (MPS - length))) {
+		auto offset = HLEN + index;
 		Serializer::unpackib(data, (frame().array() + offset), length);
 		return true;
 	} else if (!length) {
@@ -471,8 +471,8 @@ bool Message::getBytes(unsigned int index, unsigned char *data,
 	}
 }
 const unsigned char* Message::getBytes(unsigned int index) const noexcept {
-	if (index < PAYLOAD_SIZE) {
-		auto offset = HEADER_SIZE + index;
+	if (index < MPS) {
+		auto offset = HLEN + index;
 		return frame().array() + offset;
 	} else {
 		return nullptr;
@@ -480,12 +480,12 @@ const unsigned char* Message::getBytes(unsigned int index) const noexcept {
 }
 bool Message::setBytes(unsigned int index, const unsigned char *data,
 		unsigned int length) noexcept {
-	if ((length > PAYLOAD_SIZE) || (index > (PAYLOAD_SIZE - length))) {
+	if ((length > MPS) || (index > (MPS - length))) {
 		return false;
 	} else if (!length) {
 		return true;
 	} else if (data) {
-		auto offset = HEADER_SIZE + index;
+		auto offset = HLEN + index;
 		Serializer::packib((frame().array() + offset), data, length);
 		return true;
 	} else {
@@ -499,7 +499,7 @@ bool Message::appendBytes(const unsigned char *data,
 		return false;
 	} else if (!length) {
 		return true;
-	} else if (data && (length <= PAYLOAD_SIZE) && putLength(offset + length)) {
+	} else if (data && (length <= MPS) && putLength(offset + length)) {
 		Serializer::packib((frame().array() + offset), data, length);
 		return true;
 	} else {
@@ -522,10 +522,9 @@ bool Message::pack(const MessageHeader &header, const char *format,
 	this->header().setLength(0); //Length will be calculated
 
 	auto size = this->header().write(frame().array());
-	size += Serializer::vpack(frame().array() + HEADER_SIZE, PAYLOAD_SIZE,
-			format, ap);
+	size += Serializer::vpack(frame().array() + HLEN, MPS, format, ap);
 
-	if (format && format[0] && size == HEADER_SIZE) {
+	if (format && format[0] && size == HLEN) {
 		return false;
 	} else {
 		return putLength(size);
@@ -534,7 +533,7 @@ bool Message::pack(const MessageHeader &header, const char *format,
 
 bool Message::pack(const MessageHeader &header,
 		const unsigned char *payload) noexcept {
-	if (header.getLength() > HEADER_SIZE && !payload) {
+	if (header.getLength() > HLEN && !payload) {
 		return false;
 	} else if (!putHeader(header)) {
 		return false;
@@ -555,7 +554,7 @@ bool Message::pack(const unsigned char *message) noexcept {
 			return false;
 		}
 
-		return setBytes(0, message + HEADER_SIZE, getPayloadLength());
+		return setBytes(0, message + HLEN, getPayloadLength());
 	} else {
 		return false;
 	}
@@ -593,8 +592,8 @@ bool Message::unpack(const char *format, ...) const noexcept {
 
 bool Message::unpack(const char *format, va_list ap) const noexcept {
 	if (format && format[0]) {
-		return Serializer::vunpack(frame().array() + HEADER_SIZE,
-				getPayloadLength(), format, ap);
+		return Serializer::vunpack(frame().array() + HLEN, getPayloadLength(),
+				format, ap);
 	} else {
 		return false;
 	}

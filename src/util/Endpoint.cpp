@@ -225,7 +225,7 @@ void Endpoint::receive(int sfd, Packet &packet, unsigned int seq, Trust *pki) {
 	packet.clear();
 	do {
 		//Receive the header
-		Network::read(sfd, packet.buffer(), HEADER_SIZE);
+		Network::read(sfd, packet.buffer(), HLEN);
 
 		//Prepare the header and the frame buffer
 		if (!packet.unpackHeader()) {
@@ -233,7 +233,7 @@ void Endpoint::receive(int sfd, Packet &packet, unsigned int seq, Trust *pki) {
 		}
 
 		//Receive the payload
-		auto payloadLength = packet.header().getLength() - HEADER_SIZE;
+		auto payloadLength = packet.header().getLength() - HLEN;
 		Network::read(sfd, packet.payload(), payloadLength);
 	} while (seq && (packet.header().getSequenceNumber() != seq));
 
@@ -246,7 +246,7 @@ void Endpoint::receive(SSL *ssl, Packet &packet, unsigned int seq, Trust *pki) {
 	packet.clear();
 	do {
 		//Receive the header
-		SSLContext::receive(ssl, packet.buffer(), HEADER_SIZE);
+		SSLContext::receive(ssl, packet.buffer(), HLEN);
 
 		//Prepare the header and the frame buffer
 		if (!packet.unpackHeader()) {
@@ -254,7 +254,7 @@ void Endpoint::receive(SSL *ssl, Packet &packet, unsigned int seq, Trust *pki) {
 		}
 
 		//Receive the payload
-		auto payloadLength = packet.header().getLength() - HEADER_SIZE;
+		auto payloadLength = packet.header().getLength() - HLEN;
 		SSLContext::receive(ssl, packet.payload(), payloadLength);
 	} while (seq && (packet.header().getSequenceNumber() != seq));
 
