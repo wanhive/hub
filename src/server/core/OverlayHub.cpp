@@ -163,9 +163,9 @@ void OverlayHub::onInotification(unsigned long long uid,
 		return;
 	}
 
-	for (unsigned int i = 0; i < WATCHLIST_SIZE; ++i) {
-		if (watchlist[i].identifier == event->wd) {
-			watchlist[i].events |= event->mask;
+	for (unsigned int i = 0; i < TRACKER_CNT; ++i) {
+		if (tracker[i].id == event->wd) {
+			tracker[i].events |= event->mask;
 			refresh(i);
 			break;
 		}
@@ -207,43 +207,43 @@ void OverlayHub::installTracker() {
 		//Events we are interested in: modify-> close
 		const uint32_t events = IN_MODIFY | IN_ATTRIB | IN_CLOSE_WRITE;
 		if (auto path = getPath(Identity::CTX_OPTIONS); path) {
-			watchlist[0].identifier = track(path, events);
-			watchlist[0].context = Identity::CTX_OPTIONS;
+			tracker[0].id = track(path, events);
+			tracker[0].context = Identity::CTX_OPTIONS;
 		}
 
 		if (auto path = getPath(Identity::CTX_HOSTS_DB); path) {
-			watchlist[1].identifier = track(path, events);
-			watchlist[1].context = Identity::CTX_HOSTS_DB;
+			tracker[1].id = track(path, events);
+			tracker[1].context = Identity::CTX_HOSTS_DB;
 		}
 
 		if (auto path = getPath(Identity::CTX_HOSTS_FILE); path) {
-			watchlist[2].identifier = track(path, events);
-			watchlist[2].context = Identity::CTX_HOSTS_FILE;
+			tracker[2].id = track(path, events);
+			tracker[2].context = Identity::CTX_HOSTS_FILE;
 		}
 
 		if (auto path = getPath(Identity::CTX_PKI_PRIVATE); path) {
-			watchlist[3].identifier = track(path, events);
-			watchlist[3].context = Identity::CTX_PKI_PRIVATE;
+			tracker[3].id = track(path, events);
+			tracker[3].context = Identity::CTX_PKI_PRIVATE;
 		}
 
 		if (auto path = getPath(Identity::CTX_PKI_PUBLIC); path) {
-			watchlist[4].identifier = track(path, events);
-			watchlist[4].context = Identity::CTX_PKI_PUBLIC;
+			tracker[4].id = track(path, events);
+			tracker[4].context = Identity::CTX_PKI_PUBLIC;
 		}
 
 		if (auto path = getPath(Identity::CTX_SSL_ROOT); path) {
-			watchlist[5].identifier = track(path, events);
-			watchlist[5].context = Identity::CTX_SSL_ROOT;
+			tracker[5].id = track(path, events);
+			tracker[5].context = Identity::CTX_SSL_ROOT;
 		}
 
 		if (auto path = getPath(Identity::CTX_SSL_CERT); path) {
-			watchlist[6].identifier = track(path, events);
-			watchlist[6].context = Identity::CTX_SSL_CERT;
+			tracker[6].id = track(path, events);
+			tracker[6].context = Identity::CTX_SSL_CERT;
 		}
 
 		if (auto path = getPath(Identity::CTX_SSL_PRIVATE); path) {
-			watchlist[7].identifier = track(path, events);
-			watchlist[7].context = Identity::CTX_SSL_PRIVATE;
+			tracker[7].id = track(path, events);
+			tracker[7].context = Identity::CTX_SSL_PRIVATE;
 		}
 
 	} catch (const BaseException &e) {
@@ -252,30 +252,30 @@ void OverlayHub::installTracker() {
 	}
 }
 
-void OverlayHub::refresh(unsigned int context) noexcept {
+void OverlayHub::refresh(unsigned int index) noexcept {
 	//REF: https://github.com/guard/guard/wiki/Analysis-of-inotify-events-for-different-editors
-	if (watchlist[context].events & IN_IGNORED) {
+	if (tracker[index].events & IN_IGNORED) {
 		//Associated file will no longer be monitored
-		watchlist[context].identifier = -1;
-		watchlist[context].events = 0;
-	} else if (!(watchlist[context].events & IN_CLOSE_WRITE)) { //Write-close
+		tracker[index].id = -1;
+		tracker[index].events = 0;
+	} else if (!(tracker[index].events & IN_CLOSE_WRITE)) { //Write-close
 		return;
-	} else if (!(watchlist[context].events & (IN_MODIFY | IN_ATTRIB))) { //Modification
+	} else if (!(tracker[index].events & (IN_MODIFY | IN_ATTRIB))) { //Modification
 		//Closed without modification
-		watchlist[context].events = 0;
+		tracker[index].events = 0;
 		return;
 	} else {
 		//Reset for next cycle
-		watchlist[context].events = 0;
+		tracker[index].events = 0;
 	}
 	//-----------------------------------------------------------------
 	/*
 	 * Reload the settings
 	 */
 	try {
-		switch (watchlist[context].context) {
+		switch (tracker[index].context) {
 		case Identity::CTX_OPTIONS:
-			if (watchlist[context].identifier != -1) {
+			if (tracker[index].id != -1) {
 				WH_LOG_DEBUG(
 						"Configuration file has been modified (restart required)");
 			} else {
@@ -283,14 +283,14 @@ void OverlayHub::refresh(unsigned int context) noexcept {
 			}
 			break;
 		case Identity::CTX_HOSTS_DB:
-			if (watchlist[context].identifier != -1) {
+			if (tracker[index].id != -1) {
 				WH_LOG_DEBUG("Hosts database has been modified");
 			} else {
 				WH_LOG_DEBUG("Hosts database has been ignored");
 			}
 			break;
 		case Identity::CTX_HOSTS_FILE:
-			if (watchlist[context].identifier != -1) {
+			if (tracker[index].id != -1) {
 				WH_LOG_DEBUG("Hosts file has been modified");
 				Identity::refresh(Identity::CTX_HOSTS_FILE);
 			} else {
@@ -298,7 +298,7 @@ void OverlayHub::refresh(unsigned int context) noexcept {
 			}
 			break;
 		case Identity::CTX_PKI_PRIVATE:
-			if (watchlist[context].identifier != -1) {
+			if (tracker[index].id != -1) {
 				WH_LOG_DEBUG("Private key file has been modified");
 				Identity::refresh(Identity::CTX_PKI_PRIVATE);
 			} else {
@@ -306,7 +306,7 @@ void OverlayHub::refresh(unsigned int context) noexcept {
 			}
 			break;
 		case Identity::CTX_PKI_PUBLIC:
-			if (watchlist[context].identifier != -1) {
+			if (tracker[index].id != -1) {
 				WH_LOG_DEBUG("Public key file has been modified");
 				Identity::refresh(Identity::CTX_PKI_PUBLIC);
 			} else {
@@ -314,7 +314,7 @@ void OverlayHub::refresh(unsigned int context) noexcept {
 			}
 			break;
 		case Identity::CTX_SSL_ROOT:
-			if (watchlist[context].identifier != -1) {
+			if (tracker[index].id != -1) {
 				WH_LOG_DEBUG(
 						"SSL Root CA certificate has been modified (restart required)");
 			} else {
@@ -322,7 +322,7 @@ void OverlayHub::refresh(unsigned int context) noexcept {
 			}
 			break;
 		case Identity::CTX_SSL_CERT:
-			if (watchlist[context].identifier != -1) {
+			if (tracker[index].id != -1) {
 				WH_LOG_DEBUG("SSL certificate has been modified");
 				Identity::refresh(Identity::CTX_SSL_CERT);
 			} else {
@@ -330,7 +330,7 @@ void OverlayHub::refresh(unsigned int context) noexcept {
 			}
 			break;
 		case Identity::CTX_SSL_PRIVATE:
-			if (watchlist[context].identifier != -1) {
+			if (tracker[index].id != -1) {
 				WH_LOG_DEBUG("SSL private key has been modified");
 				Identity::refresh(Identity::CTX_SSL_PRIVATE);
 			} else {
@@ -435,10 +435,10 @@ void OverlayHub::offboard(Watcher *w) noexcept {
 	}
 }
 
-void OverlayHub::memorize(unsigned long long id) noexcept {
+void OverlayHub::stash(unsigned long long id) noexcept {
 	if (id && isInternal(id) && !isHost(id)) {
-		nodes.cache[nodes.index] = id;
-		nodes.index = (nodes.index + 1) & (NODECACHE_SIZE - 1);
+		nodes.list[nodes.index] = id;
+		nodes.index = (nodes.index + 1) & (NODES_CNT - 1);
 	}
 }
 
@@ -571,7 +571,7 @@ void OverlayHub::annotate(Message *message) noexcept {
 		//Retrieve the group ID during routing
 		message->setGroup(message->getLabel());
 	} else {
-		memorize(message->getSource());
+		stash(message->getSource());
 	}
 }
 
@@ -584,7 +584,7 @@ bool OverlayHub::plot(Message *message) noexcept {
 			message->setDestination(CONTROLLER);
 		}
 	} else if (isController(origin)) {
-		if (corroborate(message)) {
+		if (reconcile(message)) {
 			//Stabilization response returned via controller
 			message->setDestination(getWorker());
 		}
@@ -601,7 +601,7 @@ bool OverlayHub::plot(Message *message) noexcept {
 	return true;
 }
 
-bool OverlayHub::corroborate(const Message *message) const noexcept {
+bool OverlayHub::reconcile(const Message *message) const noexcept {
 	auto &sh = worker.header;
 	return message->getStatus() != WH_DHT_AQLF_REQUEST
 			&& message->getLabel() == sh.getLabel()
@@ -873,7 +873,7 @@ bool OverlayHub::handleTokenRequest(Message *msg) noexcept {
 	 * TOTAL: 32+64=96 bytes in Request; 32+128=160 bytes in Response
 	 */
 	auto origin = msg->getOrigin();
-	auto payload = msg->getPayloadLength();
+	auto plen = msg->getPayloadLength();
 	//-----------------------------------------------------------------
 	/*
 	 * [PROXY ESTABLISHMENT]
@@ -885,7 +885,7 @@ bool OverlayHub::handleTokenRequest(Message *msg) noexcept {
 		//Check message integrity
 		if (msg->getStatus() != WH_DHT_AQLF_ACCEPTED) {
 			return handleInvalidRequest(msg);
-		} else if (payload < (2 * Hash::SIZE)) {
+		} else if (plen < (2 * Hash::SIZE)) {
 			return handleInvalidRequest(msg);
 		} else if (!msg->verify(verifyHost() ? getPKI() : nullptr)) {
 			return handleInvalidRequest(msg);
@@ -915,7 +915,7 @@ bool OverlayHub::handleTokenRequest(Message *msg) noexcept {
 	 * This call succeeds if the caller is a temporary connection and the
 	 * message is of proper size, otherwise a failure message is sent back.
 	 */
-	if (isEphemeral(origin) && payload <= Hash::SIZE) {
+	if (isEphemeral(origin) && plen <= Hash::SIZE) {
 		Digest hc;	//Challenge Key
 		memset(&hc, 0, sizeof(hc));
 		generateNonce(hash, origin, getUid(), &hc);
@@ -924,12 +924,12 @@ bool OverlayHub::handleTokenRequest(Message *msg) noexcept {
 		msg->writeDestination(0);
 		msg->setDestination(origin);
 		msg->putStatus(WH_DHT_AQLF_ACCEPTED);
-	} else if (isEphemeral(origin) && payload > Hash::SIZE && verifyHost()
+	} else if (isEphemeral(origin) && plen > Hash::SIZE && verifyHost()
 			&& getPKI()) {
 		//Extract the challenge key
 		unsigned char pt[Message::MPS] { }; //Challenge
 		Cache challenge { pt, sizeof(pt) };
-		getPKI()->decrypt( { msg->getBytes(0), payload }, challenge);
+		getPKI()->decrypt( { msg->getBytes(0), plen }, challenge);
 		msg->setBytes(0, challenge.base, Hash::SIZE);
 		//Build and return the session key
 		Digest hc; //Response
@@ -1041,15 +1041,14 @@ bool OverlayHub::handleBootstrapRequest(Message *msg) noexcept {
 	//-----------------------------------------------------------------
 	msg->setDestination(origin);
 	msg->putLength(
-			Message::HLEN + sizeof(uint32_t)
-					+ (sizeof(uint64_t) * NODECACHE_SIZE));
+			Message::HLEN + sizeof(uint32_t) + (sizeof(uint64_t) * NODES_CNT));
 	msg->putStatus(WH_DHT_AQLF_ACCEPTED);
 	//-----------------------------------------------------------------
 	//Number of IDs returned, same as the size of the cache
-	msg->setData32(0, NODECACHE_SIZE);
+	msg->setData32(0, NODES_CNT);
 	unsigned int offset = sizeof(uint32_t);
-	for (unsigned int i = 0; i < NODECACHE_SIZE; i++) {
-		msg->setData64(offset, nodes.cache[i]);
+	for (unsigned int i = 0; i < NODES_CNT; ++i) {
+		msg->setData64(offset, nodes.list[i]);
 		offset += sizeof(uint64_t);
 	}
 	return true;
@@ -1619,10 +1618,8 @@ void OverlayHub::clear() noexcept {
 	memset(&nodes, 0, sizeof(nodes));
 	memset(sessions, 0, sizeof(sessions));
 
-	for (unsigned int i = 0; i < WATCHLIST_SIZE; ++i) {
-		watchlist[i].context = -1;
-		watchlist[i].identifier = -1;
-		watchlist[i].events = 0;
+	for (unsigned int i = 0; i < TRACKER_CNT; ++i) {
+		tracker[i] = { -1, -1, 0 };
 	}
 
 	topics.clear();

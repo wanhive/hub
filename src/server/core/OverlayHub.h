@@ -52,14 +52,14 @@ private:
 	//-----------------------------------------------------------------
 	void installService();
 	void installTracker();
-	void refresh(unsigned int context) noexcept;
+	void refresh(unsigned int index) noexcept;
 	//-----------------------------------------------------------------
 	bool converge() noexcept;
 	bool bridge(unsigned long long id, Digest *hc) noexcept;
 	//-----------------------------------------------------------------
 	void onboard(Watcher *w) noexcept;
 	void offboard(Watcher *w) noexcept;
-	void memorize(unsigned long long id) noexcept;
+	void stash(unsigned long long id) noexcept;
 	//-----------------------------------------------------------------
 	int enroll(const Message *message) noexcept;
 	int enroll(unsigned long long source, unsigned long long request) noexcept;
@@ -70,7 +70,7 @@ private:
 	bool intercept(Message *message) noexcept;
 	void annotate(Message *message) noexcept;
 	bool plot(Message *message) noexcept;
-	bool corroborate(const Message *message) const noexcept;
+	bool reconcile(const Message *message) const noexcept;
 	unsigned long long gateway(unsigned long long to) const noexcept;
 	bool approve(unsigned long long from, unsigned long long to) const noexcept;
 	bool permit(unsigned long long from, unsigned long long to) const noexcept;
@@ -153,21 +153,21 @@ private:
 		unsigned long long nodes[128];
 	} ctx;
 	//-----------------------------------------------------------------
-	static constexpr unsigned int NODECACHE_SIZE = 32;
+	static constexpr unsigned int NODES_CNT = 32;
 	struct {
 		unsigned int index;
-		unsigned long long cache[NODECACHE_SIZE];
+		unsigned long long list[NODES_CNT];
 	} nodes;
 	//-----------------------------------------------------------------
 	Digest sessions[TABLESIZE + 1];
 	Hash hash;
 	//-----------------------------------------------------------------
-	static constexpr unsigned int WATCHLIST_SIZE = 8;
+	static constexpr unsigned int TRACKER_CNT = 8;
 	struct {
 		int context;
-		int identifier;
+		int id;
 		uint32_t events;
-	} watchlist[WATCHLIST_SIZE];
+	} tracker[TRACKER_CNT];
 	//-----------------------------------------------------------------
 	Topics topics;
 	Tokens tokens;
