@@ -478,6 +478,15 @@ const unsigned char* Message::getBytes(unsigned int index) const noexcept {
 		return nullptr;
 	}
 }
+const unsigned char* Message::getBytes(unsigned int index,
+		unsigned int length) const noexcept {
+	if ((length <= MPS) && (index <= (MPS - length))) {
+		auto offset = HLEN + index;
+		return frame().array() + offset;
+	} else {
+		return nullptr;
+	}
+}
 bool Message::setBytes(unsigned int index, const unsigned char *data,
 		unsigned int length) noexcept {
 	if ((length > MPS) || (index > (MPS - length))) {

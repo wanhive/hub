@@ -66,11 +66,10 @@ public:
 	 */
 	void clear() noexcept;
 	/**
-	 * Incrementally builds this message from a given source. If the source does
-	 * not contain sufficient data then call this method again when additional
-	 * data becomes available.
+	 * Incrementally builds the current instance. If the source does not contain
+	 * sufficient data, then call again later.
 	 * @param in source's reference
-	 * @return true on completion (message populated), false otherwise
+	 * @return true on completion, false otherwise
 	 */
 	bool build(Source<unsigned char> &in);
 	//-----------------------------------------------------------------
@@ -90,7 +89,7 @@ public:
 	 */
 	void writeLabel(uint64_t label) noexcept;
 	/**
-	 * Combines Message::setLabel() and Message::writeLabel().
+	 * Combines Message::setLabel and Message::writeLabel.
 	 * @param label new label
 	 */
 	void putLabel(uint64_t label) noexcept;
@@ -111,7 +110,7 @@ public:
 	 */
 	void writeSource(uint64_t source) noexcept;
 	/**
-	 * Combines Message::setSource() and Message::writeSource().
+	 * Combines Message::setSource and Message::writeSource.
 	 * @param source new source
 	 */
 	void putSource(uint64_t source) noexcept;
@@ -132,7 +131,7 @@ public:
 	 */
 	void writeDestination(uint64_t destination) noexcept;
 	/**
-	 * Combines Message::setDestination() and Message::writeDestination().
+	 * Combines Message::setDestination and Message::writeDestination.
 	 * @param destination new destination
 	 */
 	void putDestination(uint64_t destination) noexcept;
@@ -155,7 +154,7 @@ public:
 	 */
 	bool writeLength(uint16_t length) noexcept;
 	/**
-	 * Combines Message::setLength() and Message::writeLength().
+	 * Combines Message::setLength and Message::writeLength.
 	 * @param length new length
 	 * @return true on success, false on error (invalid length)
 	 */
@@ -177,7 +176,7 @@ public:
 	 */
 	void writeSequenceNumber(uint16_t sequenceNumber) noexcept;
 	/**
-	 * Combines Message::setSequenceNumber() and Message::writeSequenceNumber().
+	 * Combines Message::setSequenceNumber and Message::writeSequenceNumber.
 	 * @param sequenceNumber new sequence number
 	 */
 	void putSequenceNumber(uint16_t sequenceNumber) noexcept;
@@ -198,7 +197,7 @@ public:
 	 */
 	void writeSession(uint8_t session) noexcept;
 	/**
-	 * Combines Message::setSession() and Message::writeSession().
+	 * Combines Message::setSession and Message::writeSession.
 	 * @param session new session
 	 */
 	void putSession(uint8_t session) noexcept;
@@ -219,7 +218,7 @@ public:
 	 */
 	void writeCommand(uint8_t command) noexcept;
 	/**
-	 * Combines Message::setCommand() and Message::writeCommand().
+	 * Combines Message::setCommand and Message::writeCommand.
 	 * @param command new command
 	 */
 	void putCommand(uint8_t command) noexcept;
@@ -240,7 +239,7 @@ public:
 	 */
 	void writeQualifier(uint8_t qualifier) noexcept;
 	/**
-	 * Combines Message::setQualifier() and Message::writeQualifier().
+	 * Combines Message::setQualifier and Message::writeQualifier.
 	 * @param qualifier new qualifier
 	 */
 	void putQualifier(uint8_t qualifier) noexcept;
@@ -261,7 +260,7 @@ public:
 	 */
 	void writeStatus(uint8_t status) noexcept;
 	/**
-	 * Combines Message::setStatus() and Message::writeStatus().
+	 * Combines Message::setStatus and Message::writeStatus.
 	 * @param status new status code
 	 */
 	void putStatus(uint8_t status) noexcept;
@@ -272,21 +271,21 @@ public:
 	 */
 	void getHeader(MessageHeader &header) const noexcept;
 	/**
-	 * Updates the routing header. This call will fail if the length field in
-	 * the new header contains invalid value.
+	 * Updates the routing header. The call will not succeed if the length field
+	 * in the new header contains an invalid value.
 	 * @param header new header data
 	 * @return true on success, false on error (invalid length)
 	 */
 	bool setHeader(const MessageHeader &header) noexcept;
 	/**
-	 * Updates frame buffer's header data. This call will fail if the length
-	 * field in the new header contains invalid value.
+	 * Updates frame buffer's header data. The call will not succeed if the
+	 * length field in the new header contains an invalid value.
 	 * @param header new header data
 	 * @return true on success, false on error (invalid length)
 	 */
 	bool writeHeader(const MessageHeader &header) noexcept;
 	/**
-	 * Combines Message::setHeader() and Message::writeHeader().
+	 * Combines Message::setHeader and Message::writeHeader.
 	 * @param header new header data
 	 * @return true on success, false on error (invalid data)
 	 */
@@ -314,7 +313,7 @@ public:
 	bool setData64(unsigned int index, uint64_t data) noexcept;
 	/**
 	 * Appends 64-bit (8 byte) unsigned integer to the payload and updates
-	 * message's length.
+	 * the message length.
 	 * @param data 8-byte unsigned integer
 	 * @return true on success, false on error
 	 */
@@ -342,7 +341,7 @@ public:
 	bool setData32(unsigned int index, uint32_t data) noexcept;
 	/**
 	 * Appends 32-bit (4 byte) unsigned integer to the payload and updates
-	 * message's length.
+	 * the message length.
 	 * @param data 4-byte unsigned integer
 	 * @return true on success, false on error
 	 */
@@ -370,7 +369,7 @@ public:
 	bool setData16(unsigned int index, uint16_t data) noexcept;
 	/**
 	 * Appends 16-bit (2 byte) unsigned integer to the payload and updates
-	 * message's length.
+	 * the message length.
 	 * @param data 2-byte unsigned integer
 	 * @return true on success, false on error
 	 */
@@ -398,7 +397,7 @@ public:
 	bool setData8(unsigned int index, uint8_t data) noexcept;
 	/**
 	 * Appends 8-bit (1 byte) unsigned integer to the payload and updates
-	 * message's length.
+	 * the message length.
 	 * @param data 1-byte unsigned integer
 	 * @return true on success, false on error
 	 */
@@ -425,7 +424,7 @@ public:
 	 */
 	bool setFloat(unsigned int index, float data) noexcept;
 	/**
-	 * Appends a float value to the payload and updates message's length.
+	 * Appends a float value to the payload and updates the message length.
 	 * @param data float value
 	 * @return true on success, false on error
 	 */
@@ -452,7 +451,7 @@ public:
 	 */
 	bool setDouble(unsigned int index, double data) noexcept;
 	/**
-	 * Appends a double value to the payload and updates message's length.
+	 * Appends a double value to the payload and updates the message length.
 	 * @param data double value
 	 * @return true on success, false on error
 	 */
@@ -468,12 +467,21 @@ public:
 	bool getBytes(unsigned int index, unsigned char *data,
 			unsigned int length) const noexcept;
 	/**
-	 * Returns a constant pointer to the sequence of bytes at the given offset
+	 * Returns a constant pointer to sequence of bytes at the specified offset
 	 * in the payload.
 	 * @param index offset in bytes
 	 * @return data's pointer, nullptr on overflow
 	 */
 	const unsigned char* getBytes(unsigned int index) const noexcept;
+	/**
+	 * Returns a constant pointer to fixed-length binary data at the specified
+	 * offset in the payload.
+	 * @param index offset in bytes
+	 * @param length data size in bytes
+	 * @return data's pointer, nullptr on overflow
+	 */
+	const unsigned char* getBytes(unsigned int index,
+			unsigned int length) const noexcept;
 	/**
 	 * Writes a sequence of bytes into the payload.
 	 * @param index offset in bytes
@@ -484,7 +492,8 @@ public:
 	bool setBytes(unsigned int index, const unsigned char *data,
 			unsigned int length) noexcept;
 	/**
-	 * Appends a sequence of bytes to the payload and updates message's length.
+	 * Appends a sequence of bytes to the payload and updates the message
+	 * length.
 	 * @param data bytes to write
 	 * @param length number of bytes to write
 	 * @return true on success, false on error
@@ -492,7 +501,7 @@ public:
 	bool appendBytes(const unsigned char *data, unsigned int length) noexcept;
 	//-----------------------------------------------------------------
 	/**
-	 * Writes header and payload data into this message and updates its length.
+	 * Writes header and payload data and updates the message length.
 	 * @param header message header (the length field is ignored)
 	 * @param format payload's format string. In case of empty payload, the
 	 * format string should either be nullptr or an empty string. Additional
@@ -501,7 +510,7 @@ public:
 	 */
 	bool pack(const MessageHeader &header, const char *format, ...) noexcept;
 	/**
-	 * Writes header and payload data into this message and updates its length.
+	 * Writes header and payload data and updates the message length.
 	 * @param header message header (the length field is ignored)
 	 * @param format payload's format string (should either be nullptr or an
 	 * empty string if the payload is empty).
@@ -512,7 +521,7 @@ public:
 			va_list ap) noexcept;
 	//-----------------------------------------------------------------
 	/**
-	 * Writes header and payload data into this message and updates its length.
+	 * Writes header and payload data and updates the message length.
 	 * @param header message header
 	 * @param payload serialized payload data (can be nullptr)
 	 * @return true on success, false on error (invalid length)
@@ -520,21 +529,21 @@ public:
 	bool pack(const MessageHeader &header,
 			const unsigned char *payload) noexcept;
 	/**
-	 * Writes serialized message data into this message.
+	 * Writes serialized message data into the current instance.
 	 * @param message serialized data
 	 * @return true on success, false on error (invalid data)
 	 */
 	bool pack(const unsigned char *message) noexcept;
 	//-----------------------------------------------------------------
 	/**
-	 * Appends additional data to the payload and updates message's length.
+	 * Appends additional data to the payload and updates the message length.
 	 * @param format payload data's format string. Payload data is passed
 	 * through the arguments following it.
 	 * @return true on success, false on error (invalid data or format)
 	 */
 	bool append(const char *format, ...) noexcept;
 	/**
-	 * Appends additional data to the payload and updates message's length.
+	 * Appends additional data to the payload and updates the message length.
 	 * @param format payload data's format string
 	 * @param ap payload data
 	 * @return true on success, false on error (invalid data or format)
@@ -542,23 +551,23 @@ public:
 	bool append(const char *format, va_list ap) noexcept;
 	//-----------------------------------------------------------------
 	/**
-	 * Reads message's payload data.
-	 * @param format payload data's format string. Payload data is stored
-	 * at locations provided by the pointer arguments following it.
+	 * Reads the payload data.
+	 * @param format format string. Payload data is stored at locations provided
+	 * by the pointer arguments following it.
 	 * @return true on success, false on error (invalid message or format)
 	 */
 	bool unpack(const char *format, ...) const noexcept;
 	/**
-	 * Reads message's payload data.
-	 * @param format payload data's format string
+	 * Reads the payload data.
+	 * @param format format string
 	 * @param ap pointers to the output buffers
 	 * @return true on success, false on error (invalid message or format)
 	 */
 	bool unpack(const char *format, va_list ap) const noexcept;
 	//-----------------------------------------------------------------
 	/**
-	 * Checks if a given number of messages can be allocated.
-	 * @param count number of messages to create
+	 * Checks if the specified number of messages can be created.
+	 * @param count message count
 	 * @return true if messages can be created, false otherwise
 	 */
 	static bool available(unsigned int count) noexcept;

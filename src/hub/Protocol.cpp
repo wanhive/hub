@@ -424,7 +424,7 @@ unsigned int Protocol::createRegisterRequest(const MessageAddress &address,
 	auto length = HLEN;
 	if (hc) {
 		//Append the challenge key
-		Serializer::packib(packet.payload(), (unsigned char*) hc, Hash::SIZE);
+		Serializer::packib(packet.payload(), Hash::bytes(hc), Hash::SIZE);
 		length += Hash::SIZE;
 	}
 
@@ -440,16 +440,15 @@ unsigned int Protocol::createTokenRequest(const MessageAddress &address,
 	auto length = HLEN;
 	packet.clear();
 	if (tk.nonce && tk.pki) {
-		unsigned char ct[Packet::MPS] { };
+		unsigned char ct[MPS] { };
 		Cache challenge { ct, sizeof(ct) };
 		//Ignore the encryption error (Public key is used for encryption)
-		tk.pki->encrypt( { *tk.nonce, Hash::SIZE }, challenge);
+		tk.pki->encrypt( { Hash::bytes(tk.nonce), Hash::SIZE }, challenge);
 		//Append the challenge at the start of the message
 		Serializer::packib(packet.payload(), challenge.base, challenge.length);
 		length += challenge.length;
 	} else if (tk.nonce) {
-		Serializer::packib(packet.payload(), (unsigned char*) tk.nonce,
-				Hash::SIZE);
+		Serializer::packib(packet.payload(), Hash::bytes(tk.nonce), Hash::SIZE);
 		length += Hash::SIZE;
 	}
 
@@ -466,9 +465,9 @@ unsigned int Protocol::processTokenResponse(const Packet &packet,
 		return 0;
 	} else if (!hc || packet.getPayloadLength() < (2 * Hash::SIZE)) {
 		return 0;
-	} else if (!memcmp(packet.payload(), hc, Hash::SIZE)) {
+	} else if (!memcmp(packet.payload(), Hash::bytes(hc), Hash::SIZE)) {
 		//Verify the response, if OK then store the key
-		Serializer::unpackib((unsigned char*) hc, packet.payload(Hash::SIZE),
+		Serializer::unpackib(Hash::bytes(hc), packet.payload(Hash::SIZE),
 				Hash::SIZE);
 		return packet.header().getLength();
 	} else {

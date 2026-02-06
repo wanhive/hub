@@ -316,7 +316,7 @@ void OverlayTool::registerCmd() {
 
 	try {
 		Digest hc;
-		Random().bytes(&hc, Hash::SIZE);
+		Random().bytes(Hash::bytes(hc), Hash::SIZE);
 		if (tokenRequest( { 0, id }, &hc, verifyHost()) && registerRequest( {
 				newId, id }, &hc)) {
 			std::cout << "REGISTER SUCCEEDED FOR ID: " << newId << std::endl;
@@ -337,7 +337,7 @@ void OverlayTool::tokenCmd() {
 
 	try {
 		Digest hc;
-		Random().bytes(&hc, Hash::SIZE);
+		Random().bytes(Hash::bytes(hc), Hash::SIZE);
 		if (tokenRequest( { 0, id }, &hc, verifyHost())) {
 			EncodedDigest encodedKey;
 			unsigned int encLen = Hash::encode(&hc, &encodedKey);

@@ -511,8 +511,7 @@ bool OverlayHub::authenticate(const Message *message) noexcept {
 	} else if (message->getPayloadLength() > Hash::SIZE) {
 		//CASE 2 & 3
 		return tokens.take()
-				&& verifyNonce(hash, origin, getUid(),
-						(Digest*) message->getBytes(0))
+				&& verifyNonce(hash, origin, getUid(), getDigest(message))
 				&& message->verify(getPKI());
 	} else {
 		return false;
@@ -889,12 +888,12 @@ bool OverlayHub::handleTokenRequest(Message *msg) noexcept {
 			return handleInvalidRequest(msg);
 		} else if (!msg->verify(verifyHost() ? getPKI() : nullptr)) {
 			return handleInvalidRequest(msg);
-		} else if (nonceToId((Digest*) msg->getBytes(0)) != origin) {
+		} else if (nonceToId(getDigest(msg)) != origin) {
 			return handleInvalidRequest(msg);
 		} else {
 			//Convert the message into a Registration Request
-			Digest hc;
-			memcpy(&hc, msg->getBytes(Hash::SIZE), Hash::SIZE);
+			Digest hc { };
+			memcpy(Hash::bytes(hc), msg->getBytes(Hash::SIZE), Hash::SIZE);
 			Protocol::createRegisterRequest( { getUid(), origin }, &hc, msg);
 			msg->sign(getPKI());
 			//We are sending a registration request to the remote Node.
@@ -916,10 +915,9 @@ bool OverlayHub::handleTokenRequest(Message *msg) noexcept {
 	 * message is of proper size, otherwise a failure message is sent back.
 	 */
 	if (isEphemeral(origin) && plen <= Hash::SIZE) {
-		Digest hc;	//Challenge Key
-		memset(&hc, 0, sizeof(hc));
+		Digest hc { };	//Challenge Key
 		generateNonce(hash, origin, getUid(), &hc);
-		msg->appendBytes((const unsigned char*) &hc, Hash::SIZE);
+		msg->appendBytes(Hash::bytes(hc), Hash::SIZE);
 		msg->writeSource(0);
 		msg->writeDestination(0);
 		msg->setDestination(origin);
@@ -932,10 +930,9 @@ bool OverlayHub::handleTokenRequest(Message *msg) noexcept {
 		getPKI()->decrypt( { msg->getBytes(0), plen }, challenge);
 		msg->setBytes(0, challenge.base, Hash::SIZE);
 		//Build and return the session key
-		Digest hc; //Response
-		memset(&hc, 0, sizeof(hc));
+		Digest hc { }; //Response
 		generateNonce(hash, origin, getUid(), &hc);
-		msg->setBytes(Hash::SIZE, (const unsigned char*) &hc, Hash::SIZE);
+		msg->setBytes(Hash::SIZE, Hash::bytes(hc), Hash::SIZE);
 		msg->writeSource(0);
 		msg->writeDestination(0);
 		msg->setDestination(origin);
@@ -1433,6 +1430,11 @@ void OverlayHub::buildDirectResponse(Message *msg, unsigned int length) noexcept
 	}
 }
 
+const Digest* OverlayHub::getDigest(const Message *message,
+		unsigned int index) noexcept {
+	return reinterpret_cast<const Digest*>(message->getBytes(index, Hash::SIZE));
+}
+
 unsigned int OverlayHub::mapKey(unsigned long long key) noexcept {
 	if (key > (MAX_ID + MAX_NODES)) {
 		//Take the higher bits into account
@@ -1443,9 +1445,10 @@ unsigned int OverlayHub::mapKey(unsigned long long key) noexcept {
 }
 
 unsigned long long OverlayHub::nonceToId(const Digest *nonce) const noexcept {
-	unsigned int i = 0;
-	for (; i <= TABLESIZE; i++) {
-		if (memcmp(nonce, &sessions[i], sizeof(Digest)) == 0)
+	unsigned int i { };
+	auto reference = Hash::bytes(nonce);
+	for (; i <= TABLESIZE; ++i) {
+		if (memcmp(reference, Hash::bytes(sessions[i]), Hash::SIZE) == 0)
 			break;
 	}
 

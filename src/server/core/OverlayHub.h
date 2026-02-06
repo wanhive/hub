@@ -109,6 +109,8 @@ private:
 	//-----------------------------------------------------------------
 	int mapFunction(Message *msg) noexcept;
 	void buildDirectResponse(Message *msg, unsigned int length = 0) noexcept;
+	static const Digest* getDigest(const Message *message, unsigned int index =
+			0) noexcept;
 	//-----------------------------------------------------------------
 	static unsigned int mapKey(unsigned long long key) noexcept;
 	unsigned long long nonceToId(const Digest *hc) const noexcept;
