@@ -23,9 +23,9 @@ namespace wanhive {
 class Agent: public Hub {
 public:
 	/**
-	 * Constructor: creates a new client
-	 * @param uid hub's unique identifier
-	 * @param path pathname of the configuration file
+	 * Constructor: creates a new agent.
+	 * @param uid unique identifier
+	 * @param path configuration file's path
 	 */
 	Agent(unsigned long long uid, const char *path = nullptr) noexcept;
 	/**

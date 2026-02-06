@@ -49,9 +49,8 @@ class Hub: public Handler<Alarm>,
 public:
 	/**
 	 * Constructor: creates a new hub.
-	 * @param uid hub's identifier
-	 * @param path configuration file's pathname, if not provided (pathname is
-	 * nullptr) then configuration data is loaded from the default location(s).
+	 * @param uid unique identifier
+	 * @param path configuration file's path (nullptr for default)
 	 */
 	Hub(unsigned long long uid, const char *path = nullptr) noexcept;
 	/**
@@ -65,7 +64,7 @@ public:
 	 */
 	unsigned long long getUid() const noexcept;
 	/**
-	 * Executes this hub, returns only after termination of the event loop.
+	 * Executes the event loop.
 	 * @param arg additional argument
 	 * @return true on normal termination, false on error
 	 */
@@ -109,7 +108,7 @@ protected:
 	 */
 	void metrics(HubInfo &info) const noexcept;
 	/**
-	 * Remove sensitive information from logs.
+	 * Returns option for removal of sensitive information from logs.
 	 * @return true to remove, false otherwise
 	 */
 	bool redact() const noexcept;
