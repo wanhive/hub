@@ -1,5 +1,9 @@
 # --- SOURCE FILES DECLARATIONS START ---
 
+## src/app collection
+WH_APPHEADERS = app/ConfigTool.h app/Manager.h
+WH_APPSOURCES = app/ConfigTool.cpp app/Manager.cpp wanhive.cpp
+
 ## src/base/common
 WH_BASE_COMMONHEADERS = base/common/Activity.h base/common/Atomic.h \
 	base/common/BaseException.h base/common/CommandLine.h \
@@ -73,26 +77,13 @@ WH_BASE_TOPSOURCES = base/Network.cpp base/Options.cpp base/Selector.cpp \
 WH_BASEHEADERS = $(WH_BASE_COMMONHEADERS) $(WH_BASE_DBHEADERS) \
 	$(WH_BASE_DSHEADERS) $(WH_BASE_IPCHEADERS) $(WH_BASE_SECURITYHEADERS) \
 	$(WH_BASEUNIXHEADERS) $(WH_BASE_TOPHEADERS)
-
 WH_BASESOURCES =  $(WH_BASE_COMMONSOURCES) $(WH_BASE_DBSOURCES) \
 	$(WH_BASE_DSSOURCES) $(WH_BASE_IPCSOURCES) $(WH_BASE_SECURITYSOURCES) \
 	$(WH_BASEUNIXSOURCES) $(WH_BASE_TOPSOURCES)
 
-## src/reactor collection
-WH_REACTORHEADERS = reactor/Descriptor.h reactor/Handler.h reactor/Reactor.h \
-	reactor/Watcher.h
-WH_REACTORSOURCES = reactor/Descriptor.cpp reactor/Reactor.cpp reactor/Watcher.cpp
-
-## src/util collection
-WH_UTILHEADERS = util/Endpoint.h util/FlowControl.h util/Frame.h util/Hash.h \
-	util/Hosts.h util/InstanceID.h util/Message.h util/MessageAddress.h \
-	util/MessageContext.h util/MessageControl.h util/MessageHeader.h \
-	util/PKI.h util/Packet.h util/Random.h util/Verifier.h util/commands.h
-WH_UTILSOURCES = util/Endpoint.cpp util/FlowControl.cpp util/Frame.cpp \
-	util/Hash.cpp util/Hosts.cpp util/InstanceID.cpp util/Message.cpp \
-	util/MessageAddress.cpp util/MessageContext.cpp util/MessageControl.cpp \
-	util/MessageHeader.cpp util/PKI.cpp util/Packet.cpp util/Random.cpp \
-	util/Verifier.cpp
+## src/edge collection
+WH_EDGEHEADERS = edge/Edge.h edge/Monitor.h
+WH_EDGESOURCES = edge/Edge.cpp edge/Monitor.cpp
 
 ## src/hub collection
 WH_HUBHEADERS = hub/Agent.h hub/Alarm.h hub/Event.h hub/Hub.h \
@@ -103,6 +94,11 @@ WH_HUBSOURCES = hub/Agent.cpp hub/Alarm.cpp hub/Event.cpp hub/Hub.cpp \
 	hub/HubInfo.cpp hub/Identity.cpp hub/Inotifier.cpp hub/Interrupt.cpp \
 	hub/Job.cpp hub/Logic.cpp hub/Protocol.cpp hub/Socket.cpp hub/Stream.cpp \
 	hub/Topic.cpp hub/Watchers.cpp
+
+## src/reactor collection
+WH_REACTORHEADERS = reactor/Descriptor.h reactor/Handler.h reactor/Reactor.h \
+	reactor/Watcher.h
+WH_REACTORSOURCES = reactor/Descriptor.cpp reactor/Reactor.cpp reactor/Watcher.cpp
 
 ## src/server collection
 WH_SERVERHEADERS = server/auth/AuthenticationHub.h server/auth/Things.h \
@@ -124,12 +120,20 @@ WH_TESTSOURCES = test/ds/BufferTest.cpp test/ds/HashTableTest.cpp \
 	test/flood/TestClient.cpp test/flood/NetworkTest.cpp \
 	test/multicast/MulticastConsumer.cpp
 
-## src/app collection
-WH_APPHEADERS = app/ConfigTool.h app/Manager.h
-WH_APPSOURCES = app/ConfigTool.cpp app/Manager.cpp wanhive.cpp
+## src/util collection
+WH_UTILHEADERS = util/Endpoint.h util/FlowControl.h util/Frame.h util/Hash.h \
+	util/Hosts.h util/InstanceID.h util/Message.h util/MessageAddress.h \
+	util/MessageContext.h util/MessageControl.h util/MessageHeader.h \
+	util/PKI.h util/Packet.h util/Random.h util/Verifier.h util/commands.h
+WH_UTILSOURCES = util/Endpoint.cpp util/FlowControl.cpp util/Frame.cpp \
+	util/Hash.cpp util/Hosts.cpp util/InstanceID.cpp util/Message.cpp \
+	util/MessageAddress.cpp util/MessageContext.cpp util/MessageControl.cpp \
+	util/MessageHeader.cpp util/PKI.cpp util/Packet.cpp util/Random.cpp \
+	util/Verifier.cpp
 
 ## src/ collection
-WH_TOPHEADERS = wanhive-base.h wanhive-reactor.h wanhive-util.h wanhive-hub.h wanhive.h
+WH_TOPHEADERS = wanhive.h wanhive-base.h wanhive-edge.h wanhive-hub.h \
+	wanhive-reactor.h wanhive-util.h
 
 # --- SOURCE FILES DECLARATIONS END ---
 
@@ -137,8 +141,10 @@ AM_CXXFLAGS = -Wall -Werror
 
 if WH_WITH_EXECUTABLES
 bin_PROGRAMS = wanhive
-wanhive_SOURCES = $(WH_SERVERHEADERS) $(WH_SERVERSOURCES) $(WH_TESTHEADERS) \
-	$(WH_TESTSOURCES) $(WH_VERHEADERS) $(WH_APPHEADERS) $(WH_APPSOURCES)
+wanhive_SOURCES = $(WH_APPHEADERS) $(WH_APPSOURCES) \
+	$(WH_SERVERHEADERS) $(WH_SERVERSOURCES) \
+	$(WH_TESTHEADERS) $(WH_TESTSOURCES) \
+	$(WH_VERHEADERS)
 wanhive_CXXFLAGS = -Wall
 wanhive_LDADD = libwanhive.la
 endif
@@ -147,17 +153,20 @@ lib_LTLIBRARIES = libwanhive.la
 libwanhive_la_CXXFLAGS = $(AM_CXXFLAGS) -DWH_CONF_SYSTEM_BASE='"@sysconfdir@"'
 # https://www.gnu.org/software/libtool/manual/html_node/Updating-version-info.html
 libwanhive_la_LDFLAGS = -version-info @WH_LIB_VERSION@
-libwanhive_la_SOURCES = $(WH_BASEHEADERS) $(WH_BASESOURCES) $(WH_REACTORHEADERS) \
-	$(WH_REACTORSOURCES) $(WH_UTILHEADERS) $(WH_UTILSOURCES) $(WH_HUBHEADERS) \
-	$(WH_HUBSOURCES) $(WH_TOPHEADERS) $(WH_VERHEADERS) $(WH_VERSOURCES)
+libwanhive_la_SOURCES = $(WH_BASEHEADERS) $(WH_BASESOURCES) \
+	$(WH_EDGEHEADERS) $(WH_EDGESOURCES) \
+	$(WH_HUBHEADERS) $(WH_HUBSOURCES) \
+	$(WH_REACTORHEADERS) $(WH_REACTORSOURCES) \
+	$(WH_UTILHEADERS) $(WH_UTILSOURCES) \
+	$(WH_VERHEADERS) $(WH_VERSOURCES) \
+	$(WH_TOPHEADERS)
 
 # --- Library headers ---
 # https://www.gnu.org/software/automake/manual/html_node/Uniform.html
 # https://www.gnu.org/software/automake/manual/html_node/Headers.html
-nobase_pkginclude_HEADERS = $(WH_TOPHEADERS) $(WH_BASE_TOPHEADERS) \
-	$(WH_BASE_COMMONHEADERS) $(WH_BASE_DBHEADERS) $(WH_BASE_DSHEADERS) \
-	$(WH_BASE_IPCHEADERS) $(WH_BASE_SECURITYHEADERS) $(WH_BASEUNIXHEADERS) \
-	$(WH_REACTORHEADERS) $(WH_UTILHEADERS) $(WH_HUBHEADERS)
+nobase_pkginclude_HEADERS = $(WH_BASEHEADERS) $(WH_EDGEHEADERS) \
+	$(WH_HUBHEADERS) $(WH_REACTORHEADERS) $(WH_UTILHEADERS) \
+	$(WH_TOPHEADERS)
 
 # --- pkg-config metadata file ---
 pkgconfig_DATA = wanhive.pc

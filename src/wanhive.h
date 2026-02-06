@@ -14,6 +14,7 @@
 #define WH_WANHIVE_H_
 
 #include "wanhive-base.h"
+#include "wanhive-edge.h"
 #include "wanhive-hub.h"
 #include "wanhive-reactor.h"
 #include "wanhive-util.h"

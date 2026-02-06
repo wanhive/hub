@@ -100,6 +100,8 @@
 #include "base/unix/TSignal.h"
 #include "base/unix/User.h"
 #include "base/unix/WorkingDirectory.h"
+#include "edge/Edge.h"
+#include "edge/Monitor.h"
 #include "hub/Agent.h"
 #include "hub/Alarm.h"
 #include "hub/Event.h"
