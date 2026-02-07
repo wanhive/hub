@@ -37,48 +37,53 @@ protected:
 	void cleanup() noexcept override;
 	//-----------------------------------------------------------------
 	/**
-	 * Sends association request to a remote host.
+	 * Periodically sends an association request to the designated remote node.
+	 * @param interval polling interval
+	 * @param sqn sequence number
+	 * @param tokens default access tokens count if the remote host's latency
+	 * is zero.
+	 * @return true on success, false on error
+	 */
+	bool heartbeat(unsigned int interval, unsigned int sqn,
+			unsigned int tokens = 0) noexcept;
+	/**
+	 * Sends association request to a remote node.
 	 * @param id remote node's identifier
 	 * @param sqn sequence number
 	 * @param tokens access tokens count
 	 * @return true on success, false on error
 	 */
-	bool engage(unsigned long long id, unsigned int sqn,
-			unsigned int tokens) noexcept;
+	bool sample(unsigned long long id, unsigned int sqn,
+			unsigned int tokens = 0) noexcept;
 	/**
-	 * Processes association response from a remote host.
+	 * Processes association response from a remote node.
 	 * @param message association response
 	 * @return true on success, false on error
 	 */
 	bool connect(Message *message) noexcept;
 	//-----------------------------------------------------------------
 	/**
-	 * Breaks existing association with remote node.
+	 * Assigns a remote node for monitoring.
+	 * @param peer remote node's identifier
+	 * @param latency remote node's reporting interval
+	 * @return true on success, false on error
 	 */
-	void revoke() noexcept;
+	bool target(unsigned long long id, unsigned int latency = 0) noexcept;
 	/**
 	 * Returns remote node's identifier.
 	 * @return remote node's identifier
 	 */
-	unsigned long long getPeer() const noexcept;
-	/**
-	 * Updates remote node's identifier.
-	 * @param host remote node's identifier
-	 */
-	void setPeer(unsigned long long peer) noexcept;
+	unsigned long long host() const noexcept;
 	/**
 	 * Returns remote node's reporting interval.
 	 * @return reporting interval
 	 */
-	unsigned int getLatency() const noexcept;
+	unsigned int latency() const noexcept;
 	/**
-	 * Updates remote node's reporting interval.
-	 * @param latency reporting interval
+	 * Breaks the association with the remote node.
 	 */
-	void setLatency(unsigned int latency) noexcept;
+	void revoke() noexcept;
 private:
-	bool connect(unsigned long long id, unsigned int sqn,
-			unsigned int latency) noexcept;
 	void setup();
 	void clear() noexcept;
 private:

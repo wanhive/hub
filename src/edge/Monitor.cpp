@@ -44,7 +44,19 @@ void Monitor::cleanup() noexcept {
 	Agent::cleanup();
 }
 
-bool Monitor::engage(unsigned long long id, unsigned int sqn,
+bool Monitor::heartbeat(unsigned int interval, unsigned int sqn,
+		unsigned int tokens) noexcept {
+	if (!interval) {
+		return false;
+	} else if (edge.latency == 0) {
+		return sample(edge.id, sqn, tokens);
+	} else {
+		tokens = ((interval * 1.25) / edge.latency) + 2;
+		return sample(edge.id, sqn, tokens);
+	}
+}
+
+bool Monitor::sample(unsigned long long id, unsigned int sqn,
 		unsigned int tokens) noexcept {
 	auto message = Message::create();
 	if (message) {
@@ -65,44 +77,37 @@ bool Monitor::engage(unsigned long long id, unsigned int sqn,
 }
 
 bool Monitor::connect(Message *message) noexcept {
-	if (message && message->getPayloadLength() >= sizeof(uint32_t)) {
-		auto id = message->getSource();
-		auto sqn = message->getSequenceNumber();
-		auto latency = message->getData32(0);
-		return connect(id, sqn, latency);
-	} else {
+	if (!message || message->getStatus() != WH_AQLF_ACCEPTED
+			|| message->getPayloadLength() != sizeof(uint32_t)) {
 		return false;
 	}
-}
 
-void Monitor::revoke() noexcept {
-	edge = { getUid(), 0, 0 };
-}
-
-unsigned long long Monitor::getPeer() const noexcept {
-	return edge.id;
-}
-
-void Monitor::setPeer(unsigned long long peer) noexcept {
-	edge.id = peer;
-}
-
-unsigned int Monitor::getLatency() const noexcept {
-	return edge.latency;
-}
-
-void Monitor::setLatency(unsigned int latency) noexcept {
-	edge.latency = latency;
-}
-
-bool Monitor::connect(unsigned long long id, unsigned int sqn,
-		unsigned int latency) noexcept {
+	auto id = message->getSource();
+	auto sqn = message->getSequenceNumber();
+	auto latency = message->getData32(0);
 	if (id == edge.id && sqn == edge.sqn) {
 		edge.latency = latency;
 		return true;
 	} else {
 		return false;
 	}
+}
+
+bool Monitor::target(unsigned long long id, unsigned int latency) noexcept {
+	edge = { id, latency, 0 };
+	return true;
+}
+
+unsigned long long Monitor::host() const noexcept {
+	return edge.id;
+}
+
+unsigned int Monitor::latency() const noexcept {
+	return edge.latency;
+}
+
+void Monitor::revoke() noexcept {
+	edge = { getUid(), 0, 0 };
 }
 
 void Monitor::setup() {

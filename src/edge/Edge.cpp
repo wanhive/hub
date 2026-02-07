@@ -30,10 +30,7 @@ Edge::~Edge() {
 void Edge::configure(void *arg) {
 	try {
 		Agent::configure(arg);
-		ctx.online = getOptions().getBoolean("EDGE", "online");
-		ctx.multicast = getOptions().getBoolean("EDGE", "multicast");
-		WH_LOG_DEBUG("\nONLINE=%s, MULTICAST=%s\n", WH_BOOLF(ctx.online),
-				WH_BOOLF(ctx.multicast));
+		WH_LOG_DEBUG("Setting things up...");
 		setup();
 	} catch (const BaseException &e) {
 		WH_LOG_EXCEPTION(e);
@@ -49,22 +46,15 @@ void Edge::cleanup() noexcept {
 	Agent::cleanup();
 }
 
-bool Edge::online() const noexcept {
-	return ctx.online;
-}
-
-bool Edge::multicast() const noexcept {
-	return (ctx.online && ctx.multicast);
-}
-
 bool Edge::accept(Message *message, unsigned int interval) noexcept {
-	if (!message || message->getPayloadLength() < sizeof(uint32_t)) {
+	if (!message || message->getStatus() != WH_AQLF_REQUEST
+			|| message->getPayloadLength() != sizeof(uint32_t)) {
 		return false;
 	} else if (accept(message->getSource(), message->getData32(0))) {
-		WH_LOG_DEBUG("Node %llu requested %u tokens", slot.id, slot.tokens);
+		WH_LOG_DEBUG("Node %llu requested %u tokens", meta.id, meta.tokens);
 		message->setData32(0, interval);
 		message->putLength(Message::HLEN + sizeof(uint32_t));
-		message->writeDestination(slot.id);
+		message->writeDestination(meta.id);
 		message->setDestination(0);
 		message->putStatus(WH_AQLF_ACCEPTED);
 		return true;
@@ -74,36 +64,29 @@ bool Edge::accept(Message *message, unsigned int interval) noexcept {
 }
 
 bool Edge::accept(unsigned long long id, unsigned int tokens) noexcept {
-	if (ctx.online && !ctx.multicast) {
-		slot = { id, tokens };
-		return live();
-	} else {
-		return false;
-	}
+	meta = { id, tokens };
+	return true;
 }
 
-void Edge::revoke() noexcept {
-	slot = { getUid(), 0 };
+bool Edge::linked() const noexcept {
+	return ((meta.id != getUid()) && (meta.tokens != 0));
 }
 
-bool Edge::live() const noexcept {
-	return ((slot.id != getUid()) && (slot.tokens != 0));
-}
-
-bool Edge::report() noexcept {
-	if (live()) {
-		slot.tokens -= 1;
+bool Edge::sample() noexcept {
+	if (linked()) {
+		meta.tokens -= 1;
 		return true;
 	} else {
 		return false;
 	}
 }
-unsigned long long Edge::peer() const noexcept {
-	if (live()) {
-		return slot.id;
-	} else {
-		return getUid();
-	}
+
+unsigned long long Edge::host() const noexcept {
+	return meta.id;
+}
+
+void Edge::revoke() noexcept {
+	meta = { getUid(), 0 };
 }
 
 double Edge::timestamp() noexcept {
@@ -118,7 +101,6 @@ void Edge::setup() {
 
 void Edge::clear() noexcept {
 	revoke();
-	ctx = { false, false };
 }
 
 } /* namespace wanhive */
