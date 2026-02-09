@@ -66,8 +66,8 @@ public:
 	 */
 	void clear() noexcept;
 	/**
-	 * Incrementally builds the current instance. If the source does not contain
-	 * sufficient data, then call again later.
+	 * Builds the current instance incrementally. If the source lacks sufficient
+	 * data, call this method again when more data is available.
 	 * @param in source's reference
 	 * @return true on completion, false otherwise
 	 */
