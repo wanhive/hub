@@ -120,21 +120,22 @@ protected:
 	 */
 	bool attached(unsigned long long id) const noexcept;
 	/**
-	 * Watcher management: returns the watcher associated with a key.
+	 * Watcher management: retrieves the watcher associated with a
+	 * specified key.
 	 * @param id key's value
 	 * @return associated watcher if the key exists, nullptr otherwise
 	 */
 	Watcher* find(unsigned long long id) const noexcept;
 	/**
-	 * Watcher management: registers a watcher, watcher's unique identifier is
-	 * set as its key.
+	 * Watcher management: registers a watcher and assigns its unique
+	 * identifier as the key.
 	 * @param w watcher to register
 	 * @param events events of interest
-	 * @param flags watcher's flags to set on success
+	 * @param flags watcher's flags
 	 */
 	void attach(Watcher *w, uint32_t events, uint32_t flags);
 	/**
-	 * Watcher management: removes a key and its associated watcher.
+	 * Watcher management: removes a key and the corresponding watcher.
 	 * @param id key's value
 	 * @return true if the operation could not complete immediately (scheduled
 	 * for future), false otherwise.
@@ -195,19 +196,17 @@ protected:
 	void expel(Watcher *w) noexcept override;
 	//-----------------------------------------------------------------
 	/**
-	 * Configuration: configures the hub before entering the event loop. Invoke
-	 * it as a pre-operation in the derived class' version.
+	 * Configuration: configures the hub before the event loop's start.
 	 * @param arg additional argument
 	 */
 	virtual void configure(void *arg);
 	/**
-	 * Cleanup: cleans up the hub after exiting the event loop. Invoke it as a
-	 * post-operation in the derived class' version.
+	 * Cleanup: cleans up the hub after the event loop's termination.
 	 */
 	virtual void cleanup() noexcept;
 private:
 	/**
-	 * Adapter: the hub maintenance routine.
+	 * Adapter: hub's maintenance routine.
 	 */
 	virtual void maintain() noexcept;
 	/**
@@ -217,7 +216,7 @@ private:
 	 */
 	virtual bool probe(Message *message) noexcept;
 	/**
-	 * Adapter: processes an incoming message and creates a route for it.
+	 * Adapter: processes an incoming message and sets up its route.
 	 * @param message incoming message
 	 */
 	virtual void route(Message *message) noexcept;
@@ -257,7 +256,7 @@ private:
 	virtual void onLogic(unsigned long long uid,
 			const LogicEvent &event) noexcept;
 	/**
-	 * Adapter: callback for byte stream.
+	 * Adapter: callback for byte stream events.
 	 * @param id source identifier
 	 * @param channel bidirectional channel
 	 */
