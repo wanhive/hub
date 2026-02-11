@@ -49,14 +49,14 @@ bool Monitor::heartbeat(unsigned int interval, unsigned int sqn,
 	if (!interval) {
 		return false;
 	} else if (edge.latency == 0) {
-		return sample(edge.id, sqn, tokens);
+		return invite(edge.id, sqn, tokens);
 	} else {
 		tokens = ((interval * 1.25) / edge.latency) + 2;
-		return sample(edge.id, sqn, tokens);
+		return invite(edge.id, sqn, tokens);
 	}
 }
 
-bool Monitor::sample(unsigned long long id, unsigned int sqn,
+bool Monitor::invite(unsigned long long id, unsigned int sqn,
 		unsigned int tokens) noexcept {
 	auto message = Message::create();
 	if (message) {
@@ -77,8 +77,8 @@ bool Monitor::sample(unsigned long long id, unsigned int sqn,
 }
 
 bool Monitor::connect(Message *message) noexcept {
-	if (!message || message->getStatus() != WH_AQLF_ACCEPTED
-			|| message->getPayloadLength() != sizeof(uint32_t)) {
+	if (!((message) && message->checkContext(0, 0, WH_AQLF_ACCEPTED)
+			&& message->getPayloadLength() == sizeof(uint32_t))) {
 		return false;
 	}
 
@@ -106,7 +106,7 @@ unsigned int Monitor::latency() const noexcept {
 	return edge.latency;
 }
 
-void Monitor::revoke() noexcept {
+void Monitor::teardown() noexcept {
 	edge = { getUid(), 0, 0 };
 }
 
@@ -115,7 +115,7 @@ void Monitor::setup() {
 }
 
 void Monitor::clear() noexcept {
-	revoke();
+	teardown();
 }
 
 } /* namespace wanhive */

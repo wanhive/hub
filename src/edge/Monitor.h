@@ -37,7 +37,7 @@ protected:
 	void cleanup() noexcept override;
 	//-----------------------------------------------------------------
 	/**
-	 * Periodically sends an association request to the designated remote node.
+	 * Periodically sends a session request to the designated remote node.
 	 * @param interval polling interval
 	 * @param sqn sequence number
 	 * @param tokens default access tokens count if the remote host's latency
@@ -47,17 +47,18 @@ protected:
 	bool heartbeat(unsigned int interval, unsigned int sqn,
 			unsigned int tokens = 0) noexcept;
 	/**
-	 * Sends association request to a remote node.
+	 * Sends session request to a remote node.
 	 * @param id remote node's identifier
 	 * @param sqn sequence number
 	 * @param tokens access tokens count
 	 * @return true on success, false on error
 	 */
-	bool sample(unsigned long long id, unsigned int sqn,
+	bool invite(unsigned long long id, unsigned int sqn,
 			unsigned int tokens = 0) noexcept;
 	/**
-	 * Processes association response from a remote node.
-	 * @param message association response
+	 * Handles the session response from a remote node and updates the
+	 * meta-data accordingly.
+	 * @param message session response
 	 * @return true on success, false on error
 	 */
 	bool connect(Message *message) noexcept;
@@ -80,9 +81,9 @@ protected:
 	 */
 	unsigned int latency() const noexcept;
 	/**
-	 * Breaks the association with the remote node.
+	 * Ends the current session and reverts to the original settings.
 	 */
-	void revoke() noexcept;
+	void teardown() noexcept;
 private:
 	void setup();
 	void clear() noexcept;

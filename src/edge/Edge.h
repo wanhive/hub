@@ -37,39 +37,39 @@ protected:
 	void cleanup() noexcept override;
 	//-----------------------------------------------------------------
 	/**
-	 * Processes and responds to an association request.
-	 * @param message association request
+	 * Handles and responds to a session request.
+	 * @param message the session request
 	 * @param interval reporting interval
 	 * @return true on success, false on error (request denied)
 	 */
 	bool accept(Message *message, unsigned int interval = 0) noexcept;
 	/**
-	 * Creates association with a remote node.
+	 * Creates an active session with a remote node.
 	 * @param id remote node's identifier
 	 * @param tokens access tokens count
 	 * @return true on success, false on error
 	 */
 	bool accept(unsigned long long id, unsigned int tokens = 0) noexcept;
 	/**
-	 * Confirms an active association with the remote node.
-	 * @return true if an association exists, false otherwise
+	 * Verifies whether an active session with a remote node exists.
+	 * @return true if active, false if inactive
 	 */
-	bool linked() const noexcept;
+	bool live() const noexcept;
 	/**
-	 * Verifies the active association with a remote node and, if successful,
+	 * Validates the active session with a remote node and, if successful,
 	 * consumes an access token.
-	 * @return true if an association exists, false otherwise
+	 * @return true if active, false if inactive
 	 */
-	bool sample() noexcept;
+	bool report() noexcept;
 	/**
-	 * Returns remote node's identifier (may not be active).
+	 * Gets the remote node's identifier (may be inactive).
 	 * @return remote node's identifier
 	 */
 	unsigned long long host() const noexcept;
 	/**
-	 * Breaks the association with the remote node.
+	 * Ends the current session and reverts to the original settings.
 	 */
-	void revoke() noexcept;
+	void teardown() noexcept;
 	/**
 	 * Provides a timestamp suitable for recording when an event occurs.
 	 * @return seconds elapsed since the Epoch

@@ -47,10 +47,10 @@ void Edge::cleanup() noexcept {
 }
 
 bool Edge::accept(Message *message, unsigned int interval) noexcept {
-	if (!message || message->getStatus() != WH_AQLF_REQUEST
-			|| message->getPayloadLength() != sizeof(uint32_t)) {
-		return false;
-	} else if (accept(message->getSource(), message->getData32(0))) {
+	auto success = (message) && message->checkContext(0, 0, WH_AQLF_REQUEST)
+			&& (message->getPayloadLength() == sizeof(uint32_t))
+			&& accept(message->getSource(), message->getData32(0));
+	if (success) {
 		WH_LOG_DEBUG("Node %llu requested %u tokens", meta.id, meta.tokens);
 		message->setData32(0, interval);
 		message->putLength(Message::HLEN + sizeof(uint32_t));
@@ -68,12 +68,12 @@ bool Edge::accept(unsigned long long id, unsigned int tokens) noexcept {
 	return true;
 }
 
-bool Edge::linked() const noexcept {
+bool Edge::live() const noexcept {
 	return ((meta.id != getUid()) && (meta.tokens != 0));
 }
 
-bool Edge::sample() noexcept {
-	if (linked()) {
+bool Edge::report() noexcept {
+	if (live()) {
 		meta.tokens -= 1;
 		return true;
 	} else {
@@ -85,7 +85,7 @@ unsigned long long Edge::host() const noexcept {
 	return meta.id;
 }
 
-void Edge::revoke() noexcept {
+void Edge::teardown() noexcept {
 	meta = { getUid(), 0 };
 }
 
@@ -100,7 +100,7 @@ void Edge::setup() {
 }
 
 void Edge::clear() noexcept {
-	revoke();
+	teardown();
 }
 
 } /* namespace wanhive */
