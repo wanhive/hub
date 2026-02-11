@@ -12,14 +12,13 @@
 
 #include "MulticastConsumer.h"
 #include "../../base/common/Logger.h"
-#include "../../base/ds/Twiddler.h"
 #include "../../util/commands.h"
 
 namespace wanhive {
 
 MulticastConsumer::MulticastConsumer(unsigned long long uid, unsigned int topic,
 		const char *path) noexcept :
-		Agent { uid, path }, topic { topic }, subscribed { false } {
+		Consumer { uid, path }, topic { topic } {
 
 }
 
@@ -27,28 +26,25 @@ MulticastConsumer::~MulticastConsumer() {
 
 }
 
-void MulticastConsumer::cleanup() noexcept {
-	subscribed = false;
-	Agent::cleanup();
-}
-
 void MulticastConsumer::expel(Watcher *w) noexcept {
-	if (w->getUid() == 0) {
-		//Subscriptions are lost on disconnection
-		subscribed = false;
+	Consumer::expel(w);
+	if (!subscribed()) {
+		Reactor::setTimeout(2000);
 	}
-
-	Agent::expel(w);
 }
 
 void MulticastConsumer::configure(void *arg) {
 	try {
-		Agent::configure(arg);
+		Consumer::configure(&topic);
 		Reactor::setTimeout(2000);
-	} catch (BaseException &e) {
+	} catch (const BaseException &e) {
 		WH_LOG_EXCEPTION(e);
 		throw;
 	}
+}
+
+void MulticastConsumer::cleanup() noexcept {
+	Consumer::cleanup();
 }
 
 void MulticastConsumer::route(Message *message) noexcept {
@@ -62,12 +58,8 @@ void MulticastConsumer::route(Message *message) noexcept {
 void MulticastConsumer::maintain() noexcept {
 	if (!connected()) {
 		Agent::maintain();
-	} else if (!subscribed && (topic <= Topic::MAX_ID)
-			&& timer.hasTimedOut(2000)) {
-		timer.now();
-		subscribe(topic);
 	} else {
-		//Nothing
+		subscribe(2000);
 	}
 }
 
@@ -83,53 +75,52 @@ void MulticastConsumer::process(Message *message) noexcept {
 	switch (cmd) {
 	case WH_CMD_MULTICAST:
 		if (origin != 0) {
-			handleInvalidMessage(message);
+			discard(message);
 			return;
 		} else if (qlf == WH_QLF_PUBLISH) {
-			processMulticastMessage(message);
+			print(message);
 			return;
 		} else if (source == 0 && qlf == WH_QLF_SUBSCRIBE) {
-			processSubscribeResponse(message);
+			subscribe(message);
 			return;
 		} else {
-			handleInvalidMessage(message);
+			discard(message);
 			return;
 		}
 	default:
-		handleInvalidMessage(message);
+		discard(message);
 		break;
 	}
 }
 
-void MulticastConsumer::processMulticastMessage(const Message *msg) noexcept {
+void MulticastConsumer::print(const Message *msg) noexcept {
 	msg->printHeader();
 }
 
-void MulticastConsumer::processSubscribeResponse(const Message *msg) noexcept {
-	if (msg->getStatus() == WH_AQLF_ACCEPTED) {
-		subscribed = true;
-		WH_LOG_INFO("Subscribed to %u", msg->getSession());
-	} else if (msg->getStatus() == WH_AQLF_REJECTED) {
-		WH_LOG_INFO("Subscription to %u denied", msg->getSession());
+void MulticastConsumer::subscribe(unsigned int delay) noexcept {
+	if (Consumer::subscribed()) {
+		return;
+	}
+
+	if (!timer.hasTimedOut(delay)) {
+		return;
+	}
+
+	timer.now();
+	Consumer::subscribe();
+}
+
+void MulticastConsumer::subscribe(const Message *msg) noexcept {
+	if (Consumer::subscribe(msg)) {
+		WH_LOG_INFO("Subscribed to %u", topic);
+		Reactor::setTimeout(-1);
 	} else {
-		handleInvalidMessage(msg);
+		WH_LOG_INFO("Subscription to %u denied", topic);
 	}
 }
 
-void MulticastConsumer::handleInvalidMessage(const Message *msg) noexcept {
+void MulticastConsumer::discard(const Message *msg) noexcept {
 	WH_LOG_DEBUG("Invalid message");
-}
-
-void MulticastConsumer::subscribe(unsigned int topic) noexcept {
-	auto message = Message::create();
-	if (message) {
-		MessageHeader header;
-		header.setAddress(0, 0);
-		header.setControl(Message::HLEN, 0, topic);
-		header.setContext(WH_CMD_MULTICAST, WH_QLF_SUBSCRIBE, WH_AQLF_REQUEST);
-		message->putHeader(header);
-		forward(message);
-	}
 }
 
 } /* namespace wanhive */

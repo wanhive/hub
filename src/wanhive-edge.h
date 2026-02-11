@@ -13,6 +13,7 @@
 #ifndef WANHIVE_EDGE_H_
 #define WANHIVE_EDGE_H_
 
+#include "edge/Consumer.h"
 #include "edge/Edge.h"
 #include "edge/Monitor.h"
 

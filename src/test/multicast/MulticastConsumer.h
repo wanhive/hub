@@ -12,14 +12,14 @@
 
 #ifndef WH_TEST_MULTICAST_MULTICASTCONSUMER_H_
 #define WH_TEST_MULTICAST_MULTICASTCONSUMER_H_
-#include "../../hub/Agent.h"
+#include "../../edge/Consumer.h"
 
 /*! @namespace wanhive */
 namespace wanhive {
 /**
  * Multicast client, consumes multicast messages.
  */
-class MulticastConsumer final: public Agent {
+class MulticastConsumer final: public Consumer {
 public:
 	MulticastConsumer(unsigned long long uid, unsigned int topic,
 			const char *path = nullptr) noexcept;
@@ -32,17 +32,13 @@ private:
 	void maintain() noexcept override;
 	//-----------------------------------------------------------------
 	void process(Message *message) noexcept;
-	void processMulticastMessage(const Message *msg) noexcept;
-	void processSubscribeResponse(const Message *msg) noexcept;
-	void handleInvalidMessage(const Message *msg) noexcept;
-	//-----------------------------------------------------------------
-	void subscribe(unsigned int topic) noexcept;
-public:
-	static constexpr unsigned int TOPICS = Topic::COUNT;
+	void print(const Message *msg) noexcept;
+	void subscribe(unsigned int delay) noexcept;
+	void subscribe(const Message *msg) noexcept;
+	void discard(const Message *msg) noexcept;
 private:
 	Timer timer;
 	unsigned int topic;
-	bool subscribed;
 };
 
 } /* namespace wanhive */
