@@ -76,28 +76,28 @@ public:
 	void cancel() noexcept;
 protected:
 	/**
-	 * Reads the default periodic timer's settings in milliseconds. This method
-	 * can be safely called by the worker thread.
+	 * Retrieves the default periodic timer settings in milliseconds. Can be
+	 * safely called by the worker thread.
 	 * @param data timer's period
 	 */
 	void period(Period &data) noexcept;
 	/**
-	 * Reports events to the events counter. This method can be safely called
-	 * by the worker thread.
+	 * Reports events to the events counter. Can be safely called by the
+	 * worker thread.
 	 * @param events events count
 	 */
 	void alert(unsigned long long events);
 	/**
-	 * Starts monitoring the file system events. This method can be safely
-	 * called by the worker thread.
+	 * Initiates the monitoring of file system events. Can be safely called by
+	 * the worker thread.
 	 * @param path file or directory to monitor
-	 * @param mask events of interest (inotify(7))
+	 * @param mask events of interest
 	 * @return unique watch descriptor
 	 */
 	int track(const char *path, uint32_t mask);
 	/**
-	 * Stops monitoring the file system events. This method can be safely
-	 * called by the worker thread.
+	 * Stops the monitoring of file system events. Can be safely called by the
+	 * worker thread.
 	 * @param identifier watch descriptor
 	 */
 	void untrack(int identifier) noexcept;
@@ -108,34 +108,33 @@ protected:
 	 */
 	void metrics(HubInfo &info) const noexcept;
 	/**
-	 * Returns option for removal of sensitive information from logs.
-	 * @return true to remove, false otherwise
+	 * Returns option for removing sensitive information from logs.
+	 * @return true to enable removal, false to keep the information
 	 */
 	bool redact() const noexcept;
 	//-----------------------------------------------------------------
 	/**
-	 * Watcher management: checks whether a key is associated with a watcher.
+	 * Watcher management: verifies if a key is linked to an active watcher.
 	 * @param id key's value
 	 * @return true if the key exists, false otherwise
 	 */
 	bool attached(unsigned long long id) const noexcept;
 	/**
-	 * Watcher management: retrieves the watcher associated with a
-	 * specified key.
+	 * Watcher management: retrieves the watcher associated with a key.
 	 * @param id key's value
 	 * @return associated watcher if the key exists, nullptr otherwise
 	 */
 	Watcher* find(unsigned long long id) const noexcept;
 	/**
-	 * Watcher management: registers a watcher and assigns its unique
-	 * identifier as the key.
+	 * Watcher management: registers a watcher and assigns its unique identifier
+	 * as the key.
 	 * @param w watcher to register
 	 * @param events events of interest
 	 * @param flags watcher's flags
 	 */
 	void attach(Watcher *w, uint32_t events, uint32_t flags);
 	/**
-	 * Watcher management: removes a key and the corresponding watcher.
+	 * Watcher management: removes a key and its corresponding watcher.
 	 * @param id key's value
 	 * @return true if the operation could not complete immediately (scheduled
 	 * for future), false otherwise.
@@ -176,14 +175,14 @@ protected:
 	unsigned int reap(unsigned int target = 0, bool force = false) noexcept;
 	//-----------------------------------------------------------------
 	/**
-	 * Message queuing: puts a message directly into the incoming queue.
-	 * @param message a message to insert
+	 * Message queuing: places a message directly into the incoming queue.
+	 * @param message the message
 	 * @return true on success, false on error
 	 */
 	bool collect(Message *message) noexcept;
 	/**
-	 * Message queuing: puts a message directly into the outgoing queue.
-	 * @param message a message to insert
+	 * Message queuing: places a message directly into the outgoing queue.
+	 * @param message the message
 	 * @return true on success, false on error
 	 */
 	bool forward(Message *message) noexcept;
@@ -196,12 +195,12 @@ protected:
 	void expel(Watcher *w) noexcept override;
 	//-----------------------------------------------------------------
 	/**
-	 * Configuration: configures the hub before the event loop's start.
+	 * Configuration: sets up the hub prior to starting the event loop.
 	 * @param arg additional argument
 	 */
 	virtual void configure(void *arg);
 	/**
-	 * Cleanup: cleans up the hub after the event loop's termination.
+	 * Cleanup: restores the hub after the event loop finishes.
 	 */
 	virtual void cleanup() noexcept;
 private:
