@@ -107,11 +107,19 @@ const SelectionEvent* Selector::next() noexcept {
 }
 
 void* Selector::attachment(const SelectionEvent *se) noexcept {
-	return se->data.ptr;
+	if (se) {
+		return se->data.ptr;
+	} else {
+		return nullptr;
+	}
 }
 
 uint32_t Selector::events(const SelectionEvent *se) noexcept {
-	return se->events;
+	if (se) {
+		return se->events;
+	} else {
+		return 0;
+	}
 }
 
 void Selector::create() {

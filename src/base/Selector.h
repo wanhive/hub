@@ -106,12 +106,12 @@ public:
 	unsigned int select(int timeout = -1);
 	/**
 	 * Checks whether the selector got timed out.
-	 * @return true if timeout expired, false otherwise.
+	 * @return true if timeout expired, false otherwise
 	 */
 	bool expired() const noexcept;
 	/**
 	 * Checks whether the selector got interrupted by a signal.
-	 * @return true if interrupted, false otherwise.
+	 * @return true if interrupted, false otherwise
 	 */
 	bool interrupted() const noexcept;
 	//-----------------------------------------------------------------
