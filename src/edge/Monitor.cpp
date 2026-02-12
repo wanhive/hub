@@ -44,19 +44,19 @@ void Monitor::cleanup() noexcept {
 	Agent::cleanup();
 }
 
-bool Monitor::heartbeat(unsigned int interval, unsigned int sqn,
+bool Monitor::ping(unsigned int interval, unsigned int sqn,
 		unsigned int tokens) noexcept {
 	if (!interval) {
 		return false;
 	} else if (edge.latency == 0) {
-		return invite(edge.id, sqn, tokens);
+		return call(edge.id, sqn, tokens);
 	} else {
 		tokens = ((interval * 1.25) / edge.latency) + 2;
-		return invite(edge.id, sqn, tokens);
+		return call(edge.id, sqn, tokens);
 	}
 }
 
-bool Monitor::invite(unsigned long long id, unsigned int sqn,
+bool Monitor::call(unsigned long long id, unsigned int sqn,
 		unsigned int tokens) noexcept {
 	auto message = Message::create();
 	if (message) {
@@ -106,7 +106,7 @@ unsigned int Monitor::latency() const noexcept {
 	return edge.latency;
 }
 
-void Monitor::teardown() noexcept {
+void Monitor::close() noexcept {
 	edge = { getUid(), 0, 0 };
 }
 
@@ -115,7 +115,7 @@ void Monitor::setup() {
 }
 
 void Monitor::clear() noexcept {
-	teardown();
+	close();
 }
 
 } /* namespace wanhive */

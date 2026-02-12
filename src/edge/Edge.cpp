@@ -72,7 +72,7 @@ bool Edge::live() const noexcept {
 	return ((meta.id != getUid()) && (meta.tokens != 0));
 }
 
-bool Edge::report() noexcept {
+bool Edge::engage() noexcept {
 	if (live()) {
 		meta.tokens -= 1;
 		return true;
@@ -85,7 +85,7 @@ unsigned long long Edge::host() const noexcept {
 	return meta.id;
 }
 
-void Edge::teardown() noexcept {
+void Edge::close() noexcept {
 	meta = { getUid(), 0 };
 }
 
@@ -100,7 +100,7 @@ void Edge::setup() {
 }
 
 void Edge::clear() noexcept {
-	teardown();
+	close();
 }
 
 } /* namespace wanhive */

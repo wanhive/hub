@@ -60,7 +60,7 @@ protected:
 	 * consumes an access token.
 	 * @return true if active, false if inactive
 	 */
-	bool report() noexcept;
+	bool engage() noexcept;
 	/**
 	 * Gets the remote node's identifier (may be inactive).
 	 * @return remote node's identifier
@@ -69,7 +69,7 @@ protected:
 	/**
 	 * Ends the current session and reverts to the original settings.
 	 */
-	void teardown() noexcept;
+	void close() noexcept;
 	/**
 	 * Provides a timestamp suitable for recording when an event occurs.
 	 * @return seconds elapsed since the Epoch

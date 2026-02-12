@@ -44,7 +44,7 @@ protected:
 	 * is zero.
 	 * @return true on success, false on error
 	 */
-	bool heartbeat(unsigned int interval, unsigned int sqn,
+	bool ping(unsigned int interval, unsigned int sqn,
 			unsigned int tokens = 0) noexcept;
 	/**
 	 * Sends session request to a remote node.
@@ -53,7 +53,7 @@ protected:
 	 * @param tokens access tokens count
 	 * @return true on success, false on error
 	 */
-	bool invite(unsigned long long id, unsigned int sqn,
+	bool call(unsigned long long id, unsigned int sqn,
 			unsigned int tokens = 0) noexcept;
 	/**
 	 * Handles the session response from a remote node and updates the
@@ -83,7 +83,7 @@ protected:
 	/**
 	 * Ends the current session and reverts to the original settings.
 	 */
-	void teardown() noexcept;
+	void close() noexcept;
 private:
 	void setup();
 	void clear() noexcept;
