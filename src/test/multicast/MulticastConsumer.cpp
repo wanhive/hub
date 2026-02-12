@@ -102,11 +102,10 @@ void MulticastConsumer::subscribe(unsigned int delay) noexcept {
 		return;
 	}
 
-	if (!timer.hasTimedOut(delay)) {
+	if (!timer.expired(delay)) {
 		return;
 	}
 
-	timer.now();
 	Consumer::subscribe();
 }
 

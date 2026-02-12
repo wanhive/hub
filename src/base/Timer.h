@@ -30,24 +30,31 @@ public:
 	 */
 	~Timer();
 	/**
-	 * Returns the elapsed time since this timer's creation.
+	 * Resets the timer and updates it with the current time.
+	 */
+	void now() noexcept;
+	/**
+	 * Checks if the timer has exceeded the timeout value since the last reset,
+	 * and if so, resets the timer.
+	 * @param milliseconds timeout value in milliseconds
+	 * @return true if timeout expired, false otherwise
+	 */
+	bool expired(unsigned int milliseconds) noexcept;
+	/**
+	 * Checks if the timer has exceeded the timeout value since the last reset.
+	 * @param milliseconds timeout value in milliseconds
+	 * @return true if timeout expired, false otherwise
+	 */
+	bool elapsed(unsigned int milliseconds) const noexcept;
+	/**
+	 * Reports the elapsed time since the most recent reset.
 	 * @return elapsed time in seconds
 	 */
 	double elapsed() const noexcept;
 	/**
-	 * Reset the timer, updates it with current time.
-	 */
-	void now() noexcept;
-	/**
-	 * Checks if this timer has outlived the timeout value since the last reset.
-	 * @param milliseconds the timeout value in milliseconds
-	 * @return true on timeout, false otherwise
-	 */
-	bool hasTimedOut(unsigned int milliseconds) const noexcept;
-	/**
 	 * Sleeps for the specified duration (cannot be interrupted by signal).
-	 * @param milliseconds milliseconds component of the duration
-	 * @param nanoseconds nanoseconds component of the duration
+	 * @param milliseconds milliseconds component
+	 * @param nanoseconds nanoseconds component
 	 */
 	static void sleep(unsigned int milliseconds,
 			unsigned int nanoseconds = 0) noexcept;
@@ -63,9 +70,9 @@ public:
 	/**
 	 * Converts unix timestamp to an ISO 8601 formatted string.
 	 * @param timestamp unix timestamp with fractional seconds
-	 * @param buffer output buffer for storing the formatted string
+	 * @param buffer stores the formatted string
 	 * @param size buffer's size in bytes
-	 * @return formatted string's size in bytes on success, 0 on failure
+	 * @return formatted string's size in bytes on success, 0 on error
 	 */
 	static size_t print(double timestamp, char *buffer, size_t size) noexcept;
 	/**

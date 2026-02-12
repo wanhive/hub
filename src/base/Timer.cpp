@@ -28,15 +28,26 @@ Timer::~Timer() {
 
 }
 
-double Timer::elapsed() const noexcept {
-	return difference(t, currentTime());
-}
-
 void Timer::now() noexcept {
 	t = currentTime();
 }
 
-bool Timer::hasTimedOut(unsigned int milliseconds) const noexcept {
+bool Timer::expired(unsigned int milliseconds) noexcept {
+	auto diff = ((unsigned long long) milliseconds) * Factor::MICRO_IN_MILLI;
+	auto mark = currentTime();
+	if ((diff == 0) || (mark < t) || ((mark - t) > diff)) {
+		t = mark;
+		return true;
+	} else {
+		return false;
+	}
+}
+
+double Timer::elapsed() const noexcept {
+	return difference(t, currentTime());
+}
+
+bool Timer::elapsed(unsigned int milliseconds) const noexcept {
 	if (milliseconds) {
 		auto diff = ((unsigned long long) milliseconds)
 				* Factor::MICRO_IN_MILLI;

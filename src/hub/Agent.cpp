@@ -284,7 +284,7 @@ void Agent::connectToOverlay() noexcept {
 }
 
 bool Agent::overdue(unsigned int milliseconds) const noexcept {
-	return boot.timer.hasTimedOut(milliseconds);
+	return boot.timer.elapsed(milliseconds);
 }
 
 void Agent::initAuthentication() noexcept {
