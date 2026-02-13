@@ -76,7 +76,7 @@ bool Monitor::call(unsigned long long id, unsigned int sqn,
 	}
 }
 
-bool Monitor::connect(Message *message) noexcept {
+bool Monitor::connect(const Message *message) noexcept {
 	if (!((message) && message->checkContext(0, 0, WH_AQLF_ACCEPTED)
 			&& message->getPayloadLength() == sizeof(uint32_t))) {
 		return false;
@@ -108,6 +108,67 @@ unsigned int Monitor::latency() const noexcept {
 
 void Monitor::close() noexcept {
 	edge = { getUid(), 0, 0 };
+}
+
+bool Monitor::subscribe(unsigned int topic) noexcept {
+	if (topic > Topic::MAX_ID) {
+		return false;
+	}
+
+	auto message = Message::create();
+	if (message) {
+		MessageHeader header;
+		header.setAddress(0, 0);
+		header.setControl(Message::HLEN, 0, topic);
+		header.setContext(WH_CMD_MULTICAST, WH_QLF_SUBSCRIBE, WH_AQLF_REQUEST);
+		message->putHeader(header);
+		return forward(message);
+	} else {
+		return false;
+	}
+}
+
+bool Monitor::unsubscribe(unsigned int topic) noexcept {
+	if (topic > Topic::MAX_ID) {
+		return false;
+	}
+
+	auto message = Message::create();
+	if (message) {
+		MessageHeader header;
+		header.setAddress(0, 0);
+		header.setControl(Message::HLEN, 0, topic);
+		header.setContext(WH_CMD_MULTICAST, WH_QLF_UNSUBSCRIBE,
+				WH_AQLF_REQUEST);
+		message->putHeader(header);
+		return forward(message);
+	} else {
+		return false;
+	}
+}
+
+bool Monitor::subscribe(const Message *message,
+		unsigned int &topic) const noexcept {
+	if (message
+			&& message->checkContext(WH_CMD_MULTICAST, WH_QLF_SUBSCRIBE,
+					WH_AQLF_ACCEPTED)) {
+		topic = message->getSession();
+		return true;
+	} else {
+		return false;
+	}
+}
+
+bool Monitor::unsubscribe(const Message *message,
+		unsigned int &topic) const noexcept {
+	if (message
+			&& message->checkContext(WH_CMD_MULTICAST, WH_QLF_UNSUBSCRIBE,
+					WH_AQLF_ACCEPTED)) {
+		topic = message->getSession();
+		return true;
+	} else {
+		return false;
+	}
 }
 
 void Monitor::setup() {

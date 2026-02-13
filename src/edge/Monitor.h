@@ -61,7 +61,7 @@ protected:
 	 * @param message session response
 	 * @return true on success, false on error
 	 */
-	bool connect(Message *message) noexcept;
+	bool connect(const Message *message) noexcept;
 	//-----------------------------------------------------------------
 	/**
 	 * Assigns a remote node for monitoring.
@@ -84,6 +84,33 @@ protected:
 	 * Ends the current session and reverts to the original settings.
 	 */
 	void close() noexcept;
+	//-----------------------------------------------------------------
+	/**
+	 * Requests subscription to the specified topic.
+	 * @param topic the topic identifier
+	 * @return true on success, false on error
+	 */
+	bool subscribe(unsigned int topic) noexcept;
+	/**
+	 * Cancels the subscription to the specified topic.
+	 * @param topic the topic identifier
+	 * @return true on success, false on error
+	 */
+	bool unsubscribe(unsigned int topic) noexcept;
+	/**
+	 * Handles a subscription response.
+	 * @param message subscription response
+	 * @param topic stores the topic identifier
+	 * @return true on success, false on error
+	 */
+	bool subscribe(const Message *message, unsigned int &topic) const noexcept;
+	/**
+	 * Handles a subscription cancellation response.
+	 * @param message cancellation response
+	 * @param topic stores the topic identifier
+	 * @return true on success, false on error
+	 */
+	bool unsubscribe(const Message *message, unsigned int &topic) const noexcept;
 private:
 	void setup();
 	void clear() noexcept;
