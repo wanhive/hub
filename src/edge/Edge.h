@@ -37,6 +37,17 @@ protected:
 	void cleanup() noexcept override;
 	//-----------------------------------------------------------------
 	/**
+	 * Activates or deactivates the remote session feature.
+	 * @param enable true to activate, otherwise false
+	 */
+	void session(bool enable) noexcept;
+	/**
+	 * Checks if remote session access is allowed.
+	 * @return true if allowed, otherwise false
+	 */
+	bool session() const noexcept;
+	//-----------------------------------------------------------------
+	/**
 	 * Handles and responds to a session request.
 	 * @param message the session request
 	 * @param interval reporting interval
@@ -50,6 +61,11 @@ protected:
 	 * @return true on success, false on error
 	 */
 	bool accept(unsigned long long id, unsigned int tokens = 0) noexcept;
+	/**
+	 * Ends the current session.
+	 */
+	void close() noexcept;
+	//-----------------------------------------------------------------
 	/**
 	 * Verifies whether an active session with a remote node exists.
 	 * @return true if active, false if inactive
@@ -66,10 +82,7 @@ protected:
 	 * @return remote node's identifier
 	 */
 	unsigned long long host() const noexcept;
-	/**
-	 * Ends the current session and reverts to the original settings.
-	 */
-	void close() noexcept;
+	//-----------------------------------------------------------------
 	/**
 	 * Provides a timestamp suitable for recording when an event occurs.
 	 * @return seconds elapsed since the Epoch
@@ -83,6 +96,10 @@ private:
 		unsigned long long id;
 		unsigned int tokens;
 	} meta;
+
+	struct {
+		bool session;
+	} ctx;
 };
 
 } /* namespace wanhive */

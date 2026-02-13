@@ -46,6 +46,17 @@ void Edge::cleanup() noexcept {
 	Agent::cleanup();
 }
 
+void Edge::session(bool enable) noexcept {
+	ctx.session = enable;
+	if (!enable) {
+		close();
+	}
+}
+
+bool Edge::session() const noexcept {
+	return ctx.session;
+}
+
 bool Edge::accept(Message *message, unsigned int interval) noexcept {
 	auto success = (message) && message->checkContext(0, 0, WH_AQLF_REQUEST)
 			&& (message->getPayloadLength() == sizeof(uint32_t))
@@ -64,8 +75,17 @@ bool Edge::accept(Message *message, unsigned int interval) noexcept {
 }
 
 bool Edge::accept(unsigned long long id, unsigned int tokens) noexcept {
-	meta = { id, tokens };
-	return true;
+	if (session()) {
+		meta = { id, tokens };
+		return true;
+	} else {
+		close();
+		return false;
+	}
+}
+
+void Edge::close() noexcept {
+	meta = { getUid(), 0 };
 }
 
 bool Edge::live() const noexcept {
@@ -85,10 +105,6 @@ unsigned long long Edge::host() const noexcept {
 	return meta.id;
 }
 
-void Edge::close() noexcept {
-	meta = { getUid(), 0 };
-}
-
 double Edge::timestamp() noexcept {
 	double seconds { };
 	Time::now(CLOCK_REALTIME, seconds);
@@ -100,7 +116,7 @@ void Edge::setup() {
 }
 
 void Edge::clear() noexcept {
-	close();
+	session(false);
 }
 
 } /* namespace wanhive */
