@@ -203,7 +203,7 @@ void Agent::connectToAuthenticator() noexcept {
 		//-----------------------------------------------------------------
 		//Check for timed-out connection
 		if (boot.auth) {
-			if (boot.auth->hasTimedOut(ctx.timeout)) {
+			if (boot.auth->aged(ctx.timeout)) {
 				WH_LOG_DEBUG("Connection timed out");
 				disable(boot.auth);
 			}
@@ -249,7 +249,7 @@ void Agent::connectToOverlay() noexcept {
 		//-----------------------------------------------------------------
 		//Check for timed-out connection
 		if (boot.node) {
-			if (boot.node->hasTimedOut(ctx.timeout)) {
+			if (boot.node->aged(ctx.timeout)) {
 				WH_LOG_DEBUG("Connection timed out");
 				disable(boot.node);
 			}

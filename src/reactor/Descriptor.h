@@ -41,20 +41,20 @@ public:
 	//-----------------------------------------------------------------
 	/**
 	 * Returns a unique identifier.
-	 * @return current unique identifier
+	 * @return unique identifier
 	 */
 	unsigned long long getUid() const noexcept;
 	/**
 	 * Sets a unique identifier.
-	 * @param uid new unique identifier
+	 * @param uid unique identifier
 	 */
 	void setUid(unsigned long long uid) noexcept;
 	/**
-	 * Checks whether this object has outlived the given duration.
-	 * @param timeout timeout value in milliseconds
-	 * @return true on timeout, false otherwise
+	 * Checks if the object has outlived the specified duration.
+	 * @param duration value in milliseconds
+	 * @return true if exceeded, false otherwise
 	 */
-	bool hasTimedOut(unsigned int timeout) const noexcept;
+	bool aged(unsigned int duration) const noexcept;
 protected:
 	//-----------------------------------------------------------------
 	using File::get;
@@ -63,59 +63,55 @@ protected:
 	using File::close;
 	//-----------------------------------------------------------------
 	/**
-	 * Checks whether an IO operation is pending on this object. Checks for
-	 * the following conditions:
-	 * 1. IO error or peer shutdown
-	 * 2. Read event
-	 * 3. Write event and outgoing data available
-	 * @param outgoing true if outgoing data is available, false otherwise.
-	 * @return true if an IO operation is pending, false otherwise
+	 * Checks if an I/O operation is pending on this object by evaluating:
+	 * 1. An I/O error or peer shutdown
+	 * 2. A read event
+	 * 3. A write event with outgoing data
+	 * @param outgoing true if outgoing data is available, false otherwise
+	 * @return true if an IO operation is pending; false otherwise
 	 */
 	bool isReady(bool outgoing) const noexcept;
 	//-----------------------------------------------------------------
 	/**
-	 * Checks whether the managed file descriptor is in blocking mode.
-	 * @return true if the managed file descriptor is in blocking mode, false
-	 * if non-blocking mode is enabled.
+	 * Checks if the managed file descriptor is in blocking mode.
+	 * @return true if blocking mode is enabled; false if non-blocking
 	 */
 	bool isBlocking();
 	/**
-	 * Configures managed file descriptor's blocking mode.
-	 * @param block true for blocking mode, false for non-blocking mode
+	 * Configures the blocking mode of a managed file descriptor.
+	 * @param block true to enable blocking mode; false for non-blocking
 	 */
 	void setBlocking(bool block);
 	/**
-	 * Scatter read operation.
-	 * @param vectors scatter input buffers
+	 * Performs a scatter read operation.
+	 * @param vectors input buffers
 	 * @param count input buffers count
-	 * @return number of bytes read on success (possibly 0), -1 on EOF (end
-	 * of file) and 0 if the file descriptor is non-blocking and the operation
-	 * would block.
+	 * @return bytes read on success (possibly 0), -1 on EOF (end of file), 0 if
+	 * a non-blocking operation would block.
 	 */
 	ssize_t readv(const iovec *vectors, unsigned int count);
 	/**
 	 * Reads from the managed file descriptor.
 	 * @param buffer input buffer
-	 * @param count the maximum number of bytes to read
-	 * @return number of bytes read on success (possibly 0), -1 on EOF (end of
-	 * file) and 0 if the file descriptor is non-blocking and the operation
-	 * would block.
+	 * @param count the maximum bytes to write
+	 * @return bytes read on success (possibly 0), -1 on EOF (end of file), 0 if
+	 * a non-blocking operation would block.
 	 */
 	ssize_t read(void *buffer, size_t count);
 	/**
-	 * Gather write operation.
-	 * @param vectors gather output buffers
+	 * Performs a gather write operation.
+	 * @param vectors output buffers
 	 * @param count output buffers count
-	 * @return number of bytes written on success (possibly 0), and 0 if the
-	 * file descriptor is non-blocking and the operation would block.
+	 * @return bytes written on success (could be 0), or 0 if a non-blocking
+	 * operation would block.
 	 */
 	ssize_t writev(const iovec *vectors, unsigned int count);
 	/**
 	 * Writes to the managed file descriptor.
-	 * @param buffer output buffer
-	 * @param count the maximum number of bytes to write
-	 * @return number of bytes written on success (possibly 0), and 0 if the
-	 * file descriptor is non-blocking and the operation would block.
+	 * @param buffer the data to write
+	 * @param count the maximum bytes to write
+	 * @return bytes written on success (could be 0), or 0 if a non-blocking
+	 * operation would block.
 	 */
 	ssize_t write(const void *buffer, size_t count);
 private:

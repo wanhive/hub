@@ -1527,7 +1527,7 @@ Watcher* OverlayHub::connect(unsigned long long id, Digest *hc) {
 	} else if (conn->testFlags(WATCHER_ACTIVE)) {
 		//Registration completed
 		return conn;
-	} else if (conn->hasTimedOut(ctx.timeout)) {
+	} else if (conn->aged(ctx.timeout)) {
 		disable(conn);
 		return nullptr;
 	} else {

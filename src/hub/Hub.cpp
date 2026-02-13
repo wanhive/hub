@@ -143,7 +143,7 @@ unsigned int Hub::reap(unsigned int target, bool force) noexcept {
 		auto conn = find(id);
 		if (!conn) {
 			continue;
-		} else if (conn->hasTimedOut(timeout)) {
+		} else if (conn->aged(timeout)) {
 			disable(conn);
 			++count;
 			if (target && count >= target) {
