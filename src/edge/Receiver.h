@@ -1,7 +1,7 @@
 /**
- * @file Consumer.h
+ * @file Receiver.h
  *
- * Consumer Hub
+ * Receiver Hub
  *
  *
  * Copyright (C) 2026 Wanhive Systems Private Limited (info@wanhive.com)
@@ -10,27 +10,27 @@
  *
  */
 
-#ifndef WH_EDGE_CONSUMER_H_
-#define WH_EDGE_CONSUMER_H_
+#ifndef WH_EDGE_RECEIVER_H_
+#define WH_EDGE_RECEIVER_H_
 #include "Monitor.h"
 
 /*! @namespace wanhive */
 namespace wanhive {
 /**
- * Consumer Hub
+ * Receiver Hub
  */
-class Consumer: public Monitor {
+class Receiver: public Monitor {
 public:
 	/**
-	 * Constructor: creates a new consumer hub.
+	 * Constructor: creates a new receiver hub.
 	 * @param uid unique identifier
 	 * @param path configuration file's path
 	 */
-	Consumer(unsigned long long uid, const char *path = nullptr) noexcept;
+	Receiver(unsigned long long uid, const char *path = nullptr) noexcept;
 	/**
 	 * Destructor
 	 */
-	~Consumer();
+	~Receiver();
 protected:
 	//-----------------------------------------------------------------
 	void expel(Watcher *w) noexcept override;
@@ -81,4 +81,4 @@ private:
 
 } /* namespace wanhive */
 
-#endif /* WH_EDGE_CONSUMER_H_ */
+#endif /* WH_EDGE_RECEIVER_H_ */

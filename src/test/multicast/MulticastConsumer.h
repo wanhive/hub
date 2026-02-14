@@ -12,14 +12,14 @@
 
 #ifndef WH_TEST_MULTICAST_MULTICASTCONSUMER_H_
 #define WH_TEST_MULTICAST_MULTICASTCONSUMER_H_
-#include "../../edge/Consumer.h"
+#include "../../edge/Receiver.h"
 
 /*! @namespace wanhive */
 namespace wanhive {
 /**
  * Multicast client, consumes multicast messages.
  */
-class MulticastConsumer final: public Consumer {
+class MulticastConsumer final: public Receiver {
 public:
 	MulticastConsumer(unsigned long long uid, unsigned int topic,
 			const char *path = nullptr) noexcept;

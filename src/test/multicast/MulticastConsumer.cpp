@@ -18,7 +18,7 @@ namespace wanhive {
 
 MulticastConsumer::MulticastConsumer(unsigned long long uid, unsigned int topic,
 		const char *path) noexcept :
-		Consumer { uid, path }, topic { topic } {
+		Receiver { uid, path }, topic { topic } {
 
 }
 
@@ -28,7 +28,7 @@ MulticastConsumer::~MulticastConsumer() {
 
 void MulticastConsumer::configure(void *arg) {
 	try {
-		Consumer::configure(&topic);
+		Receiver::configure(&topic);
 		Reactor::setTimeout(2000);
 	} catch (const BaseException &e) {
 		WH_LOG_EXCEPTION(e);
@@ -37,7 +37,7 @@ void MulticastConsumer::configure(void *arg) {
 }
 
 void MulticastConsumer::cleanup() noexcept {
-	Consumer::cleanup();
+	Receiver::cleanup();
 }
 
 void MulticastConsumer::route(Message *message) noexcept {
@@ -98,11 +98,11 @@ void MulticastConsumer::subscribe(unsigned int delay) noexcept {
 		return;
 	}
 
-	Consumer::subscribe();
+	Receiver::subscribe();
 }
 
 void MulticastConsumer::subscribe(const Message *msg) noexcept {
-	if (Consumer::subscribe(msg)) {
+	if (Receiver::subscribe(msg)) {
 		WH_LOG_INFO("Subscribed to topic %u", topic);
 	} else {
 		WH_LOG_INFO("Subscription to topic %u denied", topic);

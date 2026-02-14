@@ -1,7 +1,7 @@
 /*
- * Consumer.cpp
+ * Receiver.cpp
  *
- * Consumer Hub
+ * Receiver Hub
  *
  *
  * Copyright (C) 2026 Wanhive Systems Private Limited (info@wanhive.com)
@@ -10,22 +10,22 @@
  *
  */
 
-#include "Consumer.h"
+#include "Receiver.h"
 #include "../base/common/Logger.h"
 #include "../util/commands.h"
 
 namespace wanhive {
 
-Consumer::Consumer(unsigned long long uid, const char *path) noexcept :
+Receiver::Receiver(unsigned long long uid, const char *path) noexcept :
 		Monitor { uid, path } {
 	clear();
 }
 
-Consumer::~Consumer() {
+Receiver::~Receiver() {
 
 }
 
-void Consumer::expel(Watcher *w) noexcept {
+void Receiver::expel(Watcher *w) noexcept {
 	Agent::expel(w);
 
 	if (!Agent::connected()) {
@@ -33,7 +33,7 @@ void Consumer::expel(Watcher *w) noexcept {
 	}
 }
 
-void Consumer::configure(void *arg) {
+void Receiver::configure(void *arg) {
 	try {
 		Monitor::configure(arg);
 		WH_LOG_DEBUG("Setting things up...");
@@ -51,12 +51,12 @@ void Consumer::configure(void *arg) {
 	}
 }
 
-void Consumer::cleanup() noexcept {
+void Receiver::cleanup() noexcept {
 	clear();
 	Monitor::cleanup();
 }
 
-bool Consumer::subscribe() noexcept {
+bool Receiver::subscribe() noexcept {
 	if (ctx.subscribed) {
 		return true;
 	} else {
@@ -64,7 +64,7 @@ bool Consumer::subscribe() noexcept {
 	}
 }
 
-bool Consumer::unsubscribe() noexcept {
+bool Receiver::unsubscribe() noexcept {
 	if (!ctx.subscribed) {
 		return true;
 	} else {
@@ -72,7 +72,7 @@ bool Consumer::unsubscribe() noexcept {
 	}
 }
 
-bool Consumer::subscribe(const Message *message) noexcept {
+bool Receiver::subscribe(const Message *message) noexcept {
 	if (ctx.subscribed) {
 		return true;
 	} else {
@@ -83,7 +83,7 @@ bool Consumer::subscribe(const Message *message) noexcept {
 	}
 }
 
-bool Consumer::unsubscribe(const Message *message) noexcept {
+bool Receiver::unsubscribe(const Message *message) noexcept {
 	if (!ctx.subscribed) {
 		return true;
 	} else {
@@ -94,19 +94,19 @@ bool Consumer::unsubscribe(const Message *message) noexcept {
 	}
 }
 
-unsigned int Consumer::topic() const noexcept {
+unsigned int Receiver::topic() const noexcept {
 	return ctx.topic;
 }
 
-bool Consumer::subscribed() const noexcept {
+bool Receiver::subscribed() const noexcept {
 	return ctx.subscribed;
 }
 
-void Consumer::setup() {
+void Receiver::setup() {
 
 }
 
-void Consumer::clear() noexcept {
+void Receiver::clear() noexcept {
 	ctx = { 0, false };
 }
 
