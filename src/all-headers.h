@@ -102,6 +102,7 @@
 #include "base/unix/WorkingDirectory.h"
 #include "edge/Consumer.h"
 #include "edge/Edge.h"
+#include "edge/Gadget.h"
 #include "edge/Monitor.h"
 #include "hub/Agent.h"
 #include "hub/Alarm.h"

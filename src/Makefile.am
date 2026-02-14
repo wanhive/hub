@@ -82,8 +82,8 @@ WH_BASESOURCES =  $(WH_BASE_COMMONSOURCES) $(WH_BASE_DBSOURCES) \
 	$(WH_BASEUNIXSOURCES) $(WH_BASE_TOPSOURCES)
 
 ## src/edge collection
-WH_EDGEHEADERS = edge/Consumer.h edge/Edge.h edge/Monitor.h
-WH_EDGESOURCES = edge/Consumer.cpp edge/Edge.cpp edge/Monitor.cpp
+WH_EDGEHEADERS = edge/Consumer.h edge/Edge.h edge/Gadget.h edge/Monitor.h
+WH_EDGESOURCES = edge/Consumer.cpp edge/Edge.cpp edge/Gadget.cpp edge/Monitor.cpp
 
 ## src/hub collection
 WH_HUBHEADERS = hub/Agent.h hub/Alarm.h hub/Event.h hub/Hub.h \

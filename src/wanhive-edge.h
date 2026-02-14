@@ -14,7 +14,6 @@
 #define WANHIVE_EDGE_H_
 
 #include "edge/Consumer.h"
-#include "edge/Edge.h"
-#include "edge/Monitor.h"
+#include "edge/Gadget.h"
 
 #endif /* WANHIVE_EDGE_H_ */
