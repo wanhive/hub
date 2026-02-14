@@ -57,7 +57,7 @@ bool Beacon::service(Message *message) noexcept {
 }
 
 bool Beacon::transmit() noexcept {
-	if (!Agent::connected() || !(multicast() || Edge::access())) {
+	if (!Gadget::share()) {
 		return false;
 	}
 

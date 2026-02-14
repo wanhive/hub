@@ -58,9 +58,16 @@ protected:
 	 * @return reporting interval
 	 */
 	unsigned int interval() const noexcept;
+	//-----------------------------------------------------------------
 	/**
-	 * Prepares a suitable outgoing message header.
-	 * @param header message header
+	 * Checks permission for online data transmission.
+	 * @param charge true to use an access token; false otherwise
+	 * @return true if permitted, false if denied
+	 */
+	bool share(bool charge = true) noexcept;
+	/**
+	 * Generates an appropriate outgoing message header.
+	 * @param header stores the header data
 	 * @param session session identifier
 	 */
 	void prepare(MessageHeader &header, unsigned int session) const noexcept;

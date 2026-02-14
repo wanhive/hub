@@ -81,6 +81,11 @@ unsigned int Gadget::interval() const noexcept {
 	return ctx.interval;
 }
 
+bool Gadget::share(bool charge) noexcept {
+	return Agent::connected() && online()
+			&& (multicast() || (charge ? Edge::access() : Edge::paired()));
+}
+
 void Gadget::prepare(MessageHeader &header, unsigned int session) const noexcept {
 	if (multicast()) {
 		header.setAddress(0, 0);
