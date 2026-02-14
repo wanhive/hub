@@ -30,6 +30,7 @@ void Gadget::configure(void *arg) {
 		Edge::configure(arg);
 		ctx.online = getOptions().getBoolean("EDGE", "online");
 		ctx.multicast = getOptions().getBoolean("EDGE", "multicast");
+		ctx.multicast = ctx.multicast && ctx.online;
 		WH_LOG_DEBUG("\nONLINE=%s, MULTICAST=%s\n", WH_BOOLF(ctx.online),
 				WH_BOOLF(ctx.multicast));
 		setup();
@@ -103,7 +104,6 @@ bool Gadget::service(Message *message) noexcept {
 }
 
 void Gadget::setup() {
-	ctx.multicast = ctx.multicast && ctx.online;
 	Edge::pair(ctx.online && !ctx.multicast);
 
 	Period p;
