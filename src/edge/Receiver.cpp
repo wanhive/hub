@@ -12,7 +12,6 @@
 
 #include "Receiver.h"
 #include "../base/common/Logger.h"
-#include "../util/commands.h"
 
 namespace wanhive {
 
