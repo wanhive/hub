@@ -13,7 +13,7 @@
 #ifndef WANHIVE_EDGE_H_
 #define WANHIVE_EDGE_H_
 
-#include "edge/Gadget.h"
+#include "edge/Beacon.h"
 #include "edge/Receiver.h"
 
 #endif /* WANHIVE_EDGE_H_ */
