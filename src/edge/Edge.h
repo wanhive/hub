@@ -37,19 +37,19 @@ protected:
 	void cleanup() noexcept override;
 	//-----------------------------------------------------------------
 	/**
-	 * Activates or deactivates the remote session feature.
-	 * @param enable true to activate, otherwise false
+	 * Toggles the remote session feature on or off.
+	 * @param true to enable, false to disable
 	 */
-	void session(bool enable) noexcept;
+	void pair(bool enable) noexcept;
 	/**
-	 * Checks if remote session access is allowed.
+	 * Determines if a remote session is permitted.
 	 * @return true if allowed, otherwise false
 	 */
-	bool session() const noexcept;
+	bool pair() const noexcept;
 	//-----------------------------------------------------------------
 	/**
 	 * Handles and responds to a session request.
-	 * @param message the session request
+	 * @param message session request
 	 * @param interval reporting interval
 	 * @return true on success, false on error (request denied)
 	 */
@@ -60,28 +60,28 @@ protected:
 	 * @param tokens access tokens count
 	 * @return true on success, false on error
 	 */
-	bool accept(unsigned long long id, unsigned int tokens = 0) noexcept;
+	bool accept(unsigned long long id, unsigned int tokens) noexcept;
 	/**
 	 * Ends the current session.
 	 */
-	void close() noexcept;
+	void end() noexcept;
 	//-----------------------------------------------------------------
-	/**
-	 * Verifies whether an active session with a remote node exists.
-	 * @return true if active, false if inactive
-	 */
-	bool live() const noexcept;
 	/**
 	 * Validates the active session with a remote node and, if successful,
 	 * consumes an access token.
 	 * @return true if active, false if inactive
 	 */
-	bool engage() noexcept;
+	bool access() noexcept;
+	/**
+	 * Verifies whether an active session with a remote node exists.
+	 * @return true if active, false if inactive
+	 */
+	bool paired() const noexcept;
 	/**
 	 * Gets the remote node's identifier (may be inactive).
 	 * @return remote node's identifier
 	 */
-	unsigned long long host() const noexcept;
+	unsigned long long peer() const noexcept;
 	//-----------------------------------------------------------------
 	/**
 	 * Provides a timestamp suitable for recording when an event occurs.
@@ -98,7 +98,7 @@ private:
 	} meta;
 
 	struct {
-		bool session;
+		bool pair;
 	} ctx;
 };
 

@@ -39,18 +39,17 @@ protected:
 	/**
 	 * Periodically sends a session request to the designated remote node.
 	 * @param interval polling interval
-	 * @param sqn sequence number
-	 * @param tokens default access tokens count if the remote host's latency
-	 * is zero.
+	 * @param sqn request's sequence number
+	 * @param tokens default access token count when remote host latency is zero
 	 * @return true on success, false on error
 	 */
 	bool ping(unsigned int interval, unsigned int sqn,
 			unsigned int tokens = 0) noexcept;
 	/**
-	 * Sends session request to a remote node.
+	 * Sends a session request to a remote node.
 	 * @param id remote node's identifier
-	 * @param sqn sequence number
-	 * @param tokens access tokens count
+	 * @param sqn request's sequence number
+	 * @param tokens access token count
 	 * @return true on success, false on error
 	 */
 	bool call(unsigned long long id, unsigned int sqn,
@@ -65,7 +64,7 @@ protected:
 	//-----------------------------------------------------------------
 	/**
 	 * Assigns a remote node for monitoring.
-	 * @param peer remote node's identifier
+	 * @param id remote node's identifier
 	 * @param latency remote node's reporting interval
 	 * @return true on success, false on error
 	 */
@@ -74,16 +73,16 @@ protected:
 	 * Returns remote node's identifier.
 	 * @return remote node's identifier
 	 */
-	unsigned long long host() const noexcept;
+	unsigned long long target() const noexcept;
 	/**
 	 * Returns remote node's reporting interval.
 	 * @return reporting interval
 	 */
 	unsigned int latency() const noexcept;
 	/**
-	 * Ends the current session and reverts to the original settings.
+	 * Ends the current session.
 	 */
-	void close() noexcept;
+	void end() noexcept;
 	//-----------------------------------------------------------------
 	/**
 	 * Requests subscription to the specified topic.

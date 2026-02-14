@@ -26,13 +26,6 @@ MulticastConsumer::~MulticastConsumer() {
 
 }
 
-void MulticastConsumer::expel(Watcher *w) noexcept {
-	Consumer::expel(w);
-	if (!subscribed()) {
-		Reactor::setTimeout(2000);
-	}
-}
-
 void MulticastConsumer::configure(void *arg) {
 	try {
 		Consumer::configure(&topic);
@@ -57,9 +50,12 @@ void MulticastConsumer::route(Message *message) noexcept {
 
 void MulticastConsumer::maintain() noexcept {
 	if (!connected()) {
+		Reactor::setTimeout(2000);
 		Agent::maintain();
-	} else {
+	} else if (!subscribed()) {
 		subscribe(2000);
+	} else {
+		Reactor::setTimeout(-1);
 	}
 }
 
@@ -98,10 +94,6 @@ void MulticastConsumer::print(const Message *msg) noexcept {
 }
 
 void MulticastConsumer::subscribe(unsigned int delay) noexcept {
-	if (Consumer::subscribed()) {
-		return;
-	}
-
 	if (!timer.expired(delay)) {
 		return;
 	}
@@ -111,10 +103,9 @@ void MulticastConsumer::subscribe(unsigned int delay) noexcept {
 
 void MulticastConsumer::subscribe(const Message *msg) noexcept {
 	if (Consumer::subscribe(msg)) {
-		WH_LOG_INFO("Subscribed to %u", topic);
-		Reactor::setTimeout(-1);
+		WH_LOG_INFO("Subscribed to topic %u", topic);
 	} else {
-		WH_LOG_INFO("Subscription to %u denied", topic);
+		WH_LOG_INFO("Subscription to topic %u denied", topic);
 	}
 }
 

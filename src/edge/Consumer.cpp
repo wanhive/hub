@@ -17,7 +17,7 @@
 namespace wanhive {
 
 Consumer::Consumer(unsigned long long uid, const char *path) noexcept :
-		Agent { uid, path } {
+		Monitor { uid, path } {
 	clear();
 }
 
@@ -26,23 +26,21 @@ Consumer::~Consumer() {
 }
 
 void Consumer::expel(Watcher *w) noexcept {
-	if (w->getUid() == 0) {
+	Agent::expel(w);
+
+	if (!Agent::connected()) {
 		ctx.subscribed = false;
 	}
-
-	Agent::expel(w);
 }
 
 void Consumer::configure(void *arg) {
 	try {
-		Agent::configure(arg);
+		Monitor::configure(arg);
+		WH_LOG_DEBUG("Setting things up...");
 		if (arg) {
 			ctx.topic = *static_cast<unsigned int*>(arg);
-		} else {
-			ctx.topic = getOptions().getNumber("CONSUMER", "topic");
 		}
 		ctx.topic = ctx.topic > Topic::MAX_ID ? 0 : ctx.topic;
-		WH_LOG_DEBUG("\nTOPIC=%u\n", ctx.topic);
 		setup();
 	} catch (const BaseException &e) {
 		WH_LOG_EXCEPTION(e);
@@ -55,24 +53,22 @@ void Consumer::configure(void *arg) {
 
 void Consumer::cleanup() noexcept {
 	clear();
-	Agent::cleanup();
+	Monitor::cleanup();
 }
 
 bool Consumer::subscribe() noexcept {
 	if (ctx.subscribed) {
 		return true;
-	}
-
-	auto message = Message::create();
-	if (message) {
-		MessageHeader header;
-		header.setAddress(0, 0);
-		header.setControl(Message::HLEN, 0, ctx.topic);
-		header.setContext(WH_CMD_MULTICAST, WH_QLF_SUBSCRIBE, WH_AQLF_REQUEST);
-		message->putHeader(header);
-		return forward(message);
 	} else {
-		return false;
+		return Monitor::subscribe(ctx.topic);
+	}
+}
+
+bool Consumer::unsubscribe() noexcept {
+	if (!ctx.subscribed) {
+		return true;
+	} else {
+		return Monitor::unsubscribe(ctx.topic);
 	}
 }
 
@@ -80,11 +76,21 @@ bool Consumer::subscribe(const Message *message) noexcept {
 	if (ctx.subscribed) {
 		return true;
 	} else {
-		ctx.subscribed = (message)
-				&& (message->checkContext(WH_CMD_MULTICAST, WH_QLF_SUBSCRIBE,
-						WH_AQLF_ACCEPTED))
-				&& (message->getSession() == ctx.topic);
+		unsigned int topic { Topic::MAX_ID + 1 };
+		ctx.subscribed = Monitor::subscribe(message, topic)
+				&& (ctx.topic == topic);
 		return ctx.subscribed;
+	}
+}
+
+bool Consumer::unsubscribe(const Message *message) noexcept {
+	if (!ctx.subscribed) {
+		return true;
+	} else {
+		unsigned int topic { Topic::MAX_ID + 1 };
+		ctx.subscribed = !(Monitor::unsubscribe(message, topic)
+				&& (ctx.topic == topic));
+		return !ctx.subscribed;
 	}
 }
 
@@ -101,7 +107,7 @@ void Consumer::setup() {
 }
 
 void Consumer::clear() noexcept {
-	ctx = { 0, 0 };
+	ctx = { 0, false };
 }
 
 } /* namespace wanhive */

@@ -46,15 +46,15 @@ void Edge::cleanup() noexcept {
 	Agent::cleanup();
 }
 
-void Edge::session(bool enable) noexcept {
-	ctx.session = enable;
+void Edge::pair(bool enable) noexcept {
+	ctx.pair = enable;
 	if (!enable) {
-		close();
+		end();
 	}
 }
 
-bool Edge::session() const noexcept {
-	return ctx.session;
+bool Edge::pair() const noexcept {
+	return ctx.pair;
 }
 
 bool Edge::accept(Message *message, unsigned int interval) noexcept {
@@ -75,33 +75,34 @@ bool Edge::accept(Message *message, unsigned int interval) noexcept {
 }
 
 bool Edge::accept(unsigned long long id, unsigned int tokens) noexcept {
-	if (session()) {
+	if (pair() && (id != getUid())) {
 		meta = { id, tokens };
 		return true;
 	} else {
-		close();
+		end();
 		return false;
 	}
 }
 
-void Edge::close() noexcept {
+void Edge::end() noexcept {
 	meta = { getUid(), 0 };
 }
 
-bool Edge::live() const noexcept {
-	return ((meta.id != getUid()) && (meta.tokens != 0));
-}
-
-bool Edge::engage() noexcept {
-	if (live()) {
+bool Edge::access() noexcept {
+	if (paired()) {
 		meta.tokens -= 1;
 		return true;
 	} else {
+		end();
 		return false;
 	}
 }
 
-unsigned long long Edge::host() const noexcept {
+bool Edge::paired() const noexcept {
+	return ((meta.id != getUid()) && (meta.tokens != 0));
+}
+
+unsigned long long Edge::peer() const noexcept {
 	return meta.id;
 }
 
@@ -116,7 +117,7 @@ void Edge::setup() {
 }
 
 void Edge::clear() noexcept {
-	session(false);
+	pair(false);
 }
 
 } /* namespace wanhive */

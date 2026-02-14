@@ -12,14 +12,14 @@
 
 #ifndef WH_EDGE_CONSUMER_H_
 #define WH_EDGE_CONSUMER_H_
-#include "../hub/Agent.h"
+#include "Monitor.h"
 
 /*! @namespace wanhive */
 namespace wanhive {
 /**
  * Consumer Hub
  */
-class Consumer: public Agent {
+class Consumer: public Monitor {
 public:
 	/**
 	 * Constructor: creates a new consumer hub.
@@ -43,11 +43,22 @@ protected:
 	 */
 	bool subscribe() noexcept;
 	/**
+	 * Sends out a subscription cancellation request.
+	 * @return true on success, false on error
+	 */
+	bool unsubscribe() noexcept;
+	/**
 	 * Processes a subscription response.
 	 * @param message subscription response
 	 * @return true on success, false on error
 	 */
 	bool subscribe(const Message *message) noexcept;
+	/**
+	 * Processes a subscription cancellation response.
+	 * @param message subscription cancellation response
+	 * @return true on success, false on error
+	 */
+	bool unsubscribe(const Message *message) noexcept;
 	/**
 	 * Gets the topic identifier.
 	 * @return topic id

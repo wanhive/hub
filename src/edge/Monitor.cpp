@@ -46,9 +46,7 @@ void Monitor::cleanup() noexcept {
 
 bool Monitor::ping(unsigned int interval, unsigned int sqn,
 		unsigned int tokens) noexcept {
-	if (!interval) {
-		return false;
-	} else if (edge.latency == 0) {
+	if (edge.latency == 0) {
 		return call(edge.id, sqn, tokens);
 	} else {
 		tokens = ((interval * 1.25) / edge.latency) + 2;
@@ -58,6 +56,10 @@ bool Monitor::ping(unsigned int interval, unsigned int sqn,
 
 bool Monitor::call(unsigned long long id, unsigned int sqn,
 		unsigned int tokens) noexcept {
+	if (id == getUid()) {
+		return false;
+	}
+
 	auto message = Message::create();
 	if (message) {
 		edge.sqn = sqn;
@@ -85,7 +87,7 @@ bool Monitor::connect(const Message *message) noexcept {
 	auto id = message->getSource();
 	auto sqn = message->getSequenceNumber();
 	auto latency = message->getData32(0);
-	if (id == edge.id && sqn == edge.sqn) {
+	if ((id != getUid()) && (id == edge.id) && (sqn == edge.sqn)) {
 		edge.latency = latency;
 		return true;
 	} else {
@@ -94,11 +96,16 @@ bool Monitor::connect(const Message *message) noexcept {
 }
 
 bool Monitor::target(unsigned long long id, unsigned int latency) noexcept {
-	edge = { id, latency, 0 };
-	return true;
+	if (id != getUid()) {
+		edge = { id, latency, 0 };
+		return true;
+	} else {
+		end();
+		return false;
+	}
 }
 
-unsigned long long Monitor::host() const noexcept {
+unsigned long long Monitor::target() const noexcept {
 	return edge.id;
 }
 
@@ -106,7 +113,7 @@ unsigned int Monitor::latency() const noexcept {
 	return edge.latency;
 }
 
-void Monitor::close() noexcept {
+void Monitor::end() noexcept {
 	edge = { getUid(), 0, 0 };
 }
 
@@ -130,7 +137,7 @@ bool Monitor::subscribe(unsigned int topic) noexcept {
 
 bool Monitor::unsubscribe(unsigned int topic) noexcept {
 	if (topic > Topic::MAX_ID) {
-		return false;
+		return true;
 	}
 
 	auto message = Message::create();
@@ -176,7 +183,7 @@ void Monitor::setup() {
 }
 
 void Monitor::clear() noexcept {
-	close();
+	end();
 }
 
 } /* namespace wanhive */
