@@ -18,6 +18,7 @@
 namespace wanhive {
 /**
  * Beacon Hub
+ * @note Sends time-stamped messages continuously and at regular intervals.
  */
 class Beacon final: public Gadget {
 public:
@@ -43,7 +44,11 @@ private:
 	void setup();
 	void clear() noexcept;
 public:
-	static constexpr unsigned int SESSION = 17;
+	static constexpr unsigned int CHANNEL = 17;
+private:
+	struct {
+		unsigned int channel;
+	} ctx;
 };
 
 } /* namespace wanhive */

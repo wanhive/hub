@@ -12,7 +12,7 @@
 
 #include "Beacon.h"
 #include "../base/common/Logger.h"
-#include "../util/commands.h"
+#include "../base/ds/Twiddler.h"
 
 namespace wanhive {
 
@@ -28,7 +28,9 @@ Beacon::~Beacon() {
 void Beacon::configure(void *arg) {
 	try {
 		Gadget::configure(arg);
-		WH_LOG_DEBUG("Setting things up...");
+		ctx.channel = getOptions().getNumber("EDGE", "beacon", CHANNEL);
+		ctx.channel = Twiddler::min(Topic::MAX_ID, ctx.channel);
+		WH_LOG_DEBUG("\nCHANNEL=%u\n", ctx.channel);
 		setup();
 	} catch (const BaseException &e) {
 		WH_LOG_EXCEPTION(e);
@@ -67,11 +69,11 @@ bool Beacon::transmit() noexcept {
 	}
 
 	MessageHeader header;
-	prepare(header, SESSION);
+	prepare(header, ctx.channel);
 	message->putHeader(header);
 	message->appendDouble(Edge::timestamp());
 	message->setDestination(0);
-	return forward(message); //Always succeeds
+	return forward(message);
 }
 
 void Beacon::setup() {
@@ -79,7 +81,7 @@ void Beacon::setup() {
 }
 
 void Beacon::clear() noexcept {
-
+	ctx.channel = CHANNEL;
 }
 
 } /* namespace wanhive */
