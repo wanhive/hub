@@ -43,7 +43,7 @@ protected:
 	//-----------------------------------------------------------------
 	/**
 	 * Gets the topic identifier.
-	 * @return topic id
+	 * @return topic identifier
 	 */
 	unsigned int channel() const noexcept;
 	/**
@@ -53,31 +53,40 @@ protected:
 	bool subscribed() const noexcept;
 	//-----------------------------------------------------------------
 	/**
-	 * Sends out a subscription request.
-	 * @param delay delay (milliseconds) between subsequent calls
+	 * Initiates a subscription request.
+	 * @param delay interval in milliseconds between consecutive calls
 	 * @return true on success, false on error
 	 */
 	bool subscribe(unsigned int delay = 0) noexcept;
 	/**
-	 * Sends out a subscription cancellation request.
-	 * @param delay delay (milliseconds) between subsequent calls
+	 * Initiates a subscription cancellation request.
+	 * @param delay interval in milliseconds between consecutive calls
 	 * @return true on success, false on error
 	 */
 	bool unsubscribe(unsigned int delay = 0) noexcept;
 	/**
 	 * Processes a subscription response.
-	 * @param message subscription response
+	 * @param message the response
 	 * @return true on success, false on error
 	 */
 	bool subscribe(const Message *message) noexcept;
 	/**
 	 * Processes a subscription cancellation response.
-	 * @param message subscription cancellation response
+	 * @param message the response
 	 * @return true on success, false on error
 	 */
 	bool unsubscribe(const Message *message) noexcept;
 private:
-	bool service(Message *message) noexcept;
+	//-----------------------------------------------------------------
+	/**
+	 * Adapter: processes the incoming messages.
+	 * @param message incoming message
+	 * @return true on success, false on error
+	 */
+	virtual bool service(Message *message) noexcept;
+	//-----------------------------------------------------------------
+private:
+	bool receive(Message *message) noexcept;
 	void subscribed(bool status) noexcept;
 	void setup();
 	void clear() noexcept;

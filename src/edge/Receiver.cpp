@@ -35,6 +35,7 @@ void Receiver::expel(Watcher *w) noexcept {
 	Agent::expel(w);
 
 	if (!Agent::connected()) {
+		Monitor::target(Monitor::target());
 		subscribed(false);
 	}
 }
@@ -64,7 +65,6 @@ void Receiver::cleanup() noexcept {
 
 void Receiver::maintain() noexcept {
 	if (!Agent::connected()) {
-		Monitor::target(Monitor::target());
 		Agent::maintain();
 	} else {
 		subscribe(TIMEOUT);
@@ -79,7 +79,7 @@ void Receiver::route(Message *message) noexcept {
 
 	//Prevents replay (UID is the sink)
 	message->setDestination(getUid());
-	service(message);
+	receive(message);
 }
 
 void Receiver::onAlarm(unsigned long long uid,
@@ -142,6 +142,11 @@ bool Receiver::unsubscribe(const Message *message) noexcept {
 }
 
 bool Receiver::service(Message *message) noexcept {
+	message->header().print();
+	return true;
+}
+
+bool Receiver::receive(Message *message) noexcept {
 	auto cmd = message->getCommand();
 	auto qlf = message->getQualifier();
 	auto session = message->getSession();
@@ -151,18 +156,17 @@ bool Receiver::service(Message *message) noexcept {
 		if (session == 0) {
 			return Monitor::connect(message);
 		} else {
-			message->header().print();
-			return true;
+			return service(message);
 		}
 	case WH_CMD_MULTICAST:
-		if (qlf == WH_QLF_SUBSCRIBE) {
+		switch (qlf) {
+		case WH_QLF_PUBLISH:
+			return service(message);
+		case WH_QLF_SUBSCRIBE:
 			return subscribe(message);
-		} else if (qlf == WH_QLF_UNSUBSCRIBE) {
+		case WH_QLF_UNSUBSCRIBE:
 			return unsubscribe(message);
-		} else if (qlf == WH_QLF_PUBLISH) {
-			message->header().print();
-			return true;
-		} else {
+		default:
 			WH_LOG_INFO("Invalid message");
 			return false;
 		}

@@ -116,11 +116,9 @@ WH_SERVERSOURCES = server/auth/AuthenticationHub.cpp server/auth/Things.cpp \
 
 ## src/test collection
 WH_TESTHEADERS = test/ds/BufferTest.h test/ds/HashTableTest.h \
-	test/flood/TestClient.h test/flood/NetworkTest.h \
-	test/multicast/MulticastConsumer.h
+	test/flood/TestClient.h test/flood/NetworkTest.h
 WH_TESTSOURCES = test/ds/BufferTest.cpp test/ds/HashTableTest.cpp \
-	test/flood/TestClient.cpp test/flood/NetworkTest.cpp \
-	test/multicast/MulticastConsumer.cpp
+	test/flood/TestClient.cpp test/flood/NetworkTest.cpp
 
 ## src/util collection
 WH_UTILHEADERS = util/Endpoint.h util/FlowControl.h util/Frame.h util/Hash.h \

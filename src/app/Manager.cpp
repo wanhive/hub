@@ -13,13 +13,13 @@
 #include "Manager.h"
 #include "ConfigTool.h"
 #include "../base/version.h"
+#include "../edge/Receiver.h"
 #include "../server/auth/AuthenticationHub.h"
 #include "../server/core/OverlayHub.h"
 #include "../server/core/OverlayTool.h"
 #include "../test/ds/BufferTest.h"
 #include "../test/ds/HashTableTest.h"
 #include "../test/flood/NetworkTest.h"
-#include "../test/multicast/MulticastConsumer.h"
 #include <iostream>
 #include <getopt.h>
 
@@ -148,7 +148,7 @@ void Manager::executeHub() noexcept {
 	} else if (ctx.type == '\0') {
 		std::cout << "Select an option\n" << "1: Overlay server (-to)\n"
 				<< "2: Authentication server (-ta)\n"
-				<< "3: Multicast consumer for testing (-tm)\n" << ":: ";
+				<< "3: Monitoring hub (-tm)\n" << ":: ";
 		std::cin >> mode;
 		if (CommandLine::inputError()) {
 			return;
@@ -172,20 +172,7 @@ void Manager::executeHub() noexcept {
 		} else if (mode == 2) {
 			ctx.hub = new AuthenticationHub(ctx.uid, ctx.config);
 		} else if (mode == 3) {
-			unsigned int topic;
-			std::cout << "Topic [" << Topic::MIN_ID << "-" << Topic::MAX_ID
-					<< "]: ";
-			std::cin >> topic;
-			if (CommandLine::inputError()) {
-				return;
-			}
-
-			if (topic > Topic::MAX_ID) {
-				std::cerr << "Invalid topic" << std::endl;
-				return;
-			}
-
-			ctx.hub = new MulticastConsumer(ctx.uid, topic, ctx.config);
+			ctx.hub = new Receiver(ctx.uid, ctx.config);
 		} else {
 			std::cerr << "Invalid option" << std::endl;
 			return;
