@@ -39,7 +39,7 @@ void Receiver::configure(void *arg) {
 		if (arg) {
 			ctx.topic = *static_cast<unsigned int*>(arg);
 		}
-		ctx.topic = ctx.topic > Topic::MAX_ID ? 0 : ctx.topic;
+		ctx.topic = (ctx.topic > Topic::MAX_ID) ? 0 : ctx.topic;
 		setup();
 	} catch (const BaseException &e) {
 		WH_LOG_EXCEPTION(e);

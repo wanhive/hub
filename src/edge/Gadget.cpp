@@ -87,14 +87,14 @@ bool Gadget::share(bool charge) noexcept {
 			&& (multicast() || (charge ? Edge::access() : Edge::paired()));
 }
 
-void Gadget::prepare(MessageHeader &header, unsigned int session) const noexcept {
+void Gadget::prepare(MessageHeader &header, unsigned int channel) const noexcept {
 	if (multicast()) {
 		header.setAddress(0, 0);
-		header.setControl(Message::HLEN, 0, session);
+		header.setControl(Message::HLEN, 0, channel);
 		header.setContext(2, 0, WH_AQLF_REQUEST);
 	} else {
 		header.setAddress(0, peer());
-		header.setControl(Message::HLEN, 0, session);
+		header.setControl(Message::HLEN, 0, channel);
 		header.setContext(0, 0, WH_AQLF_REQUEST);
 	}
 }

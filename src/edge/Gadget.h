@@ -61,16 +61,16 @@ protected:
 	//-----------------------------------------------------------------
 	/**
 	 * Checks permission for online data transmission.
-	 * @param charge true to use an access token; false otherwise
+	 * @param charge true to consume an access token; false otherwise
 	 * @return true if permitted, false if denied
 	 */
 	bool share(bool charge = true) noexcept;
 	/**
 	 * Generates an appropriate outgoing message header.
 	 * @param header stores the header data
-	 * @param session session identifier
+	 * @param channel session or topic identifier
 	 */
-	void prepare(MessageHeader &header, unsigned int session) const noexcept;
+	void prepare(MessageHeader &header, unsigned int channel) const noexcept;
 private:
 	//-----------------------------------------------------------------
 	/**
