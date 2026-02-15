@@ -20,7 +20,7 @@ namespace wanhive {
  * Beacon Hub
  * @note Sends time-stamped messages continuously and at regular intervals.
  */
-class Beacon final: public Gadget {
+class Beacon: public Gadget {
 public:
 	/**
 	 * Constructor: creates a new beacon hub.
@@ -32,19 +32,23 @@ public:
 	 * Destructor
 	 */
 	~Beacon();
-private:
+protected:
 	//-----------------------------------------------------------------
 	void configure(void *arg) override;
 	void cleanup() noexcept override;
 	void onAlarm(unsigned long long uid, unsigned long long ticks) noexcept
 			override;
+	//-----------------------------------------------------------------
+	/**
+	 * Returns the transmission channel (session or topic identifier).
+	 * @return transmission channel
+	 */
+	unsigned int channel() const noexcept;
 private:
 	bool service(Message *message) noexcept override;
 	bool transmit() noexcept;
 	void setup();
 	void clear() noexcept;
-public:
-	static constexpr unsigned int CHANNEL = 17;
 private:
 	struct {
 		unsigned int channel;

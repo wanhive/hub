@@ -28,8 +28,8 @@ Beacon::~Beacon() {
 void Beacon::configure(void *arg) {
 	try {
 		Gadget::configure(arg);
-		ctx.channel = getOptions().getNumber("EDGE", "beacon", CHANNEL);
-		ctx.channel = Twiddler::min(Topic::MAX_ID, ctx.channel);
+		ctx.channel = getOptions().getNumber("EDGE", "channel");
+		ctx.channel = (ctx.channel > Topic::MAX_ID) ? 0 : ctx.channel;
 		WH_LOG_DEBUG("\nCHANNEL=%u\n", ctx.channel);
 		setup();
 	} catch (const BaseException &e) {
@@ -50,6 +50,10 @@ void Beacon::onAlarm(unsigned long long uid, unsigned long long ticks) noexcept 
 	transmit();
 }
 
+unsigned int Beacon::channel() const noexcept {
+	return ctx.channel;
+}
+
 bool Beacon::service(Message *message) noexcept {
 	if (!(message->getSession() == 0
 			&& Edge::accept(message, Gadget::interval()))) {
@@ -59,7 +63,7 @@ bool Beacon::service(Message *message) noexcept {
 }
 
 bool Beacon::transmit() noexcept {
-	if (!Gadget::share()) {
+	if (!(channel() && Gadget::share())) {
 		return false;
 	}
 
@@ -81,7 +85,7 @@ void Beacon::setup() {
 }
 
 void Beacon::clear() noexcept {
-	ctx.channel = CHANNEL;
+	ctx.channel = 0;
 }
 
 } /* namespace wanhive */
