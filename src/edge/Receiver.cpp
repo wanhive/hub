@@ -12,6 +12,13 @@
 
 #include "Receiver.h"
 #include "../base/common/Logger.h"
+#include "../util/commands.h"
+
+namespace {
+
+constexpr int TIMEOUT = 2000;
+
+}  // namespace
 
 namespace wanhive {
 
@@ -28,18 +35,18 @@ void Receiver::expel(Watcher *w) noexcept {
 	Agent::expel(w);
 
 	if (!Agent::connected()) {
-		ctx.subscribed = false;
+		subscribed(false);
 	}
 }
 
 void Receiver::configure(void *arg) {
 	try {
 		Monitor::configure(arg);
-		WH_LOG_DEBUG("Setting things up...");
-		if (arg) {
-			ctx.topic = *static_cast<unsigned int*>(arg);
-		}
-		ctx.topic = (ctx.topic > Topic::MAX_ID) ? 0 : ctx.topic;
+		ctx.channel = getOptions().getNumber("EDGE", "channel");
+		ctx.channel = (ctx.channel > Topic::MAX_ID) ? 0 : ctx.channel;
+		Monitor::target(getOptions().getNumber("EDGE", "target", getUid()));
+		WH_LOG_DEBUG("\nCHANNEL=%u, TARGET=%llu\n", ctx.channel,
+				Monitor::target());
 		setup();
 	} catch (const BaseException &e) {
 		WH_LOG_EXCEPTION(e);
@@ -55,58 +62,140 @@ void Receiver::cleanup() noexcept {
 	Monitor::cleanup();
 }
 
-bool Receiver::subscribe() noexcept {
-	if (ctx.subscribed) {
-		return true;
+void Receiver::maintain() noexcept {
+	if (!Agent::connected()) {
+		Monitor::target(Monitor::target());
+		Agent::maintain();
 	} else {
-		return Monitor::subscribe(ctx.topic);
+		subscribe(TIMEOUT);
 	}
 }
 
-bool Receiver::unsubscribe() noexcept {
-	if (!ctx.subscribed) {
-		return true;
-	} else {
-		return Monitor::unsubscribe(ctx.topic);
+void Receiver::route(Message *message) noexcept {
+	if (!Agent::connected()) {
+		Agent::route(message);
+		return;
+	}
+
+	//Prevents replay (UID is the sink)
+	message->setDestination(getUid());
+	service(message);
+}
+
+void Receiver::onAlarm(unsigned long long uid,
+		unsigned long long ticks) noexcept {
+	if (Agent::connected()) {
+		Monitor::ping(ctx.interval, 0);
 	}
 }
 
-bool Receiver::subscribe(const Message *message) noexcept {
-	if (ctx.subscribed) {
-		return true;
-	} else {
-		unsigned int topic { Topic::MAX_ID + 1 };
-		ctx.subscribed = Monitor::subscribe(message, topic)
-				&& (ctx.topic == topic);
-		return ctx.subscribed;
-	}
-}
-
-bool Receiver::unsubscribe(const Message *message) noexcept {
-	if (!ctx.subscribed) {
-		return true;
-	} else {
-		unsigned int topic { Topic::MAX_ID + 1 };
-		ctx.subscribed = !(Monitor::unsubscribe(message, topic)
-				&& (ctx.topic == topic));
-		return !ctx.subscribed;
-	}
-}
-
-unsigned int Receiver::topic() const noexcept {
-	return ctx.topic;
+unsigned int Receiver::channel() const noexcept {
+	return ctx.channel;
 }
 
 bool Receiver::subscribed() const noexcept {
 	return ctx.subscribed;
 }
 
-void Receiver::setup() {
+bool Receiver::subscribe(unsigned int delay) noexcept {
+	if (subscribed()) {
+		return true;
+	} else if (channel() && timer.expired(delay)) {
+		return Monitor::subscribe(channel());
+	} else {
+		return false;
+	}
+}
 
+bool Receiver::unsubscribe(unsigned int delay) noexcept {
+	if (!subscribed()) {
+		return true;
+	} else if (timer.expired(delay)) {
+		return Monitor::unsubscribe(channel());
+	} else {
+		return false;
+	}
+}
+
+bool Receiver::subscribe(const Message *message) noexcept {
+	if (subscribed()) {
+		return true;
+	} else {
+		unsigned int topic { Topic::MAX_ID + 1 };
+		auto status = Monitor::subscribe(message, topic)
+				&& (ctx.channel == topic);
+		subscribed(status);
+		return subscribed();
+	}
+}
+
+bool Receiver::unsubscribe(const Message *message) noexcept {
+	if (!subscribed()) {
+		return true;
+	} else {
+		unsigned int topic { Topic::MAX_ID + 1 };
+		auto status = Monitor::unsubscribe(message, topic)
+				&& (ctx.channel == topic);
+		subscribed(!status);
+		return subscribed();
+	}
+}
+
+bool Receiver::service(Message *message) noexcept {
+	auto cmd = message->getCommand();
+	auto qlf = message->getQualifier();
+	auto session = message->getSession();
+
+	switch (cmd) {
+	case WH_CMD_NULL:
+		if (session == 0) {
+			return Monitor::connect(message);
+		} else {
+			message->header().print();
+			return true;
+		}
+	case WH_CMD_MULTICAST:
+		if (qlf == WH_QLF_SUBSCRIBE) {
+			return subscribe(message);
+		} else if (qlf == WH_QLF_UNSUBSCRIBE) {
+			return unsubscribe(message);
+		} else if (qlf == WH_QLF_PUBLISH) {
+			message->header().print();
+			return true;
+		} else {
+			WH_LOG_INFO("Invalid message");
+			return false;
+		}
+	default:
+		WH_LOG_INFO("Unsupported message");
+		return false;
+	}
+}
+
+void Receiver::subscribed(bool status) noexcept {
+	ctx.subscribed = status;
+	if (!status && channel()) {
+		Reactor::setTimeout(ctx.interval ? -1 : TIMEOUT);
+	} else {
+		Reactor::setTimeout(-1);
+	}
+}
+
+void Receiver::setup() {
+	Period p;
+	Hub::period(p);
+	if (p.once && p.interval) {
+		ctx.interval = p.interval;
+	} else {
+		ctx.interval = 0;
+		Monitor::end();
+	}
+
+	subscribed(false);
 }
 
 void Receiver::clear() noexcept {
-	ctx = { 0, false };
+	ctx = { 0, 0, false };
 }
 
 } /* namespace wanhive */
