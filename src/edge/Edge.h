@@ -17,7 +17,8 @@
 /*! @namespace wanhive */
 namespace wanhive {
 /**
- * Edge Hub
+ * @brief Edge Hub
+ * @details This is the base class for applications focused on edge computing.
  */
 class Edge: public Agent {
 public:

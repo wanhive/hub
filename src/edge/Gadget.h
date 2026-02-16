@@ -17,7 +17,9 @@
 /*! @namespace wanhive */
 namespace wanhive {
 /**
- * Gadget Hub
+ * @brief Gadget Hub
+ * @details This component extends the Edge Hub by adding support for both
+ * end-to-end communication and group communication.
  */
 class Gadget: public Edge {
 public:

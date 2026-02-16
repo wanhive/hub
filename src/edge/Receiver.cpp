@@ -84,8 +84,14 @@ void Receiver::route(Message *message) noexcept {
 
 void Receiver::onAlarm(unsigned long long uid,
 		unsigned long long ticks) noexcept {
+	ping();
+}
+
+bool Receiver::ping(unsigned int sqn, unsigned int tokens) noexcept {
 	if (Agent::connected()) {
-		Monitor::ping(ctx.interval, 0);
+		return Monitor::ping(ctx.interval, sqn, tokens);
+	} else {
+		return false;
 	}
 }
 
@@ -149,11 +155,10 @@ bool Receiver::service(Message *message) noexcept {
 bool Receiver::receive(Message *message) noexcept {
 	auto cmd = message->getCommand();
 	auto qlf = message->getQualifier();
-	auto session = message->getSession();
 
 	switch (cmd) {
 	case WH_CMD_NULL:
-		if (session == 0) {
+		if (message->getSession() == 0) {
 			return Monitor::connect(message);
 		} else {
 			return service(message);

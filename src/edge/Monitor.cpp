@@ -1,7 +1,7 @@
 /*
  * Monitor.cpp
  *
- * Monitoring Hub
+ * Monitor Hub
  *
  *
  * Copyright (C) 2026 Wanhive Systems Private Limited (info@wanhive.com)

@@ -17,7 +17,9 @@
 /*! @namespace wanhive */
 namespace wanhive {
 /**
- * Receiver Hub
+ * @brief Receiver Hub
+ * @details This hub accepts incoming messages for both end-to-end and
+ * group communication.
  */
 class Receiver: public Monitor {
 public:
@@ -40,6 +42,14 @@ protected:
 	void route(Message *message) noexcept override;
 	void onAlarm(unsigned long long uid, unsigned long long ticks) noexcept
 			override;
+	//-----------------------------------------------------------------
+	/**
+	 * Periodically sends a session request to the designated remote node.
+	 * @param sqn request's sequence number
+	 * @param tokens default access token count when remote host latency is zero
+	 * @return true on success, false on error
+	 */
+	bool ping(unsigned int sqn = 0, unsigned int tokens = 0) noexcept;
 	//-----------------------------------------------------------------
 	/**
 	 * Gets the topic identifier.

@@ -1,7 +1,7 @@
 /**
  * @file Monitor.h
  *
- * Monitoring Hub
+ * Monitor Hub
  *
  *
  * Copyright (C) 2026 Wanhive Systems Private Limited (info@wanhive.com)
@@ -17,12 +17,14 @@
 /*! @namespace wanhive */
 namespace wanhive {
 /**
- * Monitoring Hub
+ * @brief Monitor Hub
+ * @details This hub monitors the Edge Hubs and supports both end-to-end and
+ * group communication.
  */
 class Monitor: public Agent {
 public:
 	/**
-	 * Constructor: creates a new monitoring hub.
+	 * Constructor: creates a new monitor hub.
 	 * @param uid unique identifier
 	 * @param path configuration file's path
 	 */

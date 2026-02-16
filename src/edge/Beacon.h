@@ -17,8 +17,9 @@
 /*! @namespace wanhive */
 namespace wanhive {
 /**
- * Beacon Hub
- * @note Sends time-stamped messages continuously and at regular intervals.
+ * @brief Beacon Hub
+ * @details Continuously sends time-stamped messages at regular intervals for
+ * end-to-end and group communication.
  */
 class Beacon: public Gadget {
 public:
