@@ -84,14 +84,8 @@ void Receiver::route(Message *message) noexcept {
 
 void Receiver::onAlarm(unsigned long long uid,
 		unsigned long long ticks) noexcept {
-	ping();
-}
-
-bool Receiver::ping(unsigned int sqn, unsigned int tokens) noexcept {
 	if (Agent::connected()) {
-		return Monitor::ping(ctx.interval, sqn, tokens);
-	} else {
-		return false;
+		Monitor::ping(Agent::cycle(), 0);
 	}
 }
 
@@ -184,19 +178,14 @@ bool Receiver::receive(Message *message) noexcept {
 void Receiver::subscribed(bool status) noexcept {
 	ctx.subscribed = status;
 	if (!status && channel()) {
-		Reactor::setTimeout(ctx.interval ? -1 : TIMEOUT);
+		Reactor::setTimeout(Agent::cycle() ? -1 : TIMEOUT);
 	} else {
 		Reactor::setTimeout(-1);
 	}
 }
 
 void Receiver::setup() {
-	Period p;
-	Hub::period(p);
-	if (p.once && p.interval) {
-		ctx.interval = p.interval;
-	} else {
-		ctx.interval = 0;
+	if (!Agent::cycle()) {
 		Monitor::end();
 	}
 
@@ -204,7 +193,7 @@ void Receiver::setup() {
 }
 
 void Receiver::clear() noexcept {
-	ctx = { 0, 0, false };
+	ctx = { 0, false };
 }
 
 } /* namespace wanhive */

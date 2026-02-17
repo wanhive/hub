@@ -55,9 +55,9 @@ struct Color {
  * Cyclic function's period.
  */
 struct Period {
-	/*! Initial expiration */
+	/*! Initial expiration (delay) */
 	unsigned int once;
-	/*! Repetition interval */
+	/*! Regular repetition interval */
 	unsigned int interval;
 };
 

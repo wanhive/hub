@@ -13,6 +13,7 @@
 #include "Agent.h"
 #include "Protocol.h"
 #include "../base/common/Logger.h"
+#include "../base/unix/Time.h"
 #include "../util/commands.h"
 #include "../util/Random.h"
 
@@ -184,6 +185,22 @@ void Agent::setPassword(const unsigned char *password, unsigned int length,
 		ctx.passwordLength = 0;
 		ctx.rounds = 0;
 	}
+}
+
+unsigned int Agent::cycle() const noexcept {
+	Period p;
+	Hub::period(p);
+	if (p.once && p.interval) {
+		return p.interval;
+	} else {
+		return 0;
+	}
+}
+
+double Agent::timestamp() noexcept {
+	double seconds { };
+	Time::now(CLOCK_REALTIME, seconds);
+	return seconds;
 }
 
 void Agent::connectToAuthenticator() noexcept {

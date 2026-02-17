@@ -30,24 +30,24 @@ public:
 	~Topic();
 	//-----------------------------------------------------------------
 	/**
-	 * Adds subscription to a topic.
+	 * Adds a subscription to a specific topic.
 	 * @param id topic identifier
 	 * @return true on success, false on error (invalid topic)
 	 */
 	bool set(unsigned int id) noexcept;
 	/**
-	 * Clears subscription to a topic.
+	 * Clears the subscription for a specific topic.
 	 * @param id topic identifier
 	 */
 	void clear(unsigned int id) noexcept;
 	/**
-	 * Tests subscription to a topic.
+	 * Checks if a subscription exists for a specific topic.
 	 * @param id topic identifier
-	 * @return true if subscription exists, false otherwise
+	 * @return true if subscribed, false otherwise
 	 */
 	bool test(unsigned int id) const noexcept;
 	/**
-	 * Returns the number of subscribed topics.
+	 * Returns the total number of subscribed topics.
 	 * @return subscription count
 	 */
 	unsigned int count() const noexcept;

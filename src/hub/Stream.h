@@ -19,7 +19,8 @@
 /*! @namespace wanhive */
 namespace wanhive {
 /**
- * Byte stream watcher
+ * @brief Byte stream watcher
+ * @details Supports two-way communication over a half or full duplex channel
  */
 class Stream final: public Duplex<unsigned char>, public Watcher {
 public:
@@ -59,15 +60,13 @@ public:
 	//-----------------------------------------------------------------
 	/**
 	 * Reads incoming bytes from the managed stream.
-	 * @return the number of bytes read on success (possible zero(0) if the
-	 * internal buffer is full), zero(0) if the stream is non-blocking and
-	 * the read operation would block, -1 if the stream was closed cleanly.
+	 * @return bytes read on success, 0 if the buffer is full or if the stream
+	 * is non-blocking and would block, -1 if the stream is closed cleanly.
 	 */
 	ssize_t read();
 	/**
 	 * Writes data to the managed stream.
-	 * @return the number of bytes written, possibly zero (0) if the outgoing
-	 * data queue is empty.
+	 * @return bytes written on success, 0 if the outgoing data queue is empty
 	 */
 	ssize_t write();
 private:

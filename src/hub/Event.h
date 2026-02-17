@@ -17,8 +17,8 @@
 /*! @namespace wanhive */
 namespace wanhive {
 /**
- * Events counter
- * @note Abstraction of linux's event wait/notify mechanism (see eventfd(2))
+ * @brief Events counter
+ * @details Abstraction of linux's event wait/notify mechanism (see eventfd(2))
  */
 class Event final: public Watcher {
 public:
@@ -43,15 +43,15 @@ public:
 	 * decrements the counter by 1 (reads one single event), otherwise the
 	 * counter is reset (reads all events).
 	 * @param count stores the events count
-	 * @return number of bytes read (8 bytes) on success, 0 if non-blocking mode
-	 * is on and the call would block, -1 if the file descriptor was closed.
+	 * @return bytes read (8 bytes) on success, 0 if non-blocking mode is on and
+	 * the call would block, -1 if the file descriptor is closed.
 	 */
 	ssize_t read(unsigned long long &count);
 	/**
 	 * Adds an 8-byte integer value to the counter.
 	 * @param count value to add
-	 * @return number of bytes written (8 bytes) on success, 0 if non-blocking
-	 * mode is on and the call would block.
+	 * @return bytes written (8 bytes) on success, 0 if non-blocking mode is on
+	 * and the call would block.
 	 */
 	ssize_t write(unsigned long long count);
 };

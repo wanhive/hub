@@ -37,8 +37,8 @@ struct LogicEvent {
 };
 //-----------------------------------------------------------------
 /**
- * Digital logic watcher
- * @note Doesn't provide concrete implementation
+ * @brief Digital logic watcher
+ * @details Base class for digital logic monitoring applications.
  */
 class Logic: public Watcher {
 public:
@@ -57,10 +57,9 @@ public:
 	bool publish(void *arg) noexcept override;
 	//-----------------------------------------------------------------
 	/**
-	 * Reports a change in state.
+	 * Reports a change of state.
 	 * @param event stores the event
-	 * @return number of bytes read on success, 0 on non-fatal error, -1 on
-	 * fatal error.
+	 * @return bytes read on success, 0 on non-fatal error, -1 on fatal error
 	 */
 	virtual ssize_t report(LogicEvent &event);
 };

@@ -24,8 +24,8 @@ namespace wanhive {
 using InotifyEvent = inotify_event;
 
 /**
- * Reports file system events
- * @note Abstraction of Linux's inotify(7) mechanism
+ * @brief Monitors file system events
+ * @details Abstraction of Linux's inotify(7) mechanism
  */
 class Inotifier final: public Watcher {
 public:
@@ -59,8 +59,8 @@ public:
 	/**
 	 * Reads file system events and stores them into an internal buffer. Each
 	 * call overwrites the old events.
-	 * @return number of bytes read on success, 0 if non-blocking mode is on and
-	 * the call would block, -1 if the file descriptor was closed.
+	 * @return bytes read on success, 0 if non-blocking mode is on and the call
+	 * would block, -1 if the file descriptor is closed.
 	 */
 	ssize_t read();
 	//-----------------------------------------------------------------

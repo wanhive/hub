@@ -17,8 +17,8 @@
 /*! @namespace wanhive */
 namespace wanhive {
 /**
- * Signal watcher
- * @note Abstraction of Linux's signalfd(2) mechanism
+ * @brief Signal watcher
+ * @details Abstraction of Linux's signalfd(2) mechanism
  */
 class Interrupt final: public Watcher {
 public:
@@ -40,8 +40,8 @@ public:
 	/**
 	 * Reads a pending signal.
 	 * @param signum signal's number
-	 * @return number of bytes read on success, 0 if non-blocking mode is on and
-	 * the call would block, -1 if the file descriptor was closed.
+	 * @return bytes read on success, 0 if non-blocking mode is on and the call
+	 * would block, -1 if the file descriptor is closed.
 	 */
 	ssize_t read(int &signum);
 private:

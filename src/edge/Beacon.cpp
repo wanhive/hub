@@ -55,8 +55,7 @@ unsigned int Beacon::channel() const noexcept {
 }
 
 bool Beacon::service(Message *message) noexcept {
-	if (!(message->getSession() == 0
-			&& Edge::accept(message, Gadget::interval()))) {
+	if (!(message->getSession() == 0 && Edge::accept(message, Agent::cycle()))) {
 		WH_LOG_DEBUG("Invalid request");
 	}
 	return true;
@@ -75,7 +74,7 @@ bool Beacon::transmit() noexcept {
 	MessageHeader header;
 	prepare(header, ctx.channel);
 	message->putHeader(header);
-	message->appendDouble(Edge::timestamp());
+	message->appendDouble(Agent::timestamp());
 	message->setDestination(0);
 	return forward(message);
 }

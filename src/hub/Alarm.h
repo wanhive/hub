@@ -18,14 +18,14 @@
 /*! @namespace wanhive */
 namespace wanhive {
 /**
- * Millisecond precision periodic timer
- * @note Abstraction of the Linux's timerfd mechanism (timerfd_create(2))
+ * @brief Millisecond precision periodic timer
+ * @details Abstraction of the Linux's timerfd mechanism (timerfd_create(2))
  */
 class Alarm final: public Watcher {
 public:
 	/**
-	 * Constructor: creates a new timer.
-	 * @param period timer's period
+	 * Constructor: creates a new periodic timer.
+	 * @param period timer's settings
 	 * @param blocking true for blocking IO, false for non-blocking IO (default)
 	 */
 	Alarm(const Period &period, bool blocking = false);
@@ -40,26 +40,26 @@ public:
 	bool publish(void *arg) noexcept override;
 	//-----------------------------------------------------------------
 	/**
-	 * Reads the timer expiration count.
+	 * Reads the periodic timer's expiration count.
 	 * @param count stores the expiration count
-	 * @return number of bytes read (8 bytes) on success, 0 if non-blocking mode
-	 * is on and the call would block, -1 if the file descriptor was closed.
+	 * @return bytes read (8 bytes) on success, 0 if non-blocking mode is
+	 * enabled and the call would block, -1 if the file descriptor is closed.
 	 */
 	ssize_t read(unsigned long long &count);
 	/**
-	 * Resets timer's settings and restarts it.
-	 * @param period timer's period
+	 * Resets and restarts the periodic timer with new settings.
+	 * @param period new settings
 	 */
 	void reset(const Period &period);
 	/**
-	 * Returns timer's current settings.
-	 * @return timer's period
+	 * Gets the periodic timer's current settings.
+	 * @return current settings
 	 */
-	const Period& getPeriod() const noexcept;
+	const Period& settings() const noexcept;
 private:
 	void create(bool blocking);
 	void update(const Period &period);
-	void settings(Period &period);
+	void retrieve(Period &period);
 private:
 	Period period;
 };

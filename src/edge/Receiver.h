@@ -44,14 +44,6 @@ protected:
 			override;
 	//-----------------------------------------------------------------
 	/**
-	 * Periodically sends a session request to the designated remote node.
-	 * @param sqn request's sequence number
-	 * @param tokens default access token count when remote host latency is zero
-	 * @return true on success, false on error
-	 */
-	bool ping(unsigned int sqn = 0, unsigned int tokens = 0) noexcept;
-	//-----------------------------------------------------------------
-	/**
 	 * Gets the topic identifier.
 	 * @return topic identifier
 	 */
@@ -103,7 +95,6 @@ private:
 private:
 	Timer timer;
 	struct {
-		unsigned int interval;
 		unsigned int channel;
 		bool subscribed;
 	} ctx;

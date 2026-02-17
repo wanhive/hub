@@ -90,23 +90,19 @@ const InotifyEvent* Inotifier::next() noexcept {
 }
 
 int Inotifier::getWatchDescriptor(const InotifyEvent *e) noexcept {
-	return e->wd;
+	return e ? e->wd : -1;
 }
 
 uint32_t Inotifier::getMask(const InotifyEvent *e) noexcept {
-	return e->mask;
+	return e ? e->mask : 0;
 }
 
 uint32_t Inotifier::getCookie(const InotifyEvent *e) noexcept {
-	return e->cookie;
+	return e ? e->cookie : 0;
 }
 
 const char* Inotifier::getFileName(const InotifyEvent *e) noexcept {
-	if (e->len) {
-		return e->name;
-	} else {
-		return "";
-	}
+	return (e && e->len) ? e->name : "";
 }
 
 } /* namespace wanhive */

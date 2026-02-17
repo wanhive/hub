@@ -78,9 +78,9 @@ protected:
 	/**
 	 * Retrieves the default periodic timer settings in milliseconds. Can be
 	 * safely called by the worker thread.
-	 * @param data timer's period
+	 * @param value stores timer's settings
 	 */
-	void period(Period &data) noexcept;
+	void period(Period &value) const noexcept;
 	/**
 	 * Reports events to the events counter. Can be safely called by the
 	 * worker thread.

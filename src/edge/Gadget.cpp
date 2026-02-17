@@ -74,14 +74,6 @@ bool Gadget::multicast() const noexcept {
 	return ctx.multicast;
 }
 
-void Gadget::interval(unsigned int value) noexcept {
-	ctx.interval = value;
-}
-
-unsigned int Gadget::interval() const noexcept {
-	return ctx.interval;
-}
-
 bool Gadget::share(bool charge) noexcept {
 	return Agent::connected() && online()
 			&& (multicast() || (charge ? Edge::access() : Edge::paired()));
@@ -105,18 +97,10 @@ bool Gadget::service(Message *message) noexcept {
 
 void Gadget::setup() {
 	Edge::pair(ctx.online && !ctx.multicast);
-
-	Period p;
-	Hub::period(p);
-	if (ctx.online && p.once && p.interval) {
-		ctx.interval = p.interval;
-	} else {
-		ctx.interval = 0;
-	}
 }
 
 void Gadget::clear() noexcept {
-	ctx = { false, false, 0 };
+	ctx = { false, false };
 }
 
 } /* namespace wanhive */

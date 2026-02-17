@@ -83,12 +83,6 @@ protected:
 	 * @return remote node's identifier
 	 */
 	unsigned long long peer() const noexcept;
-	//-----------------------------------------------------------------
-	/**
-	 * Provides a timestamp suitable for recording when an event occurs.
-	 * @return seconds elapsed since the Epoch
-	 */
-	static double timestamp() noexcept;
 private:
 	void setup();
 	void clear() noexcept;

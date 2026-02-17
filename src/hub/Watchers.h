@@ -23,7 +23,7 @@ namespace wanhive {
 class Watchers {
 public:
 	/**
-	 * Default constructor: initializes an empty container.
+	 * Constructor: initializes an empty collection.
 	 */
 	Watchers() noexcept;
 	/**
@@ -31,79 +31,79 @@ public:
 	 */
 	~Watchers();
 	/**
-	 * Checks whether a key is present.
-	 * @param key key's value
+	 * Checks if a specified key is present in the collection.
+	 * @param key the key
 	 * @return true if the key exists, false otherwise
 	 */
 	bool contains(unsigned long long key) const noexcept;
 	/**
-	 * Returns watcher associated with a given key.
-	 * @param key key's value
-	 * @return associated watcher, nullptr if the key doesn't exist
+	 * Retrieves the watcher associated with a given key.
+	 * @param key the key
+	 * @return the associated watcher, or nullptr if the key does not exist
 	 */
 	Watcher* select(unsigned long long key) const noexcept;
 	/**
-	 * Inserts a new (key, watcher) pair.
-	 * @param key key's value
-	 * @param w watcher's pointer, its UID is updated to match the key
+	 * Inserts a new (key, watcher) pair and sets the key as the identifier for
+	 * the watcher.
+	 * @param key the key
+	 * @param watcher the watcher
 	 * @return true on success, false otherwise
 	 */
-	bool insert(unsigned long long key, Watcher *w) noexcept;
+	bool insert(unsigned long long key, Watcher *watcher) noexcept;
 	/**
-	 * Inserts a new watcher. Watcher's UID is used as the key.
-	 * @param w watcher's pointer
+	 * Inserts a new watcher and assigns its unique identifier as the key.
+	 * @param watcher the watcher
 	 * @return true on success, false otherwise
 	 */
-	bool insert(Watcher *w) noexcept;
+	bool insert(Watcher *watcher) noexcept;
 	/**
-	 * Inserts a (key, watcher) pair. In case of conflict the old watcher is
-	 * replaced and returned.
-	 * @param key key's value
-	 * @param w watcher to associate with the key, the key is set as watcher's
-	 * unique identifier (UID).
-	 * @return replaced watcher (nullptr on a new insertion)
+	 * Inserts a (key, watcher) pair and sets the key as the identifier for the
+	 * watcher. If there is a conflict with an existing key, the old watcher
+	 * will be replaced and returned.
+	 * @param key the key
+	 * @param watcher the watcher
+	 * @return the replaced watcher (nullptr if it is a new insertion)
 	 */
-	Watcher* replace(unsigned long long key, Watcher *w) noexcept;
+	Watcher* replace(unsigned long long key, Watcher *watcher) noexcept;
 	/**
-	 * Inserts a watcher after resolving any conflict. if another watcher is
-	 * associated with the given watcher's identifier then the conflicting
-	 * watcher will be replaced and returned.
-	 * @param w watcher to insert into the hash table, its identifier will be
-	 * used as the key.
-	 * @return replaced watcher (nullptr on a new insertion)
+	 * Inserts a watcher, resolving any conflicts, and assigns its unique
+	 * identifier as the key. If another watcher is already associated with the
+	 * given identifier, the conflicting watcher will be replaced and returned.
+	 * @param watcher the watcher
+	 * @return the replaced watcher (nullptr if it is a new insertion)
 	 */
-	Watcher* replace(Watcher *w) noexcept;
+	Watcher* replace(Watcher *watcher) noexcept;
 	/**
-	 * Removes a key.
-	 * @param key key's value
+	 * Removes the specified key from the collection.
+	 * @param key the key
 	 */
 	void remove(unsigned long long key) noexcept;
 	/**
-	 * Swaps the watchers associated with a pair of keys. If only one of the two
-	 * keys exists then the existing key is removed from the hash table and
-	 * its watcher is reassigned to the missing key and the new key is set as
-	 * the moved watcher's identifier. If both the keys exist and swapping
-	 * is enabled then the watchers associated with the two keys will be
-	 * swapped and their respective identifiers will be set to the new keys.
-	 * @param first first key
-	 * @param second second key
-	 * @param w stores the watchers associated with the given keys (in order)
-	 * after successful operation.
-	 * @param swap true to enable swapping, false otherwise
-	 * @return true on success, false on failure (could not swap or neither of
-	 * the two keys exists).
+	 * Swaps the watchers associated with a pair of keys. If only one of the
+	 * two keys exists, the existing watcher is removed and reassigned to the
+	 * missing key, with the new key set as the watcher's identifier. If both
+	 * keys exist and swapping is enabled, the watchers associated with the
+	 * two keys will be swapped, and their respective identifiers will be
+	 * updated to the new keys.
+	 * @param first the first key
+	 * @param second the second key
+	 * @param w a reference to store the watchers associated with the given keys
+	 * (in order) after a successful operation.
+	 * @param swap set to true to enable swapping, or false otherwise
+	 * @return true if the operation is successful, false if the swap could not
+	 * be performed or if neither key exists.
 	 */
 	bool move(unsigned long long first, unsigned long long second,
 			Watcher *(&w)[2], bool swap) noexcept;
 	/**
 	 * Iterates through the hash table. The callback function's return value
 	 * determines the behavior:
-	 * [0]: continue,
-	 * [1]: remove the current entry and continue,
-	 * [Any other value]: stop.
-	 * @param fn callback function, receives the next watcher as it's first
-	 * argument, and a generic pointer as it's second argument.
-	 * @param arg callback function's second argument
+	 * [0]: continue iteration,
+	 * [1]: remove the current entry and continue iteration,
+	 * [Any other value]: stop iteration.
+	 * @param fn the callback function, which receives the next watcher as its
+	 * first argument and a generic pointer as its second argument.
+	 * @param arg the second argument for the callback function.
 	 */
 	void iterate(int (*fn)(Watcher*, void*), void *arg);
 private:

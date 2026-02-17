@@ -53,6 +53,18 @@ protected:
 	 */
 	void setPassword(const unsigned char *password, unsigned int length,
 			unsigned int rounds) noexcept;
+	//-----------------------------------------------------------------
+	/**
+	 * Gets the default periodic timer's recurring interval.
+	 * @return interval duration in milliseconds
+	 */
+	unsigned int cycle() const noexcept;
+	/**
+	 * Provides a time-stamp suitable for recording when an event occurs.
+	 * @return seconds elapsed since the Epoch
+	 */
+	static double timestamp() noexcept;
+	//-----------------------------------------------------------------
 private:
 	void connectToAuthenticator() noexcept;
 	void connectToOverlay() noexcept;

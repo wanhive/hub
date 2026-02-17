@@ -32,34 +32,34 @@ Watcher* Watchers::select(unsigned long long key) const noexcept {
 	return w;
 }
 
-bool Watchers::insert(unsigned long long key, Watcher *w) noexcept {
-	if (w && watchers.hmPut(key, w)) {
-		w->setUid(key);
+bool Watchers::insert(unsigned long long key, Watcher *watcher) noexcept {
+	if (watcher && watchers.hmPut(key, watcher)) {
+		watcher->setUid(key);
 		return true;
 	} else {
 		return false;
 	}
 }
 
-bool Watchers::insert(Watcher *w) noexcept {
-	return w && insert(w->getUid(), w);
+bool Watchers::insert(Watcher *watcher) noexcept {
+	return watcher && insert(watcher->getUid(), watcher);
 }
 
-Watcher* Watchers::replace(unsigned long long key, Watcher *w) noexcept {
-	if (w) {
+Watcher* Watchers::replace(unsigned long long key, Watcher *watcher) noexcept {
+	if (watcher) {
 		Watcher *old = nullptr;
-		watchers.hmReplace(key, w, old);
-		w->setUid(key);
+		watchers.hmReplace(key, watcher, old);
+		watcher->setUid(key);
 		return old;
 	} else {
 		return nullptr;
 	}
 }
 
-Watcher* Watchers::replace(Watcher *w) noexcept {
-	if (w) {
+Watcher* Watchers::replace(Watcher *watcher) noexcept {
+	if (watcher) {
 		Watcher *old = nullptr;
-		watchers.hmReplace(w->getUid(), w, old);
+		watchers.hmReplace(watcher->getUid(), watcher, old);
 		return old;
 	} else {
 		return nullptr;

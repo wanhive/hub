@@ -106,12 +106,6 @@ unsigned long long Edge::peer() const noexcept {
 	return meta.id;
 }
 
-double Edge::timestamp() noexcept {
-	double seconds { };
-	Time::now(CLOCK_REALTIME, seconds);
-	return seconds;
-}
-
 void Edge::setup() {
 
 }

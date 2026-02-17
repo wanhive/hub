@@ -72,7 +72,7 @@ void Alarm::reset(const Period &period) {
 	this->period = period;
 }
 
-const Period& Alarm::getPeriod() const noexcept {
+const Period& Alarm::settings() const noexcept {
 	return period;
 }
 
@@ -94,7 +94,7 @@ void Alarm::update(const Period &period) {
 	}
 }
 
-void Alarm::settings(Period &period) {
+void Alarm::retrieve(Period &period) {
 	struct itimerspec time;
 	if (timerfd_gettime(Descriptor::get(), &time) == 0) {
 		period.once = Time::milliseconds(time.it_value);

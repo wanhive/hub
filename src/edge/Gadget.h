@@ -50,16 +50,6 @@ protected:
 	 * @return true if enabled, false if disabled
 	 */
 	bool multicast() const noexcept;
-	/**
-	 * Sets the reporting interval.
-	 * @param value reporting interval
-	 */
-	void interval(unsigned int value) noexcept;
-	/**
-	 * Gets the reporting interval.
-	 * @return reporting interval
-	 */
-	unsigned int interval() const noexcept;
 	//-----------------------------------------------------------------
 	/**
 	 * Checks permission for online data transmission.
@@ -89,7 +79,6 @@ private:
 	struct {
 		bool online;
 		bool multicast;
-		unsigned int interval;
 	} ctx;
 };
 
