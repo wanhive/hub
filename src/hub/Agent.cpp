@@ -188,8 +188,7 @@ void Agent::setPassword(const unsigned char *password, unsigned int length,
 }
 
 unsigned int Agent::cycle() const noexcept {
-	Period p;
-	Hub::period(p);
+	auto p = Hub::period();
 	if (p.once && p.interval) {
 		return p.interval;
 	} else {

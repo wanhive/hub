@@ -18,7 +18,7 @@
 
 namespace wanhive {
 
-Alarm::Alarm(const Period &period, bool blocking) :
+Alarm::Alarm(Period period, bool blocking) :
 		period { period } {
 	create(blocking);
 }
@@ -66,13 +66,13 @@ ssize_t Alarm::read(unsigned long long &count) {
 	}
 }
 
-void Alarm::reset(const Period &period) {
+void Alarm::reset(Period period) {
 	update(period);
 	//Update the settings only if the system call succeeded
 	this->period = period;
 }
 
-const Period& Alarm::settings() const noexcept {
+Period Alarm::settings() const noexcept {
 	return period;
 }
 
@@ -85,7 +85,7 @@ void Alarm::create(bool blocking) {
 	}
 }
 
-void Alarm::update(const Period &period) {
+void Alarm::update(Period period) {
 	struct itimerspec time;
 	time.it_value = Time::convert(period.once);
 	time.it_interval = Time::convert(period.interval);
@@ -94,11 +94,13 @@ void Alarm::update(const Period &period) {
 	}
 }
 
-void Alarm::retrieve(Period &period) {
+Period Alarm::retrieve() {
 	struct itimerspec time;
 	if (timerfd_gettime(Descriptor::get(), &time) == 0) {
+		Period period;
 		period.once = Time::milliseconds(time.it_value);
 		period.interval = Time::milliseconds(time.it_interval);
+		return period;
 	} else {
 		throw SystemException();
 	}

@@ -28,7 +28,7 @@ public:
 	 * @param period timer's settings
 	 * @param blocking true for blocking IO, false for non-blocking IO (default)
 	 */
-	Alarm(const Period &period, bool blocking = false);
+	Alarm(Period period, bool blocking = false);
 	/**
 	 * Destructor
 	 */
@@ -50,16 +50,16 @@ public:
 	 * Resets and restarts the periodic timer with new settings.
 	 * @param period new settings
 	 */
-	void reset(const Period &period);
+	void reset(Period period);
 	/**
 	 * Gets the periodic timer's current settings.
 	 * @return current settings
 	 */
-	const Period& settings() const noexcept;
+	Period settings() const noexcept;
 private:
 	void create(bool blocking);
-	void update(const Period &period);
-	void retrieve(Period &period);
+	void update(Period period);
+	Period retrieve();
 private:
 	Period period;
 };

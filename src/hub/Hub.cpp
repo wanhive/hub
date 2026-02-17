@@ -40,11 +40,11 @@ void Hub::cancel() noexcept {
 	setStatus(0);
 }
 
-void Hub::period(Period &value) const noexcept {
+Period Hub::period() const noexcept {
 	if (prime.alarm) {
-		value = prime.alarm->settings();
+		return prime.alarm->settings();
 	} else {
-		value = { 0, 0 };
+		return {0, 0};
 	}
 }
 
