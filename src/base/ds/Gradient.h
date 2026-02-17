@@ -34,9 +34,9 @@ public:
 	/**
 	 * Maps a given value to it's corresponding color code.
 	 * @param data normalized data in [0, 1] range
-	 * @param color output color code
+	 * @return generated color code
 	 */
-	void map(double data, Color &color) const noexcept;
+	Color map(double data) const noexcept;
 private:
 	const bool _colored;
 };
