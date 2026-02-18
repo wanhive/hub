@@ -9,12 +9,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-- Edge computing base classes.
+- Base classes for edge computing and edge monitoring.
 - Abstract base class (**Trust**) for public key infrastructure.
 
 ### Changed
 
-- Clean up and restructure the cryptography interfaces to ensure consistency.
+- Clean up and restructure the library to improve clarity and performance.
 
 ### Fixed
 
