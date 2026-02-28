@@ -34,19 +34,13 @@ public:
 	 */
 	~Gadget();
 protected:
-	//-----------------------------------------------------------------
-	void configure(void *arg) override;
-	void cleanup() noexcept override;
-	void maintain() noexcept override;
-	void route(Message *message) noexcept override;
-	//-----------------------------------------------------------------
 	/**
-	 * Returns the online option flag.
+	 * Gets the online option flag.
 	 * @return true if enabled, false if disabled
 	 */
 	bool online() const noexcept;
 	/**
-	 * Returns the multicast option flag.
+	 * Gets the multicast option flag.
 	 * @return true if enabled, false if disabled
 	 */
 	bool multicast() const noexcept;
@@ -63,6 +57,12 @@ protected:
 	 * @param channel session or topic identifier
 	 */
 	void prepare(MessageHeader &header, unsigned int channel) const noexcept;
+	//-----------------------------------------------------------------
+	void configure(void *arg) override;
+	void cleanup() noexcept override;
+	void maintain() noexcept override;
+	void route(Message *message) noexcept override;
+	//-----------------------------------------------------------------
 private:
 	//-----------------------------------------------------------------
 	/**

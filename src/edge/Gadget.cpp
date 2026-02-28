@@ -25,6 +25,31 @@ Gadget::~Gadget() {
 
 }
 
+bool Gadget::online() const noexcept {
+	return ctx.online;
+}
+
+bool Gadget::multicast() const noexcept {
+	return ctx.multicast;
+}
+
+bool Gadget::share(bool charge) noexcept {
+	return Agent::connected() && online()
+			&& (multicast() || (charge ? Edge::access() : Edge::paired()));
+}
+
+void Gadget::prepare(MessageHeader &header, unsigned int channel) const noexcept {
+	if (multicast()) {
+		header.setAddress(0, 0);
+		header.setControl(Message::HLEN, 0, channel);
+		header.setContext(2, 0, WH_AQLF_REQUEST);
+	} else {
+		header.setAddress(0, peer());
+		header.setControl(Message::HLEN, 0, channel);
+		header.setContext(0, 0, WH_AQLF_REQUEST);
+	}
+}
+
 void Gadget::configure(void *arg) {
 	try {
 		Edge::configure(arg);
@@ -64,31 +89,6 @@ void Gadget::route(Message *message) noexcept {
 	//Prevents replay (UID is the sink)
 	message->setDestination(getUid());
 	service(message);
-}
-
-bool Gadget::online() const noexcept {
-	return ctx.online;
-}
-
-bool Gadget::multicast() const noexcept {
-	return ctx.multicast;
-}
-
-bool Gadget::share(bool charge) noexcept {
-	return Agent::connected() && online()
-			&& (multicast() || (charge ? Edge::access() : Edge::paired()));
-}
-
-void Gadget::prepare(MessageHeader &header, unsigned int channel) const noexcept {
-	if (multicast()) {
-		header.setAddress(0, 0);
-		header.setControl(Message::HLEN, 0, channel);
-		header.setContext(2, 0, WH_AQLF_REQUEST);
-	} else {
-		header.setAddress(0, peer());
-		header.setControl(Message::HLEN, 0, channel);
-		header.setContext(0, 0, WH_AQLF_REQUEST);
-	}
 }
 
 bool Gadget::service(Message *message) noexcept {

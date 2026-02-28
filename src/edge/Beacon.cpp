@@ -25,6 +25,10 @@ Beacon::~Beacon() {
 
 }
 
+unsigned int Beacon::channel() const noexcept {
+	return ctx.channel;
+}
+
 void Beacon::configure(void *arg) {
 	try {
 		Gadget::configure(arg);
@@ -47,25 +51,20 @@ void Beacon::cleanup() noexcept {
 }
 
 void Beacon::onAlarm(unsigned long long uid, unsigned long long ticks) noexcept {
-	transmit();
-}
-
-unsigned int Beacon::channel() const noexcept {
-	return ctx.channel;
+	if (Gadget::share()) {
+		transmit();
+	}
 }
 
 bool Beacon::service(Message *message) noexcept {
-	if (!(message->getSession() == 0 && Edge::accept(message, Agent::cycle()))) {
-		WH_LOG_DEBUG("Invalid request");
+	if (message->getSession() == 0 && Edge::accept(message, Agent::cycle())) {
+		return true;
+	} else {
+		return false;
 	}
-	return true;
 }
 
 bool Beacon::transmit() noexcept {
-	if (!(channel() && Gadget::share())) {
-		return false;
-	}
-
 	auto message = Message::create();
 	if (!message) {
 		return false;

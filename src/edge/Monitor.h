@@ -34,10 +34,6 @@ public:
 	 */
 	~Monitor();
 protected:
-	//-----------------------------------------------------------------
-	void configure(void *arg) override;
-	void cleanup() noexcept override;
-	//-----------------------------------------------------------------
 	/**
 	 * Periodically sends a session request to the designated remote node.
 	 * @param interval polling interval
@@ -112,6 +108,10 @@ protected:
 	 * @return true on success, false on error
 	 */
 	bool unsubscribe(const Message *message, unsigned int &topic) const noexcept;
+	//-----------------------------------------------------------------
+	void configure(void *arg) override;
+	void cleanup() noexcept override;
+	//-----------------------------------------------------------------
 private:
 	void setup();
 	void clear() noexcept;

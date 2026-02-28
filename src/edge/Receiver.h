@@ -34,15 +34,6 @@ public:
 	 */
 	~Receiver();
 protected:
-	//-----------------------------------------------------------------
-	void expel(Watcher *w) noexcept override;
-	void configure(void *arg) override;
-	void cleanup() noexcept override;
-	void maintain() noexcept override;
-	void route(Message *message) noexcept override;
-	void onAlarm(unsigned long long uid, unsigned long long ticks) noexcept
-			override;
-	//-----------------------------------------------------------------
 	/**
 	 * Gets the topic identifier.
 	 * @return topic identifier
@@ -53,6 +44,11 @@ protected:
 	 * @return true if subscribed, false otherwise
 	 */
 	bool subscribed() const noexcept;
+	/**
+	 * Gets the multicast option flag.
+	 * @return true if enabled, false if disabled
+	 */
+	bool multicast() const noexcept;
 	//-----------------------------------------------------------------
 	/**
 	 * Initiates a subscription request.
@@ -78,8 +74,17 @@ protected:
 	 * @return true on success, false on error
 	 */
 	bool unsubscribe(const Message *message) noexcept;
+	//-----------------------------------------------------------------
+	void expel(Watcher *w) noexcept override;
+	void configure(void *arg) override;
+	void cleanup() noexcept override;
+	void maintain() noexcept override;
+	void route(Message *message) noexcept override;
+	//-----------------------------------------------------------------
 private:
 	//-----------------------------------------------------------------
+	void onAlarm(unsigned long long uid, unsigned long long ticks) noexcept
+			override;
 	/**
 	 * Adapter: processes the incoming messages.
 	 * @param message incoming message
@@ -87,7 +92,6 @@ private:
 	 */
 	virtual bool service(Message *message) noexcept;
 	//-----------------------------------------------------------------
-private:
 	bool receive(Message *message) noexcept;
 	void subscribed(bool status) noexcept;
 	void setup();
@@ -97,6 +101,7 @@ private:
 	struct {
 		unsigned int channel;
 		bool subscribed;
+		bool multicast;
 	} ctx;
 };
 

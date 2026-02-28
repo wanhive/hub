@@ -33,10 +33,6 @@ public:
 	 */
 	~Edge();
 protected:
-	//-----------------------------------------------------------------
-	void configure(void *arg) override;
-	void cleanup() noexcept override;
-	//-----------------------------------------------------------------
 	/**
 	 * Toggles the remote session feature on or off.
 	 * @param true to enable, false to disable
@@ -83,6 +79,10 @@ protected:
 	 * @return remote node's identifier
 	 */
 	unsigned long long peer() const noexcept;
+	//-----------------------------------------------------------------
+	void configure(void *arg) override;
+	void cleanup() noexcept override;
+	//-----------------------------------------------------------------
 private:
 	void setup();
 	void clear() noexcept;

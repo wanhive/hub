@@ -25,25 +25,6 @@ Monitor::~Monitor() {
 
 }
 
-void Monitor::configure(void *arg) {
-	try {
-		Agent::configure(arg);
-		WH_LOG_DEBUG("Setting things up...");
-		setup();
-	} catch (const BaseException &e) {
-		WH_LOG_EXCEPTION(e);
-		throw;
-	} catch (...) {
-		WH_LOG_EXCEPTION_U();
-		throw Exception(EX_OPERATION);
-	}
-}
-
-void Monitor::cleanup() noexcept {
-	clear();
-	Agent::cleanup();
-}
-
 bool Monitor::ping(unsigned int interval, unsigned int sqn,
 		unsigned int tokens) noexcept {
 	if (edge.latency == 0) {
@@ -176,6 +157,25 @@ bool Monitor::unsubscribe(const Message *message,
 	} else {
 		return false;
 	}
+}
+
+void Monitor::configure(void *arg) {
+	try {
+		Agent::configure(arg);
+		WH_LOG_DEBUG("Setting things up...");
+		setup();
+	} catch (const BaseException &e) {
+		WH_LOG_EXCEPTION(e);
+		throw;
+	} catch (...) {
+		WH_LOG_EXCEPTION_U();
+		throw Exception(EX_OPERATION);
+	}
+}
+
+void Monitor::cleanup() noexcept {
+	clear();
+	Agent::cleanup();
 }
 
 void Monitor::setup() {

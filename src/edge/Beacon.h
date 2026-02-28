@@ -34,19 +34,21 @@ public:
 	 */
 	~Beacon();
 protected:
+	/**
+	 * Gets the transmission channel (session/topic) identifier.
+	 * @return channel identifier
+	 */
+	unsigned int channel() const noexcept;
 	//-----------------------------------------------------------------
 	void configure(void *arg) override;
 	void cleanup() noexcept override;
+	//-----------------------------------------------------------------
+private:
+	//-----------------------------------------------------------------
 	void onAlarm(unsigned long long uid, unsigned long long ticks) noexcept
 			override;
-	//-----------------------------------------------------------------
-	/**
-	 * Returns the transmission channel (session or topic identifier).
-	 * @return transmission channel
-	 */
-	unsigned int channel() const noexcept;
-private:
 	bool service(Message *message) noexcept override;
+	//-----------------------------------------------------------------
 	bool transmit() noexcept;
 	void setup();
 	void clear() noexcept;

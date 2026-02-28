@@ -27,25 +27,6 @@ Edge::~Edge() {
 
 }
 
-void Edge::configure(void *arg) {
-	try {
-		Agent::configure(arg);
-		WH_LOG_DEBUG("Setting things up...");
-		setup();
-	} catch (const BaseException &e) {
-		WH_LOG_EXCEPTION(e);
-		throw;
-	} catch (...) {
-		WH_LOG_EXCEPTION_U();
-		throw Exception(EX_OPERATION);
-	}
-}
-
-void Edge::cleanup() noexcept {
-	clear();
-	Agent::cleanup();
-}
-
 void Edge::pair(bool enable) noexcept {
 	ctx.pair = enable;
 	if (!enable) {
@@ -104,6 +85,25 @@ bool Edge::paired() const noexcept {
 
 unsigned long long Edge::peer() const noexcept {
 	return meta.id;
+}
+
+void Edge::configure(void *arg) {
+	try {
+		Agent::configure(arg);
+		WH_LOG_DEBUG("Setting things up...");
+		setup();
+	} catch (const BaseException &e) {
+		WH_LOG_EXCEPTION(e);
+		throw;
+	} catch (...) {
+		WH_LOG_EXCEPTION_U();
+		throw Exception(EX_OPERATION);
+	}
+}
+
+void Edge::cleanup() noexcept {
+	clear();
+	Agent::cleanup();
 }
 
 void Edge::setup() {
