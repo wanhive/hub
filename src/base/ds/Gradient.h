@@ -36,7 +36,7 @@ public:
 	 * @param data normalized data in [0, 1] range
 	 * @return generated color code
 	 */
-	Color map(double data) const noexcept;
+	RGB map(double data) const noexcept;
 private:
 	const bool _colored;
 };

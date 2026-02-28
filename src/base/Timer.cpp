@@ -33,7 +33,7 @@ void Timer::now() noexcept {
 }
 
 bool Timer::expired(unsigned int milliseconds) noexcept {
-	auto diff = ((unsigned long long) milliseconds) * Factor::MICRO_IN_MILLI;
+	auto diff = ((unsigned long long) milliseconds) * Scale::MICRO_IN_MILLI;
 	auto mark = currentTime();
 	if ((diff == 0) || (mark < t) || ((mark - t) > diff)) {
 		t = mark;
@@ -49,8 +49,7 @@ double Timer::elapsed() const noexcept {
 
 bool Timer::elapsed(unsigned int milliseconds) const noexcept {
 	if (milliseconds) {
-		auto diff = ((unsigned long long) milliseconds)
-				* Factor::MICRO_IN_MILLI;
+		auto diff = ((unsigned long long) milliseconds) * Scale::MICRO_IN_MILLI;
 		auto mark = currentTime();
 		return (mark < t) || ((mark - t) > diff);
 	} else {
@@ -112,13 +111,13 @@ unsigned long long Timer::seed() noexcept {
 unsigned long long Timer::currentTime() noexcept {
 	Time t(CLOCK_MONOTONIC); //Cannot fail
 	decltype(auto) ts = t.get();
-	return (((unsigned long long) ts.tv_sec * Factor::MICRO)
-			+ (ts.tv_nsec / Factor::NANO_IN_MICRO));
+	return (((unsigned long long) ts.tv_sec * Scale::MICRO)
+			+ (ts.tv_nsec / Scale::NANO_IN_MICRO));
 }
 
 double Timer::difference(unsigned long long start,
 		unsigned long long end) noexcept {
-	return ((double) (end - start) / (double) Factor::MICRO);
+	return ((double) (end - start) / (double) Scale::MICRO);
 }
 
 } /* namespace wanhive */

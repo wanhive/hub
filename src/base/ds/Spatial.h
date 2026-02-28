@@ -42,7 +42,7 @@ template<typename T> struct Spatial {
 /**
  * RGB (additive) color model.
  */
-struct Color {
+struct RGB {
 	/*! Red channel */
 	unsigned char red;
 	/*! Green channel */
@@ -64,7 +64,7 @@ struct Period {
 /**
  * Commonly used metric prefixes.
  */
-struct Factor {
+struct Scale {
 	/*! Metric prefix Nano- */
 	constexpr static long NANO = 1000000000L;
 	/*! Metric prefix Micro- */

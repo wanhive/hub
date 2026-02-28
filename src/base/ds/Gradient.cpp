@@ -15,7 +15,7 @@
 
 namespace {
 
-wanhive::Color grayscale(double data) noexcept {
+wanhive::RGB grayscale(double data) noexcept {
 	if (std::isnan(data) || data <= 0) {
 		return {0, 0, 0};
 	} else if (data >= 1) {
@@ -26,7 +26,7 @@ wanhive::Color grayscale(double data) noexcept {
 	}
 }
 
-wanhive::Color colored(double data) noexcept {
+wanhive::RGB colored(double data) noexcept {
 	static constexpr unsigned NUM_COLORS = 7;
 	static constexpr double colors[NUM_COLORS][3] = { { 0, 0, 0 }, { 0, 0, 1 },
 			{ 0, 1, 1 }, { 0, 1, 0 }, { 1, 1, 0 }, { 1, 0, 0 }, { 1, 1, 1 } };
@@ -53,11 +53,11 @@ wanhive::Color colored(double data) noexcept {
 	auto blue = (colors[idx2][2] - colors[idx1][2]) * fractBetween
 			+ colors[idx1][2];
 
-	wanhive::Color color;
-	color.red = static_cast<unsigned char>(red * 255);
-	color.green = static_cast<unsigned char>(green * 255);
-	color.blue = static_cast<unsigned char>(blue * 255);
-	return color;
+	wanhive::RGB rgb;
+	rgb.red = static_cast<unsigned char>(red * 255);
+	rgb.green = static_cast<unsigned char>(green * 255);
+	rgb.blue = static_cast<unsigned char>(blue * 255);
+	return rgb;
 }
 
 }  // namespace
@@ -73,7 +73,7 @@ Gradient::~Gradient() {
 
 }
 
-Color Gradient::map(double data) const noexcept {
+RGB Gradient::map(double data) const noexcept {
 	if (_colored) {
 		return colored(data);
 	} else {

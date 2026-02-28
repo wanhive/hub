@@ -157,32 +157,31 @@ public:
 	 * @param out valid output buffer
 	 * @param width image's width
 	 * @param pixel pixel's coordinates
-	 * @param color desired color
+	 * @param rgb desired color
 	 */
 	static void paint(unsigned char *out, unsigned width,
-			Planar<unsigned> pixel, Color color) noexcept {
+			Planar<unsigned> pixel, RGB rgb) noexcept {
 		auto index = (pixel.y * width + pixel.x) * 3;
-		out[index] = color.red;
-		out[index + 1] = color.green;
-		out[index + 2] = color.blue;
+		out[index] = rgb.red;
+		out[index + 1] = rgb.green;
+		out[index + 2] = rgb.blue;
 	}
 	/**
 	 * Performs pixel replication.
 	 * @param out output buffer of sufficient size
-	 * @param color original pixel's color
+	 * @param rgb original pixel's color
 	 * @param pixel original pixel's coordinates
 	 * @param limits original image's dimensions
 	 * @param scale desired scale multiplier
 	 */
-	static void replicate(unsigned char *out, Color color,
-			Planar<unsigned> pixel, Planar<unsigned> limits,
-			unsigned scale = 4) noexcept {
+	static void replicate(unsigned char *out, RGB rgb, Planar<unsigned> pixel,
+			Planar<unsigned> limits, unsigned scale = 4) noexcept {
 		auto newWidth = limits.x * scale;
 		for (unsigned repY = 0; repY < scale; ++repY) {
 			for (unsigned repX = 0; repX < scale; ++repX) {
 				auto newX = pixel.x * scale + repX;
 				auto newY = pixel.y * scale + repY;
-				paint(out, newWidth, { newX, newY }, color);
+				paint(out, newWidth, { newX, newY }, rgb);
 			}
 		}
 	}
