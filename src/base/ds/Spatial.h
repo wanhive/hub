@@ -40,6 +40,17 @@ template<typename T> struct Spatial {
 };
 
 /**
+ * Square or cubic grid element.
+ * @tparam T component type
+ */
+template<typename T> struct Cell {
+	/*! Cell's breadth */
+	T size;
+	/*! Cell's border */
+	T edge;
+};
+
+/**
  * RGB (additive) color model.
  */
 struct RGB {
