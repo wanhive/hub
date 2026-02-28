@@ -13,6 +13,7 @@
 #include "Manager.h"
 #include "ConfigTool.h"
 #include "../base/version.h"
+#include "../edge/Beacon.h"
 #include "../edge/Receiver.h"
 #include "../server/auth/AuthenticationHub.h"
 #include "../server/core/OverlayHub.h"
@@ -143,12 +144,15 @@ void Manager::executeHub() noexcept {
 		mode = 1;
 	} else if (ctx.type == 'a') {
 		mode = 2;
-	} else if (ctx.type == 'm') {
+	} else if (ctx.type == 'r') {
 		mode = 3;
+	} else if (ctx.type == 'b') {
+		mode = 4;
 	} else if (ctx.type == '\0') {
 		std::cout << "Select an option\n" << "1: Overlay server (-to)\n"
 				<< "2: Authentication server (-ta)\n"
-				<< "3: Monitoring hub (-tm)\n" << ":: ";
+				<< "3: Receiver hub (-tr)\n" << "4: Beacon hub (-tb)\n"
+				<< ":: ";
 		std::cin >> mode;
 		if (CommandLine::inputError()) {
 			return;
@@ -173,6 +177,8 @@ void Manager::executeHub() noexcept {
 			ctx.hub = new AuthenticationHub(ctx.uid, ctx.config);
 		} else if (mode == 3) {
 			ctx.hub = new Receiver(ctx.uid, ctx.config);
+		} else if (mode == 4) {
+			ctx.hub = new Beacon(ctx.uid, ctx.config);
 		} else {
 			std::cerr << "Invalid option" << std::endl;
 			return;
