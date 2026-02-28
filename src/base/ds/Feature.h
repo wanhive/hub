@@ -187,20 +187,21 @@ public:
 	}
 	/**
 	 * Performs rectangular grid pattern conversion.
-	 * @param in input image
-	 * @param original input image's dimensions
+	 * @param in original image
+	 * @param limits original image's dimensions
 	 * @param cell grid's cell
-	 * @param out output image buffer. Set to nullptr to calculate the output
-	 * image's dimensions.
+	 * @param out output buffer for the generated image. Set to nullptr to
+	 * calculate the generated image's dimensions.
 	 * @param result maximum buffer capacity as input and generated image's
 	 * dimensions as output (value-result argument).
 	 * @return true on success, false on error
 	 */
-	static bool grid(const unsigned char *in, Planar<unsigned> original,
-			Cell<unsigned> cell, unsigned char *out, Planar<unsigned> &result) {
+	static bool grid(const unsigned char *in, Planar<unsigned> limits,
+			Cell<unsigned> cell, unsigned char *out,
+			Planar<unsigned> &result) noexcept {
 		cell.edge = (cell.edge <= cell.size) ? cell.edge : 0;
-		auto width = original.x * cell.size;
-		auto height = original.y * cell.size;
+		auto width = limits.x * cell.size;
+		auto height = limits.y * cell.size;
 
 		if (!out) {
 			result = { width, height };
@@ -214,9 +215,9 @@ public:
 		auto inner = cell.edge;
 		auto outer = (cell.size - cell.edge);
 
-		for (unsigned y = 0; y < original.y; ++y) {
-			for (unsigned x = 0; x < original.x; ++x) {
-				auto index = (y * original.x + x) * 3;
+		for (unsigned y = 0; y < limits.y; ++y) {
+			for (unsigned x = 0; x < limits.x; ++x) {
+				auto index = (y * limits.x + x) * 3;
 				RGB rgb { in[index], in[index + 1], in[index + 2] };
 				for (unsigned py = 0; py < cell.size; ++py) {
 					for (unsigned px = 0; px < cell.size; ++px) {
