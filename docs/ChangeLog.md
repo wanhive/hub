@@ -11,10 +11,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Base classes for edge computing and edge monitoring.
 - Abstract base class (**Trust**) for public key infrastructure.
+- RGB bitmap to grid pattern generator function in the **Feature** class.
 
 ### Changed
 
-- Clean up and restructure the library to improve clarity and performance.
+- Clean up and restructure the code-base.
 
 ### Fixed
 
