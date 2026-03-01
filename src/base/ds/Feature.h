@@ -153,7 +153,19 @@ public:
 	}
 	//-----------------------------------------------------------------
 	/**
-	 * Sets pixel's RGB color in a buffer.
+	 * Gets a pixel's RGB color.
+	 * @param in image's buffer
+	 * @param width image's width
+	 * @param pixel pixel's coordinates
+	 * @return pixel's color
+	 */
+	static RGB color(const unsigned char *in, unsigned int width,
+			Planar<unsigned> pixel) noexcept {
+		const auto index = (pixel.y * width + pixel.x) * 3;
+		return RGB { in[index], in[index + 1], in[index + 2] };
+	}
+	/**
+	 * Sets a pixel's RGB color.
 	 * @param out valid output buffer
 	 * @param width image's width
 	 * @param pixel pixel's coordinates
@@ -161,10 +173,20 @@ public:
 	 */
 	static void paint(unsigned char *out, unsigned width,
 			Planar<unsigned> pixel, RGB rgb) noexcept {
-		auto index = (pixel.y * width + pixel.x) * 3;
+		const auto index = (pixel.y * width + pixel.x) * 3;
 		out[index] = rgb.red;
 		out[index + 1] = rgb.green;
 		out[index + 2] = rgb.blue;
+	}
+	/**
+	 * Calculates the scaled up image's dimensions.
+	 * @param limits original image's dimensions
+	 * @param scale scaling-up factor
+	 * @return scaled up image's dimensions
+	 */
+	static Planar<unsigned> replicate(Planar<unsigned> limits,
+			unsigned scale) noexcept {
+		return Planar<unsigned> { limits.x * scale, limits.y * scale };
 	}
 	/**
 	 * Performs pixel replication.
@@ -172,70 +194,54 @@ public:
 	 * @param rgb original pixel's color
 	 * @param pixel original pixel's coordinates
 	 * @param limits original image's dimensions
-	 * @param scale desired scale multiplier
+	 * @param scale scaling-up factor
 	 */
 	static void replicate(unsigned char *out, RGB rgb, Planar<unsigned> pixel,
-			Planar<unsigned> limits, unsigned scale = 4) noexcept {
-		auto newWidth = limits.x * scale;
-		for (unsigned repY = 0; repY < scale; ++repY) {
-			for (unsigned repX = 0; repX < scale; ++repX) {
-				auto newX = pixel.x * scale + repX;
-				auto newY = pixel.y * scale + repY;
-				paint(out, newWidth, { newX, newY }, rgb);
+			Planar<unsigned> limits, unsigned scale) noexcept {
+		const auto width = limits.x * scale;
+		for (unsigned py = 0; py < scale; ++py) {
+			for (unsigned px = 0; px < scale; ++px) {
+				auto ox = pixel.x * scale + px;
+				auto oy = pixel.y * scale + py;
+				paint(out, width, { ox, oy }, rgb);
 			}
 		}
 	}
 	/**
-	 * Performs rectangular grid pattern conversion.
-	 * @param in original image
+	 * Calculates grid pattern's dimensions.
 	 * @param limits original image's dimensions
 	 * @param cell grid's cell
-	 * @param out output buffer for the generated image. Set to nullptr to
-	 * calculate the generated image's dimensions.
-	 * @param result maximum buffer capacity as input and generated image's
-	 * dimensions as output (value-result argument).
-	 * @return true on success, false on error
+	 * @return grid pattern's dimensions
 	 */
-	static bool grid(const unsigned char *in, Planar<unsigned> limits,
-			Cell<unsigned> cell, unsigned char *out,
-			Planar<unsigned> &result) noexcept {
-		cell.edge = (cell.edge <= cell.size) ? cell.edge : 0;
-		auto width = limits.x * cell.size;
-		auto height = limits.y * cell.size;
-
-		if (!out) {
-			result = { width, height };
-			return true;
-		} else if ((result.x * result.y) < (width * height)) {
-			return false;
-		} else {
-			result = { width, height };
-		}
-
-		auto inner = cell.edge;
-		auto outer = (cell.size - cell.edge);
-
-		for (unsigned y = 0; y < limits.y; ++y) {
-			for (unsigned x = 0; x < limits.x; ++x) {
-				auto index = (y * limits.x + x) * 3;
-				RGB rgb { in[index], in[index + 1], in[index + 2] };
-				for (unsigned py = 0; py < cell.size; ++py) {
-					for (unsigned px = 0; px < cell.size; ++px) {
-						auto ox = x * cell.size + px;
-						auto oy = y * cell.size + py;
-						if (!(px < inner || px > outer || py < inner
-								|| py > outer)) {
-							paint(out, width, { ox, oy }, rgb);
-						} else {
-							paint(out, width, { ox, oy }, { 0, 0, 0 });
-						}
-					}
+	static Planar<unsigned> grid(Planar<unsigned> limits,
+			Cell<unsigned> cell) noexcept {
+		const auto scale = (cell.size + cell.edge);
+		return replicate(limits, scale);
+	}
+	/**
+	 * Performs rectangular grid pattern conversion.
+	 * @param out output buffer of sufficient size
+	 * @param rgb original pixel's color
+	 * @param pixel original pixel's coordinates
+	 * @param limits original image's dimensions
+	 * @param cell grid's cell
+	 */
+	static void grid(unsigned char *out, RGB rgb, Planar<unsigned> pixel,
+			Planar<unsigned> limits, Cell<unsigned> cell) noexcept {
+		const auto scale = (cell.size + cell.edge);
+		const auto width = limits.x * scale;
+		for (unsigned py = 0; py < scale; ++py) {
+			for (unsigned px = 0; px < scale; ++px) {
+				auto ox = pixel.x * scale + px;
+				auto oy = pixel.y * scale + py;
+				if (!(px < cell.edge || px > cell.size || py < cell.edge
+						|| py > cell.size)) {
+					paint(out, width, { ox, oy }, rgb);
+				} else {
+					paint(out, width, { ox, oy }, { 0, 0, 0 });
 				}
-
 			}
 		}
-
-		return true;
 	}
 };
 
