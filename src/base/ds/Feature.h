@@ -179,10 +179,10 @@ public:
 		out[index + 2] = rgb.blue;
 	}
 	/**
-	 * Calculates the scaled up image's dimensions.
+	 * Calculates the scaled-up image's dimensions.
 	 * @param limits original image's dimensions
 	 * @param scale scaling-up factor
-	 * @return scaled up image's dimensions
+	 * @return scaled-up image's dimensions
 	 */
 	static Planar<unsigned> replicate(Planar<unsigned> limits,
 			unsigned scale) noexcept {
@@ -208,7 +208,7 @@ public:
 		}
 	}
 	/**
-	 * Calculates grid pattern's dimensions.
+	 * Calculates the grid pattern's dimensions.
 	 * @param limits original image's dimensions
 	 * @param cell grid's cell
 	 * @return grid pattern's dimensions
