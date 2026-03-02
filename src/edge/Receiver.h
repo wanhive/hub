@@ -91,6 +91,11 @@ private:
 	 * @return true on success, false on error
 	 */
 	virtual bool service(Message *message) noexcept;
+	/**
+	 * Adapter: handles session meta-data changes.
+	 * @return true on success, false on error
+	 */
+	virtual bool cascade() noexcept;
 	//-----------------------------------------------------------------
 	bool receive(Message *message) noexcept;
 	void subscribed(bool status) noexcept;

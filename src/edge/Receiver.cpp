@@ -146,6 +146,10 @@ void Receiver::onAlarm(unsigned long long uid,
 	}
 }
 
+bool Receiver::cascade() noexcept {
+	return true;
+}
+
 bool Receiver::service(Message *message) noexcept {
 	message->header().print();
 	return true;
@@ -159,7 +163,7 @@ bool Receiver::receive(Message *message) noexcept {
 	switch (cmd) {
 	case WH_CMD_NULL:
 		if ((session == 0) && (qlf == 0) && (status != WH_AQLF_REQUEST)) {
-			return Monitor::connect(message);
+			return Monitor::connect(message) && cascade();
 		} else {
 			return service(message);
 		}
