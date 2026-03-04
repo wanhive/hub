@@ -137,7 +137,7 @@ bool Monitor::unsubscribe(unsigned int topic) noexcept {
 
 bool Monitor::subscribe(const Message *message,
 		unsigned int &topic) const noexcept {
-	if (message
+	if (message && (message->getSource() == 0)
 			&& message->checkContext(WH_CMD_MULTICAST, WH_QLF_SUBSCRIBE,
 					WH_AQLF_ACCEPTED)) {
 		topic = message->getSession();
@@ -149,7 +149,7 @@ bool Monitor::subscribe(const Message *message,
 
 bool Monitor::unsubscribe(const Message *message,
 		unsigned int &topic) const noexcept {
-	if (message
+	if (message && (message->getSource() == 0)
 			&& message->checkContext(WH_CMD_MULTICAST, WH_QLF_UNSUBSCRIBE,
 					WH_AQLF_ACCEPTED)) {
 		topic = message->getSession();
