@@ -86,6 +86,11 @@ private:
 	void onAlarm(unsigned long long uid, unsigned long long ticks) noexcept
 			override;
 	/**
+	 * Adapter: handles the session changes.
+	 * @return true on success, false on error
+	 */
+	virtual bool onboard() noexcept;
+	/**
 	 * Adapter: processes the incoming messages.
 	 * @param message incoming message
 	 * @return true on success, false on error
