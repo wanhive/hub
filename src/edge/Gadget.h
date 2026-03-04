@@ -72,7 +72,6 @@ private:
 	 */
 	virtual bool service(Message *message) noexcept;
 	//-----------------------------------------------------------------
-private:
 	void setup();
 	void clear() noexcept;
 private:
