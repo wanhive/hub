@@ -312,7 +312,7 @@ void Hub::cleanup() noexcept {
 		await();
 		//-----------------------------------------------------------------
 		//2. Disconnect: recycle all watchers
-		iterate(deleteWatchers, nullptr);
+		iterate(recycle, nullptr);
 		//-----------------------------------------------------------------
 		//3. Clean up all the containers
 		guests.clear();
@@ -504,9 +504,9 @@ bool Hub::handle(Socket *socket) noexcept {
 	} else if (socket->testEvents(IO_CLOSE)) {
 		return disable(socket);
 	} else if (socket->isType(SOCKET_LISTENER)) {
-		return acceptConnection(socket);
+		return accept(socket);
 	} else {
-		return processConnection(socket);
+		return service(socket);
 	}
 }
 
@@ -516,7 +516,7 @@ bool Hub::handle(Stream *stream) noexcept {
 	} else if (stream->testEvents(IO_CLOSE)) {
 		return disable(stream);
 	} else {
-		return processStream(stream);
+		return service(stream);
 	}
 }
 
@@ -551,9 +551,9 @@ void Hub::setup(void *arg) {
 void Hub::loop() {
 	while (running) {
 		poll(out.isEmpty());
-		publish();
+		deliver();
 		dispatch();
-		process();
+		ingest();
 		maintain();
 	}
 }
@@ -588,7 +588,7 @@ void Hub::initReactor() {
 }
 
 void Hub::initListener() {
-	Socket *listener = nullptr;
+	Socket *listener { };
 	try {
 		if (!ctx.listen) {
 			return;
@@ -622,7 +622,7 @@ void Hub::initListener() {
 }
 
 void Hub::initAlarm() {
-	Alarm *alarm = nullptr;
+	Alarm *alarm { };
 	try {
 		if (ctx.expiration) {
 			alarm = new Alarm( { ctx.expiration, ctx.interval });
@@ -645,7 +645,7 @@ void Hub::initAlarm() {
 }
 
 void Hub::initEvent() {
-	Event *event = nullptr;
+	Event *event { };
 	try {
 		event = new Event(ctx.semaphore);
 		attach(event, IO_READ, (WATCHER_ACTIVE | WATCHER_CRITICAL));
@@ -662,7 +662,7 @@ void Hub::initEvent() {
 }
 
 void Hub::initInotifier() {
-	Inotifier *inotifier = nullptr;
+	Inotifier *inotifier { };
 	try {
 		inotifier = new Inotifier();
 		attach(inotifier, IO_READ, (WATCHER_ACTIVE | WATCHER_CRITICAL));
@@ -679,7 +679,7 @@ void Hub::initInotifier() {
 }
 
 void Hub::initInterrupt() {
-	Interrupt *interrupt = nullptr;
+	Interrupt *interrupt { };
 	try {
 		if (ctx.signal) {
 			interrupt = new Interrupt();
@@ -724,7 +724,7 @@ void Hub::await() {
 	}
 }
 
-void Hub::publish() noexcept {
+void Hub::deliver() noexcept {
 	//-----------------------------------------------------------------
 	/*
 	 * Incoming Allocation Strategy (IAS)
@@ -770,7 +770,7 @@ void Hub::publish() noexcept {
 			forwardCapacity--;
 		} else if (drop(msg)) {
 			//Message can be dropped
-			countDropped(msg->getLength());
+			dropped(msg->getLength());
 			Message::recycle(msg);
 			continue;
 		}
@@ -784,7 +784,7 @@ void Hub::publish() noexcept {
 	}
 }
 
-void Hub::process() noexcept {
+void Hub::ingest() noexcept {
 	Message *message;
 	while (in.get(message)) {
 		if (!message->testFlags(MSG_PROCESSED)) {
@@ -796,54 +796,53 @@ void Hub::process() noexcept {
 	}
 }
 
-bool Hub::acceptConnection(Socket *listener) noexcept {
+bool Hub::accept(Socket *listener) noexcept {
 	//Limited protection against flooding of new connections
 	if (!guests.hasSpace()) {
 		//Clean up timed out temporary connections
 		reap();
 	}
 	//-----------------------------------------------------------------
-	Socket *newConn = nullptr;
+	Socket *client { };
 	try {
-		newConn = listener->accept();
-		if (!newConn) {
+		client = listener->accept();
+		if (!client) {
 			//No more connections waiting
 			return false;
 		}
 
 		//Announce the new arrival
-		WH_LOG_DEBUG("A new connection %llu has arrived", newConn->getUid());
+		WH_LOG_DEBUG("A new connection %llu has arrived", client->getUid());
 		/*
 		 * Maintain this sequence to prevent resource leak
 		 * and other unknown issues.
 		 */
 		//Activate the Connection
-		if (guests.put(newConn->getUid())) {
-			attach(newConn, IO_WR, 0);
-			newConn->setOption(WATCHER_OUTBOUND_MAX, ctx.outward);
+		if (guests.put(client->getUid())) {
+			attach(client, IO_WR, 0);
+			client->setOption(WATCHER_OUTBOUND_MAX, ctx.outward);
 		} else {
 			throw Exception(EX_OVERFLOW);
 		}
 	} catch (const BaseException &e) {
 		WH_LOG_EXCEPTION(e);
-		delete newConn;
+		delete client;
 	}
 	//We might be having more connections waiting
 	return true;
 }
 
-bool Hub::processConnection(Socket *connection) noexcept {
+bool Hub::service(Socket *socket) noexcept {
 	try {
 		//-----------------------------------------------------------------
 		//First drain out all the messages
-		if (connection->testEvents(IO_WRITE)
-				&& connection->testFlags(WATCHER_OUT)) {
-			connection->write();
+		if (socket->testEvents(IO_WRITE) && socket->testFlags(WATCHER_OUT)) {
+			socket->write();
 		}
 
 		//Read from the socket
-		if (connection->testEvents(IO_READ) && (connection->read() == -1)) {
-			return disable(connection);
+		if (socket->testEvents(IO_READ) && (socket->read() == -1)) {
+			return disable(socket);
 		}
 		//-----------------------------------------------------------------
 		/*
@@ -852,7 +851,7 @@ bool Hub::processConnection(Socket *connection) noexcept {
 		 */
 		unsigned int cycleLimit;
 		if (ctx.regulate) {
-			cycleLimit = throttle(connection);
+			cycleLimit = throttle(socket);
 		} else {
 			cycleLimit = Twiddler::min(ctx.inward, Message::unallocated());
 		}
@@ -863,24 +862,24 @@ bool Hub::processConnection(Socket *connection) noexcept {
 		 */
 		unsigned int msgCount = 0;
 		while (msgCount < cycleLimit) {
-			Message *message = connection->obtain();
+			Message *message = socket->obtain();
 			if (message) {
 				in.put(message);
-				countReceived(message->getLength());
+				received(message->getLength());
 				msgCount++;
 			} else {
 				break;
 			}
 		}
 		//-----------------------------------------------------------------
-		return connection->isReady() || (ctx.inward && (msgCount == cycleLimit));
+		return socket->isReady() || (ctx.inward && (msgCount == cycleLimit));
 	} catch (const BaseException &e) {
 		WH_LOG_EXCEPTION(e);
-		return disable(connection);
+		return disable(socket);
 	}
 }
 
-bool Hub::processStream(Stream *stream) noexcept {
+bool Hub::service(Stream *stream) noexcept {
 	try {
 		//-----------------------------------------------------------------
 		//Write to the stream
@@ -906,7 +905,7 @@ bool Hub::drop(Message *message) const noexcept {
 			&& (message->hop() > ctx.ttl);
 }
 
-unsigned int Hub::throttle(const Socket *connection) const noexcept {
+unsigned int Hub::throttle(const Socket *socket) const noexcept {
 	/*
 	 * [Congestion Control]: set limit on the number of messages the given
 	 * connection may deliver in the current event loop
@@ -915,7 +914,7 @@ unsigned int Hub::throttle(const Socket *connection) const noexcept {
 	//Few messages are reserved for overlay management
 	if (available > ctx.reserved) {
 		available -= ctx.reserved;
-		if (!connection->testFlags(SOCKET_OVERLAY | SOCKET_PRIORITY)) {
+		if (!socket->testFlags(SOCKET_OVERLAY | SOCKET_PRIORITY)) {
 			//A normal client connection
 			auto ratio = ((double) available) / Message::poolSize();
 			auto limit = (unsigned int) (ctx.inward * ratio);
@@ -924,7 +923,7 @@ unsigned int Hub::throttle(const Socket *connection) const noexcept {
 			//An important connection
 			return Twiddler::min(ctx.inward, available);
 		}
-	} else if (connection->testFlags(SOCKET_PRIORITY)) {
+	} else if (socket->testFlags(SOCKET_PRIORITY)) {
 		//A priority connection
 		return Twiddler::min(ctx.reserved, available);
 	} else {
@@ -933,12 +932,12 @@ unsigned int Hub::throttle(const Socket *connection) const noexcept {
 	}
 }
 
-void Hub::countReceived(unsigned int bytes) noexcept {
+void Hub::received(unsigned int bytes) noexcept {
 	traffic.received.units += 1;
 	traffic.received.bytes += bytes;
 }
 
-void Hub::countDropped(unsigned int bytes) noexcept {
+void Hub::dropped(unsigned int bytes) noexcept {
 	traffic.dropped.units += 1;
 	traffic.dropped.bytes += bytes;
 }
@@ -950,7 +949,7 @@ void Hub::clear() noexcept {
 	memset(&ctx, 0, sizeof(ctx));
 }
 
-int Hub::deleteWatchers(Watcher *w, void *arg) noexcept {
+int Hub::recycle(Watcher *w, void *arg) noexcept {
 	delete w;
 	return 1; // Remove the key from the hash table
 }

@@ -306,29 +306,29 @@ private:
 	/*
 	 * Message processing
 	 */
-	void publish() noexcept;
-	void process() noexcept;
+	void deliver() noexcept;
+	void ingest() noexcept;
 	//-----------------------------------------------------------------
 	/*
 	 * Connection and stream management
 	 */
-	bool acceptConnection(Socket *listener) noexcept;
-	bool processConnection(Socket *connection) noexcept;
-	bool processStream(Stream *stream) noexcept;
+	bool accept(Socket *listener) noexcept;
+	bool service(Socket *socket) noexcept;
+	bool service(Stream *stream) noexcept;
 	//-----------------------------------------------------------------
 	/*
 	 * Traffic limiting, shaping and policing
 	 */
 	bool drop(Message *message) const noexcept;
-	unsigned int throttle(const Socket *connection) const noexcept;
-	void countReceived(unsigned int bytes) noexcept;
-	void countDropped(unsigned int bytes) noexcept;
+	unsigned int throttle(const Socket *socket) const noexcept;
+	void received(unsigned int bytes) noexcept;
+	void dropped(unsigned int bytes) noexcept;
 	//-----------------------------------------------------------------
 	/*
 	 * Cleanup helpers
 	 */
 	void clear() noexcept;
-	static int deleteWatchers(Watcher *w, void *arg) noexcept;
+	static int recycle(Watcher *w, void *arg) noexcept;
 private:
 	const unsigned long long uid;
 	bool healthy;
