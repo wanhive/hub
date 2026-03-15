@@ -16,7 +16,7 @@
 
 namespace {
 
-constexpr int TIMEOUT = 2000;
+constexpr int TIMEOUT = 3500;
 
 }  // namespace
 
