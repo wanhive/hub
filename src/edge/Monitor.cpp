@@ -59,8 +59,9 @@ bool Monitor::call(unsigned long long id, unsigned int sqn,
 	}
 }
 
-bool Monitor::connect(const Message *message) noexcept {
-	if (!((message) && message->checkContext(0, 0, WH_AQLF_ACCEPTED)
+bool Monitor::join(const Message *message) noexcept {
+	if (!((message) && (message->getSession() == 0)
+			&& message->checkContext(0, 0, WH_AQLF_ACCEPTED)
 			&& message->getPayloadLength() == sizeof(uint32_t))) {
 		return false;
 	}

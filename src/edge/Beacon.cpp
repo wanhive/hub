@@ -56,8 +56,8 @@ void Beacon::onAlarm(unsigned long long uid, unsigned long long ticks) noexcept 
 	}
 }
 
-bool Beacon::service(Message *message) noexcept {
-	if (message->getSession() == 0 && Edge::accept(message, Agent::cycle())) {
+bool Beacon::answer(Message *message) noexcept {
+	if (Edge::join(message, Agent::cycle())) {
 		return true;
 	} else {
 		return false;

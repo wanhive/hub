@@ -58,7 +58,7 @@ protected:
 	 * @param message session response
 	 * @return true on success, false on error
 	 */
-	bool connect(const Message *message) noexcept;
+	bool join(const Message *message) noexcept;
 	//-----------------------------------------------------------------
 	/**
 	 * Assigns a remote node for monitoring.

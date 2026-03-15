@@ -34,6 +34,7 @@ public:
 	 */
 	~Gadget();
 protected:
+	//-----------------------------------------------------------------
 	/**
 	 * Gets the online option flag.
 	 * @return true if enabled, false if disabled
@@ -47,10 +48,17 @@ protected:
 	//-----------------------------------------------------------------
 	/**
 	 * Checks permission for online data transmission.
-	 * @param charge true to consume an access token; false otherwise
+	 * @param direct true for end-to-end only; false otherwise
+	 * @param token true to use an access token; false otherwise
 	 * @return true if permitted, false if denied
 	 */
-	bool share(bool charge = true) noexcept;
+	bool share(bool direct, bool token = true) noexcept;
+	/**
+	 * Checks permission for online data transmission.
+	 * @param token true to use an access token; false otherwise
+	 * @return true if permitted, false if denied
+	 */
+	bool share(bool token = true) noexcept;
 	/**
 	 * Generates an appropriate outgoing message header.
 	 * @param header stores the header data
@@ -70,7 +78,7 @@ private:
 	 * @param message incoming message
 	 * @return true on success, false on error
 	 */
-	virtual bool service(Message *message) noexcept;
+	virtual bool answer(Message *message) noexcept;
 	//-----------------------------------------------------------------
 	void setup();
 	void clear() noexcept;

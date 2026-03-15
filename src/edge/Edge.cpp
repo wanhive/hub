@@ -27,21 +27,22 @@ Edge::~Edge() {
 
 }
 
-void Edge::pair(bool enable) noexcept {
-	ctx.pair = enable;
+void Edge::join(bool enable) noexcept {
+	ctx.join = enable;
 	if (!enable) {
 		end();
 	}
 }
 
-bool Edge::pair() const noexcept {
-	return ctx.pair;
+bool Edge::join() const noexcept {
+	return ctx.join;
 }
 
-bool Edge::accept(Message *message, unsigned int interval) noexcept {
-	auto success = (message) && message->checkContext(0, 0, WH_AQLF_REQUEST)
+bool Edge::join(Message *message, unsigned int interval) noexcept {
+	auto success = (message) && (message->getSession() == 0)
+			&& message->checkContext(0, 0, WH_AQLF_REQUEST)
 			&& (message->getPayloadLength() == sizeof(uint32_t))
-			&& accept(message->getSource(), message->getData32(0));
+			&& join(message->getSource(), message->getData32(0));
 	if (success) {
 		WH_LOG_DEBUG("Node %llu requested %u tokens", meta.id, meta.tokens);
 		message->setData32(0, interval);
@@ -55,8 +56,8 @@ bool Edge::accept(Message *message, unsigned int interval) noexcept {
 	}
 }
 
-bool Edge::accept(unsigned long long id, unsigned int tokens) noexcept {
-	if (pair() && (id != getUid())) {
+bool Edge::join(unsigned long long id, unsigned int tokens) noexcept {
+	if (join() && (id != getUid())) {
 		meta = { id, tokens };
 		return true;
 	} else {
@@ -70,7 +71,7 @@ void Edge::end() noexcept {
 }
 
 bool Edge::access() noexcept {
-	if (paired()) {
+	if (joined()) {
 		meta.tokens -= 1;
 		return true;
 	} else {
@@ -79,7 +80,7 @@ bool Edge::access() noexcept {
 	}
 }
 
-bool Edge::paired() const noexcept {
+bool Edge::joined() const noexcept {
 	return ((meta.id != getUid()) && (meta.tokens != 0));
 }
 
@@ -111,7 +112,7 @@ void Edge::setup() {
 }
 
 void Edge::clear() noexcept {
-	pair(false);
+	join(false);
 }
 
 } /* namespace wanhive */

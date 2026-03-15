@@ -146,12 +146,12 @@ void Receiver::onAlarm(unsigned long long uid,
 	}
 }
 
-bool Receiver::onboard() noexcept {
+bool Receiver::answer(Message *message) noexcept {
+	message->header().print();
 	return true;
 }
 
-bool Receiver::service(Message *message) noexcept {
-	message->header().print();
+bool Receiver::onboard() noexcept {
 	return true;
 }
 
@@ -163,14 +163,14 @@ bool Receiver::receive(Message *message) noexcept {
 	switch (cmd) {
 	case WH_CMD_NULL:
 		if ((session == 0) && (qlf == 0) && (status != WH_AQLF_REQUEST)) {
-			return Monitor::connect(message) && onboard();
+			return Monitor::join(message) && onboard();
 		} else {
-			return service(message);
+			return answer(message);
 		}
 	case WH_CMD_MULTICAST:
 		switch (qlf) {
 		case WH_QLF_PUBLISH:
-			return service(message);
+			return answer(message);
 		case WH_QLF_SUBSCRIBE:
 			return subscribe(message);
 		case WH_QLF_UNSUBSCRIBE:

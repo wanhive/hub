@@ -47,7 +47,7 @@ private:
 	//-----------------------------------------------------------------
 	void onAlarm(unsigned long long uid, unsigned long long ticks) noexcept
 			override;
-	bool service(Message *message) noexcept override;
+	bool answer(Message *message) noexcept override;
 	//-----------------------------------------------------------------
 	bool transmit() noexcept;
 	void setup();

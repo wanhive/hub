@@ -33,31 +33,31 @@ public:
 	 */
 	~Edge();
 protected:
+	//-----------------------------------------------------------------
 	/**
 	 * Toggles the remote session feature on or off.
 	 * @param true to enable, false to disable
 	 */
-	void pair(bool enable) noexcept;
+	void join(bool enable) noexcept;
 	/**
 	 * Determines if a remote session is permitted.
 	 * @return true if allowed, otherwise false
 	 */
-	bool pair() const noexcept;
-	//-----------------------------------------------------------------
+	bool join() const noexcept;
 	/**
 	 * Handles and responds to a session request.
 	 * @param message session request
 	 * @param interval reporting interval
 	 * @return true on success, false on error (request denied)
 	 */
-	bool accept(Message *message, unsigned int interval = 0) noexcept;
+	bool join(Message *message, unsigned int interval = 0) noexcept;
 	/**
 	 * Creates an active session with a remote node.
 	 * @param id remote node's identifier
 	 * @param tokens access tokens count
 	 * @return true on success, false on error
 	 */
-	bool accept(unsigned long long id, unsigned int tokens) noexcept;
+	bool join(unsigned long long id, unsigned int tokens) noexcept;
 	/**
 	 * Ends the current session.
 	 */
@@ -73,7 +73,7 @@ protected:
 	 * Verifies whether an active session with a remote node exists.
 	 * @return true if active, false if inactive
 	 */
-	bool paired() const noexcept;
+	bool joined() const noexcept;
 	/**
 	 * Gets the remote node's identifier (may be inactive).
 	 * @return remote node's identifier
@@ -93,7 +93,7 @@ private:
 	} meta;
 
 	struct {
-		bool pair;
+		bool join;
 	} ctx;
 };
 

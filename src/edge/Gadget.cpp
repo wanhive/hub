@@ -33,9 +33,14 @@ bool Gadget::multicast() const noexcept {
 	return ctx.multicast;
 }
 
-bool Gadget::share(bool charge) noexcept {
+bool Gadget::share(bool direct, bool token) noexcept {
 	return Agent::connected() && online()
-			&& (multicast() || (charge ? Edge::access() : Edge::paired()));
+			&& ((multicast() && !direct)
+					|| (token ? Edge::access() : Edge::joined()));
+}
+
+bool Gadget::share(bool token) noexcept {
+	return share(false, token);
 }
 
 void Gadget::prepare(MessageHeader &header, unsigned int channel) const noexcept {
@@ -88,15 +93,15 @@ void Gadget::route(Message *message) noexcept {
 
 	//Prevents replay (UID is the sink)
 	message->setDestination(getUid());
-	service(message);
+	answer(message);
 }
 
-bool Gadget::service(Message *message) noexcept {
+bool Gadget::answer(Message *message) noexcept {
 	return true;
 }
 
 void Gadget::setup() {
-	Edge::pair(ctx.online && !ctx.multicast);
+	Edge::join(ctx.online && !ctx.multicast);
 }
 
 void Gadget::clear() noexcept {
