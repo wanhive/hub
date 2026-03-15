@@ -57,11 +57,7 @@ void Beacon::onAlarm(unsigned long long uid, unsigned long long ticks) noexcept 
 }
 
 bool Beacon::answer(Message *message) noexcept {
-	if (Edge::join(message, Agent::cycle())) {
-		return true;
-	} else {
-		return false;
-	}
+	return Edge::join(message, Agent::cycle());
 }
 
 bool Beacon::transmit() noexcept {
