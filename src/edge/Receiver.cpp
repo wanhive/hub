@@ -43,23 +43,19 @@ bool Receiver::multicast() const noexcept {
 	return ctx.multicast;
 }
 
-bool Receiver::subscribe(unsigned int delay) noexcept {
-	if (!multicast() || subscribed()) {
-		return true;
-	} else if (timer.expired(delay)) {
+bool Receiver::subscribe() noexcept {
+	if (multicast() && !subscribed()) {
 		return Monitor::subscribe(channel());
 	} else {
-		return false;
+		return true;
 	}
 }
 
-bool Receiver::unsubscribe(unsigned int delay) noexcept {
-	if (!subscribed()) {
-		return true;
-	} else if (timer.expired(delay)) {
+bool Receiver::unsubscribe() noexcept {
+	if (subscribed()) {
 		return Monitor::unsubscribe(channel());
 	} else {
-		return false;
+		return true;
 	}
 }
 
@@ -67,7 +63,7 @@ bool Receiver::subscribe(const Message *message) noexcept {
 	if (subscribed()) {
 		return true;
 	} else {
-		unsigned int topic { Topic::MAX_ID + 1 };
+		auto topic { Topic::MAX_ID + 1 };
 		auto status = Monitor::subscribe(message, topic)
 				&& (channel() == topic);
 		subscribed(status);
@@ -79,7 +75,7 @@ bool Receiver::unsubscribe(const Message *message) noexcept {
 	if (!subscribed()) {
 		return true;
 	} else {
-		unsigned int topic { Topic::MAX_ID + 1 };
+		auto topic { Topic::MAX_ID + 1 };
 		auto status = Monitor::unsubscribe(message, topic)
 				&& (channel() == topic);
 		subscribed(!status);
@@ -123,8 +119,10 @@ void Receiver::cleanup() noexcept {
 void Receiver::maintain() noexcept {
 	if (!Agent::connected()) {
 		Agent::maintain();
+	} else if (multicast() && !subscribed() && timer.expired(TIMEOUT)) {
+		subscribe();
 	} else {
-		subscribe(TIMEOUT);
+		return;
 	}
 }
 
@@ -151,8 +149,8 @@ bool Receiver::answer(Message *message) noexcept {
 	return true;
 }
 
-bool Receiver::onboard() noexcept {
-	return true;
+bool Receiver::onboard(Message *message) noexcept {
+	return Monitor::join(message);
 }
 
 bool Receiver::receive(Message *message) noexcept {
@@ -163,7 +161,7 @@ bool Receiver::receive(Message *message) noexcept {
 	switch (cmd) {
 	case WH_CMD_NULL:
 		if ((session == 0) && (qlf == 0) && (status != WH_AQLF_REQUEST)) {
-			return Monitor::join(message) && onboard();
+			return onboard(message);
 		} else {
 			return answer(message);
 		}

@@ -52,16 +52,14 @@ protected:
 	//-----------------------------------------------------------------
 	/**
 	 * Initiates a subscription request.
-	 * @param delay interval in milliseconds between consecutive calls
 	 * @return true on success, false on error
 	 */
-	bool subscribe(unsigned int delay = 0) noexcept;
+	bool subscribe() noexcept;
 	/**
 	 * Initiates a subscription cancellation request.
-	 * @param delay interval in milliseconds between consecutive calls
 	 * @return true on success, false on error
 	 */
-	bool unsubscribe(unsigned int delay = 0) noexcept;
+	bool unsubscribe() noexcept;
 	/**
 	 * Processes a subscription response.
 	 * @param message the response
@@ -85,6 +83,7 @@ private:
 	//-----------------------------------------------------------------
 	void onAlarm(unsigned long long uid, unsigned long long ticks) noexcept
 			override;
+	//-----------------------------------------------------------------
 	/**
 	 * Adapter: processes the incoming messages.
 	 * @param message incoming message
@@ -92,10 +91,11 @@ private:
 	 */
 	virtual bool answer(Message *message) noexcept;
 	/**
-	 * Adapter: handles the session changes.
+	 * Adapter: processes the session response.
+	 * @param message session response
 	 * @return true on success, false on error
 	 */
-	virtual bool onboard() noexcept;
+	virtual bool onboard(Message *message) noexcept;
 	//-----------------------------------------------------------------
 	bool receive(Message *message) noexcept;
 	void subscribed(bool status) noexcept;
