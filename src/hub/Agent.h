@@ -63,12 +63,38 @@ protected:
 	 * Provides a time-stamp suitable for recording when an event occurs.
 	 * @return seconds elapsed since the Epoch
 	 */
-	static double timestamp() noexcept;
+	double timestamp() const noexcept;
+	//-----------------------------------------------------------------
+	/**
+	 * Requests subscription to the specified topic.
+	 * @param topic the topic identifier
+	 * @return true on success, false on error
+	 */
+	bool subscribe(unsigned int topic) noexcept;
+	/**
+	 * Cancels the subscription to the specified topic.
+	 * @param topic the topic identifier
+	 * @return true on success, false on error
+	 */
+	bool unsubscribe(unsigned int topic) noexcept;
+	/**
+	 * Handles a subscription response.
+	 * @param message subscription response
+	 * @param topic stores the topic identifier
+	 * @return true on success, false on error
+	 */
+	bool subscribe(const Message *message, unsigned int &topic) const noexcept;
+	/**
+	 * Handles a subscription cancellation response.
+	 * @param message cancellation response
+	 * @param topic stores the topic identifier
+	 * @return true on success, false on error
+	 */
+	bool unsubscribe(const Message *message, unsigned int &topic) const noexcept;
 	//-----------------------------------------------------------------
 private:
 	void connectToAuthenticator() noexcept;
 	void connectToOverlay() noexcept;
-	bool overdue(unsigned int milliseconds) const noexcept;
 	void initAuthentication() noexcept;
 	void findRoot() noexcept;
 	void initAuthorization() noexcept;

@@ -89,7 +89,7 @@ void Agent::maintain() noexcept {
 		connectToAuthenticator();
 		break;
 	case WHC_AUTHENTICATE:
-		if (overdue(ctx.timeout)) {
+		if (boot.timer.elapsed(ctx.timeout)) {
 			setStage(WHC_ERROR);
 		}
 		break;
@@ -99,12 +99,12 @@ void Agent::maintain() noexcept {
 	case WHC_ROOT:
 	case WHC_GETKEY:
 	case WHC_AUTHORIZE:
-		if (overdue(ctx.timeout)) {
+		if (boot.timer.elapsed(ctx.timeout)) {
 			setStage(WHC_ERROR);
 		}
 		break;
 	case WHC_ERROR:
-		if (overdue(ctx.pause)) {
+		if (boot.timer.elapsed(ctx.pause)) {
 			setStage(WHC_IDENTIFY);
 		}
 		break;
@@ -196,10 +196,71 @@ unsigned int Agent::cycle() const noexcept {
 	}
 }
 
-double Agent::timestamp() noexcept {
+double Agent::timestamp() const noexcept {
 	double seconds { };
 	Time::now(CLOCK_REALTIME, seconds);
 	return seconds;
+}
+
+bool Agent::subscribe(unsigned int topic) noexcept {
+	if (topic > Topic::MAX_ID) {
+		return false;
+	}
+
+	auto message = Message::create();
+	if (message) {
+		MessageHeader header;
+		header.setAddress(0, 0);
+		header.setControl(Message::HLEN, 0, topic);
+		header.setContext(WH_CMD_MULTICAST, WH_QLF_SUBSCRIBE, WH_AQLF_REQUEST);
+		message->putHeader(header);
+		return forward(message);
+	} else {
+		return false;
+	}
+}
+
+bool Agent::unsubscribe(unsigned int topic) noexcept {
+	if (topic > Topic::MAX_ID) {
+		return true;
+	}
+
+	auto message = Message::create();
+	if (message) {
+		MessageHeader header;
+		header.setAddress(0, 0);
+		header.setControl(Message::HLEN, 0, topic);
+		header.setContext(WH_CMD_MULTICAST, WH_QLF_UNSUBSCRIBE,
+				WH_AQLF_REQUEST);
+		message->putHeader(header);
+		return forward(message);
+	} else {
+		return false;
+	}
+}
+
+bool Agent::subscribe(const Message *message,
+		unsigned int &topic) const noexcept {
+	if (message && (message->getSource() == 0)
+			&& message->checkContext(WH_CMD_MULTICAST, WH_QLF_SUBSCRIBE,
+					WH_AQLF_ACCEPTED)) {
+		topic = message->getSession();
+		return true;
+	} else {
+		return false;
+	}
+}
+
+bool Agent::unsubscribe(const Message *message,
+		unsigned int &topic) const noexcept {
+	if (message && (message->getSource() == 0)
+			&& message->checkContext(WH_CMD_MULTICAST, WH_QLF_UNSUBSCRIBE,
+					WH_AQLF_ACCEPTED)) {
+		topic = message->getSession();
+		return true;
+	} else {
+		return false;
+	}
 }
 
 void Agent::connectToAuthenticator() noexcept {
@@ -297,10 +358,6 @@ void Agent::connectToOverlay() noexcept {
 		WH_LOG_EXCEPTION(e);
 		delete s;
 	}
-}
-
-bool Agent::overdue(unsigned int milliseconds) const noexcept {
-	return boot.timer.elapsed(milliseconds);
 }
 
 void Agent::initAuthentication() noexcept {

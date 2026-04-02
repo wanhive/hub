@@ -45,7 +45,7 @@ bool Receiver::multicast() const noexcept {
 
 bool Receiver::subscribe() noexcept {
 	if (multicast() && !subscribed()) {
-		return Monitor::subscribe(channel());
+		return Agent::subscribe(channel());
 	} else {
 		return true;
 	}
@@ -53,7 +53,7 @@ bool Receiver::subscribe() noexcept {
 
 bool Receiver::unsubscribe() noexcept {
 	if (subscribed()) {
-		return Monitor::unsubscribe(channel());
+		return Agent::unsubscribe(channel());
 	} else {
 		return true;
 	}
@@ -64,8 +64,7 @@ bool Receiver::subscribe(const Message *message) noexcept {
 		return true;
 	} else {
 		auto topic { Topic::MAX_ID + 1 };
-		auto status = Monitor::subscribe(message, topic)
-				&& (channel() == topic);
+		auto status = Agent::subscribe(message, topic) && (channel() == topic);
 		subscribed(status);
 		return subscribed();
 	}
@@ -76,7 +75,7 @@ bool Receiver::unsubscribe(const Message *message) noexcept {
 		return true;
 	} else {
 		auto topic { Topic::MAX_ID + 1 };
-		auto status = Monitor::unsubscribe(message, topic)
+		auto status = Agent::unsubscribe(message, topic)
 				&& (channel() == topic);
 		subscribed(!status);
 		return subscribed();

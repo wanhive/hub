@@ -82,33 +82,6 @@ protected:
 	 */
 	void end() noexcept;
 	//-----------------------------------------------------------------
-	/**
-	 * Requests subscription to the specified topic.
-	 * @param topic the topic identifier
-	 * @return true on success, false on error
-	 */
-	bool subscribe(unsigned int topic) noexcept;
-	/**
-	 * Cancels the subscription to the specified topic.
-	 * @param topic the topic identifier
-	 * @return true on success, false on error
-	 */
-	bool unsubscribe(unsigned int topic) noexcept;
-	/**
-	 * Handles a subscription response.
-	 * @param message subscription response
-	 * @param topic stores the topic identifier
-	 * @return true on success, false on error
-	 */
-	bool subscribe(const Message *message, unsigned int &topic) const noexcept;
-	/**
-	 * Handles a subscription cancellation response.
-	 * @param message cancellation response
-	 * @param topic stores the topic identifier
-	 * @return true on success, false on error
-	 */
-	bool unsubscribe(const Message *message, unsigned int &topic) const noexcept;
-	//-----------------------------------------------------------------
 	void configure(void *arg) override;
 	void cleanup() noexcept override;
 	//-----------------------------------------------------------------

@@ -99,67 +99,6 @@ void Monitor::end() noexcept {
 	edge = { getUid(), 0, 0 };
 }
 
-bool Monitor::subscribe(unsigned int topic) noexcept {
-	if (topic > Topic::MAX_ID) {
-		return false;
-	}
-
-	auto message = Message::create();
-	if (message) {
-		MessageHeader header;
-		header.setAddress(0, 0);
-		header.setControl(Message::HLEN, 0, topic);
-		header.setContext(WH_CMD_MULTICAST, WH_QLF_SUBSCRIBE, WH_AQLF_REQUEST);
-		message->putHeader(header);
-		return forward(message);
-	} else {
-		return false;
-	}
-}
-
-bool Monitor::unsubscribe(unsigned int topic) noexcept {
-	if (topic > Topic::MAX_ID) {
-		return true;
-	}
-
-	auto message = Message::create();
-	if (message) {
-		MessageHeader header;
-		header.setAddress(0, 0);
-		header.setControl(Message::HLEN, 0, topic);
-		header.setContext(WH_CMD_MULTICAST, WH_QLF_UNSUBSCRIBE,
-				WH_AQLF_REQUEST);
-		message->putHeader(header);
-		return forward(message);
-	} else {
-		return false;
-	}
-}
-
-bool Monitor::subscribe(const Message *message,
-		unsigned int &topic) const noexcept {
-	if (message && (message->getSource() == 0)
-			&& message->checkContext(WH_CMD_MULTICAST, WH_QLF_SUBSCRIBE,
-					WH_AQLF_ACCEPTED)) {
-		topic = message->getSession();
-		return true;
-	} else {
-		return false;
-	}
-}
-
-bool Monitor::unsubscribe(const Message *message,
-		unsigned int &topic) const noexcept {
-	if (message && (message->getSource() == 0)
-			&& message->checkContext(WH_CMD_MULTICAST, WH_QLF_UNSUBSCRIBE,
-					WH_AQLF_ACCEPTED)) {
-		topic = message->getSession();
-		return true;
-	} else {
-		return false;
-	}
-}
-
 void Monitor::configure(void *arg) {
 	try {
 		Agent::configure(arg);
