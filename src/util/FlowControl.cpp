@@ -1,7 +1,7 @@
 /*
  * FlowControl.cpp
  *
- * Message stream flow control
+ * Message flow control
  *
  *
  * Copyright (C) 2021 Amit Kumar (amitkriit@gmail.com)
