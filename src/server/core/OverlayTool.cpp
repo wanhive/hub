@@ -275,7 +275,7 @@ void OverlayTool::authorizeCmd() {
 			WH_DHT_AQLF_REQUEST);
 	packHeader();
 	try {
-		executeRequest(false, true);
+		exchange(false, true);
 		if (header().getStatus() != WH_AQLF_REJECTED) {
 			std::cout << "AUTHORIZE SUCCEEDED WITH GROUP ID "
 					<< (int) header().getSession() << std::endl;

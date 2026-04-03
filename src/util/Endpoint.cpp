@@ -1,7 +1,7 @@
 /*
  * Endpoint.cpp
  *
- * Request-response pattern implementation
+ * Message exchange
  *
  *
  * Copyright (C) 2018 Amit Kumar (amitkriit@gmail.com)
@@ -67,7 +67,7 @@ int Endpoint::getSocket() const noexcept {
 	return sockfd;
 }
 
-SSL* Endpoint::getSecureSocket() const noexcept {
+SSL* Endpoint::getSSL() const noexcept {
 	return ssl;
 }
 
@@ -90,7 +90,7 @@ void Endpoint::setSocket(int sfd) {
 	}
 }
 
-void Endpoint::setSecureSocket(SSL *ssl) {
+void Endpoint::setSSL(SSL *ssl) {
 	if (ssl == this->ssl) {
 		return;
 	} else if (ssl && sslContext && sslContext->linked(ssl)) {
@@ -110,7 +110,7 @@ int Endpoint::releaseSocket() noexcept {
 	return tmp;
 }
 
-SSL* Endpoint::releaseSecureSocket() noexcept {
+SSL* Endpoint::releaseSSL() noexcept {
 	if (ssl) {
 		auto tmp = ssl;
 		sockfd = -1;
@@ -133,7 +133,7 @@ int Endpoint::swapSocket(int sfd) {
 	}
 }
 
-SSL* Endpoint::swapSecureSocket(SSL *ssl) {
+SSL* Endpoint::swapSSL(SSL *ssl) {
 	if (ssl == this->ssl) {
 		return ssl;
 	} else if (ssl && this->ssl && sslContext && sslContext->linked(ssl)
@@ -147,7 +147,7 @@ SSL* Endpoint::swapSecureSocket(SSL *ssl) {
 	}
 }
 
-void Endpoint::setSocketTimeout(int input, int output) const {
+void Endpoint::setTimeout(int input, int output) const {
 	Network::setTimeout(sockfd, input, output);
 }
 
@@ -169,13 +169,13 @@ void Endpoint::receive(unsigned int seq, bool verify) {
 	}
 }
 
-bool Endpoint::executeRequest(bool sign, bool verify) {
+bool Endpoint::exchange(bool sign, bool verify) {
 	send(sign);
 	receive(header().getSequenceNumber(), verify);
 	return (header().getStatus() == WH_AQLF_ACCEPTED);
 }
 
-void Endpoint::sendPong() {
+void Endpoint::pong() {
 	receive();
 	MessageHeader::writeSource(buffer(), header().getDestination());
 	MessageHeader::writeDestination(buffer(), header().getSource());

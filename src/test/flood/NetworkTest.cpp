@@ -113,7 +113,7 @@ void NetworkTest::echo(unsigned int iterations) {
 	try {
 		bootstrap(serverId);
 		//Disable timeout
-		setSocketTimeout(0, 0);
+		setTimeout(0, 0);
 		this->iterations = iterations;
 		pong();
 	} catch (const BaseException &e) {
@@ -131,7 +131,7 @@ void NetworkTest::produce() noexcept {
 	out.packHeader();
 	unsigned int i = 0;
 	try {
-		auto ssl = getSecureSocket();
+		auto ssl = getSSL();
 		if (ssl) {
 			while (!iterations || i < iterations) {
 				send(ssl, out);
@@ -155,7 +155,7 @@ void NetworkTest::consume() noexcept {
 	Packet in;
 	unsigned int i = 0;
 	try {
-		auto ssl = getSecureSocket();
+		auto ssl = getSSL();
 		if (ssl) {
 			while (!iterations || i < iterations) {
 				receive(ssl, in);
@@ -177,7 +177,7 @@ void NetworkTest::consume() noexcept {
 void NetworkTest::pong() {
 	unsigned int i = 0;
 	while (!iterations || i < iterations) {
-		Protocol::sendPong();
+		Protocol::pong();
 		i++;
 	}
 }

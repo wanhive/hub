@@ -42,7 +42,7 @@ bool Protocol::identificationRequest(const MessageAddress &address,
 	 * BODY: variable in Request and Response
 	 * TOTAL: at least 32 bytes in Request and Response
 	 */
-	return createIdentificationRequest(address, nonce) && executeRequest();
+	return createIdentificationRequest(address, nonce) && exchange();
 }
 
 unsigned int Protocol::createAuthenticationRequest(
@@ -62,7 +62,7 @@ bool Protocol::authenticationRequest(const MessageAddress &address,
 	 * BODY: variable in Request and Response
 	 * TOTAL: at least 32 bytes in Request and Response
 	 */
-	return createAuthenticationRequest(address, proof) && executeRequest();
+	return createAuthenticationRequest(address, proof) && exchange();
 }
 
 unsigned int Protocol::createRegisterRequest(const MessageAddress &address,
@@ -88,7 +88,7 @@ bool Protocol::registerRequest(const MessageAddress &address, Digest *hc) {
 	 * BODY: 64-byte CHALLANGE CODE in Request (optional); nothing in Response
 	 * TOTAL: 32+64=96 bytes in Request; 32 bytes in Response
 	 */
-	return createRegisterRequest(address, hc) && executeRequest(true, false)
+	return createRegisterRequest(address, hc) && exchange(true, false)
 			&& processRegisterResponse();
 }
 
@@ -109,8 +109,8 @@ bool Protocol::tokenRequest(const MessageAddress &address, Digest *hc,
 	 * BODY: 512/8=64 Bytes in Request (optional), (512/8)*2=128 Bytes in Response
 	 * TOTAL: 32+64=96 bytes in Request; 32+128=160 bytes in Response
 	 */
-	return createTokenRequest(address, hc, verify)
-			&& executeRequest(false, verify) && processTokenResponse(hc);
+	return createTokenRequest(address, hc, verify) && exchange(false, verify)
+			&& processTokenResponse(hc);
 }
 
 unsigned int Protocol::createFindRootRequest(uint64_t host,
@@ -132,7 +132,7 @@ bool Protocol::findRootRequest(uint64_t host, uint64_t identity,
 	 * <successor> in Response
 	 * TOTAL: 32+8=40 bytes in Request; 32+8+8=48 bytes in Response
 	 */
-	return createFindRootRequest(host, identity) && executeRequest()
+	return createFindRootRequest(host, identity) && exchange()
 			&& processFindRootResponse(identity, root);
 }
 
@@ -173,7 +173,7 @@ bool Protocol::bootstrapRequest(uint64_t host, uint64_t keys[],
 	 * in Response
 	 * TOTAL: 32 bytes in Request; 32+4+8*NODECACHE_SIZE bytes in Response
 	 */
-	return createBootstrapRequest(host) && executeRequest()
+	return createBootstrapRequest(host) && exchange()
 			&& processBootstrapResponse(keys, limit);
 }
 
@@ -231,7 +231,7 @@ bool Protocol::subscribeRequest(uint64_t host, uint8_t topic) {
 	 * BODY: 0 in Request; 0 in Response
 	 * TOTAL: 32 bytes in Request; 32 bytes in Response
 	 */
-	return createSubscribeRequest(host, topic) && executeRequest()
+	return createSubscribeRequest(host, topic) && exchange()
 			&& processSubscribeResponse(topic);
 }
 
@@ -263,7 +263,7 @@ bool Protocol::unsubscribeRequest(uint64_t host, uint8_t topic) {
 	 * BODY: 0 in Request; 0 in Response
 	 * TOTAL: 32 bytes in Request; 32 bytes in Response
 	 */
-	return createUnsubscribeRequest(host, topic) && executeRequest()
+	return createUnsubscribeRequest(host, topic) && exchange()
 			&& processUnsubscribeResponse(topic);
 }
 

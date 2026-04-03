@@ -52,7 +52,7 @@ bool OverlayProtocol::describeRequest(uint64_t host, OverlayHubInfo &info) {
 	 * BODY: 0 bytes in Request; 84+25*Node::TABLESIZE bytes in Response
 	 * TOTAL: 32 bytes in Request; 116+25*Node::TABLESIZE bytes in Response
 	 */
-	return createDescribeRequest(host) && executeRequest()
+	return createDescribeRequest(host) && exchange()
 			&& processDescribeResponse(info);
 }
 
@@ -87,7 +87,7 @@ bool OverlayProtocol::getPredecessorRequest(uint64_t host, uint64_t &key) {
 	 * BODY: 0 bytes in Request; 8 bytes as <predecessor> in Response
 	 * TOTAL: 32 bytes in Request; 32+8=40 bytes in Response
 	 */
-	return createGetPredecessorRequest(host) && executeRequest()
+	return createGetPredecessorRequest(host) && exchange()
 			&& processGetPredecessorResponse(key);
 }
 
@@ -127,7 +127,7 @@ bool OverlayProtocol::setPredecessorRequest(uint64_t host, uint64_t key) {
 	 * BODY: 8 bytes as <predecessor> in Request; 8 bytes as <predecessor> in Response
 	 * TOTAL: 32+8=40 bytes
 	 */
-	return createSetPredecessorRequest(host, key) && executeRequest()
+	return createSetPredecessorRequest(host, key) && exchange()
 			&& processSetPredecessorResponse(key);
 }
 
@@ -161,7 +161,7 @@ bool OverlayProtocol::getSuccessorRequest(uint64_t host, uint64_t &key) {
 	 * BODY: 0 bytes in Request; 8 bytes as <successor> in Response
 	 * TOTAL: 32 bytes in Request; 32+8=40 bytes in Response
 	 */
-	return createGetSuccessorRequest(host) && executeRequest()
+	return createGetSuccessorRequest(host) && exchange()
 			&& processGetSuccessorResponse(key);
 }
 
@@ -201,7 +201,7 @@ bool OverlayProtocol::setSuccessorRequest(uint64_t host, uint64_t key) {
 	 * BODY: 8 bytes as <successor> in Request; 8 bytes as <successor> in response
 	 * TOTAL: 32+8=40 bytes
 	 */
-	return createSetSuccessorRequest(host, key) && executeRequest()
+	return createSetSuccessorRequest(host, key) && exchange()
 			&& processSetSuccessorResponse(key);
 }
 
@@ -246,7 +246,7 @@ bool OverlayProtocol::getFingerRequest(uint64_t host, uint32_t index,
 	 * as <finger> in Response
 	 * TOTAL: 32+4=36 bytes in Request; 32+4+8=44 bytes in Response
 	 */
-	return createGetFingerRequest(host, index) && executeRequest()
+	return createGetFingerRequest(host, index) && exchange()
 			&& processGetFingerResponse(index, key);
 }
 
@@ -288,7 +288,7 @@ bool OverlayProtocol::setFingerRequest(uint64_t host, uint32_t index,
 	 * BODY: 4 bytes as <index> and 8 bytes as <finger> in Request and in Response
 	 * TOTAL: 32+4+8=44 bytes
 	 */
-	return createSetFingerRequest(host, index, key) && executeRequest()
+	return createSetFingerRequest(host, index, key) && exchange()
 			&& processSetFingerResponse(index, key);
 }
 
@@ -325,7 +325,7 @@ bool OverlayProtocol::getNeighboursRequest(uint64_t host, uint64_t &predecessor,
 	 * as <successor> in Response
 	 * TOTAL: 32 bytes in Request; 32+8+8=48 bytes in Response
 	 */
-	return createGetNeighboursRequest(host) && executeRequest()
+	return createGetNeighboursRequest(host) && exchange()
 			&& processGetNeighboursResponse(predecessor, successor);
 }
 
@@ -360,7 +360,7 @@ bool OverlayProtocol::notifyRequest(uint64_t host, uint64_t predecessor) {
 	 * BODY: 8 bytes as <predecessor> in Request; 0 bytes in Response
 	 * TOTAL: 32+8=40 bytes in Request; 32 bytes in Response
 	 */
-	return createNotifyRequest(host, predecessor) && executeRequest()
+	return createNotifyRequest(host, predecessor) && exchange()
 			&& processNotifyResponse();
 }
 
@@ -404,7 +404,7 @@ bool OverlayProtocol::findSuccessorRequest(uint64_t host, uint64_t uid,
 	 * as <successor> in Response
 	 * TOTAL: 32+8=40 bytes in Request; 32+8+8=48 bytes in Response
 	 */
-	return createFindSuccessorRequest(host, uid) && executeRequest()
+	return createFindSuccessorRequest(host, uid) && exchange()
 			&& processFindSuccessorResponse(uid, successor);
 }
 
@@ -434,7 +434,7 @@ bool OverlayProtocol::pingRequest(uint64_t host) {
 	 * BODY: 0 bytes in Request and Response
 	 * TOTAL: 32 bytes in Request and Response
 	 */
-	return createPingRequest(host) && executeRequest() && processPingRequest();
+	return createPingRequest(host) && exchange() && processPingRequest();
 }
 
 unsigned int OverlayProtocol::createMapRequest(uint64_t host) noexcept {
@@ -463,7 +463,7 @@ bool OverlayProtocol::mapRequest(uint64_t host) {
 	 * BODY: variable in Request; variable in Response
 	 * TOTAL: at least 32 bytes in Request and Response
 	 */
-	return createMapRequest(host) && executeRequest() && processMapRequest();
+	return createMapRequest(host) && exchange() && processMapRequest();
 }
 
 } /* namespace wanhive */

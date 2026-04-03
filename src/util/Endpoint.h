@@ -1,7 +1,7 @@
 /**
  * @file Endpoint.h
  *
- * Request-response pattern implementation
+ * Message exchange
  *
  *
  * Copyright (C) 2018 Amit Kumar (amitkriit@gmail.com)
@@ -20,9 +20,8 @@
 /*! @namespace wanhive */
 namespace wanhive {
 /**
- * Request-response pattern implementation.
- * @note Supports blocking I/O operations only, hence the socket must be opened
- * in blocking mode.
+ * Implementation of the request-response message exchange pattern
+ * @note This implementation requires blocking I/O
  */
 class Endpoint: protected Packet, private NonCopyable {
 public:
@@ -76,7 +75,7 @@ public:
 	 * Returns the managed secure connection object.
 	 * @return SSL object (can be nullptr)
 	 */
-	SSL* getSecureSocket() const noexcept;
+	SSL* getSSL() const noexcept;
 	/**
 	 * Replaces the managed socket file descriptor (closes the previous one).
 	 * @param sfd new socket file descriptor
@@ -86,17 +85,17 @@ public:
 	 * Replaces the managed secure connection object (closes the previous one).
 	 * @param ssl new SSL object
 	 */
-	void setSecureSocket(SSL *ssl);
+	void setSSL(SSL *ssl);
 	/**
 	 * Returns the managed socket file descriptor and releases its ownership.
 	 * @return socket file descriptor
 	 */
 	int releaseSocket() noexcept;
 	/**
-	 * Releases the managed secure connection object and releases its ownership.
+	 * Returns the managed secure connection object and releases its ownership.
 	 * @return SSL object (can be nullptr)
 	 */
-	SSL* releaseSecureSocket() noexcept;
+	SSL* releaseSSL() noexcept;
 	/**
 	 * Swaps the managed socket file descriptor.
 	 * @param sfd new file descriptor
@@ -108,7 +107,7 @@ public:
 	 * @param ssl new SSL object
 	 * @return previous SSL object
 	 */
-	SSL* swapSecureSocket(SSL *ssl);
+	SSL* swapSSL(SSL *ssl);
 	/**
 	 * Sets existing connection's receive and send timeout values.
 	 * @param input receive timeout in milliseconds. Set 0 to block forever,
@@ -116,77 +115,74 @@ public:
 	 * @param output send timeout in milliseconds.  Set 0 block forever,
 	 * negative value to ignore.
 	 */
-	void setSocketTimeout(int input, int output) const;
+	void setTimeout(int input, int output) const;
 	//-----------------------------------------------------------------
 	/**
-	 * Sends out a request, routing header's length field determines the
-	 * request's size in bytes.
+	 * Sends a request, with the routing header's length field indicating the
+	 * request size in bytes.
 	 * @param sign true for message signing, false otherwise
 	 */
 	void send(bool sign = false);
 	/**
 	 * Receives a response.
 	 * @param seq expected sequence number (0 to ignore)
-	 * @param verify true for message verification, false otherwise
+	 * @param verify true to verify the response, false otherwise
 	 */
 	void receive(unsigned int seq = 0, bool verify = false);
 	/**
-	 * Executes a request: sends a request and receives the response.
-	 * @param sign true to sign the outgoing request, false otherwise
-	 * @param verify true to verify the incoming response, false otherwise
+	 * Sends a request and receives the response.
+	 * @param sign true to sign the request, false otherwise
+	 * @param verify true to verify the response, false otherwise
 	 * @return true on success, false otherwise (request rejected)
 	 */
-	bool executeRequest(bool sign = false, bool verify = false);
+	bool exchange(bool sign = false, bool verify = false);
 	/**
 	 * Waits for a ping and then responds back with a pong.
 	 */
-	void sendPong();
+	void pong();
 	//-----------------------------------------------------------------
 	/**
 	 * Connects to a host and returns the socket file descriptor.
 	 * @param ni host's resource name
-	 * @param sa object for storing the socket address on success
-	 * @param timeout IO timeout in milliseconds for the new connection. Set 0
-	 * to block forever, negative value to ignore.
+	 * @param sa stores the socket address on success
+	 * @param timeout IO timeout in milliseconds for the new connection. Set
+	 * to 0 to block indefinitely, or a negative value to ignore.
 	 * @return socket file descriptor
 	 */
 	static int connect(const NameInfo &ni, SocketAddress &sa, int timeout = -1);
 	/**
-	 * Sends a request. If a signing key is provided (not nullptr) then the
-	 * outgoing request is digitally signed.
+	 * Sends a request over a socket, signing it if a signing key is provided.
 	 * @param sfd socket file descriptor
 	 * @param packet outgoing request
 	 * @param pki signing key
 	 */
 	static void send(int sfd, Packet &packet, Trust *pki = nullptr);
 	/**
-	 * Sends a request. If a signing key is provided (not nullptr) then the
-	 * outgoing request is digitally signed.
+	 * Sends a request over a secure connection, signing it if a signing key
+	 * is provided.
 	 * @param ssl secure connection object
 	 * @param packet outgoing request
 	 * @param pki signing key
 	 */
 	static void send(SSL *ssl, Packet &packet, Trust *pki = nullptr);
 	/**
-	 * Receives a response. If a verification key is provided (not nullptr) then
-	 * the response's digital signature is verified. If an "expected" sequence
-	 * number is provided (not zero) then all incoming messages that fail to
-	 * match the expected sequence number get silently dropped.
+	 * Receives a response from a socket, verifying the signature if a
+	 * verification key is provided. Incoming messages not matching the expected
+	 * sequence number are dropped silently.
 	 * @param sfd socket file descriptor
 	 * @param packet stores the incoming response
-	 * @param seq expected sequence number
+	 * @param seq expected sequence number (0 to ignore)
 	 * @param pki verification key
 	 */
 	static void receive(int sfd, Packet &packet, unsigned int seq = 0,
 			Trust *pki = nullptr);
 	/**
-	 * Receives a response. If a verification key is provided (not nullptr) then
-	 * the response's digital signature is verified. If an "expected" sequence
-	 * number is provided (not zero) then all incoming messages that fail to
-	 * match the expected sequence number get silently dropped.
+	 * Receives a response from a secure connection, verifying the signature
+	 * if a verification key is provided. Incoming messages not matching the
+	 * expected sequence number are dropped silently.
 	 * @param ssl secure connection object
 	 * @param packet stores the incoming response
-	 * @param seq expected sequence number
+	 * @param seq expected sequence number (0 to ignore)
 	 * @param pki verification key
 	 */
 	static void receive(SSL *ssl, Packet &packet, unsigned int seq = 0,
