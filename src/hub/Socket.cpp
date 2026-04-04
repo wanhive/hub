@@ -129,11 +129,10 @@ bool Socket::callback(void *arg) noexcept {
 }
 
 bool Socket::publish(void *arg) noexcept {
-	auto message = static_cast<Message*>(arg);
-	if (message && (!backlog || out.readSpace() < backlog)
-			&& out.put(message)) {
-		message->link();
-		setTrace(message->getTrace());
+	auto msg = static_cast<Message*>(arg);
+	if (msg && (!backlog || out.readSpace() < backlog) && out.put(msg)) {
+		msg->link();
+		setTrace(msg->getTrace());
 		setFlags(WATCHER_OUT);
 		return true;
 	} else {
@@ -215,7 +214,7 @@ ssize_t Socket::write() {
 	}
 }
 
-Message* Socket::obtain() {
+Message* Socket::message() {
 	if (next == nullptr) {
 		if (in.isEmpty()) { //:-)
 			return nullptr;
@@ -483,19 +482,19 @@ unsigned int Socket::post() noexcept {
 }
 
 void Socket::offload(size_t bytes) noexcept {
-	size_t total = 0;
-	unsigned int sentMessages = 0;
+	size_t sum = 0;
+	unsigned int count = 0;
 	auto iovecs = egress.offset();
-	auto count = egress.space();
-	for (unsigned int index = 0; index < count; ++index) {
-		iovec &iov = iovecs[index];
-		total += iov.iov_len;
-		if (total > bytes) {
+	const auto size = egress.space();
+	for (unsigned int index = 0; index < size; ++index) {
+		auto &iov = iovecs[index];
+		sum += iov.iov_len;
+		if (sum > bytes) {
 			//This IOVEC has been consumed partially
-			auto originalLength = iov.iov_len;
-			iov.iov_len = (total - bytes);
+			auto length = iov.iov_len;
+			iov.iov_len = (sum - bytes);
 			iov.iov_base = ((unsigned char*) (iov.iov_base))
-					+ (originalLength - (total - bytes));
+					+ (length - (sum - bytes));
 			break;
 		}
 
@@ -503,18 +502,18 @@ void Socket::offload(size_t bytes) noexcept {
 		Message *msg = nullptr;
 		out.get(msg);
 		Message::recycle(msg);
-		++sentMessages;
+		++count;
 	}
-	egress.setIndex(egress.getIndex() + sentMessages);
+	egress.setIndex(egress.getIndex() + count);
 }
 
 void Socket::cleanup() noexcept {
 	SSLContext::destroy(secure.ssl);
 	Message::recycle(next);
 
-	Message *message;
-	while ((out.get(message))) {
-		Message::recycle(message);
+	Message *msg;
+	while ((out.get(msg))) {
+		Message::recycle(msg);
 	}
 }
 

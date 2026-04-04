@@ -846,33 +846,31 @@ bool Hub::service(Socket *socket) noexcept {
 		}
 		//-----------------------------------------------------------------
 		/*
-		 * Congestion Control Mechanism
-		 * Dynamically update on the basis of local parameters only
+		 * Congestion control
 		 */
-		unsigned int cycleLimit;
+		unsigned int limit;
 		if (ctx.regulate) {
-			cycleLimit = throttle(socket);
+			limit = throttle(socket);
 		} else {
-			cycleLimit = Twiddler::min(ctx.inward, Message::unallocated());
+			limit = Twiddler::min(ctx.inward, Message::unallocated());
 		}
-
 		//-----------------------------------------------------------------
 		/*
 		 * Get all the messages from this connection
 		 */
-		unsigned int msgCount = 0;
-		while (msgCount < cycleLimit) {
-			Message *message = socket->obtain();
+		unsigned int count = 0;
+		while (count < limit) {
+			auto message = socket->message();
 			if (message) {
 				in.put(message);
 				received(message->getLength());
-				msgCount++;
+				++count;
 			} else {
 				break;
 			}
 		}
 		//-----------------------------------------------------------------
-		return socket->isReady() || (ctx.inward && (msgCount == cycleLimit));
+		return socket->isReady() || (ctx.inward && (count == limit));
 	} catch (const BaseException &e) {
 		WH_LOG_EXCEPTION(e);
 		return disable(socket);

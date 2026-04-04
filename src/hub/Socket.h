@@ -137,7 +137,7 @@ public:
 	 * Obtains the next incoming message.
 	 * @return incoming message, nullptr if not available
 	 */
-	Message* obtain();
+	Message* message();
 	/**
 	 * Returns the number of received messages.
 	 * @return received messages count
