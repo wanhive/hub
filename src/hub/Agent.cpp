@@ -60,12 +60,12 @@ void Agent::configure(void *arg) {
 		Hub::configure(arg);
 		auto &conf = Identity::getOptions();
 
-		auto password = conf.getString("CLIENT", "password", "");
-		auto rounds = conf.getNumber("CLIENT", "rounds");
+		auto password = conf.getString("AGENT", "password", "");
+		auto rounds = conf.getNumber("AGENT", "rounds");
 		setPassword((const unsigned char*) password, strlen(password), rounds);
 
-		ctx.timeout = conf.getNumber("CLIENT", "timeout", 5000);
-		ctx.pause = conf.getNumber("CLIENT", "pause", 10000);
+		ctx.timeout = conf.getNumber("AGENT", "timeout", 5000);
+		ctx.pause = conf.getNumber("AGENT", "pause", 10000);
 
 		auto mask = Hub::redact();
 		WH_LOG_DEBUG(
