@@ -38,12 +38,12 @@ public:
 	 * @param privateKey private key (can be nullptr)
 	 * @param publicKey public key (can be nullptr)
 	 * @param secret private key's pass phrase
-	 * @param memory true to treat the key data as PEM-encoded strings, false to
-	 * treat them as PEM-encoded file paths.
+	 * @param text true to treat the key data as in-memory PEM-encoded texts,
+	 * false to treat them as PEM-encoded file paths.
 	 * @return true on success, false on error
 	 */
 	bool setup(const char *privateKey, const char *publicKey, char *secret =
-			nullptr, bool memory = false) noexcept;
+			nullptr, bool text = false) noexcept;
 	/**
 	 * Disposes of the existing keys.
 	 */
@@ -52,20 +52,20 @@ public:
 	 * Loads a private key (discards the existing key).
 	 * @param key private key (can be nullptr)
 	 * @param secret private key's pass phrase
-	 * @param memory true to treat the key data as PEM-encoded string, false to
-	 * treat it as a PEM-encoded file's path.
+	 * @param text true to treat the key data as in-memory PEM-encoded text,
+	 * false to treat it as a PEM-encoded file's path.
 	 * @return true on success, false on error
 	 */
-	bool loadPrivateKey(const char *key, char *secret = nullptr, bool memory =
+	bool loadPrivateKey(const char *key, char *secret = nullptr, bool text =
 			false) noexcept;
 	/**
 	 * Loads a public key (discards the existing key).
 	 * @param key public key (can be nullptr)
-	 * @param memory true to treat the key data as PEM-encoded string, false to
-	 * treat it as a PEM-encoded file's path.
+	 * @param text true to treat the key data as in-memory PEM-encoded text,
+	 * false to treat it as a PEM-encoded file's path.
 	 * @return true on success, false on error
 	 */
-	bool loadPublicKey(const char *key, bool memory = false) noexcept;
+	bool loadPublicKey(const char *key, bool text = false) noexcept;
 	/**
 	 * Disposes of the private key.
 	 */
@@ -185,7 +185,7 @@ protected:
 	static bool store(const char *path, EVP_PKEY *pkey, bool isPublic,
 			char *secret, const EVP_CIPHER *cipher) noexcept;
 private:
-	EVP_PKEY* fromMemory(const char *key, bool isPublic, char *secret) noexcept;
+	EVP_PKEY* fromText(const char *key, bool isPublic, char *secret) noexcept;
 	EVP_PKEY* fromFile(const char *path, bool isPublic, char *secret) noexcept;
 private:
 	const int nid;

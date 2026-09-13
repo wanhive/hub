@@ -26,9 +26,9 @@ KeyPair::~KeyPair() {
 }
 
 bool KeyPair::setup(const char *privateKey, const char *publicKey, char *secret,
-		bool memory) noexcept {
-	auto success = loadPublicKey(publicKey, memory)
-			&& loadPrivateKey(privateKey, secret, memory);
+		bool text) noexcept {
+	auto success = loadPublicKey(publicKey, text)
+			&& loadPrivateKey(privateKey, secret, text);
 	if (success) {
 		return true;
 	} else {
@@ -42,25 +42,24 @@ void KeyPair::reset() noexcept {
 	freePrivateKey();
 }
 
-bool KeyPair::loadPrivateKey(const char *key, char *secret,
-		bool memory) noexcept {
+bool KeyPair::loadPrivateKey(const char *key, char *secret, bool text) noexcept {
 	freePrivateKey();
 	if (!key) {
 		return true;
-	} else if (memory) {
-		_private = fromMemory(key, false, secret);
+	} else if (text) {
+		_private = fromText(key, false, secret);
 	} else {
 		_private = fromFile(key, false, secret);
 	}
 	return _private != nullptr;
 }
 
-bool KeyPair::loadPublicKey(const char *key, bool memory) noexcept {
+bool KeyPair::loadPublicKey(const char *key, bool text) noexcept {
 	freePublicKey();
 	if (!key) {
 		return true;
-	} else if (memory) {
-		_public = fromMemory(key, true, nullptr);
+	} else if (text) {
+		_public = fromText(key, true, nullptr);
 	} else {
 		_public = fromFile(key, true, nullptr);
 	}
@@ -243,7 +242,7 @@ bool KeyPair::store(const char *path, EVP_PKEY *pkey, bool isPublic,
 	return (ret == 1);
 }
 
-EVP_PKEY* KeyPair::fromMemory(const char *key, bool isPublicKey,
+EVP_PKEY* KeyPair::fromText(const char *key, bool isPublicKey,
 		char *secret) noexcept {
 	if (!key) {
 		return nullptr;
