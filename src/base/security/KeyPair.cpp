@@ -93,7 +93,10 @@ int KeyPair::type() const noexcept {
 }
 
 bool KeyPair::validate(const EVP_PKEY *pkey) const noexcept {
-	return pkey && (EVP_PKEY_get_base_id(pkey) == nid);
+	return pkey
+			&& ((name && EVP_PKEY_is_a(pkey, name) == 1)
+					|| (nid != EVP_PKEY_NONE
+							&& EVP_PKEY_get_base_id(pkey) == nid));
 }
 
 bool KeyPair::isPrivateKey(EVP_PKEY *pkey) const noexcept {
