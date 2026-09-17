@@ -25,12 +25,10 @@ X25519::~X25519() {
 
 bool X25519::compute(unsigned char *data, size_t &bytes) noexcept {
 	EVP_PKEY_CTX *ctx { };
-	unsigned char *buf { };
-	auto len = bytes;
 	auto success = (ctx = EVP_PKEY_CTX_new(getPrivateKey(), nullptr))
 			&& (EVP_PKEY_derive_init(ctx) == 1)
 			&& (EVP_PKEY_derive_set_peer(ctx, getPublicKey()) == 1)
-			&& (EVP_PKEY_derive(ctx, buf, &len) == 1) && (bytes = len);
+			&& (EVP_PKEY_derive(ctx, data, &bytes) == 1);
 	EVP_PKEY_CTX_free(ctx);
 	return success;
 }
