@@ -74,6 +74,8 @@
 #include "base/security/CryptoUtils.h"
 #include "base/security/CSPRNG.h"
 #include "base/security/Ed25519.h"
+#include "base/security/MLDsa.h"
+#include "base/security/MLKem.h"
 #include "base/security/Rsa.h"
 #include "base/security/Sha.h"
 #include "base/security/Srp.h"
