@@ -27,35 +27,49 @@ public:
 	 */
 	PKI() noexcept;
 	/**
-	 * Constructor: loads key pair from PEM-encoded files.
-	 * @param privateKey private key file's path
-	 * @param publicKey public key file's path
+	 * Constructor: loads key pair.
+	 * @param privateKey private key (can be nullptr)
+	 * @param publicKey public key (can be nullptr)
+	 * @param secret private key's pass phrase
+	 * @param text true to treat the key data as in-memory PEM-encoded texts,
+	 * false to treat them as PEM-encoded file paths.
 	 */
-	PKI(const char *privateKey, const char *publicKey);
+	PKI(const char *privateKey, const char *publicKey, char *secret = nullptr,
+			bool text = false);
 	/**
 	 * Destructor
 	 */
 	~PKI();
 	//-----------------------------------------------------------------
 	/**
-	 * Loads key pair from PEM-encoded files (discards existing keys).
-	 * @param privateKey private key file's path
-	 * @param publicKey public key file's path
+	 * Loads key pair (discards existing keys).
+	 * @param privateKey private key (can be nullptr)
+	 * @param publicKey public key (can be nullptr)
+	 * @param secret private key's pass phrase
+	 * @param text true to treat the key data as in-memory PEM-encoded texts,
+	 * false to treat them as PEM-encoded file paths.
 	 * @return true on success, false otherwise
 	 */
-	bool setup(const char *privateKey, const char *publicKey) noexcept;
+	bool setup(const char *privateKey, const char *publicKey, char *secret =
+			nullptr, bool text = false) noexcept;
 	/**
-	 * Loads private key from PEM-encoded file (discards existing key).
-	 * @param key private key file's path
+	 * Loads private key (discards existing key).
+	 * @param key private key (can be nullptr)
+	 * @param secret private key's pass phrase
+	 * @param text true to treat the key data as in-memory PEM-encoded text,
+	 * false to treat it as a PEM-encoded file's path.
 	 * @return true on success, false otherwise
 	 */
-	bool loadPrivateKey(const char *key) noexcept;
+	bool loadPrivateKey(const char *key, char *secret = nullptr, bool text =
+			false) noexcept;
 	/**
-	 * Loads public key from PEM-encoded file (discards existing key).
-	 * @param key public key file's path
+	 * Loads public key (discards existing key).
+	 * @param key public key (can be nullptr)
+	 * @param text true to treat the key data as in-memory PEM-encoded text,
+	 * false to treat it as a PEM-encoded file's path.
 	 * @return true on success, false otherwise
 	 */
-	bool loadPublicKey(const char *key) noexcept;
+	bool loadPublicKey(const char *key, bool text = false) noexcept;
 	//-----------------------------------------------------------------
 	/*
 	 * Trust interface implementation
@@ -74,8 +88,10 @@ public:
 	 * Generates and stores key pair as PEM-encoded text files.
 	 * @param privateKey private key file's path
 	 * @param publicKey public key file's path
+	 * @param secret private key's pass phrase
 	 */
-	static void generate(const char *privateKey, const char *publicKey);
+	static void generate(const char *privateKey, const char *publicKey,
+			char *secret = nullptr);
 public:
 	/*! Key size in bits */
 	static constexpr unsigned int KEY_LENGTH = 3072;

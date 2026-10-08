@@ -19,8 +19,9 @@ PKI::PKI() noexcept {
 
 }
 
-PKI::PKI(const char *privateKey, const char *publicKey) {
-	if (!setup(privateKey, publicKey)) {
+PKI::PKI(const char *privateKey, const char *publicKey, char *secret,
+		bool text) {
+	if (!setup(privateKey, publicKey, secret, text)) {
 		throw Exception(EX_SECURITY);
 	}
 }
@@ -29,16 +30,17 @@ PKI::~PKI() {
 
 }
 
-bool PKI::setup(const char *privateKey, const char *publicKey) noexcept {
-	return rsa.setup(privateKey, publicKey);
+bool PKI::setup(const char *privateKey, const char *publicKey, char *secret,
+		bool text) noexcept {
+	return rsa.setup(privateKey, publicKey, secret, text);
 }
 
-bool PKI::loadPrivateKey(const char *key) noexcept {
-	return rsa.loadPrivateKey(key) || !key;
+bool PKI::loadPrivateKey(const char *key, char *secret, bool text) noexcept {
+	return rsa.loadPrivateKey(key, secret, text);
 }
 
-bool PKI::loadPublicKey(const char *key) noexcept {
-	return rsa.loadPublicKey(key) || !key;
+bool PKI::loadPublicKey(const char *key, bool text) noexcept {
+	return rsa.loadPublicKey(key, text);
 }
 
 bool PKI::hasPrivateKey() const noexcept {
@@ -88,8 +90,9 @@ int PKI::algorithm() const noexcept {
 	return rsa.type();
 }
 
-void PKI::generate(const char *privateKey, const char *publicKey) {
-	if (!Rsa { }.generate(privateKey, publicKey, KEY_LENGTH)) {
+void PKI::generate(const char *privateKey, const char *publicKey,
+		char *secret) {
+	if (!Rsa { }.generate(privateKey, publicKey, KEY_LENGTH, secret)) {
 		throw Exception(EX_SECURITY);
 	}
 }
