@@ -104,12 +104,12 @@ WH_REACTORHEADERS = reactor/Descriptor.h reactor/Handler.h reactor/Reactor.h \
 WH_REACTORSOURCES = reactor/Descriptor.cpp reactor/Reactor.cpp reactor/Watcher.cpp
 
 ## src/server collection
-WH_SERVERHEADERS = server/auth/AuthenticationHub.h server/auth/Things.h \
+WH_SERVERHEADERS = server/auth/AuthenticationHub.h \
 	server/core/DHT.h server/core/Finger.h server/core/Node.h \
 	server/core/OverlayHub.h server/core/OverlayHubInfo.h \
 	server/core/OverlayProtocol.h server/core/OverlayService.h \
 	server/core/OverlayTool.h server/core/Topics.h server/core/commands.h
-WH_SERVERSOURCES = server/auth/AuthenticationHub.cpp server/auth/Things.cpp \
+WH_SERVERSOURCES = server/auth/AuthenticationHub.cpp \
 	server/core/DHT.cpp server/core/Finger.cpp server/core/Node.cpp \
 	server/core/OverlayHub.cpp server/core/OverlayHubInfo.cpp \
 	server/core/OverlayProtocol.cpp server/core/OverlayService.cpp \
