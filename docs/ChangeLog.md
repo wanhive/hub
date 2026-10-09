@@ -13,6 +13,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Abstract base class (**Trust**) for public key infrastructure.
 - RGB bitmap to grid pattern generator function in the **Feature** class.
 - **ML-KEM** and **ML-DSA** cipher implementations.
+- Passkey authentication.
 
 ### Changed
 
