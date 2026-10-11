@@ -152,7 +152,13 @@ int AuthenticationHub::handlePassKeyRequest(Message *message) noexcept {
 			return handleInvalidRequest(message);
 		}
 	case WH_QLF_TOKEN:
-		return handleTokenRequest(message);
+		if (!message->testTrace(TRACE_PAKE | TRACE_TOKEN)) {
+			//Stop the <origin> from making further requests
+			message->setTrace(TRACE_TOKEN);
+			return handleTokenRequest(message);
+		} else {
+			return handleInvalidRequest(message);
+		}
 	default:
 		return handleInvalidRequest(message);
 	}
@@ -232,7 +238,7 @@ int AuthenticationHub::handleAuthenticationRequest(Message *message) noexcept {
 		message->setDestination(message->getOrigin());
 		return 0;
 	} else {
-		//Free up the memory and stop the <source> from making further requests
+		//Free up the memory and stop the <origin> from making further requests
 		delete verifier;
 		pake.hmReplace(message->getOrigin(), nullptr, verifier);
 		return handleInvalidRequest(message);
@@ -242,7 +248,7 @@ int AuthenticationHub::handleAuthenticationRequest(Message *message) noexcept {
 int AuthenticationHub::handleAuthorizationRequest(Message *message) noexcept {
 	auto origin = message->getOrigin();
 	Verifier *verifier { };
-	// Stop the <origin> from making further requests
+	//Stop the <origin> from making further requests
 	if (pake.hmReplace(origin, nullptr, verifier) && verifier
 			&& verifier->verified()) {
 		return generateAuthorizationResponse(message, verifier->identity(),
@@ -270,7 +276,7 @@ int AuthenticationHub::handleResolutionRequest(Message *message) noexcept {
 			message->setDestination(message->getOrigin());
 			return 0;
 		} else {
-			// Stop the <origin> from making further requests
+			//Stop the <origin> from making further requests
 			pkey.hmReplace(origin, { 0, 0 }, resolved);
 			return handleInvalidRequest(message);
 		}
@@ -285,13 +291,6 @@ int AuthenticationHub::handleResolutionRequest(Message *message) noexcept {
 }
 
 int AuthenticationHub::handleTokenRequest(Message *message) noexcept {
-	//-----------------------------------------------------------------
-	if (message->testTrace(TRACE_PAKE | TRACE_TOKEN)) {  //Prevent misuse
-		return handleInvalidRequest(message);
-	}
-
-	message->setTrace(TRACE_TOKEN);
-	//-----------------------------------------------------------------
 	auto origin = message->getOrigin();
 	auto plen = message->getPayloadLength();
 	if (plen <= Hash::SIZE) {
