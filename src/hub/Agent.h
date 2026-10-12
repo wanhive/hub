@@ -104,6 +104,7 @@ private:
 	void processAuthenticationResponse(const Message *msg) noexcept;
 	Message* createFindRootRequest();
 	void processFindRootResponse(const Message *msg) noexcept;
+	Message* createTokenRequest();
 	void processTokenResponse(const Message *msg) noexcept;
 	Message* createRegistrationRequest(bool sign);
 	void processRegistrationResponse(Message *msg) noexcept;
@@ -111,11 +112,13 @@ private:
 	void setStage(int stage) noexcept;
 	int getStage() const noexcept;
 	bool isStage(int stage) const noexcept;
+	bool isExternalAuthEnabled() const noexcept;
 	void loadIdentifiers(bool auth);
 	void clearIdentifiers() noexcept;
 	void clear() noexcept;
 private:
 	struct {
+		bool passkey;
 		unsigned char password[64];
 		unsigned int passwordLength;
 		unsigned int rounds;

@@ -24,7 +24,7 @@ enum {
 	WHC_AUTHENTICATE,
 	WHC_BOOTSTRAP,
 	WHC_ROOT,
-	WHC_GETKEY,
+	WHC_TOKEN,
 	WHC_AUTHORIZE,
 	WHC_ERROR,
 	WHC_REGISTERED,
@@ -60,6 +60,7 @@ void Agent::configure(void *arg) {
 		Hub::configure(arg);
 		auto &conf = Identity::getOptions();
 
+		ctx.passkey = conf.getBoolean("AGENT", "passkey");
 		auto password = conf.getString("AGENT", "password", "");
 		auto rounds = conf.getNumber("AGENT", "rounds");
 		setPassword((const unsigned char*) password, strlen(password), rounds);
@@ -69,7 +70,8 @@ void Agent::configure(void *arg) {
 
 		auto mask = Hub::redact();
 		WH_LOG_DEBUG(
-				"\nPASSWORD='%s', HASH_ROUNDS=%u,\n" "IO_TIMEOUT=%ums, RETRY_INTERVAL=%ums\n",
+				"\nPASSKEY=%s, PASSWORD='%s', HASH_ROUNDS=%u,\n" "IO_TIMEOUT=%ums, RETRY_INTERVAL=%ums\n",
+				WH_BOOLF(ctx.passkey),
 				WH_MASK_STR(mask, (const char *)ctx.password),
 				WH_MASK_NUM(mask, ctx.rounds), ctx.timeout, ctx.pause);
 	} catch (const BaseException &e) {
@@ -97,7 +99,7 @@ void Agent::maintain() noexcept {
 		connectToOverlay();
 		break;
 	case WHC_ROOT:
-	case WHC_GETKEY:
+	case WHC_TOKEN:
 	case WHC_AUTHORIZE:
 		if (boot.timer.elapsed(ctx.timeout)) {
 			setStage(WHC_ERROR);
@@ -126,7 +128,6 @@ void Agent::route(Message *message) noexcept {
 	auto qualifier = message->getQualifier();
 	//Prevents replay (UID is the sink)
 	message->setDestination(getUid());
-
 	switch (command) {
 	case WH_CMD_NULL:
 		if (isStage(WHC_ERROR) || isStage(WHC_REGISTERED) || isStage(WHC_FATAL)
@@ -146,9 +147,9 @@ void Agent::route(Message *message) noexcept {
 		break;
 	case WH_CMD_BASIC:
 		if (isStage(WHC_ERROR) || isStage(WHC_REGISTERED) || isStage(WHC_FATAL)
-				|| !boot.node || (ctx.passwordLength && !boot.auth)) {
+				|| (isExternalAuthEnabled() && !boot.auth)) {
 			//Bad message
-		} else if (!(origin == boot.node->getUid()
+		} else if (!((boot.node && origin == boot.node->getUid())
 				|| (boot.auth && origin == boot.auth->getUid()))) {
 			//Bad message
 		} else if (!(source == 0 || source == getUid())) {
@@ -272,8 +273,8 @@ void Agent::connectToAuthenticator() noexcept {
 			throw Exception(EX_STATE);
 		}
 
-		if (!ctx.passwordLength) {
-			WH_LOG_DEBUG("Using PKI for authentication");
+		if (!isExternalAuthEnabled()) {
+			WH_LOG_DEBUG("Initiating local authentication");
 			setStage(WHC_BOOTSTRAP);
 			return;
 		}
@@ -304,7 +305,11 @@ void Agent::connectToAuthenticator() noexcept {
 		Identity::getAddress(id, ni);
 		s = new Socket(ni);
 		s->setUid(id);
-		s->publish(createIdentificationRequest());
+		if (ctx.passkey) {
+			s->publish(createTokenRequest());
+		} else {
+			s->publish(createIdentificationRequest());
+		}
 		attach(s, IO_WR, WATCHER_ACTIVE);
 		boot.auth = s;
 		WH_LOG_DEBUG("Contacting authentication node %llu",
@@ -365,8 +370,14 @@ void Agent::initAuthentication() noexcept {
 		if (!isStage(WHC_AUTHENTICATE) || !boot.auth) {
 			throw Exception(EX_STATE);
 		} else {
-			//Message destination is correctly set
-			Hub::forward(createAuthenticationRequest());
+			if (ctx.passkey) {
+				auto msg = createRegistrationRequest(true);
+				msg->setDestination(boot.auth->getUid());
+				Hub::forward(msg);
+			} else {
+				//Message destination is correctly set
+				Hub::forward(createAuthenticationRequest());
+			}
 			WH_LOG_DEBUG("Authentication initiated");
 		}
 
@@ -394,16 +405,8 @@ void Agent::findRoot() noexcept {
 			WH_LOG_DEBUG("Connecting with the root node [%llu]", boot.root);
 		}
 		//-----------------------------------------------------------------
-		uint64_t rnd[2];
-		Random prng;
-		prng.bytes(rnd, sizeof(rnd));
-		generateNonce(boot.hf, rnd[0], rnd[1], &boot.nonce);
-		auto msg = Protocol::createTokenRequest( { 0, 0 },
-				{ verifyHost() ? getPKI() : nullptr, &boot.nonce }, nullptr);
-		//-----------------------------------------------------------------
-		if (!msg) {
-			throw Exception(EX_MEMORY);
-		} else if (fresh) {
+		auto msg = createTokenRequest();
+		if (fresh) {
 			s->publish(msg);
 			attach(s, IO_WR, WATCHER_ACTIVE);
 			//Swap and disable
@@ -415,7 +418,7 @@ void Agent::findRoot() noexcept {
 			Hub::forward(msg);
 		}
 		//-----------------------------------------------------------------
-		setStage(WHC_GETKEY);
+		setStage(WHC_TOKEN);
 		WH_LOG_DEBUG("Requesting session key");
 	} catch (const BaseException &e) {
 		WH_LOG_EXCEPTION(e);
@@ -552,8 +555,33 @@ void Agent::processFindRootResponse(const Message *msg) noexcept {
 	}
 }
 
+Message* Agent::createTokenRequest() {
+	try {
+		uint64_t rnd[2];
+		Random prng;
+		prng.bytes(rnd, sizeof(rnd));
+		generateNonce(boot.hf, rnd[0], rnd[1], &boot.nonce);
+		auto msg = Protocol::createTokenRequest( { 0, 0 },
+				{ verifyHost() ? getPKI() : nullptr, &boot.nonce }, nullptr);
+		if (msg) {
+			return msg;
+		} else {
+			throw Exception(EX_MEMORY);
+		}
+	} catch (const BaseException &e) {
+		WH_LOG_EXCEPTION(e);
+		throw;
+	}
+}
+
 void Agent::processTokenResponse(const Message *msg) noexcept {
-	if (!isStage(WHC_GETKEY)) {
+	if (ctx.passkey && isStage(WHC_IDENTIFY) && boot.auth
+			&& msg->getOrigin() == boot.auth->getUid()
+			&& Protocol::processTokenResponse(msg, &boot.nonce)) {
+		WH_LOG_DEBUG("Token received");
+		setStage(WHC_AUTHENTICATE);
+		initAuthentication();
+	} else if (!isStage(WHC_TOKEN)) {
 		setStage(WHC_ERROR);
 	} else if (!boot.node || msg->getOrigin() != boot.node->getUid()) {
 		setStage(WHC_ERROR);
@@ -589,7 +617,11 @@ Message* Agent::createRegistrationRequest(bool sign) {
 void Agent::processRegistrationResponse(Message *msg) noexcept {
 	auto origin = msg->getOrigin();
 	auto status = msg->getStatus();
-	if (!isStage(WHC_AUTHORIZE)) {
+	if (ctx.passkey && isStage(WHC_AUTHENTICATE) && boot.auth
+			&& origin == boot.auth->getUid() && status == WH_AQLF_ACCEPTED) {
+		WH_LOG_DEBUG("Resolution succeeded");
+		setStage(WHC_BOOTSTRAP);
+	} else if (!isStage(WHC_AUTHORIZE)) {
 		setStage(WHC_ERROR);
 	} else if (!boot.node || (ctx.passwordLength && !boot.auth)
 			|| status == WH_AQLF_REJECTED) {
@@ -634,6 +666,10 @@ int Agent::getStage() const noexcept {
 
 bool Agent::isStage(int stage) const noexcept {
 	return (boot.stage == stage);
+}
+
+bool Agent::isExternalAuthEnabled() const noexcept {
+	return (ctx.passkey || ctx.passwordLength);
 }
 
 void Agent::loadIdentifiers(bool auth) {
