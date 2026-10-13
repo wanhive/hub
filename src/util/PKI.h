@@ -76,10 +76,10 @@ public:
 	 */
 	bool hasPrivateKey() const noexcept override;
 	bool hasPublicKey() const noexcept override;
-	bool encrypt(const Data &plaintext, Cache &ciphertext) noexcept override;
-	bool decrypt(const Data &ciphertext, Cache &plaintext) noexcept override;
-	bool sign(const Data &message, Cache &signature) noexcept override;
-	bool verify(const Data &message, const Data &signature) noexcept override;
+	bool encrypt(Data plaintext, Cache &ciphertext) noexcept override;
+	bool decrypt(Data ciphertext, Cache &plaintext) noexcept override;
+	bool sign(Data message, Cache &signature) noexcept override;
+	bool verify(Data message, Data signature) noexcept override;
 	size_t payload() const noexcept override;
 	size_t fingerprint(bool &fixed) const noexcept override;
 	int algorithm() const noexcept override;

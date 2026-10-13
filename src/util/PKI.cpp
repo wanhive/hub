@@ -51,27 +51,27 @@ bool PKI::hasPublicKey() const noexcept {
 	return rsa.hasPublicKey();
 }
 
-bool PKI::encrypt(const Data &plaintext, Cache &ciphertext) noexcept {
+bool PKI::encrypt(Data plaintext, Cache &ciphertext) noexcept {
 	return (plaintext.length <= PAYLOAD_LENGTH)
 			&& (!ciphertext.base || ciphertext.length >= ENCRYPTED_LENGTH)
 			&& rsa.encrypt(plaintext.base, plaintext.length, ciphertext.base,
 					ciphertext.length);
 }
 
-bool PKI::decrypt(const Data &ciphertext, Cache &plaintext) noexcept {
+bool PKI::decrypt(Data ciphertext, Cache &plaintext) noexcept {
 	return (!plaintext.base || plaintext.length >= ENCODING_LENGTH)
 			&& (ciphertext.base && ciphertext.length == ENCRYPTED_LENGTH)
 			&& rsa.decrypt(ciphertext.base, ciphertext.length, plaintext.base,
 					plaintext.length);
 }
 
-bool PKI::sign(const Data &message, Cache &signature) noexcept {
+bool PKI::sign(Data message, Cache &signature) noexcept {
 	return (!signature.base || signature.length >= SIGNATURE_LENGTH)
 			&& rsa.sign(message.base, message.length, signature.base,
 					signature.length);
 }
 
-bool PKI::verify(const Data &message, const Data &signature) noexcept {
+bool PKI::verify(Data message, Data signature) noexcept {
 	return (signature.base) && (signature.length == SIGNATURE_LENGTH)
 			&& rsa.verify(message.base, message.length, signature.base,
 					signature.length);
