@@ -17,11 +17,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
-- Clean up and restructure the code-base.
+- Code-base restructuring and cleanup.
 
-### Fixed
+### Security
 
-- Find a workaround for the OpenSSL RSA-encryption bug.
+- Fix a potential buffer overflow in the **RSA** encryption routine.
+- Compute correct **X25519** shared secret key.
 
 ## [17.0.0] - 2026-01-26
 
