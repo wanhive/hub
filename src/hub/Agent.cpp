@@ -577,6 +577,7 @@ Message* Agent::createTokenRequest() {
 void Agent::processTokenResponse(const Message *msg) noexcept {
 	if (ctx.passkey && isStage(WHC_IDENTIFY) && boot.auth
 			&& msg->getOrigin() == boot.auth->getUid()
+			&& msg->verify((verifyHost() ? getPKI() : nullptr))
 			&& Protocol::processTokenResponse(msg, &boot.nonce)) {
 		WH_LOG_DEBUG("Token received");
 		setStage(WHC_AUTHENTICATE);
