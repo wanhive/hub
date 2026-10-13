@@ -25,7 +25,7 @@ Protocol::~Protocol() {
 }
 
 unsigned int Protocol::createIdentificationRequest(
-		const MessageAddress &address, const Data &nonce) noexcept {
+		const MessageAddress &address, Data nonce) noexcept {
 	return createIdentificationRequest(address, nextSequenceNumber(), nonce,
 			*this);
 }
@@ -36,7 +36,7 @@ unsigned int Protocol::processIdentificationResponse(Data &salt,
 }
 
 bool Protocol::identificationRequest(const MessageAddress &address,
-		const Data &nonce) {
+		Data nonce) {
 	/*
 	 * HEADER: SRC=<identity>, DEST=X, ....CMD=0, QLF=1, AQLF=0/1/127
 	 * BODY: variable in Request and Response
@@ -46,7 +46,7 @@ bool Protocol::identificationRequest(const MessageAddress &address,
 }
 
 unsigned int Protocol::createAuthenticationRequest(
-		const MessageAddress &address, const Data &proof) noexcept {
+		const MessageAddress &address, Data proof) noexcept {
 	return createAuthenticationRequest(address, nextSequenceNumber(), proof,
 			*this);
 }
@@ -56,7 +56,7 @@ unsigned int Protocol::processAuthenticationResponse(Data &proof) const noexcept
 }
 
 bool Protocol::authenticationRequest(const MessageAddress &address,
-		const Data &proof) {
+		Data proof) {
 	/*
 	 * HEADER: SRC=0, DEST=X, ....CMD=0, QLF=2, AQLF=0/1/127
 	 * BODY: variable in Request and Response
@@ -178,7 +178,7 @@ bool Protocol::bootstrapRequest(uint64_t host, uint64_t keys[],
 }
 
 unsigned int Protocol::createPublishRequest(uint64_t host, uint8_t topic,
-		const Data &data) noexcept {
+		Data data) noexcept {
 	if ((data.length && !data.base) || data.length > MPS) {
 		return 0;
 	} else {
@@ -194,7 +194,7 @@ unsigned int Protocol::createPublishRequest(uint64_t host, uint8_t topic,
 	}
 }
 
-bool Protocol::publishRequest(uint64_t host, uint8_t topic, const Data &data) {
+bool Protocol::publishRequest(uint64_t host, uint8_t topic, Data data) {
 	/*
 	 * HEADER: SRC=0, DEST=X, ....CMD=2, QLF=0, AQLF=0/1/127
 	 * BODY: variable in Request; no Response
@@ -269,7 +269,7 @@ bool Protocol::unsubscribeRequest(uint64_t host, uint8_t topic) {
 
 //-----------------------------------------------------------------
 Message* Protocol::createIdentificationRequest(const MessageAddress &address,
-		const Data &nonce, uint16_t seq) noexcept {
+		Data nonce, uint16_t seq) noexcept {
 	auto msg = Message::create();
 	if (!msg) {
 		return nullptr;
@@ -287,7 +287,7 @@ unsigned int Protocol::processIdentificationResponse(const Message *msg,
 }
 
 Message* Protocol::createAuthenticationRequest(const MessageAddress &address,
-		const Data &proof, uint16_t seq) noexcept {
+		Data proof, uint16_t seq) noexcept {
 	auto msg = Message::create();
 	if (!msg) {
 		return nullptr;
@@ -312,8 +312,8 @@ Message* Protocol::createRegisterRequest(const MessageAddress &address,
 	return msg;
 }
 
-Message* Protocol::createTokenRequest(const MessageAddress &address,
-		const Token &tk, Message *msg) noexcept {
+Message* Protocol::createTokenRequest(const MessageAddress &address, Token tk,
+		Message *msg) noexcept {
 	if (msg || (msg = Message::create())) {
 		createTokenRequest(address, 0, tk, *msg);
 	}
@@ -346,7 +346,7 @@ unsigned int Protocol::processFindRootResponse(const Message *msg,
 //-----------------------------------------------------------------
 
 unsigned int Protocol::createIdentificationRequest(
-		const MessageAddress &address, uint16_t seq, const Data &nonce,
+		const MessageAddress &address, uint16_t seq, Data nonce,
 		Packet &packet) noexcept {
 	if (!nonce.base || !nonce.length || nonce.length > MPS) {
 		return 0;
@@ -386,7 +386,7 @@ unsigned int Protocol::processIdentificationResponse(const Packet &packet,
 }
 
 unsigned int Protocol::createAuthenticationRequest(
-		const MessageAddress &address, uint16_t seq, const Data &proof,
+		const MessageAddress &address, uint16_t seq, Data proof,
 		Packet &packet) noexcept {
 	if (!proof.base || !proof.length || proof.length > MPS) {
 		return 0;
@@ -436,7 +436,7 @@ unsigned int Protocol::createRegisterRequest(const MessageAddress &address,
 }
 
 unsigned int Protocol::createTokenRequest(const MessageAddress &address,
-		uint16_t seq, const Token &tk, Packet &packet) noexcept {
+		uint16_t seq, Token tk, Packet &packet) noexcept {
 	auto length = HLEN;
 	packet.clear();
 	if (tk.nonce && tk.pki) {

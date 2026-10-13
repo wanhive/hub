@@ -52,13 +52,13 @@ private:
 	//-----------------------------------------------------------------
 	bool isBanned(unsigned long long identity) const noexcept;
 	bool loadIdentity(Verifier *verifier, unsigned long long identity,
-			const Data &nonce) noexcept;
+			Data nonce) noexcept;
 	bool loadIdentity(Message *message, unsigned int &group) noexcept;
-	int generateIdentificationResponse(Message *message, const Data &salt,
-			const Data &nonce) noexcept;
+	int generateIdentificationResponse(Message *message, Data salt,
+			Data nonce) noexcept;
 	int generateAuthorizationResponse(Message *message,
 			unsigned long long identity, unsigned int group) noexcept;
-	void resolve(unsigned long long identity, const Data &nonce,
+	void resolve(unsigned long long identity, Data nonce,
 			Verifier *verifier);
 	unsigned int resolve(Message *message);
 	void setup();

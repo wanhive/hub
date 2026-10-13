@@ -51,7 +51,7 @@ public:
 	 * @return true on success, false on error
 	 */
 	bool identify(unsigned long long identity, const char *secret,
-			const char *salt, const Data &nonce) noexcept;
+			const char *salt, Data nonce) noexcept;
 	/**
 	 * STEP 2: Calculates user's proof at the user's end.
 	 * Host -> User:  s, B = kv + g^b (sends salt and nonce, b = random number)
@@ -68,9 +68,8 @@ public:
 	 * @param rounds password hashing rounds
 	 * @return true on success, false on error
 	 */
-	bool scramble(unsigned long long identity, const Data &password,
-			const Data &salt, const Data &nonce,
-			unsigned int rounds = 1) noexcept;
+	bool scramble(unsigned long long identity, Data password, Data salt,
+			Data nonce, unsigned int rounds = 1) noexcept;
 	/**
 	 * Host and user carry out mutual authentication.
 	 * STEP 3: Host authenticates the user:
@@ -83,7 +82,7 @@ public:
 	 * @param proof shared state
 	 * @return true on success, false on error
 	 */
-	bool verify(const Data &proof) noexcept;
+	bool verify(Data proof) noexcept;
 	//-----------------------------------------------------------------
 	/**
 	 * Returns the most recent authentication's (STEPS 3 & 4) result.
@@ -149,7 +148,7 @@ public:
 	 * @param rounds password hash rounds
 	 * @return true on success, false on error
 	 */
-	bool compute(const char *identity, const Data &password,
+	bool compute(const char *identity, Data password,
 			unsigned int rounds) noexcept;
 	//-----------------------------------------------------------------
 	/**
@@ -165,8 +164,8 @@ public:
 	 */
 	void fakeSalt(unsigned long long identity, Data &data) noexcept;
 private:
-	bool verifyUser(const Data &proof) noexcept;
-	bool verifyHost(const Data &proof) noexcept;
+	bool verifyUser(Data proof) noexcept;
+	bool verifyHost(Data proof) noexcept;
 private:
 	const bool _host;
 	unsigned long long _identity { };

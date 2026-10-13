@@ -337,7 +337,7 @@ bool AuthenticationHub::isBanned(unsigned long long identity) const noexcept {
 }
 
 bool AuthenticationHub::loadIdentity(Verifier *verifier,
-		unsigned long long identity, const Data &nonce) noexcept {
+		unsigned long long identity, Data nonce) noexcept {
 	try {
 		resolve(identity, nonce, verifier);
 		return true;
@@ -365,7 +365,7 @@ bool AuthenticationHub::loadIdentity(Message *message,
 }
 
 int AuthenticationHub::generateIdentificationResponse(Message *message,
-		const Data &salt, const Data &nonce) noexcept {
+		Data salt, Data nonce) noexcept {
 	if (message) {
 		if (!salt.length || !nonce.length || !salt.base || !nonce.base
 				|| (salt.length + nonce.length + 2 * sizeof(uint16_t)
@@ -407,7 +407,7 @@ int AuthenticationHub::generateAuthorizationResponse(Message *message,
 	return 0;
 }
 
-void AuthenticationHub::resolve(unsigned long long identity, const Data &nonce,
+void AuthenticationHub::resolve(unsigned long long identity, Data nonce,
 		Verifier *verifier) {
 	if (!verifier || !nonce.base || !nonce.length) {
 		throw Exception(EX_ARGUMENT);

@@ -30,7 +30,7 @@ Verifier::~Verifier() {
 }
 
 bool Verifier::identify(unsigned long long identity, const char *secret,
-		const char *salt, const Data &nonce) noexcept {
+		const char *salt, Data nonce) noexcept {
 	if (!_host) {
 		return false;
 	}
@@ -48,8 +48,8 @@ bool Verifier::identify(unsigned long long identity, const char *secret,
 	return success;
 }
 
-bool Verifier::scramble(unsigned long long identity, const Data &password,
-		const Data &salt, const Data &nonce, unsigned int rounds) noexcept {
+bool Verifier::scramble(unsigned long long identity, Data password,
+		Data salt, Data nonce, unsigned int rounds) noexcept {
 	if (_host || !password.base || !password.length || !salt.base
 			|| !salt.length || !nonce.base || !nonce.length
 			|| salt.length > groupSize() || nonce.length > groupSize()) {
@@ -76,7 +76,7 @@ bool Verifier::scramble(unsigned long long identity, const Data &password,
 	return success;
 }
 
-bool Verifier::verify(const Data &proof) noexcept {
+bool Verifier::verify(Data proof) noexcept {
 	if (_host) {
 		return verifyUser(proof);
 	} else {
@@ -137,7 +137,7 @@ void Verifier::secret(Data &data) noexcept {
 	data = { bytes, length };
 }
 
-bool Verifier::compute(const char *identity, const Data &password,
+bool Verifier::compute(const char *identity, Data password,
 		unsigned int rounds) noexcept {
 	if (!rounds) {
 		rounds = DEFAULT_ROUNDS;
@@ -173,7 +173,7 @@ void Verifier::fakeSalt(unsigned long long identity, Data &data) noexcept {
 	}
 }
 
-bool Verifier::verifyUser(const Data &proof) noexcept {
+bool Verifier::verifyUser(Data proof) noexcept {
 	if (!_host || !proof.base || !proof.length || (proof.length != keySize())) {
 		return false;
 	} else if (verifyUserProof(proof.base, proof.length)) {
@@ -185,7 +185,7 @@ bool Verifier::verifyUser(const Data &proof) noexcept {
 	}
 }
 
-bool Verifier::verifyHost(const Data &proof) noexcept {
+bool Verifier::verifyHost(Data proof) noexcept {
 	if (_host || !proof.base || !proof.length || (proof.length != keySize())) {
 		return false;
 	} else if (verifyHostProof(proof.base, proof.length)) {

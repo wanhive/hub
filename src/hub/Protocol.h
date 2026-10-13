@@ -45,7 +45,7 @@ public:
 	 * @return message length on success, 0 on error (invalid request)
 	 */
 	unsigned int createIdentificationRequest(const MessageAddress &address,
-			const Data &nonce) noexcept;
+			Data nonce) noexcept;
 	/**
 	 * Processes an identification response.
 	 * @param salt stores the salt
@@ -61,8 +61,7 @@ public:
 	 * @param nonce public ephemeral value
 	 * @return true on success, false on error (request denied by the host)
 	 */
-	bool identificationRequest(const MessageAddress &address,
-			const Data &nonce);
+	bool identificationRequest(const MessageAddress &address, Data nonce);
 	/**
 	 * Creates an authentication request.
 	 * @param address message's address
@@ -70,7 +69,7 @@ public:
 	 * @return message length on success, 0 on error (invalid request)
 	 */
 	unsigned int createAuthenticationRequest(const MessageAddress &address,
-			const Data &proof) noexcept;
+			Data proof) noexcept;
 	/**
 	 * Processes an authentication response.
 	 * @param proof stores host's proof of identity
@@ -84,8 +83,7 @@ public:
 	 * @param proof caller's proof of identity
 	 * @return true on success, false on error (request denied by the host)
 	 */
-	bool authenticationRequest(const MessageAddress &address,
-			const Data &proof);
+	bool authenticationRequest(const MessageAddress &address, Data proof);
 	//-----------------------------------------------------------------
 	/**
 	 * Creates a registration request.
@@ -189,7 +187,7 @@ public:
 	 * @return message length on success, 0 on error (invalid request)
 	 */
 	unsigned int createPublishRequest(uint64_t host, uint8_t topic,
-			const Data &data) noexcept;
+			Data data) noexcept;
 	/**
 	 * Executes a publish request to a topic.
 	 * @param host host's identifier (can be set to zero)
@@ -197,7 +195,7 @@ public:
 	 * @param data data to publish
 	 * @return true on success, false on error (request denied by the host)
 	 */
-	bool publishRequest(uint64_t host, uint8_t topic, const Data &data);
+	bool publishRequest(uint64_t host, uint8_t topic, Data data);
 	/**
 	 * Creates a subscription request to a topic.
 	 * @param host host's identifier (can be set to zero)
@@ -247,7 +245,7 @@ public:
 	 * @return identification request on success, nullptr on error
 	 */
 	static Message* createIdentificationRequest(const MessageAddress &address,
-			const Data &nonce, uint16_t seq) noexcept;
+			Data nonce, uint16_t seq) noexcept;
 	/**
 	 * Processes an identification response.
 	 * @param msg identification response
@@ -265,7 +263,7 @@ public:
 	 * @return authentication request on success, nullptr on error
 	 */
 	static Message* createAuthenticationRequest(const MessageAddress &address,
-			const Data &proof, uint16_t seq) noexcept;
+			Data proof, uint16_t seq) noexcept;
 	/**
 	 * Processes an authentication response.
 	 * @param msg authentication response
@@ -292,8 +290,8 @@ public:
 	 * a new message will be created and returned.
 	 * @return session key request on success, nullptr on error
 	 */
-	static Message* createTokenRequest(const MessageAddress &address,
-			const Token &tk, Message *msg) noexcept;
+	static Message* createTokenRequest(const MessageAddress &address, Token tk,
+			Message *msg) noexcept;
 	/**
 	 * Processes a session key response.
 	 * @param msg session key response
@@ -322,19 +320,19 @@ public:
 			uint64_t identity, uint64_t &root) noexcept;
 private:
 	static unsigned int createIdentificationRequest(
-			const MessageAddress &address, uint16_t seq, const Data &nonce,
+			const MessageAddress &address, uint16_t seq, Data nonce,
 			Packet &packet) noexcept;
 	static unsigned int processIdentificationResponse(const Packet &packet,
 			Data &salt, Data &nonce) noexcept;
 	static unsigned int createAuthenticationRequest(
-			const MessageAddress &address, uint16_t seq, const Data &proof,
+			const MessageAddress &address, uint16_t seq, Data proof,
 			Packet &packet) noexcept;
 	static unsigned int processAuthenticationResponse(const Packet &packet,
 			Data &proof) noexcept;
 	static unsigned int createRegisterRequest(const MessageAddress &address,
 			uint16_t seq, const Digest *hc, Packet &packet) noexcept;
 	static unsigned int createTokenRequest(const MessageAddress &address,
-			uint16_t seq, const Token &tk, Packet &packet) noexcept;
+			uint16_t seq, Token tk, Packet &packet) noexcept;
 	static unsigned int processTokenResponse(const Packet &packet,
 			Digest *hc) noexcept;
 	static unsigned int createFindRootRequest(const MessageAddress &address,
