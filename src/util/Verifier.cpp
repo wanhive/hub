@@ -48,8 +48,8 @@ bool Verifier::identify(unsigned long long identity, const char *secret,
 	return success;
 }
 
-bool Verifier::scramble(unsigned long long identity, Data password,
-		Data salt, Data nonce, unsigned int rounds) noexcept {
+bool Verifier::scramble(unsigned long long identity, Data password, Data salt,
+		Data nonce, unsigned int rounds) noexcept {
 	if (_host || !password.base || !password.length || !salt.base
 			|| !salt.length || !nonce.base || !nonce.length
 			|| salt.length > groupSize() || nonce.length > groupSize()) {

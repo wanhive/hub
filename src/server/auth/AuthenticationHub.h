@@ -58,8 +58,7 @@ private:
 			Data nonce) noexcept;
 	int generateAuthorizationResponse(Message *message,
 			unsigned long long identity, unsigned int group) noexcept;
-	void resolve(unsigned long long identity, Data nonce,
-			Verifier *verifier);
+	void resolve(unsigned long long identity, Data nonce, Verifier *verifier);
 	unsigned int resolve(Message *message);
 	void setup();
 	void clear() noexcept;
