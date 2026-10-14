@@ -73,7 +73,7 @@ public:
 	 * @return true on success, false on error
 	 */
 	bool generate(const char *privateKey, const char *publicKey, char *secret =
-			nullptr) noexcept;
+			nullptr) const noexcept;
 public:
 	/*! Shared secret output size in bytes */
 	static constexpr unsigned int SECRET_SIZE = 32;

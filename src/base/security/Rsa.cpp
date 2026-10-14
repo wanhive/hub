@@ -194,7 +194,7 @@ bool Rsa::verify(const unsigned char *data, size_t dataLength,
 }
 
 bool Rsa::generate(const char *privateKey, const char *publicKey, size_t bits,
-		char *secret) noexcept {
+		char *secret) const noexcept {
 	return KeyPair::generate(privateKey, publicKey, bits, secret, nullptr);
 }
 

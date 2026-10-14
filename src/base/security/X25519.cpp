@@ -34,7 +34,7 @@ bool X25519::compute(unsigned char *data, size_t &bytes) noexcept {
 }
 
 bool X25519::generate(const char *privateKey, const char *publicKey,
-		char *secret) noexcept {
+		char *secret) const noexcept {
 	return KeyPair::generate(privateKey, publicKey, 0, secret, nullptr);
 }
 

@@ -46,7 +46,7 @@ public:
 	 * @return true on success, false on error
 	 */
 	bool generate(const char *privateKey, const char *publicKey, char *secret =
-			nullptr) noexcept;
+			nullptr) const noexcept;
 public:
 	/*! Key size in bytes */
 	static constexpr unsigned int KEY_SIZE = 32;

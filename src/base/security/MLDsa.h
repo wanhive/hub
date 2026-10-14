@@ -70,7 +70,7 @@ public:
 	 * @return true on success, false on error
 	 */
 	bool generate(const char *privateKey, const char *publicKey, char *secret =
-			nullptr) noexcept;
+			nullptr) const noexcept;
 private:
 	EVP_MD_CTX* mdContext() noexcept;
 private:

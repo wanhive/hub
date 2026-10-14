@@ -66,7 +66,7 @@ bool MLDsa::verify(const unsigned char *data, size_t dataLength,
 }
 
 bool MLDsa::generate(const char *privateKey, const char *publicKey,
-		char *secret) noexcept {
+		char *secret) const noexcept {
 	return KeyPair::generate(privateKey, publicKey, 0, secret, nullptr);
 }
 

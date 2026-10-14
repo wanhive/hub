@@ -25,7 +25,7 @@ constexpr const char *NAMES[] = { "ML-KEM-512", "ML-KEM-768", "ML-KEM-1024" };
 
 namespace wanhive {
 
-MLKem::MLKem(MLKemParam param) noexcept:
+MLKem::MLKem(MLKemParam param) noexcept :
 		KeyPair { EVP_PKEY_NONE, NAMES[param] } {
 
 }
@@ -57,7 +57,7 @@ bool MLKem::decapsulate(const unsigned char *wrapped, size_t wrappedLength,
 }
 
 bool MLKem::generate(const char *privateKey, const char *publicKey,
-		char *secret) noexcept {
+		char *secret) const noexcept {
 	return KeyPair::generate(privateKey, publicKey, 0, secret, nullptr);
 }
 

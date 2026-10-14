@@ -90,7 +90,7 @@ public:
 	 * @return true on success, false on error
 	 */
 	bool generate(const char *privateKey, const char *publicKey, size_t bits,
-			char *secret = nullptr) noexcept;
+			char *secret = nullptr) const noexcept;
 };
 
 } /* namespace wanhive */
