@@ -36,7 +36,7 @@ void Reactor::add(Watcher *w, uint32_t events) {
 	if (w && !w->testFlags(WATCHER_RUNNING)) {
 		admit(w);
 
-		events |= (IO_CLOSE | TRIGGER_EDGE);
+		events |= (EnumValue(IO_CLOSE) | EnumValue(TRIGGER_EDGE));
 		selector.add(w->get(), events, w);
 
 		w->setFlags(WATCHER_RUNNING);
@@ -47,7 +47,7 @@ void Reactor::add(Watcher *w, uint32_t events) {
 
 void Reactor::modify(Watcher *w, uint32_t events) {
 	if (w && w->testFlags(WATCHER_RUNNING)) {
-		events |= (IO_CLOSE | TRIGGER_EDGE);
+		events |= (EnumValue(IO_CLOSE) | EnumValue(TRIGGER_EDGE));
 		selector.modify(w->get(), events, w);
 	} else {
 		throw Exception(EX_ARGUMENT);
