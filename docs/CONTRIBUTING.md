@@ -19,7 +19,7 @@ You agree to license your "original work" under a compatible permissive license.
 
 # General requirements
 
-* Language standards: C++17
+* Language standards: **C++20**
 * Format the code in the K&R style.
 * The code should be robust, sufficient, and easy to test for correctness.
 * The code should be efficient.
