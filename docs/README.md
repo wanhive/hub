@@ -1,8 +1,8 @@
 # Wanhive Hub
 
-With the **Wanhive Hub** build secure multimedia based Internet of Things.
+**Wanhive Hub** is a secure Internet of Things (IoT) system designed for multimedia.
 
-This package is part of the Wanhive IoT Platform.
+Imagine a cutting-edge IoT system that transforms how we interact with technology. Let’s build a smart ecosystem where safety and innovation create seamless experiences that enhance our daily lives!
 
 ## Features
 
@@ -13,6 +13,8 @@ This package is part of the Wanhive IoT Platform.
 * Secure communication using TLS/SSL
 
 # Package
+
+This package is part of the **Wanhive IoT Platform**.
 
 This package includes
 
