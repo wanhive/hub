@@ -54,7 +54,7 @@ private:
 	static void printUsage(FILE *stream) noexcept;
 	static void printContact(FILE *stream) noexcept;
 	static void clear() noexcept;
-public:
+private:
 	struct Context {
 		const char *program;
 		bool menu;
@@ -63,7 +63,6 @@ public:
 		const char *config;
 		Hub *hub;
 	};
-private:
 	static Context ctx;
 };
 
