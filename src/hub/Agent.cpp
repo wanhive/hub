@@ -36,7 +36,7 @@ enum {
 namespace wanhive {
 
 Agent::Agent(unsigned long long uid, const char *path) noexcept :
-		Hub { uid, path } {
+		DynamicHub { uid, path } {
 	clear();
 }
 
@@ -57,7 +57,7 @@ void Agent::expel(Watcher *w) noexcept {
 
 void Agent::configure(void *arg) {
 	try {
-		Hub::configure(arg);
+		DynamicHub::configure(arg);
 		auto &conf = Identity::getOptions();
 
 		ctx.passkey = conf.getBoolean("AGENT", "passkey");
@@ -82,7 +82,7 @@ void Agent::configure(void *arg) {
 
 void Agent::cleanup() noexcept {
 	clear();
-	Hub::cleanup();
+	DynamicHub::cleanup();
 }
 
 void Agent::maintain() noexcept {

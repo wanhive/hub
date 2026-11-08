@@ -14,8 +14,8 @@
 #define WH_SERVER_CORE_OVERLAYHUB_H_
 #include "OverlayService.h"
 #include "Topics.h"
-#include "../DynamicHub.h"
 #include "../../base/ds/Tokens.h"
+#include "../../hub/DynamicHub.h"
 
 /*! @namespace wanhive */
 namespace wanhive {

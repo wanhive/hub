@@ -12,8 +12,8 @@
 
 #ifndef WH_SERVER_AUTH_AUTHENTICATIONHUB_H_
 #define WH_SERVER_AUTH_AUTHENTICATIONHUB_H_
-#include "../DynamicHub.h"
 #include "../../base/db/DataStore.h"
+#include "../../hub/DynamicHub.h"
 #include "../../util/Verifier.h"
 
 /*! @namespace wanhive */

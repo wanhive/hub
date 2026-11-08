@@ -89,14 +89,14 @@ WH_EDGESOURCES = edge/Beacon.cpp edge/Edge.cpp edge/Gadget.cpp edge/Monitor.cpp 
 	edge/Receiver.cpp
 
 ## src/hub collection
-WH_HUBHEADERS = hub/Agent.h hub/Alarm.h hub/Event.h hub/Hub.h \
+WH_HUBHEADERS = hub/Agent.h hub/Alarm.h hub/DynamicHub.h hub/Event.h hub/Hub.h \
 	hub/HubInfo.h hub/Identity.h hub/Inotifier.h hub/Interrupt.h \
 	hub/Job.h hub/Logic.h hub/Protocol.h hub/Socket.h hub/Stream.h \
 	hub/Topic.h hub/Watchers.h
-WH_HUBSOURCES = hub/Agent.cpp hub/Alarm.cpp hub/Event.cpp hub/Hub.cpp \
-	hub/HubInfo.cpp hub/Identity.cpp hub/Inotifier.cpp hub/Interrupt.cpp \
-	hub/Job.cpp hub/Logic.cpp hub/Protocol.cpp hub/Socket.cpp hub/Stream.cpp \
-	hub/Topic.cpp hub/Watchers.cpp
+WH_HUBSOURCES = hub/Agent.cpp hub/Alarm.cpp hub/DynamicHub.cpp hub/Event.cpp \
+	hub/Hub.cpp hub/HubInfo.cpp hub/Identity.cpp hub/Inotifier.cpp \
+	hub/Interrupt.cpp hub/Job.cpp hub/Logic.cpp hub/Protocol.cpp \
+	hub/Socket.cpp hub/Stream.cpp hub/Topic.cpp hub/Watchers.cpp
 
 ## src/reactor collection
 WH_REACTORHEADERS = reactor/Descriptor.h reactor/Handler.h reactor/Reactor.h \
@@ -104,12 +104,12 @@ WH_REACTORHEADERS = reactor/Descriptor.h reactor/Handler.h reactor/Reactor.h \
 WH_REACTORSOURCES = reactor/Descriptor.cpp reactor/Reactor.cpp reactor/Watcher.cpp
 
 ## src/server collection
-WH_SERVERHEADERS = server/DynamicHub.h server/auth/AuthenticationHub.h \
+WH_SERVERHEADERS = server/auth/AuthenticationHub.h \
 	server/core/DHT.h server/core/Finger.h server/core/Node.h \
 	server/core/OverlayHub.h server/core/OverlayHubInfo.h \
 	server/core/OverlayProtocol.h server/core/OverlayService.h \
 	server/core/OverlayTool.h server/core/Topics.h server/core/commands.h
-WH_SERVERSOURCES = server/DynamicHub.cpp server/auth/AuthenticationHub.cpp \
+WH_SERVERSOURCES = server/auth/AuthenticationHub.cpp \
 	server/core/DHT.cpp server/core/Finger.cpp server/core/Node.cpp \
 	server/core/OverlayHub.cpp server/core/OverlayHubInfo.cpp \
 	server/core/OverlayProtocol.cpp server/core/OverlayService.cpp \

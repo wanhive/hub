@@ -109,6 +109,7 @@
 #include "edge/Receiver.h"
 #include "hub/Agent.h"
 #include "hub/Alarm.h"
+#include "hub/DynamicHub.h"
 #include "hub/Event.h"
 #include "hub/Hub.h"
 #include "hub/HubInfo.h"

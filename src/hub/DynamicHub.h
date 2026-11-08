@@ -1,18 +1,18 @@
-/*
- * DynamicHub.h
+/**
+ * @file DynamicHub.h
  *
  * Dynamic hub
  *
  *
- * Copyright (C) 2026 Wanhive Systems Private Limited (info@wanhive.com)
+ * Copyright (C) 2026 Amit Kumar (amitkriit@gmail.com)
  * This program is part of the Wanhive IoT Platform.
  * Check the COPYING file for the license.
  *
  */
 
-#ifndef WH_SERVER_DYNAMICHUB_H_
-#define WH_SERVER_DYNAMICHUB_H_
-#include "../hub/Hub.h"
+#ifndef WH_HUB_DYNAMICHUB_H_
+#define WH_HUB_DYNAMICHUB_H_
+#include "Hub.h"
 
 /*! @namespace wanhive */
 namespace wanhive {
@@ -43,7 +43,13 @@ protected:
 	 * @return A watcher for the other end of the socket pair, set for
 	 * non-blocking IO.
 	 */
-	Watcher* bridge(int &sfd, bool blocking = false, int timeout = 0);
+	Watcher* pair(int &sfd, bool blocking = false, int timeout = 0);
+	/**
+	 * Handles file system events and updates the settings accordingly.
+	 * @param wd watch descriptor
+	 * @param mask watch mask for the events
+	 */
+	void reload(int wd, uint32_t mask) noexcept;
 	//-----------------------------------------------------------------
 	void configure(void *arg) override;
 	void cleanup() noexcept override;
@@ -53,7 +59,7 @@ private:
 	void onInotification(unsigned long long uid,
 			const InotifyEvent *event) noexcept override;
 	//-----------------------------------------------------------------
-	void refresh(unsigned int index) noexcept;
+	void reload(unsigned int index) noexcept;
 	void setup();
 	void sanitize() noexcept;
 	void clear() noexcept;
@@ -69,4 +75,4 @@ private:
 
 } /* namespace wanhive */
 
-#endif /* WH_SERVER_DYNAMICHUB_H_ */
+#endif /* WH_HUB_DYNAMICHUB_H_ */

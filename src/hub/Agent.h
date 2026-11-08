@@ -12,7 +12,7 @@
 
 #ifndef WH_HUB_AGENT_H_
 #define WH_HUB_AGENT_H_
-#include "Hub.h"
+#include "DynamicHub.h"
 #include "../util/Verifier.h"
 
 /*! @namespace wanhive */
@@ -20,7 +20,7 @@ namespace wanhive {
 /**
  * Agent implementation
  */
-class Agent: public Hub {
+class Agent: public DynamicHub {
 public:
 	/**
 	 * Constructor: creates a new agent.

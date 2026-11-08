@@ -4,7 +4,7 @@
  * Dynamic hub
  *
  *
- * Copyright (C) 2026 Wanhive Systems Private Limited (info@wanhive.com)
+ * Copyright (C) 2026 Amit Kumar (amitkriit@gmail.com)
  * This program is part of the Wanhive IoT Platform.
  * Check the COPYING file for the license.
  *
@@ -24,23 +24,37 @@ DynamicHub::~DynamicHub() {
 
 }
 
-Watcher* DynamicHub::bridge(int &sfd, bool blocking, int timeout) {
-	Socket *local = nullptr;
-	int socket = -1;
+Watcher* DynamicHub::pair(int &sfd, bool blocking, int timeout) {
+	Socket *local { };
+	int fd { -1 };
 	try {
-		local = Socket::pair(socket);
+		local = Socket::pair(fd);
 		if (blocking) {
-			Network::setBlocking(socket, true);
-			Network::setTimeout(socket, timeout, timeout);
+			Network::setBlocking(fd, true);
+			Network::setTimeout(fd, timeout, timeout);
 		}
 		attach(local, IO_WR, WATCHER_ACTIVE);
-		sfd = socket;
+		sfd = fd;
 		return local;
 	} catch (const BaseException &e) {
 		WH_LOG_EXCEPTION(e);
-		Network::close(socket);
+		Network::close(fd);
 		delete local;
 		throw;
+	}
+}
+
+void DynamicHub::reload(int wd, uint32_t mask) noexcept {
+	if (wd == -1) { //overflow notification
+		return;
+	}
+
+	for (unsigned int i = 0; i < TRACKER_CNT; ++i) {
+		if (tracker[i].id == wd) {
+			tracker[i].events |= mask;
+			reload(i);
+			break;
+		}
 	}
 }
 
@@ -68,20 +82,10 @@ void DynamicHub::cleanup() noexcept {
 
 void DynamicHub::onInotification(unsigned long long uid,
 		const InotifyEvent *event) noexcept {
-	if (event->wd == -1) { //overflow notification
-		return;
-	}
-
-	for (unsigned int i = 0; i < TRACKER_CNT; ++i) {
-		if (tracker[i].id == event->wd) {
-			tracker[i].events |= event->mask;
-			refresh(i);
-			break;
-		}
-	}
+	reload(event->wd, event->mask);
 }
 
-void DynamicHub::refresh(unsigned int index) noexcept {
+void DynamicHub::reload(unsigned int index) noexcept {
 	//REF: https://github.com/guard/guard/wiki/Analysis-of-inotify-events-for-different-editors
 	if (tracker[index].events & IN_IGNORED) {
 		//Associated file will no longer be monitored

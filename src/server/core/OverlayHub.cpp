@@ -181,7 +181,7 @@ void OverlayHub::installService() {
 	}
 
 	int fd = -1;
-	auto w = DynamicHub::bridge(fd, true, ctx.timeout);
+	auto w = DynamicHub::pair(fd, true, ctx.timeout);
 	worker.id = w->getUid(); //set here
 	onboard(w);
 	stabilizer.configure(fd, ctx.nodes, ctx.period, ctx.pause);
