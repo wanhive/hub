@@ -62,7 +62,7 @@ void DynamicHub::configure(void *arg) {
 }
 
 void DynamicHub::cleanup() noexcept {
-	clear();
+	sanitize();
 	Hub::cleanup();
 }
 
@@ -178,6 +178,7 @@ void DynamicHub::refresh(unsigned int index) noexcept {
 }
 
 void DynamicHub::setup() {
+	sanitize(); //Just in case
 	try {
 		//Events we are interested in: modify-> close
 		const uint32_t events = IN_MODIFY | IN_ATTRIB | IN_CLOSE_WRITE;
@@ -224,6 +225,15 @@ void DynamicHub::setup() {
 	} catch (const BaseException &e) {
 		WH_LOG_EXCEPTION(e);
 		throw;
+	}
+}
+
+void DynamicHub::sanitize() noexcept {
+	for (unsigned int i = 0; i < TRACKER_CNT; ++i) {
+		if (tracker[i].id != -1) {
+			Hub::untrack(tracker[i].id);
+		}
+		tracker[i] = { -1, -1, 0 };
 	}
 }
 

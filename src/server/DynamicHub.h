@@ -55,6 +55,7 @@ private:
 	//-----------------------------------------------------------------
 	void refresh(unsigned int index) noexcept;
 	void setup();
+	void sanitize() noexcept;
 	void clear() noexcept;
 	//-----------------------------------------------------------------
 private:
