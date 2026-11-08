@@ -48,8 +48,9 @@ protected:
 	 * Handles file system events and updates the settings accordingly.
 	 * @param wd watch descriptor
 	 * @param mask watch mask for the events
+	 * @return true if an event of interest occurs; false otherwise
 	 */
-	void reload(int wd, uint32_t mask) noexcept;
+	bool reload(int wd, uint32_t mask) noexcept;
 	//-----------------------------------------------------------------
 	void configure(void *arg) override;
 	void cleanup() noexcept override;

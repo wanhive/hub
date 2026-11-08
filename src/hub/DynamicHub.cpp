@@ -44,18 +44,20 @@ Watcher* DynamicHub::pair(int &sfd, bool blocking, int timeout) {
 	}
 }
 
-void DynamicHub::reload(int wd, uint32_t mask) noexcept {
-	if (wd == -1) { //overflow notification
-		return;
+bool DynamicHub::reload(int wd, uint32_t mask) noexcept {
+	if (wd == -1) { //Overflow
+		return false;
 	}
 
 	for (unsigned int i = 0; i < TRACKER_CNT; ++i) {
 		if (tracker[i].id == wd) {
 			tracker[i].events |= mask;
 			reload(i);
-			break;
+			return true;
 		}
 	}
+
+	return false;
 }
 
 void DynamicHub::configure(void *arg) {
