@@ -12,7 +12,7 @@
 
 #ifndef WH_SERVER_AUTH_AUTHENTICATIONHUB_H_
 #define WH_SERVER_AUTH_AUTHENTICATIONHUB_H_
-#include "../../hub/Hub.h"
+#include "../DynamicHub.h"
 #include "../../base/db/DataStore.h"
 #include "../../util/Verifier.h"
 
@@ -21,7 +21,7 @@ namespace wanhive {
 /**
  * Authentication hub implementation
  */
-class AuthenticationHub final: public Hub, private DataStore {
+class AuthenticationHub final: public DynamicHub, private DataStore {
 public:
 	/**
 	 * Constructor: creates a new hub.

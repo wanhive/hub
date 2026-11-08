@@ -34,7 +34,7 @@ namespace wanhive {
 
 AuthenticationHub::AuthenticationHub(unsigned long long uid,
 		const char *path) noexcept :
-		Hub { uid, path } {
+		DynamicHub { uid, path } {
 	clear();
 }
 
@@ -56,7 +56,7 @@ void AuthenticationHub::expel(Watcher *w) noexcept {
 
 void AuthenticationHub::configure(void *arg) {
 	try {
-		Hub::configure(arg);
+		DynamicHub::configure(arg);
 		auto &conf = Identity::getOptions();
 		dbi.info.name = conf.getString("AUTH", "database");
 		dbi.command = conf.getString("AUTH", "query", DEF_QUERY);
@@ -85,7 +85,7 @@ void AuthenticationHub::cleanup() noexcept {
 	pkey.clear();
 	DataStore::close();
 	clear();
-	Hub::cleanup();
+	DynamicHub::cleanup();
 }
 
 void AuthenticationHub::maintain() noexcept {

@@ -14,15 +14,15 @@
 #define WH_SERVER_CORE_OVERLAYHUB_H_
 #include "OverlayService.h"
 #include "Topics.h"
+#include "../DynamicHub.h"
 #include "../../base/ds/Tokens.h"
-#include "../../hub/Hub.h"
 
 /*! @namespace wanhive */
 namespace wanhive {
 /**
  * Overlay hub implementation
  */
-class OverlayHub final: public Hub, private Node {
+class OverlayHub final: public DynamicHub, private Node {
 public:
 	/**
 	 * Constructor: creates an overlay hub.
@@ -44,15 +44,11 @@ private:
 	void route(Message *message) noexcept override;
 	void onAlarm(unsigned long long uid, unsigned long long ticks) noexcept
 			override;
-	void onInotification(unsigned long long uid,
-			const InotifyEvent *event) noexcept override;
 	bool doable() const noexcept override;
 	void act(void *arg) noexcept override;
 	void cease() noexcept override;
 	//-----------------------------------------------------------------
 	void installService();
-	void installTracker();
-	void refresh(unsigned int index) noexcept;
 	//-----------------------------------------------------------------
 	bool converge() noexcept;
 	bool bridge(unsigned long long id, Digest *hc) noexcept;
@@ -124,7 +120,6 @@ private:
 	static bool isExternal(unsigned long long uid) noexcept;
 	static bool isEphemeral(unsigned long long uid) noexcept;
 	//-----------------------------------------------------------------
-	Watcher* connect(int &sfd, bool blocking = false, int timeout = 0);
 	Watcher* connect(unsigned long long id, Digest *hc);
 	Watcher* createProxyConnection(unsigned long long id, Digest *hc);
 	unsigned int reap(int mode, unsigned int target = 0) noexcept;
@@ -163,14 +158,6 @@ private:
 	//-----------------------------------------------------------------
 	Digest sessions[TABLESIZE + 1];
 	Hash hash;
-	//-----------------------------------------------------------------
-	static constexpr unsigned int TRACKER_CNT = 8;
-	struct {
-		int context;
-		int id;
-		uint32_t events;
-	} tracker[TRACKER_CNT];
-	//-----------------------------------------------------------------
 	Topics topics;
 	Tokens tokens;
 };
