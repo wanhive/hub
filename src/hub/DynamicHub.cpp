@@ -82,7 +82,7 @@ void DynamicHub::cleanup() noexcept {
 
 void DynamicHub::onInotification(unsigned long long uid,
 		const InotifyEvent *event) noexcept {
-	reload(event->wd, event->mask);
+	reload(Inotifier::getWatchDescriptor(event), Inotifier::getMask(event));
 }
 
 void DynamicHub::reload(unsigned int index) noexcept {
