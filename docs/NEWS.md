@@ -1,3 +1,7 @@
+## 2026-11-10
+
+- Version 19.0.0 release.
+
 ## 2026-10-17
 
 - Version 18.0.0 release.
