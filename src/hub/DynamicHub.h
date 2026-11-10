@@ -66,12 +66,12 @@ private:
 	void clear() noexcept;
 	//-----------------------------------------------------------------
 private:
-	static constexpr unsigned int TRACKER_CNT = 8;
+	static constexpr unsigned int TRACKERS = 8;
 	struct {
 		int context;
 		int id;
 		uint32_t events;
-	} tracker[TRACKER_CNT];
+	} tracker[TRACKERS];
 };
 
 } /* namespace wanhive */

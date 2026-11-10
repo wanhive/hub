@@ -49,7 +49,7 @@ bool DynamicHub::reload(int wd, uint32_t mask) noexcept {
 		return false;
 	}
 
-	for (unsigned int i = 0; i < TRACKER_CNT; ++i) {
+	for (unsigned int i = 0; i < TRACKERS; ++i) {
 		if (tracker[i].id == wd) {
 			tracker[i].events |= mask;
 			reload(i);
@@ -235,7 +235,7 @@ void DynamicHub::setup() {
 }
 
 void DynamicHub::sanitize() noexcept {
-	for (unsigned int i = 0; i < TRACKER_CNT; ++i) {
+	for (unsigned int i = 0; i < TRACKERS; ++i) {
 		if (tracker[i].id != -1) {
 			Hub::untrack(tracker[i].id);
 		}
@@ -244,7 +244,7 @@ void DynamicHub::sanitize() noexcept {
 }
 
 void DynamicHub::clear() noexcept {
-	for (unsigned int i = 0; i < TRACKER_CNT; ++i) {
+	for (unsigned int i = 0; i < TRACKERS; ++i) {
 		tracker[i] = { -1, -1, 0 };
 	}
 }
