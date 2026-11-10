@@ -16,7 +16,8 @@
 /*! @namespace wanhive */
 namespace wanhive {
 /**
- * Topic subscriptions
+ * @brief Topic Subscriptions
+ * @details Manages existing subscriptions efficiently.
  */
 class Topic {
 public:

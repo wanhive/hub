@@ -36,7 +36,8 @@ struct TrafficInfo {
 };
 //-----------------------------------------------------------------
 /**
- * Hub's runtime metrics
+ * @brief Hub Metrics
+ * @details Stores real-time health and performance measurements.
  */
 class HubInfo {
 public:

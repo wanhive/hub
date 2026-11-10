@@ -21,7 +21,8 @@
 /*! @namespace wanhive */
 namespace wanhive {
 /**
- * Hub's identity and properties
+ * @brief Hub Settings
+ * @details Reads and maintains the hub's basic settings.
  */
 class Identity {
 public:

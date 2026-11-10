@@ -19,7 +19,7 @@
 namespace wanhive {
 /**
  * @brief Millisecond precision periodic timer
- * @details Abstraction of the Linux's timerfd mechanism (timerfd_create(2))
+ * @details Abstraction of Linux's timerfd API (timerfd_create(2)).
  */
 class Alarm final: public Watcher {
 public:

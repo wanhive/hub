@@ -43,8 +43,8 @@ enum SocketType {
 };
 //-----------------------------------------------------------------
 /**
- * @brief Message stream watcher
- * @details Supports two-way Message exchange over TCP/IP
+ * @brief Message Stream Watcher
+ * @details Supports two-way Message exchange over TCP/IP.
  * @note Not thread safe
  */
 class Socket final: public Pooled<Socket>,

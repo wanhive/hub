@@ -24,8 +24,8 @@ namespace wanhive {
 using InotifyEvent = inotify_event;
 
 /**
- * @brief Monitors file system events
- * @details Abstraction of Linux's inotify(7) mechanism
+ * @brief File System Watcher
+ * @details Abstraction of Linux's file system monitoring system (inotify(7)).
  */
 class Inotifier final: public Watcher {
 public:

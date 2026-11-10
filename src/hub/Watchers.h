@@ -18,7 +18,8 @@
 /*! @namespace wanhive */
 namespace wanhive {
 /**
- * Hash table of watchers
+ * @brief Hash Table of Watchers
+ * @details Efficiently maintains a record of active watchers.
  */
 class Watchers {
 public:

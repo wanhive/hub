@@ -18,7 +18,8 @@
 /*! @namespace wanhive */
 namespace wanhive {
 /**
- * Asynchronous task
+ * @brief Asynchronous Task
+ * @details Simplifies thread management and task execution.
  */
 class Job: private Activity {
 public:

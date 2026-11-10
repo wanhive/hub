@@ -1,7 +1,7 @@
 /*
  * Protocol.cpp
  *
- * Wanhive protocol implementation
+ * Wanhive protocol
  *
  *
  * Copyright (C) 2019 Amit Kumar (amitkriit@gmail.com)

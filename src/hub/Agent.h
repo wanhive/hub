@@ -18,7 +18,8 @@
 /*! @namespace wanhive */
 namespace wanhive {
 /**
- * Agent implementation
+ * @brief Wanhive Agent
+ * @details Base class for client applications.
  */
 class Agent: public DynamicHub {
 public:

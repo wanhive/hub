@@ -37,7 +37,7 @@ struct LogicEvent {
 };
 //-----------------------------------------------------------------
 /**
- * @brief Digital logic watcher
+ * @brief Digital Logic Watcher
  * @details Base class for digital logic monitoring applications.
  */
 class Logic: public Watcher {

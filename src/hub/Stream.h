@@ -19,8 +19,8 @@
 /*! @namespace wanhive */
 namespace wanhive {
 /**
- * @brief Byte stream watcher
- * @details Supports two-way communication over a half or full duplex channel
+ * @brief Byte Stream Watcher
+ * @details Supports two-way communication over a half or full duplex channel.
  */
 class Stream final: public Duplex<unsigned char>, public Watcher {
 public:

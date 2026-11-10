@@ -17,8 +17,8 @@
 /*! @namespace wanhive */
 namespace wanhive {
 /**
- * @brief Dynamic hub implementation
- * @details Actively monitors and pulls configuration updates at runtime.
+ * @brief Dynamic Hub
+ * @details Monitors and retrieves configuration updates at runtime.
  */
 class DynamicHub: public Hub {
 public:
@@ -36,12 +36,12 @@ protected:
 	//-----------------------------------------------------------------
 	/**
 	 * Creates a connected pair of Unix domain sockets.
-	 * @param sfd stores the paired file descriptor
+	 * @param sfd stores the file descriptor for one end of the socket pair
 	 * @param blocking true to enable blocking mode on the paired file
 	 * descriptor; set to false for non-blocking mode.
 	 * @param timeout IO timeout in milliseconds
-	 * @return A watcher for the other end of the socket pair, set for
-	 * non-blocking IO.
+	 * @return a registered watcher for the other end of the socket pair, set
+	 * for non-blocking I/O.
 	 */
 	Watcher* pair(int &sfd, bool blocking = false, int timeout = 0);
 	/**

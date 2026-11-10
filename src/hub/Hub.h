@@ -33,7 +33,8 @@
 /*! @namespace wanhive */
 namespace wanhive {
 /**
- * Hub implementation
+ * @brief Wanhive Hub
+ * @details Base class for IoT applications.
  */
 class Hub: public Handler<Alarm>,
 		public Handler<Event>,

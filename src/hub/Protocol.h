@@ -1,7 +1,7 @@
 /**
  * @file Protocol.h
  *
- * Wanhive protocol implementation
+ * Wanhive protocol
  *
  *
  * Copyright (C) 2019 Amit Kumar (amitkriit@gmail.com)
@@ -30,8 +30,8 @@ struct Token {
 };
 //-----------------------------------------------------------------
 /**
- * Wanhive protocol implementation
- * @note Requires blocking IO
+ * @brief Wanhive Protocol
+ * @details Minimal messaging protocol requiring blocking I/O.
  */
 class Protocol: protected Endpoint, protected FlowControl {
 public:
