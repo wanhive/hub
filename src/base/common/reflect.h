@@ -42,7 +42,7 @@ namespace wanhive {
  * @param array's reference
  * @return number of elements
  */
-template<typename T, size_t N> constexpr auto ArraySize(T (&)[N]) {
+template<typename T, size_t N> constexpr auto ArraySize(T (&)[N]) noexcept {
 	return N;
 }
 
@@ -53,9 +53,9 @@ template<typename T, size_t N> constexpr auto ArraySize(T (&)[N]) {
  * @param e enumeration's value
  * @return integral value
  */
-template<typename E, typename = typename std::enable_if<std::is_enum<E>::value,
-		typename std::decay<E>::type>::type> constexpr auto EnumValue(E e) {
-	return static_cast<typename std::underlying_type<E>::type>(e);
+template<typename E, typename = std::enable_if_t<std::is_enum_v<E>,
+		std::decay_t<E>>> constexpr auto EnumValue(E e) noexcept {
+	return static_cast<std::underlying_type_t<E>>(e);
 }
 
 }  // namespace wanhive
