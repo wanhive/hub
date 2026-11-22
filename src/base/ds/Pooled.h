@@ -67,7 +67,7 @@ protected:
 	 * The delete operator that works with the preallocated memory pool.
 	 * @param p object's pointer
 	 */
-	void operator delete(void *p) noexcept;
+	void operator delete(void *p);
 private:
 	static MemoryPool pool;
 };
@@ -111,11 +111,15 @@ unsigned int wanhive::Pooled<X>::unallocated() noexcept {
 
 template<typename X>
 void* wanhive::Pooled<X>::operator new(size_t size) noexcept {
-	return pool.allocate();
+	if (size == sizeof(X)) {
+		return pool.allocate();
+	} else {
+		return nullptr;
+	}
 }
 
 template<typename X>
-void wanhive::Pooled<X>::operator delete(void *p) noexcept {
+void wanhive::Pooled<X>::operator delete(void *p) {
 	pool.deallocate(p);
 }
 
