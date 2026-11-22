@@ -13,7 +13,7 @@
 #include "Message.h"
 #include "../base/common/Exception.h"
 #include "../base/ds/Serializer.h"
-#include <cstdarg>
+#include <cstdio>
 
 namespace wanhive {
 
@@ -30,16 +30,12 @@ void* Message::operator new(size_t size) noexcept {
 	return Pooled::operator new(size);
 }
 
-void Message::operator delete(void *p) noexcept {
+void Message::operator delete(void *p) {
 	Pooled::operator delete(p);
 }
 
 Message* Message::create(uint64_t origin) noexcept {
-	if (allocated() != poolSize()) {
-		return new Message(origin);
-	} else {
-		return nullptr;
-	}
+	return new Message(origin);
 }
 
 bool Message::recycle(Message *message) noexcept {

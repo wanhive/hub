@@ -90,7 +90,7 @@ void* Socket::operator new(size_t size) {
 	}
 }
 
-void Socket::operator delete(void *p) noexcept {
+void Socket::operator delete(void *p) {
 	Pooled::operator delete(p);
 }
 

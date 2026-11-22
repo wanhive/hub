@@ -45,7 +45,7 @@ private:
 	~Message();
 
 	void* operator new(size_t size) noexcept;
-	void operator delete(void *p) noexcept;
+	void operator delete(void *p);
 public:
 	/**
 	 * Creates a new message.

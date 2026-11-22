@@ -89,7 +89,7 @@ public:
 	 * Custom allocator and deallocator
 	 */
 	void* operator new(size_t size);
-	void operator delete(void *p) noexcept;
+	void operator delete(void *p);
 	//-----------------------------------------------------------------
 	/*
 	 * Source interface implementation
