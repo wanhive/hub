@@ -52,7 +52,7 @@ protected:
 	 * @param token true to use an access token; false otherwise
 	 * @return true if permitted, false if denied
 	 */
-	bool share(bool direct, bool token = true) noexcept;
+	bool share(bool direct, bool token) noexcept;
 	/**
 	 * Checks permission for online data transmission.
 	 * @param token true to use an access token; false otherwise
