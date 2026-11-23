@@ -46,8 +46,8 @@ void Watcher::setOption(int name, unsigned long long value) noexcept {
 
 }
 
-bool Watcher::isReady() const noexcept {
-	return Descriptor::isReady(testFlags(WATCHER_OUT));
+bool Watcher::ready() const noexcept {
+	return Descriptor::ready(testFlags(WATCHER_OUT));
 }
 
 WatcherHandle Watcher::get() const noexcept {

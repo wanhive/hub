@@ -122,7 +122,7 @@ public:
 	 * Checks whether the watcher has pending jobs.
 	 * @return true if the watcher has pending jobs, false otherwise
 	 */
-	bool isReady() const noexcept;
+	bool ready() const noexcept;
 	/**
 	 * Returns a file handle to the reactor.
 	 * @return the file handle

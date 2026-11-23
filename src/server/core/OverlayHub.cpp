@@ -900,12 +900,11 @@ bool OverlayHub::handlePublishRequest(Message *msg) noexcept {
 	unsigned int index = 0;
 	auto topic = msg->getSession();
 	while ((sub = topics.get(topic, index))) {
-		if (sub->getUid() != msg->getOrigin()
+		auto condition = sub->getUid() != msg->getOrigin()
 				&& permit(msg->getOrigin(), sub->getUid())
 				&& !sub->testGroup(msg->getGroup()) && sub->publish(msg)
-				&& sub->isReady()) {
-			retain(sub);
-		}
+				&& sub->ready();
+		retain(sub, condition);
 		++index;
 	}
 

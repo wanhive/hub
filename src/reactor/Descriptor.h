@@ -70,7 +70,7 @@ protected:
 	 * @param outgoing true if outgoing data is available, false otherwise
 	 * @return true if an IO operation is pending; false otherwise
 	 */
-	bool isReady(bool outgoing) const noexcept;
+	bool ready(bool outgoing) const noexcept;
 	//-----------------------------------------------------------------
 	/**
 	 * Checks if the managed file descriptor is in blocking mode.

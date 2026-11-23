@@ -403,7 +403,7 @@ bool Hub::handle(Alarm *alarm) noexcept {
 			auto uid = (alarm == prime.alarm ? 0 : alarm->getUid());
 			onAlarm(uid, count);
 		}
-		return alarm->isReady();
+		return alarm->ready();
 	} catch (const BaseException &e) {
 		WH_LOG_EXCEPTION(e);
 		return disable(alarm);
@@ -425,7 +425,7 @@ bool Hub::handle(Event *event) noexcept {
 			auto uid = (event == prime.event ? 0 : event->getUid());
 			onEvent(uid, count);
 		}
-		return event->isReady();
+		return event->ready();
 	} catch (const BaseException &e) {
 		WH_LOG_EXCEPTION(e);
 		return disable(event);
@@ -447,7 +447,7 @@ bool Hub::handle(Inotifier *inotifier) noexcept {
 			auto uid = (inotifier == prime.inotifier ? 0 : inotifier->getUid());
 			onInotification(uid, event);
 		}
-		return inotifier->isReady();
+		return inotifier->ready();
 	} catch (const BaseException &e) {
 		WH_LOG_EXCEPTION(e);
 		return disable(inotifier);
@@ -470,7 +470,7 @@ bool Hub::handle(Interrupt *interrupt) noexcept {
 			auto uid = (interrupt == prime.interrupt ? 0 : interrupt->getUid());
 			onInterrupt(uid, signum);
 		}
-		return interrupt->isReady();
+		return interrupt->ready();
 	} catch (const BaseException &e) {
 		WH_LOG_EXCEPTION(e);
 		return disable(interrupt);
@@ -491,7 +491,7 @@ bool Hub::handle(Logic *logic) noexcept {
 		if (event.type != LogicEdge::NONE) {
 			onLogic(logic->getUid(), event);
 		}
-		return logic->isReady();
+		return logic->ready();
 	} catch (const BaseException &e) {
 		WH_LOG_EXCEPTION(e);
 		return disable(logic);
@@ -775,11 +775,11 @@ void Hub::deliver() noexcept {
 			continue;
 		}
 		//-----------------------------------------------------------------
-		if (!w->publish(msg)) {
+		if (w->publish(msg)) {
+			retain(w, w->testEvents(IO_WRITE));
+		} else {
 			//Recipient's queue is full, retry later
 			in.put(msg);
-		} else if (w->testEvents(IO_WRITE)) {
-			retain(w);
 		}
 	}
 }
@@ -870,7 +870,7 @@ bool Hub::service(Socket *socket) noexcept {
 			}
 		}
 		//-----------------------------------------------------------------
-		return socket->isReady() || (ctx.inward && (count == limit));
+		return socket->ready() || (ctx.inward && (count == limit));
 	} catch (const BaseException &e) {
 		WH_LOG_EXCEPTION(e);
 		return disable(socket);
@@ -891,7 +891,7 @@ bool Hub::service(Stream *stream) noexcept {
 		}
 		//-----------------------------------------------------------------
 		onStream(stream->getUid(), *stream);
-		return stream->isReady();
+		return stream->ready();
 	} catch (const BaseException &e) {
 		WH_LOG_EXCEPTION(e);
 		return disable(stream);

@@ -85,8 +85,9 @@ public:
 	/**
 	 * Adds a watcher to the ready list of watchers.
 	 * @param w a watcher being monitored
+	 * @param condition true to proceed; false for no action
 	 */
-	void retain(Watcher *w) noexcept;
+	void retain(Watcher *w, bool condition = true) noexcept;
 	/**
 	 * Checks whether the last poll got timed out.
 	 * @return true if timeout expired, false otherwise
@@ -127,12 +128,12 @@ private:
 	 */
 	virtual void expel(Watcher *w) noexcept = 0;
 private:
-	Watcher* ready() noexcept;
+	Watcher* next() noexcept;
 	void remove(Watcher *w) noexcept;
 private:
 	int timeout { -1 };
 	Selector selector;
-	ReadyList<Watcher*> readyList;
+	ReadyList<Watcher*> active;
 };
 
 } /* namespace wanhive */

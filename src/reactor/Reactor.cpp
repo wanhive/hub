@@ -29,7 +29,7 @@ Reactor::~Reactor() {
 void Reactor::initialize(unsigned int events, bool signal) {
 	timeout = -1;
 	selector.initialize(events, signal);
-	readyList.initialize();
+	active.initialize();
 }
 
 void Reactor::add(Watcher *w, uint32_t events) {
@@ -68,7 +68,7 @@ bool Reactor::disable(Watcher *w) noexcept {
 }
 
 void Reactor::poll(bool block) {
-	auto to = (readyList.isEmpty() && block) ? timeout : 0;
+	auto to = (active.isEmpty() && block) ? timeout : 0;
 	selector.select(to);
 
 	const SelectionEvent *se;
@@ -81,30 +81,28 @@ void Reactor::poll(bool block) {
 			watcher->setFlags(WATCHER_INVALID);
 		}
 
-		//Put the watcher into the ready list only if it can do some useful work
-		if (watcher->isReady()) {
-			retain(watcher);
-		}
+		//Put the watcher into the ready list if it can do useful work
+		retain(watcher, watcher->ready());
 	}
 }
 
 void Reactor::dispatch() noexcept {
 	//Need <count> because the list is modified inside the while loop
-	auto count = readyList.readSpace();
+	auto count = active.readSpace();
 	while (count--) { //postfix --
-		Watcher *watcher = ready();
+		Watcher *watcher = next();
 		if (watcher->testFlags(WATCHER_INVALID)) {
 			remove(watcher);
-		} else if (react(watcher)) {
-			retain(watcher);
+		} else {
+			retain(watcher, react(watcher));
 		}
 	}
 }
 
-void Reactor::retain(Watcher *w) noexcept {
-	if (!w->testFlags(WATCHER_READY)) {
+void Reactor::retain(Watcher *w, bool condition) noexcept {
+	if (condition && w && !w->testFlags(WATCHER_READY)) {
 		w->setFlags(WATCHER_READY);
-		readyList.put(w);
+		active.put(w);
 	}
 }
 
@@ -124,9 +122,9 @@ void Reactor::setTimeout(int timeout) noexcept {
 	this->timeout = timeout;
 }
 
-Watcher* Reactor::ready() noexcept {
+Watcher* Reactor::next() noexcept {
 	Watcher *w = nullptr;
-	if (readyList.get(w)) {
+	if (active.get(w)) {
 		w->clearFlags(WATCHER_READY);
 	}
 	return w;

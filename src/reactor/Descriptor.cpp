@@ -45,7 +45,7 @@ bool Descriptor::aged(unsigned int duration) const noexcept {
 	return timer.elapsed(duration);
 }
 
-bool Descriptor::isReady(bool outgoing) const noexcept {
+bool Descriptor::ready(bool outgoing) const noexcept {
 	return (getEvents() && ((getEvents() != IO_WRITE) || outgoing));
 }
 
