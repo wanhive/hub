@@ -27,12 +27,11 @@ Monitor::~Monitor() {
 
 bool Monitor::ping(unsigned int interval, unsigned int sqn,
 		unsigned int tokens) noexcept {
-	if (edge.latency == 0) {
-		return call(edge.id, sqn, tokens);
-	} else {
+	if (edge.latency) {
 		tokens = ((interval * 1.25) / edge.latency) + 2;
-		return call(edge.id, sqn, tokens);
 	}
+
+	return call(edge.id, sqn, tokens);
 }
 
 bool Monitor::call(unsigned long long id, unsigned int sqn,
