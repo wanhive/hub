@@ -7,12 +7,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- Passkey idiom support through **Badge**.
+
 ### Changed
 
 - The **Reactor::retain** function accepts an optional boolean argument.
 - Rename **Watcher::isReady** to **Watcher::ready**.
 - Rename **Descriptor::isReady** to **Descriptor::ready**.
 - Rename **Hub::cleanup** to **Hub::restore**.
+- Update **Handle** for compile-time data access control.
 
 ### Fixed
 
