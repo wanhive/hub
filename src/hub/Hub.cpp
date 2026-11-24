@@ -300,7 +300,7 @@ void Hub::configure(void *arg) {
 	}
 }
 
-void Hub::cleanup() noexcept {
+void Hub::restore() noexcept {
 	/*
 	 * Clean up and reset this object. Any exceptional condition should
 	 * abort the process to prevent memory leak. Maintain the sequence.
@@ -529,7 +529,7 @@ void Hub::run(void *arg) noexcept {
 		healthy = false; //terminated due to error
 		WH_LOG_EXCEPTION(e);
 	}
-	cleanup();
+	restore();
 }
 
 int Hub::getStatus() const noexcept {

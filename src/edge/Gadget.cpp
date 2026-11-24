@@ -73,9 +73,9 @@ void Gadget::configure(void *arg) {
 	}
 }
 
-void Gadget::cleanup() noexcept {
+void Gadget::restore() noexcept {
 	clear();
-	Edge::cleanup();
+	Edge::restore();
 }
 
 void Gadget::maintain() noexcept {

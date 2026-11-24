@@ -80,12 +80,12 @@ void AuthenticationHub::configure(void *arg) {
 	}
 }
 
-void AuthenticationHub::cleanup() noexcept {
+void AuthenticationHub::restore() noexcept {
 	pake.iterate(deleteVerifiers, this);
 	pkey.clear();
 	DataStore::close();
 	clear();
-	DynamicHub::cleanup();
+	DynamicHub::restore();
 }
 
 void AuthenticationHub::maintain() noexcept {

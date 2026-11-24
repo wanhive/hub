@@ -110,9 +110,9 @@ void Receiver::configure(void *arg) {
 	}
 }
 
-void Receiver::cleanup() noexcept {
+void Receiver::restore() noexcept {
 	clear();
-	Monitor::cleanup();
+	Monitor::restore();
 }
 
 void Receiver::maintain() noexcept {

@@ -203,7 +203,7 @@ protected:
 	/**
 	 * Cleanup: restores the hub after the event loop finishes.
 	 */
-	virtual void cleanup() noexcept;
+	virtual void restore() noexcept;
 private:
 	/**
 	 * Adapter: hub's maintenance routine.

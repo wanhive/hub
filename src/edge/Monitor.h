@@ -83,7 +83,7 @@ protected:
 	void end() noexcept;
 	//-----------------------------------------------------------------
 	void configure(void *arg) override;
-	void cleanup() noexcept override;
+	void restore() noexcept override;
 	//-----------------------------------------------------------------
 private:
 	void setup();

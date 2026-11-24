@@ -77,9 +77,9 @@ void DynamicHub::configure(void *arg) {
 	}
 }
 
-void DynamicHub::cleanup() noexcept {
-	sanitize();
-	Hub::cleanup();
+void DynamicHub::restore() noexcept {
+	cleanup();
+	Hub::restore();
 }
 
 void DynamicHub::onInotification(unsigned long long uid,
@@ -184,7 +184,7 @@ void DynamicHub::reload(unsigned int index) noexcept {
 }
 
 void DynamicHub::setup() {
-	sanitize(); //Just in case
+	cleanup(); //Just in case
 	try {
 		//Events we are interested in: modify-> close
 		const uint32_t events = IN_MODIFY | IN_ATTRIB | IN_CLOSE_WRITE;
@@ -234,7 +234,7 @@ void DynamicHub::setup() {
 	}
 }
 
-void DynamicHub::sanitize() noexcept {
+void DynamicHub::cleanup() noexcept {
 	for (unsigned int i = 0; i < TRACKERS; ++i) {
 		if (tracker[i].id != -1) {
 			Hub::untrack(tracker[i].id);

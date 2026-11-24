@@ -45,9 +45,9 @@ void Beacon::configure(void *arg) {
 	}
 }
 
-void Beacon::cleanup() noexcept {
+void Beacon::restore() noexcept {
 	clear();
-	Gadget::cleanup();
+	Gadget::restore();
 }
 
 void Beacon::onAlarm(unsigned long long uid, unsigned long long ticks) noexcept {

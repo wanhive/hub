@@ -102,9 +102,9 @@ void Edge::configure(void *arg) {
 	}
 }
 
-void Edge::cleanup() noexcept {
+void Edge::restore() noexcept {
 	clear();
-	Agent::cleanup();
+	Agent::restore();
 }
 
 void Edge::setup() {

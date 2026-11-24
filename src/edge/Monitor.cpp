@@ -112,9 +112,9 @@ void Monitor::configure(void *arg) {
 	}
 }
 
-void Monitor::cleanup() noexcept {
+void Monitor::restore() noexcept {
 	clear();
-	Agent::cleanup();
+	Agent::restore();
 }
 
 void Monitor::setup() {

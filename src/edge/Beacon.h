@@ -41,7 +41,7 @@ protected:
 	unsigned int channel() const noexcept;
 	//-----------------------------------------------------------------
 	void configure(void *arg) override;
-	void cleanup() noexcept override;
+	void restore() noexcept override;
 	//-----------------------------------------------------------------
 private:
 	//-----------------------------------------------------------------

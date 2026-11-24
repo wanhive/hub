@@ -80,9 +80,9 @@ void Agent::configure(void *arg) {
 	}
 }
 
-void Agent::cleanup() noexcept {
+void Agent::restore() noexcept {
 	clear();
-	DynamicHub::cleanup();
+	DynamicHub::restore();
 }
 
 void Agent::maintain() noexcept {

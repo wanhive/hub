@@ -38,7 +38,7 @@ private:
 	//-----------------------------------------------------------------
 	void expel(Watcher *w) noexcept override;
 	void configure(void *arg) override;
-	void cleanup() noexcept override;
+	void restore() noexcept override;
 	void maintain() noexcept override;
 	bool probe(Message *message) noexcept override;
 	void route(Message *message) noexcept override;

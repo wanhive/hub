@@ -53,7 +53,7 @@ protected:
 	bool reload(int wd, uint32_t mask) noexcept;
 	//-----------------------------------------------------------------
 	void configure(void *arg) override;
-	void cleanup() noexcept override;
+	void restore() noexcept override;
 	//-----------------------------------------------------------------
 private:
 	//-----------------------------------------------------------------
@@ -62,7 +62,7 @@ private:
 	//-----------------------------------------------------------------
 	void reload(unsigned int index) noexcept;
 	void setup();
-	void sanitize() noexcept;
+	void cleanup() noexcept;
 	void clear() noexcept;
 	//-----------------------------------------------------------------
 private:

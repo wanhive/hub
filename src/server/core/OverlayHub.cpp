@@ -92,7 +92,7 @@ void OverlayHub::configure(void *arg) {
 	}
 }
 
-void OverlayHub::cleanup() noexcept {
+void OverlayHub::restore() noexcept {
 	Watcher *w = nullptr;
 	if (!isHost(getWorker()) && (w = find(getWorker()))) {
 		//Shut down hub's end of the socket pair
@@ -102,7 +102,7 @@ void OverlayHub::cleanup() noexcept {
 
 	clear();
 	//Clean up the base class
-	DynamicHub::cleanup();
+	DynamicHub::restore();
 }
 
 void OverlayHub::maintain() noexcept {

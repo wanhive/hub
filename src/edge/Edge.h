@@ -81,7 +81,7 @@ protected:
 	unsigned long long peer() const noexcept;
 	//-----------------------------------------------------------------
 	void configure(void *arg) override;
-	void cleanup() noexcept override;
+	void restore() noexcept override;
 	//-----------------------------------------------------------------
 private:
 	void setup();
