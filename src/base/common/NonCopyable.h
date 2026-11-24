@@ -16,14 +16,18 @@
 /*! @namespace wanhive */
 namespace wanhive {
 /**
- * Non-copyable class: can't be copied or assigned
+ * @brief A class that cannot be copied or moved
+ * @details This class, along with its subclasses, cannot be copied, moved, or
+ * assigned to another instance.
  */
 class NonCopyable {
 protected:
 	constexpr NonCopyable() noexcept = default;
 	~NonCopyable() = default;
 	NonCopyable(const NonCopyable&) = delete;
+	NonCopyable(NonCopyable&&) = delete;
 	NonCopyable& operator=(const NonCopyable&) = delete;
+	NonCopyable& operator=(NonCopyable&&) = delete;
 };
 
 } /* namespace wanhive */
