@@ -42,8 +42,6 @@ enum WatcherOption {
 };
 //-----------------------------------------------------------------
 class Reactor;
-/*! Reactor-specific file handle */
-using WatcherHandle=Handle<Reactor>;
 //-----------------------------------------------------------------
 /**
  * Reactor pattern implementation (resource descriptor and request handler)
@@ -127,7 +125,7 @@ public:
 	 * Returns a file handle to the reactor.
 	 * @return the file handle
 	 */
-	WatcherHandle get() const noexcept;
+	FileHandle<Reactor> get() const noexcept;
 };
 
 } /* namespace wanhive */

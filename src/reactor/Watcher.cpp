@@ -50,8 +50,8 @@ bool Watcher::ready() const noexcept {
 	return Descriptor::ready(testFlags(WATCHER_OUT));
 }
 
-WatcherHandle Watcher::get() const noexcept {
-	return WatcherHandle { Descriptor::get() };
+FileHandle<Reactor> Watcher::get() const noexcept {
+	return FileHandle<Reactor> { Descriptor::get() };
 }
 
 } /* namespace wanhive */
