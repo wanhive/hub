@@ -90,7 +90,7 @@ void Reactor::dispatch() noexcept {
 	//Need <count> because the list is modified inside the while loop
 	auto count = active.readSpace();
 	while (count--) { //postfix --
-		Watcher *watcher = next();
+		Watcher *watcher = eject();
 		if (watcher->testFlags(WATCHER_INVALID)) {
 			remove(watcher);
 		} else {
@@ -122,7 +122,7 @@ void Reactor::setTimeout(int timeout) noexcept {
 	this->timeout = timeout;
 }
 
-Watcher* Reactor::next() noexcept {
+Watcher* Reactor::eject() noexcept {
 	Watcher *w = nullptr;
 	if (active.get(w)) {
 		w->clearFlags(WATCHER_READY);

@@ -128,7 +128,7 @@ private:
 	 */
 	virtual void expel(Watcher *w) noexcept = 0;
 private:
-	Watcher* next() noexcept;
+	Watcher* eject() noexcept;
 	void remove(Watcher *w) noexcept;
 private:
 	int timeout { -1 };
