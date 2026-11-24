@@ -139,6 +139,7 @@ private:
 		Verifier verifier;
 
 		Timer timer;
+		unsigned int count;
 		int stage;
 		bool connected;
 	} boot;

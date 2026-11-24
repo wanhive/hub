@@ -645,6 +645,7 @@ void Agent::processRegistrationResponse(Message *msg) noexcept {
 void Agent::setStage(int stage) noexcept {
 	if (stage != boot.stage) {
 		boot.timer.now();
+		boot.count = 0;
 		boot.stage = stage;
 		boot.connected = (stage == WHC_REGISTERED);
 
@@ -718,6 +719,7 @@ void Agent::clear() noexcept {
 	boot.auth = nullptr;
 	boot.node = nullptr;
 	memset(&boot.nonce, 0, sizeof(boot.nonce));
+	boot.count = 0;
 	boot.stage = WHC_IDENTIFY;
 	boot.connected = false;
 }
