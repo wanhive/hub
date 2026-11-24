@@ -12,6 +12,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - The **Reactor::retain** function accepts an optional boolean argument.
 - Rename **Watcher::isReady** to **Watcher::ready**.
 - Rename **Descriptor::isReady** to **Descriptor::ready**.
+- Rename **Hub::cleanup** to **Hub::restore**.
 
 ### Fixed
 
