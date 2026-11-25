@@ -5,19 +5,19 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased]
+## [20.0.0] - 2026-11-25
 
 ### Added
 
-- Passkey idiom support through **Badge**.
+- **Badge** template class for passkey idiom implementation.
 
 ### Changed
 
+- The **Handle** class accepts a *default value* template argument.
 - The **Reactor::retain** function accepts an optional boolean argument.
 - Rename **Watcher::isReady** to **Watcher::ready**.
 - Rename **Descriptor::isReady** to **Descriptor::ready**.
 - Rename **Hub::cleanup** to **Hub::restore**.
-- Update **Handle** for compile-time data access control.
 
 ### Fixed
 
